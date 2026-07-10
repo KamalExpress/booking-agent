@@ -1,0 +1,14 @@
+[
+  {
+    "key": "GET /",
+    "method": "GET",
+    "url": "https://pk-gr-services.gvcworld.eu/",
+    "path": "/"
+  },
+  {
+    "key": "GET /_Incapsula_Resource",
+    "method": "GET",
+    "url": "https://pk-gr-services.gvcworld.eu/_Incapsula_Resource?SWJIYLWA=719d34d31c8e3a6e6fffd425f7e032f3",
+    "path": "/_Incapsula_Resource"
+  }
+]

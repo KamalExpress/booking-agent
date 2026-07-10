@@ -1,0 +1,18 @@
+- Prefer MCP tools over LLM reasoning.
+- Never read entire JS bundles; use ripgrep first.
+- Never read entire HAR files; use Python tooling to extract only relevant data.
+- Persist discoveries under /knowledge.
+- Reuse existing knowledge before analyzing again.
+- Commit meaningful milestones to Git.
+- Prefer direct API automation over browser automation when feasible.
+- Use Playwright only where browser interaction is required.
+Environment:
+- Windows 11
+- Docker Desktop installed and running
+- Prefer Docker containers over local installs where practical.
+- Prefer PowerShell commands over Bash unless running inside a Linux container.
+- Prefer uv for Python package management.
+- Reuse existing Docker containers instead of creating new ones.
+- When a task requires browser automation, use the existing Chrome DevTools and Playwright MCPs before suggesting manual steps.
+- Check for existing tools and containers before installing anything new.
+- Minimize token usage by using MCP tools instead of reading large files into context.

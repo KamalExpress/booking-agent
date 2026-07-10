@@ -1,0 +1,8 @@
+{
+  "GET /": {
+    "type": "text"
+  },
+  "GET /_Incapsula_Resource": {
+    "type": "text"
+  }
+}

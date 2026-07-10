@@ -1,0 +1,13 @@
+alright let's divide this into concrete steps; here's approximate steps while our operator has to perform a booking in browser:
+
+1. Login: Solve recaptcha, fill in username/password and submit login form
+2. after successful loogin; need to make data entry + booking on appointment page (navigate from dashboard to this link: https://pk-gr-services.gvcworld.eu/appointments/add)
+2a. select from "Appointment for" dropdown: Long-Term Type D (Seasonal/Dependent Employment)
+2c.fill in: Date of Birth, Passport, Passport's Expiration Date, Gender, Appointment Date and click Search button
+3. Clicking search button loads available slots
+3a. Click/Select one of the available slots, 
+3b. Solve captcha
+3c. Click Request/Send SMS OTP
+3d. fill in received otp and click on Book Appointment button
+
+ideally we should be able to see and implement how the booking can be achieved by calling the actual backend apis/endpoints etc while implementing browserless flow

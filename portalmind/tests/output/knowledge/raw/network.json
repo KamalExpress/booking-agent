@@ -1,0 +1,12 @@
+[
+  {
+    "method": "POST",
+    "url": "https://api.example.com/v1/auth/login",
+    "path": "/v1/auth/login"
+  },
+  {
+    "method": "GET",
+    "url": "https://api.example.com/v1/users/me",
+    "path": "/v1/users/me"
+  }
+]

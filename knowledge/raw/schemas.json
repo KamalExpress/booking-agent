@@ -1,0 +1,25 @@
+[
+  {
+    "type": "request",
+    "keys": [
+      "username",
+      "password",
+      "g-recaptcha-response"
+    ]
+  },
+  {
+    "type": "request",
+    "keys": [
+      "datefrom",
+      "type",
+      "bookingfor",
+      "members",
+      "method",
+      "travelpurposes",
+      "howmanyapplicantsareunder12",
+      "appointmentId",
+      "id",
+      "vac"
+    ]
+  }
+]

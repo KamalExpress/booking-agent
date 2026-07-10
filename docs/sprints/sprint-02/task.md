@@ -1,0 +1,23 @@
+# Sprint 02: Level 3 Architecture (Behavior Analysis) Tasks
+
+- `[x]` Enhance Graph Models (`portalmind/models/graph.py`)
+  - `[x]` Add `confidence` property to Node and Edge
+  - `[x]` Add provenance fields (`created_by`, `artifact`, `evidence`)
+- `[x]` Scaffold Architecture Directories
+  - `[x]` `portalmind/reasoners/`
+  - `[x]` `portalmind/planners/`
+- `[x]` Implement `DataFlowReasoner`
+  - `[x]` Create `portalmind/reasoners/dataflow.py`
+  - `[x]` Implement logic to traverse schemas/responses and find shared values
+  - `[x]` Create `Variable` nodes and `PRODUCES`/`CONSUMES` edges
+- `[x]` Implement `WorkflowReasoner`
+  - `[x]` Create `portalmind/reasoners/workflow.py`
+  - `[x]` Implement state machine inference logic
+- `[x]` Add `Planner` Placeholder
+  - `[x]` Create `portalmind/planners/automation.py`
+- `[x]` Update Pipeline & CLI
+  - `[x]` Update `portalmind/cli.py` to trigger Reasoners after Analyzers
+- `[x]` Testing
+  - `[x]` Update `test_pipeline.py` to assert DataFlow properties on `synthetic.har`
+- `[x]` Final Verification
+  - `[x]` Run CLI against `login-data-entry-search-slots.txt`

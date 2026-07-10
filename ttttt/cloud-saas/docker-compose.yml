@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  cloud-saas:
+    image: cloud-saas:latest
+    build: .
+    container_name: cloud-saas
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      # In production, this will point to the production PostgreSQL instance
+      - DATABASE_URL=postgresql://postgres:postgres@postgres_dev:5432/booking_saas
+      - SECRET_KEY=kamal_express_saas_secure_key_12345
+      # VAPID keys for Web Push Notifications (You must generate real ones for production)
+      - VAPID_PRIVATE_KEY=private_key.pem
+      - VAPID_PUBLIC_KEY=BOJviVyqeMuXRl9-4a_iJrH67TKwCjV7N4YZs-tZ63ZBHOtqksgujIA_0yMiDaC_EAt-wUJ4YNJN4vZMoBMeuzs
+    volumes:
+      - ./private_key.pem:/app/private_key.pem
+      - ./app:/app/app
+      - ./static:/app/static
+    networks:
+      - sam-agent-platform_default
+
+networks:
+  sam-agent-platform_default:
+    external: true

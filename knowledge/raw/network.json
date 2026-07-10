@@ -1,0 +1,132 @@
+[
+  {
+    "method": "GET",
+    "url": "https://pk-gr-services.gvcworld.eu/",
+    "path": "/"
+  },
+  {
+    "method": "POST",
+    "url": "https://www.google.com/recaptcha/api2/reload?k=6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2",
+    "path": "/recaptcha/api2/reload"
+  },
+  {
+    "method": "POST",
+    "url": "https://www.google.com/recaptcha/api2/userverify?k=6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2",
+    "path": "/recaptcha/api2/userverify"
+  },
+  {
+    "method": "POST",
+    "url": "https://www.google.com/recaptcha/api2/clr?k=6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2",
+    "path": "/recaptcha/api2/clr"
+  },
+  {
+    "method": "POST",
+    "url": "https://pk-gr-services.gvcworld.eu/api/v1/auth/login",
+    "path": "/api/v1/auth/login"
+  },
+  {
+    "method": "GET",
+    "url": "https://pk-gr-services.gvcworld.eu/api/v1/translations",
+    "path": "/api/v1/translations"
+  },
+  {
+    "method": "POST",
+    "url": "https://pk-gr-services.gvcworld.eu/auth/theme",
+    "path": "/auth/theme"
+  },
+  {
+    "method": "GET",
+    "url": "https://pk-gr-services.gvcworld.eu/dist/audio/notification.mp3",
+    "path": "/dist/audio/notification.mp3"
+  },
+  {
+    "method": "POST",
+    "url": "https://pk-gr-services.gvcworld.eu/dashboard",
+    "path": "/dashboard"
+  },
+  {
+    "method": "GET",
+    "url": "https://pk-gr-services.gvcworld.eu/favicon.ico",
+    "path": "/favicon.ico"
+  },
+  {
+    "method": "POST",
+    "url": "https://pk-gr-services.gvcworld.eu/appointments/add",
+    "path": "/appointments/add"
+  },
+  {
+    "method": "GET",
+    "url": "https://pk-gr-services.gvcworld.eu/api/v1/country/bookappointmentype/siddiquez296@gmail.com",
+    "path": "/api/v1/country/bookappointmentype/siddiquez296@gmail.com"
+  },
+  {
+    "method": "GET",
+    "url": "https://www.google.com/recaptcha/api.js?onload=onloadCallbackCAPTCHA&render=explicit&hl=en&_=1782723134017",
+    "path": "/recaptcha/api.js"
+  },
+  {
+    "method": "GET",
+    "url": "https://www.google.com/recaptcha/api2/anchor?ar=1&k=6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2&co=aHR0cHM6Ly9way1nci1zZXJ2aWNlcy5ndmN3b3JsZC5ldTo0NDM.&hl=en&v=MerVUtRoajKEbP7pLiGXkL28&size=normal&anchor-ms=20000&execute-ms=30000&cb=ke43ok7ngg88",
+    "path": "/recaptcha/api2/anchor"
+  },
+  {
+    "method": "GET",
+    "url": "https://www.google.com/recaptcha/api2/webworker.js?hl=en&v=MerVUtRoajKEbP7pLiGXkL28",
+    "path": "/recaptcha/api2/webworker.js"
+  },
+  {
+    "method": "GET",
+    "url": "https://www.google.com/recaptcha/api2/bframe?hl=en&v=MerVUtRoajKEbP7pLiGXkL28&k=6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2&bft=0dAFcWeA4Wv7NVGi4E6ITGTISlNhCENy3hLalCKPdJrCit_pqPqAIo993U83Ptb22oE_oEhniu0F_4NdSZBPbE454qKms0aPSmPg",
+    "path": "/recaptcha/api2/bframe"
+  },
+  {
+    "method": "PUT",
+    "url": "https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots",
+    "path": "/api/v1/periodslot/slots"
+  },
+  {
+    "path": "/css"
+  },
+  {
+    "path": "/dist/css/vendor.css"
+  },
+  {
+    "path": "/dist/css/app.css"
+  },
+  {
+    "path": "/dist/js/vendor.js"
+  },
+  {
+    "path": "/dist/js/app.js"
+  },
+  {
+    "path": "/dist/images/logo_pk.png"
+  },
+  {
+    "path": "/dist/flags/4x3/gb.svg"
+  },
+  {
+    "path": "/s/roboto/v51/KFO7CnqEu92Fr1ME7kSn66aGLdTylUAMa3yUBA.woff2"
+  },
+  {
+    "path": "/dist/webfonts/fa-solid-900.woff2"
+  },
+  {
+    "path": "/s/roboto/v51/KFO7CnqEu92Fr1ME7kSn66aGLdTylUAMawCUBGEe.woff2"
+  },
+  {
+    "path": "/dist/webfonts/fa-regular-400.woff2"
+  },
+  {
+    "path": "/recaptcha/releases/MerVUtRoajKEbP7pLiGXkL28/recaptcha__en.js"
+  },
+  {
+    "path": "/recaptcha/releases/MerVUtRoajKEbP7pLiGXkL28/styles__ltr.css"
+  },
+  {
+    "path": "/dist/images/ui-icons_444444_256x240.png"
+  },
+  {
+    "path": "/dist/images/ui-icons_555555_256x240.png"
+  }
+]

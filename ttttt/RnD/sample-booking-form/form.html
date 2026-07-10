@@ -1,0 +1,1720 @@
+<html dir="ltr">
+
+<head>
+    <meta http-equiv="origin-trial"
+        content="A7vZI3v+Gz7JfuRolKNM4Aff6zaGuT7X0mf3wtoZTnKv6497cVMnhy03KDqX7kBz/q/iidW7srW31oQbBt4VhgoAAACUeyJvcmlnaW4iOiJodHRwczovL3d3dy5nb29nbGUuY29tOjQ0MyIsImZlYXR1cmUiOiJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2VQYXJ0aXRpb25pbmczIiwiZXhwaXJ5IjoxNzU3OTgwODAwLCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ==">
+    <title>Visa | My Appointments | Add</title>
+
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+
+    <!--<link rel="shortcut icon" type="image/png" href="/dist/images/favicon.png"/>-->
+
+    <link href="//fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i"
+        async="async" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="/dist/css/vendor.css" media="all">
+    <link rel="stylesheet" type="text/css" href="/dist/css/app.css" media="all">
+    <script type="text/javascript" async="" charset="utf-8"
+        src="https://www.gstatic.com/recaptcha/releases/TnA7HacJFoBWt9hnlunBlYfK/recaptcha__en.js"
+        crossorigin="anonymous"
+        integrity="sha384-r0+0DCYB9Tdq4Rpy9IvL6ouvcnluWOWNg9jAIO3yJA2C6v7nklWcHe/NE5zIDHbA"></script>
+</head>
+
+<body class="no-touch gvcw" cz-shortcut-listen="true">
+
+
+
+    <div id="layout-container">
+
+        <header id="header-wrapper" class="column tr" role="banner">
+            <div id="menu-toggle" class="classic-btn tr" onclick="mainMenuToggle(this)"><i class="fa fa-bars"
+                    aria-hidden="true"></i></div>
+
+            <div id="search-fullbg" onclick="ubi.search.close()"></div>
+
+
+            <div id="mini-menu-wrapper">
+                <nav>
+                    <ul>
+
+
+
+
+                        <li id="lang-wrapper">
+                            <div class="icon-wrapper">
+                                <i onclick="miniMenuToggleBox(this)" class="fas fa-globe click mm-icons"></i>
+                                <div class="icon-indicator tr">
+                                    <span class="flag-icon flag-icon-gb"></span>
+                                </div>
+                            </div>
+                            <div class="box dropdown tr">
+                                <ul>
+                                    <!--
+                                  internet country domain -> https://www.worldstandards.eu/other/tlds
+                                */-->
+                                    <li class="lang-selector tr active" user-lang="en" data-lang="en_US">
+                                        <span>English</span><span class="flag-icon flag-icon-gb tr"></span></li>
+
+
+
+
+
+
+
+
+                                </ul>
+                            </div>
+
+                        </li>
+                        <li>
+                            <i onclick="miniMenuToggleBox(this)" class="fas fa-user-circle click mm-icons"
+                                aria-hidden="true"></i>
+                            <div id="account" class="box tr">
+                                <div class="box-field box-close-btn"><i onclick="miniMenuToggleBox(this)"
+                                        class="fas fa-times click" aria-hidden="true"></i></div>
+                                <div class="box-field box-title"><span>Profile Navigation</span>
+
+                                </div>
+                                <div class="box-field box-image">
+                                    <i class="fas fa-user-circle" aria-hidden="true"></i>
+                                </div>
+                                <div class="box-field box-name">SHAHID RIAZ</div>
+                                <div class="box-field box-email"><span>siddiquez296@gmail.com</span></div>
+                                <div class="box-field box-buttons">
+                                    <a href="/user/899721" id="manage-account" class="btn darkblue"><span>Manage
+                                            Account</span></a>
+                                    <button class="btn blue" onclick="ubi.logout(this)" data-redirect="stay"
+                                        data-submit="/user/logout?lang=en_US"><span>Sign out</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li id="menu-toggle-small">
+                            <i onclick="mainMenuToggle(this)" class="fa fa-bars click mm-icons" aria-hidden="true"></i>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+        </header>
+
+        <div id="content-wrapper" class="column">
+
+            <div id="main-wrapper" class="tr">
+                <div class="dark-cover tr" onclick="closeMenu()"></div>
+                <div class="loader tr hide"></div>
+                <main class="tr" role="main">
+                    <div>
+
+                        <h1><span>My Appointments | Add</span></h1>
+
+                        <h3><span>Book Appointment</span></h3>
+
+
+                        <div id="main-area">
+
+                            <form id="appointment" class="classic" onsubmit="return false" novalidate="">
+                                <input id="no-results" type="hidden" value="No results found">
+                                <div class="appointment_box_tip">Kindly note that this platform for online appointments
+                                    has been designed to service individual applicants and their families and it is not
+                                    intended for any professional use. Appointments booked online are to be cancelled by
+                                    the applicant as soon as it is determined that these are no longer required. The
+                                    correct use of the platform is being monitored regularly and any excess use will
+                                    result to the cancellation of the reserved slots.</div>
+
+                                <input type="hidden" name="otpuser" id="otpuser"
+                                    value="User{id=899721, username=siddiquez296@gmail.com, password=829158c6e1fb10036886167f5fd47eaf9f5dfb34, firstname=SHAHID, lastname=RIAZ, email=siddiquez296@gmail.com, country=Vcountry{id=19, name=PAKISTAN}, vac=Vac{id=138, name=Lahore Visa Application Center for Greece}, roles=null, userroles=[eu.ubitech.gvcw.repository.domain.UserRole@5172be2]}">
+                                <input type="hidden" name="vpm" id="vpm" value="">
+
+
+                                <div class="form-item">
+                                    <strong>VAC</strong>:
+                                    <span>Lahore Visa Application Center for Greece</span>
+                                    <input type="hidden" name="vac" id="vac" value="138">
+                                </div>
+
+                                <table style="width:70%">
+                                    <tbody>
+                                        <tr>
+                                            <td style="width:40%;vertical-align: top" class="form-item required">
+                                                <label for="type" style="width: 570px;">Appointment for</label>
+                                                <select name="type" id="type"
+                                                    class="form-control select2-hidden-accessible" required="required"
+                                                    placeholder="Select an option" tabindex="-1" aria-hidden="true">
+                                                    <option value="0">Submission Schengen Visa (Short term – Type C)
+                                                    </option>
+                                                    <option value="2">National visa (Long term - type D)</option>
+                                                    <option value="5">Premium Lounge (optional service at an additional
+                                                        charge)</option>
+                                                    <option value="6">Prime Time (optional service at an additional
+                                                        charge)</option>
+                                                    <option value="26">Long-Term Type D (Seasonal/Dependent Employment)
+                                                    </option>
+                                                </select><span
+                                                    class="select2 select2-container select2-container--default"
+                                                    dir="ltr" style="width: 570px;"><span class="selection"><span
+                                                            class="select2-selection select2-selection--single"
+                                                            role="combobox" aria-haspopup="true" aria-expanded="false"
+                                                            tabindex="0" aria-labelledby="select2-type-container"><span
+                                                                class="select2-selection__rendered"
+                                                                id="select2-type-container"
+                                                                title="Submission Schengen Visa (Short term – Type C)">Submission
+                                                                Schengen Visa (Short term – Type C)</span><span
+                                                                class="select2-selection__arrow" role="presentation"><b
+                                                                    role="presentation"></b></span></span></span><span
+                                                        class="dropdown-wrapper" aria-hidden="true"></span></span>
+                                            </td>
+                                            <td style="width:30%" id="travelpurposesDiv"
+                                                class="form-item required hidden">
+                                                <label for="travelpurposes">Travel Purpose</label>
+                                                <select name="travelpurposes" id="travelpurposes"
+                                                    class="form-item allowclear select2-hidden-accessible"
+                                                    placeholder="Select an option" tabindex="-1" aria-hidden="true">
+                                                    <option value=""></option>
+
+                                                </select><span
+                                                    class="select2 select2-container select2-container--default"
+                                                    dir="ltr" style="width: 100px;"><span class="selection"><span
+                                                            class="select2-selection select2-selection--single"
+                                                            role="combobox" aria-haspopup="true" aria-expanded="false"
+                                                            tabindex="0"
+                                                            aria-labelledby="select2-travelpurposes-container"><span
+                                                                class="select2-selection__rendered"
+                                                                id="select2-travelpurposes-container"><span
+                                                                    class="select2-selection__placeholder">Select an
+                                                                    option</span></span><span
+                                                                class="select2-selection__arrow" role="presentation"><b
+                                                                    role="presentation"></b></span></span></span><span
+                                                        class="dropdown-wrapper" aria-hidden="true"></span></span>
+                                            </td>
+                                            <td style="width:30%">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width:40%" class="form-item required">
+                                                <label for="bookingfor" style="width: 230px;">Booking as</label>
+                                                <select name="bookingfor" id="bookingfor"
+                                                    class="form-control select2-hidden-accessible" required="required"
+                                                    placeholder="Select an option" tabindex="-1" aria-hidden="true">
+                                                    <option value="0" selected="selected">Individual</option>
+                                                    <option value="1">Group (Family/Traveler)</option>
+                                                </select><span
+                                                    class="select2 select2-container select2-container--default"
+                                                    dir="ltr" style="width: 570px;"><span class="selection"><span
+                                                            class="select2-selection select2-selection--single"
+                                                            role="combobox" aria-haspopup="true" aria-expanded="false"
+                                                            tabindex="0"
+                                                            aria-labelledby="select2-bookingfor-container"><span
+                                                                class="select2-selection__rendered"
+                                                                id="select2-bookingfor-container"
+                                                                title="Individual">Individual</span><span
+                                                                class="select2-selection__arrow" role="presentation"><b
+                                                                    role="presentation"></b></span></span></span><span
+                                                        class="dropdown-wrapper" aria-hidden="true"></span></span>
+                                            </td>
+                                            <td style="width:20%" id="membersDiv" class="form-item hidden">
+                                                <label for="members"># in Group</label>
+                                                <select name="members" id="members"
+                                                    class="form-control select2-hidden-accessible"
+                                                    placeholder="Select an option" tabindex="-1" aria-hidden="true">
+                                                    <option value="2">2</option>
+                                                    <option value="3">3</option>
+                                                    <option value="4">4</option>
+                                                    <option value="5">5</option>
+
+
+                                                </select><span
+                                                    class="select2 select2-container select2-container--default"
+                                                    dir="ltr" style="width: 100px;"><span class="selection"><span
+                                                            class="select2-selection select2-selection--single"
+                                                            role="combobox" aria-haspopup="true" aria-expanded="false"
+                                                            tabindex="0"
+                                                            aria-labelledby="select2-members-container"><span
+                                                                class="select2-selection__rendered"
+                                                                id="select2-members-container" title="2">2</span><span
+                                                                class="select2-selection__arrow" role="presentation"><b
+                                                                    role="presentation"></b></span></span></span><span
+                                                        class="dropdown-wrapper" aria-hidden="true"></span></span>
+                                            </td>
+                                            <td style="width:40%"></td>
+
+                                        </tr>
+                                        <tr>
+
+                                        </tr>
+                                        <tr>
+                                            <td style="width:40%" class="form-item required">
+                                                <label for="ind_email">E-mail</label>
+                                                <!--                <span style="background-color:white;color:red;" sec:authorize="${hasAnyRole('APPLICANT')}" th:text="#{user.bookappointment.email.tip}">TIP</span>-->
+                                                <input type="text" name="email" id="ind_email"
+                                                    class="form-control noupper" placeholder="" maxlength="60"
+                                                    required="required" data-parsley-valemail=""
+                                                    data-parsley-trigger="focusout" value="siddiquez296@gmail.com"
+                                                    readonly="readonly">
+                                            </td>
+
+                                        </tr>
+                                        <tr></tr>
+
+                                        <tr>
+                                            <td style="width:60%" colspan="2" class="form-item required">
+                                                <label for="ind_passportnumber">Phone number</label>
+                                                <!--                <span style="background-color:white;color:red;" sec:authorize="${hasAnyRole('APPLICANT')}"-->
+                                                <!--                      th:text="#{user.edit.phonenumber.appointment.tip}">TIP</span>-->
+                                                <table style="width:100%">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td style="width:30%">
+                                                                <select name="phonenumberprefix[id]"
+                                                                    id="phonenumberprefix"
+                                                                    class="form-control select2-hidden-accessible"
+                                                                    tabindex="-1" aria-hidden="true">
+                                                                    <option value=""></option>
+                                                                    <option value="197" selected="selected">PAKISTAN +92
+                                                                    </option>
+                                                                </select><span
+                                                                    class="select2 select2-container select2-container--default"
+                                                                    dir="ltr" style="width: 249px;"><span
+                                                                        class="selection"><span
+                                                                            class="select2-selection select2-selection--single"
+                                                                            role="combobox" aria-haspopup="true"
+                                                                            aria-expanded="false" tabindex="0"
+                                                                            aria-labelledby="select2-phonenumberprefix-container"><span
+                                                                                class="select2-selection__rendered"
+                                                                                id="select2-phonenumberprefix-container"
+                                                                                title="PAKISTAN  +92">PAKISTAN
+                                                                                +92</span><span
+                                                                                class="select2-selection__arrow"
+                                                                                role="presentation"><b
+                                                                                    role="presentation"></b></span></span></span><span
+                                                                        class="dropdown-wrapper"
+                                                                        aria-hidden="true"></span></span>
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" name="phonenumber"
+                                                                    id="ind_phonenumber" class="form-control"
+                                                                    placeholder="" required="required"
+                                                                    pattern="^((?!(0){1})[0-9]{10})$" maxlength="10"
+                                                                    data-parsley-trigger="focusout" value="3165185964"
+                                                                    readonly="readonly">
+                                                            </td>
+
+                                                        </tr>
+
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+
+                                <h2 class="appointment_subtitle"><span>Client Information</span></h2>
+                                <input type="hidden" name="groupid" id="groupid" value="">
+
+                                <!--INDIVIDUAL/ GROUP INFO -->
+                                <div class="form-item" id="groupInfoDiv">
+                                    <div class="appointment_tip">Please fill out the information of all the persons for
+                                        this appointment.</div>
+                                    <table style="width: 90% !important" id="groupTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Surname</th>
+                                                <th>Name</th>
+                                                <th>Date of Birth</th>
+                                                <th>Passport</th>
+                                                <th>Passport's Expiration Date</th>
+                                                <th>Gender</th>
+                                                <th>Nationality</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="groupBody">
+                                            <tr>
+                                                <td>
+                                                    <span class="form-item required">
+                                                        <input type="text" name="applicants[][surname]" id="gp_surname"
+                                                            class="form-control" placeholder="" required="required"
+                                                            maxlength="65" data-parsley-longval2=""
+                                                            data-parsley-trigger="focusout" value="RIAZ">
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="form-item required">
+                                                        <input type="text" name="applicants[][firstname]"
+                                                            id="gp_firstname" class="form-control" placeholder=""
+                                                            required="required" maxlength="65" data-parsley-longval2=""
+                                                            data-parsley-trigger="focusout" value="SHAHID">
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="form-item required dpicker">
+                                                        <input type="text" name="applicants[][dateofbirth]"
+                                                            id="gp_dateofbirth"
+                                                            class="form-control datepicker hasDatepicker" placeholder=""
+                                                            required="required" maxlength="10" data-parsley-valdate=""
+                                                            data-parsley-trigger="focusout" value="">
+                                                        <i class="far fa-calendar-alt" style="top: 4px !important;"></i>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="form-item required">
+                                                        <input type="text" name="applicants[][passportnumber]"
+                                                            id="gp_passportnumber" class="form-control" placeholder=""
+                                                            required="required" pattern="^(([A-Z])|(\d)){7,12}"
+                                                            maxlength="12" data-parsley-trigger="focusout" value=""
+                                                            data-parsley-pattern-message="Field should have maximum length of 9 symbols; acceptable symbols: latin-characters(uppercase), numbers">
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="form-item dpicker">
+                                                        <input type="text" name="applicants[][traveldocumentvaliduntil]"
+                                                            id="gp_traveldocumentvaliduntil"
+                                                            class="form-control datepicker lock-before-today hasDatepicker"
+                                                            placeholder="" maxlength="10" data-parsley-valdate=""
+                                                            data-parsley-trigger="focusout" value="" afterdays="1"><i
+                                                            class="far fa-calendar-alt"
+                                                            style="top: 4px !important;"></i>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="form-item">
+                                                        <select name="applicants[][gender[id]]" id="gp_gender"
+                                                            class="form-control select2-hidden-accessible"
+                                                            placeholder="Select an option" tabindex="-1"
+                                                            aria-hidden="true">
+                                                            <option value=""></option>
+                                                            <option value="1">FEMALE</option>
+                                                            <option value="2">MALE</option>
+                                                            <option value="3">OTHER</option>
+                                                        </select><span
+                                                            class="select2 select2-container select2-container--default"
+                                                            dir="ltr" style="width: 72px;"><span class="selection"><span
+                                                                    class="select2-selection select2-selection--single"
+                                                                    role="combobox" aria-haspopup="true"
+                                                                    aria-expanded="false" tabindex="0"
+                                                                    aria-labelledby="select2-gp_gender-container"><span
+                                                                        class="select2-selection__rendered"
+                                                                        id="select2-gp_gender-container"><span
+                                                                            class="select2-selection__placeholder">Select
+                                                                            an option</span></span><span
+                                                                        class="select2-selection__arrow"
+                                                                        role="presentation"><b
+                                                                            role="presentation"></b></span></span></span><span
+                                                                class="dropdown-wrapper"
+                                                                aria-hidden="true"></span></span>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="form-item">
+                                                        <select name="applicants[][nationality[id]]]"
+                                                            id="gp_nationality"
+                                                            class="form-control allowclear select2-hidden-accessible"
+                                                            placeholder="Select an option" tabindex="-1"
+                                                            aria-hidden="true">
+                                                            <option value=""></option>
+                                                            <option value="2">AFGHANISTAN</option>
+                                                            <option value="6">ALAND ISLANDS</option>
+                                                            <option value="7">ALBANIA</option>
+                                                            <option value="79">ALGERIA</option>
+                                                            <option value="14">AMERICAN SAMOA</option>
+                                                            <option value="8">ANDORRA</option>
+                                                            <option value="4">ANGOLA</option>
+                                                            <option value="5">ANGUILLA</option>
+                                                            <option value="15">ANTARCTICA</option>
+                                                            <option value="18">ANTIGUA AND BARBUDA</option>
+                                                            <option value="11">ARGENTINA</option>
+                                                            <option value="12">ARMENIA</option>
+                                                            <option value="1">ARUBA</option>
+                                                            <option value="13">ASCENSION ISLAND</option>
+                                                            <option value="20">AUSTRALIA</option>
+                                                            <option value="21">AUSTRIA</option>
+                                                            <option value="22">AZERBAIJAN</option>
+                                                            <option value="31">BAHAMAS</option>
+                                                            <option value="30">BAHRAIN</option>
+                                                            <option value="28">BANGLADESH</option>
+                                                            <option value="39">BARBADOS</option>
+                                                            <option value="34">BELARUS</option>
+                                                            <option value="45">BELARUS SSR</option>
+                                                            <option value="24">BELGIUM</option>
+                                                            <option value="35">BELIZE</option>
+                                                            <option value="25">BENIN</option>
+                                                            <option value="36">BERMUDA</option>
+                                                            <option value="41">BHUTAN</option>
+                                                            <option value="37">BOLIVIA</option>
+                                                            <option value="26">BONAIRE, SAINT EUSTATIUS AND SABA
+                                                            </option>
+                                                            <option value="32">BOSNIA AND HERZEGOVINA</option>
+                                                            <option value="44">BOTSWANA</option>
+                                                            <option value="43">BOUVET ISLAND</option>
+                                                            <option value="38">BRAZIL</option>
+                                                            <option value="16">BRITISH ANTARCTIC TERRITORY</option>
+                                                            <option value="95">BRITISH DEPENDENT TERRITORIES CITIZEN
+                                                            </option>
+                                                            <option value="128">BRITISH INDIAN OCEAN TERRITORY</option>
+                                                            <option value="96">BRITISH NATIONAL (OVERSEAS)</option>
+                                                            <option value="97">BRITISH OVERSEAS CITIZEN</option>
+                                                            <option value="98">BRITISH PROTECTED PERSON</option>
+                                                            <option value="100">BRITISH SUBJECT</option>
+                                                            <option value="40">BRUNEI DARUSSALAM</option>
+                                                            <option value="29">BULGARIA</option>
+                                                            <option value="27">BURKINA FASO</option>
+                                                            <option value="42">BURMA</option>
+                                                            <option value="23">BURUNDI</option>
+                                                            <option value="142">CAMBODIA</option>
+                                                            <option value="53">CAMEROON</option>
+                                                            <option value="47">CANADA</option>
+                                                            <option value="64">CANTON AND ENDERBURY ISLANDS</option>
+                                                            <option value="60">CAPE VERDE</option>
+                                                            <option value="68">CAYMAN ISLANDS</option>
+                                                            <option value="46">CENTRAL AFRICAN REPUBLIC</option>
+                                                            <option value="248">CHAD</option>
+                                                            <option value="50">CHILE</option>
+                                                            <option value="51">CHINA</option>
+                                                            <option value="67">CHRISTMAS ISLAND</option>
+                                                            <option value="59">CLIPPERTON ISLAND</option>
+                                                            <option value="48">COCOS (KEELING) ISLANDS</option>
+                                                            <option value="57">COLOMBIA</option>
+                                                            <option value="58">COMOROS</option>
+                                                            <option value="55">CONGO</option>
+                                                            <option value="54">CONGO, DEMOCRATIC REPUBLIC</option>
+                                                            <option value="56">COOK ISLANDS</option>
+                                                            <option value="62">COSTA RICA</option>
+                                                            <option value="52">COTE D IVOIRE</option>
+                                                            <option value="121">CROATIA</option>
+                                                            <option value="65">CUBA</option>
+                                                            <option value="66">CURACAO</option>
+                                                            <option value="69">CYPRUS</option>
+                                                            <option value="70">CZECH REPUBLIC</option>
+                                                            <option value="63">CZECHOSLOVAKIA</option>
+                                                            <option value="74">DAHOMEY</option>
+                                                            <option value="77">DENMARK</option>
+                                                            <option value="266">DESIGNATES A RESIDENT OF KOSOVO TO WHOM
+                                                                A TRAVEL DOCUMENT HAS BEEN ISSUED BY THE UNITED NATIONS
+                                                            </option>
+                                                            <option value="265">DESIGNATES A SPECIALIZED AGENCY OF THE
+                                                                UNITED NATIONS OR ONE OF ITS OFFICIALS</option>
+                                                            <option value="283">DESIGNATES THE SOVEREIGN MILITARY ORDER
+                                                                OF MALTA OR ONE OF ITS EMISSARIES</option>
+                                                            <option value="267">DESIGNATES THE UNITED NATIONS
+                                                                ORGANIZATION OR ONE OF ITS OFFICIALS</option>
+                                                            <option value="73">DIEGO GARCIA</option>
+                                                            <option value="75">DJIBOUTI</option>
+                                                            <option value="76">DOMINICA</option>
+                                                            <option value="78">DOMINICAN REPUBLIC</option>
+                                                            <option value="19">DRONNING MAUD LAND</option>
+                                                            <option value="80">ECUADOR</option>
+                                                            <option value="81">EGYPT</option>
+                                                            <option value="230">EL SALVADOR</option>
+                                                            <option value="110">EQUATORIAL GUINEA</option>
+                                                            <option value="82">ERITREA</option>
+                                                            <option value="85">ESTONIA</option>
+                                                            <option value="86">ETHIOPIA</option>
+                                                            <option value="89">FALKLAND ISLANDS (MALVINAS)</option>
+                                                            <option value="91">FAROE ISLANDS</option>
+                                                            <option value="88">FIJI</option>
+                                                            <option value="87">FINLAND</option>
+                                                            <option value="90">FRANCE</option>
+                                                            <option value="93">FRANCE, METROPOLITAN</option>
+                                                            <option value="115">FRENCH GUIANA</option>
+                                                            <option value="213">FRENCH POLYNESIA</option>
+                                                            <option value="17">FRENCH SOUTHERN TERRITORIES</option>
+                                                            <option value="3">FRENCH TERRITORY OF THE AFARS AND THE
+                                                                ISSAS</option>
+                                                            <option value="94">GABON</option>
+                                                            <option value="108">GAMBIA</option>
+                                                            <option value="102">GEORGIA</option>
+                                                            <option value="71">GERMAN DEMOCRATIC REPUBLIC</option>
+                                                            <option value="72">GERMANY</option>
+                                                            <option value="104">GHANA</option>
+                                                            <option value="105">GIBRALTAR</option>
+                                                            <option value="101">GILBERT AND ELLIS ISLANDS</option>
+                                                            <option value="111">GREECE</option>
+                                                            <option value="113">GREENLAND</option>
+                                                            <option value="112">GRENADA</option>
+                                                            <option value="107">GUADELOUPE</option>
+                                                            <option value="116">GUAM</option>
+                                                            <option value="114">GUATEMALA</option>
+                                                            <option value="103">GUERNSEY</option>
+                                                            <option value="106">GUINEA</option>
+                                                            <option value="109">GUINEA-BISSAU</option>
+                                                            <option value="117">GUYANA</option>
+                                                            <option value="122">HAITI</option>
+                                                            <option value="119">HEARD ISLAND AND MCDONALD ISLANDS
+                                                            </option>
+                                                            <option value="272">HOLY SEE (VATICAN CITY STATE</option>
+                                                            <option value="120">HONDURAS</option>
+                                                            <option value="118">HONG KONG</option>
+                                                            <option value="123">HUNGARY</option>
+                                                            <option value="131">ICELAND</option>
+                                                            <option value="127">INDIA</option>
+                                                            <option value="125">INDONESIA</option>
+                                                            <option value="61">INTERNATIONAL COMMITTEE OF THE RED CROSS
+                                                            </option>
+                                                            <option value="130">IRAN, ISLAMIC REPUBLIC</option>
+                                                            <option value="299">IRAQ, REPUBLIC OF IRAQ</option>
+                                                            <option value="129">IRELAND</option>
+                                                            <option value="126">ISLE OF MAN</option>
+                                                            <option value="132">ISRAEL</option>
+                                                            <option value="133">ITALY</option>
+                                                            <option value="134">JAMAICA</option>
+                                                            <option value="137">JAPAN</option>
+                                                            <option value="135">JERSEY</option>
+                                                            <option value="138">JOHNSTON ISLAND</option>
+                                                            <option value="136">JORDAN</option>
+                                                            <option value="139">KAZAKHSTAN</option>
+                                                            <option value="140">KENYA</option>
+                                                            <option value="143">KIRIBATI</option>
+                                                            <option value="208">KOREA, DEMOCRATIC PEOPLE'S REPUBLIC
+                                                            </option>
+                                                            <option value="145">KOREA, REPUBLIC</option>
+                                                            <option value="287">KOSOVO/UN SC 1244</option>
+                                                            <option value="146">KUWAIT</option>
+                                                            <option value="141">KYRGYZSTAN</option>
+                                                            <option value="147">LAO PEOPLE'S DEMOCRATIC REPUBLIC
+                                                            </option>
+                                                            <option value="157">LATVIA</option>
+                                                            <option value="148">LEBANON</option>
+                                                            <option value="154">LESOTHO</option>
+                                                            <option value="149">LIBERIA</option>
+                                                            <option value="150">LIBYA</option>
+                                                            <option value="152">LIECHTENSTEIN</option>
+                                                            <option value="155">LITHUANIA</option>
+                                                            <option value="156">LUXEMBOURG</option>
+                                                            <option value="158">MACAO</option>
+                                                            <option value="163">MADAGASCAR</option>
+                                                            <option value="179">MALAWI</option>
+                                                            <option value="180">MALAYSIA</option>
+                                                            <option value="164">MALDIVES</option>
+                                                            <option value="168">MALI</option>
+                                                            <option value="169">MALTA</option>
+                                                            <option value="166">MARSHALL ISLANDS</option>
+                                                            <option value="177">MARTINIQUE</option>
+                                                            <option value="175">MAURITANIA</option>
+                                                            <option value="178">MAURITIUS</option>
+                                                            <option value="181">MAYOTTE</option>
+                                                            <option value="165">MEXICO</option>
+                                                            <option value="92">MICRONESIA, FEDERATED STATES</option>
+                                                            <option value="167">MIDWAY ISLANDS</option>
+                                                            <option value="162">MOLDOVA REPUBLIC</option>
+                                                            <option value="161">MONACO</option>
+                                                            <option value="172">MONGOLIA</option>
+                                                            <option value="171">MONTENEGRO</option>
+                                                            <option value="176">MONTSERRAT</option>
+                                                            <option value="160">MOROCCO</option>
+                                                            <option value="174">MOZAMBIQUE</option>
+                                                            <option value="170">MYANMAR</option>
+                                                            <option value="182">NAMIBIA</option>
+                                                            <option value="193">NAURU</option>
+                                                            <option value="192">NEPAL</option>
+                                                            <option value="190">NETHERLANDS</option>
+                                                            <option value="9">NETHERLANDS ANTILLES</option>
+                                                            <option value="194">NEUTRAL ZONE</option>
+                                                            <option value="183">NEW CALEDONIA</option>
+                                                            <option value="187">NEW HEBRIDES</option>
+                                                            <option value="195">NEW ZEALAND</option>
+                                                            <option value="188">NICARAGUA</option>
+                                                            <option value="184">NIGER</option>
+                                                            <option value="186">NIGERIA</option>
+                                                            <option value="189">NIUE</option>
+                                                            <option value="185">NORFOLK ISLAND</option>
+                                                            <option value="288">NORTH MACEDONIA</option>
+                                                            <option value="173">NORTHERN MARIANA ISLANDS</option>
+                                                            <option value="191">NORWAY</option>
+                                                            <option value="196">OMAN</option>
+                                                            <option value="199">PACIFIC ISLANDS, TRUST TERRITORY OF THE
+                                                            </option>
+                                                            <option value="197" selected="selected">PAKISTAN</option>
+                                                            <option value="204">PALAU</option>
+                                                            <option value="289">PALESTINE</option>
+                                                            <option value="211">PALESTINIAN TERRITORY, OCCUPIED</option>
+                                                            <option value="198">PANAMA</option>
+                                                            <option value="201">PANAMA CANAL ZONE</option>
+                                                            <option value="205">PAPUA NEW GUINEA</option>
+                                                            <option value="210">PARAGUAY</option>
+                                                            <option value="202">PERU</option>
+                                                            <option value="203">PHILIPPINES</option>
+                                                            <option value="200">PITCAIRN</option>
+                                                            <option value="206">POLAND</option>
+                                                            <option value="209">PORTUGAL</option>
+                                                            <option value="207">PUERTO RICO</option>
+                                                            <option value="214">QATAR</option>
+                                                            <option value="285">REFUGEE (1951 CONVENTION)</option>
+                                                            <option value="286">REFUGEE (OTHER)</option>
+                                                            <option value="215">RÉUNION</option>
+                                                            <option value="216">RHODESIA</option>
+                                                            <option value="217">ROMANIA</option>
+                                                            <option value="218">RUSSIAN FEDERATION</option>
+                                                            <option value="219">RWANDA</option>
+                                                            <option value="33">SAINT BARTHÉLEMY</option>
+                                                            <option value="225">SAINT HELENA</option>
+                                                            <option value="144">SAINT KITTS AND NEVIS</option>
+                                                            <option value="151">SAINT LUCIA</option>
+                                                            <option value="159">SAINT MARTIN (FRENCH PART)</option>
+                                                            <option value="233">SAINT PIERRE AND MIQUELON</option>
+                                                            <option value="273">SAINT VINCENT AND THE GRENADINES
+                                                            </option>
+                                                            <option value="282">SAMOA</option>
+                                                            <option value="231">SAN MARINO</option>
+                                                            <option value="236">SAO TOME AND PRINCIPE</option>
+                                                            <option value="220">SAUDI ARABIA</option>
+                                                            <option value="222">SENEGAL</option>
+                                                            <option value="234">SERBIA</option>
+                                                            <option value="244">SEYCHELLES</option>
+                                                            <option value="229">SIERRA LEONE</option>
+                                                            <option value="227">SIKKIM</option>
+                                                            <option value="223">SINGAPORE</option>
+                                                            <option value="243">SINT MAARTEN (DUTCH PART</option>
+                                                            <option value="239">SLOVAKIA</option>
+                                                            <option value="240">SLOVENIA</option>
+                                                            <option value="228">SOLOMON ISLANDS</option>
+                                                            <option value="232">SOMALIA</option>
+                                                            <option value="295">SOUTH AFRICA</option>
+                                                            <option value="224">SOUTH GEORGIA AND THE SOUTH SANDWICH
+                                                                ISLANDS</option>
+                                                            <option value="235">SOUTH SUDAN</option>
+                                                            <option value="237">SOVIET UNION</option>
+                                                            <option value="84">SPAIN</option>
+                                                            <option value="153">SRI LANKA</option>
+                                                            <option value="284">STATELESS (1954 CONVENTION)</option>
+                                                            <option value="221">SUDAN</option>
+                                                            <option value="238">SURINAME</option>
+                                                            <option value="226">SVALBARD AND JAN MAYEN</option>
+                                                            <option value="242">SWAZILAND</option>
+                                                            <option value="241">SWEDEN</option>
+                                                            <option value="49">SWITZERLAND</option>
+                                                            <option value="245">SYRIAN ARAB REPUBLIC</option>
+                                                            <option value="260">TAIWAN, PROVINCE OF CHINA</option>
+                                                            <option value="251">TAJIKISTAN</option>
+                                                            <option value="261">TANZANIA, UNITED REPUBLIC,</option>
+                                                            <option value="250">THAILAND</option>
+                                                            <option value="290">TIBET</option>
+                                                            <option value="254">TIMOR-LESTE</option>
+                                                            <option value="249">TOGO</option>
+                                                            <option value="252">TOKELAU</option>
+                                                            <option value="255">TONGA</option>
+                                                            <option value="256">TRINIDAD AND TOBAGO</option>
+                                                            <option value="246">TRISTAN DA CUNHA</option>
+                                                            <option value="257">TUNISIA</option>
+                                                            <option value="258">TURKEY</option>
+                                                            <option value="253">TURKMENISTAN</option>
+                                                            <option value="247">TURKS AND CAICOS ISLANDS</option>
+                                                            <option value="259">TUVALU</option>
+                                                            <option value="212">U.S. MISCELLANEOUS PACIFIC ISLANDS
+                                                            </option>
+                                                            <option value="262">UGANDA</option>
+                                                            <option value="263">UKRAINE</option>
+                                                            <option value="268">UNHCR</option>
+                                                            <option value="10">UNITED ARAB EMIRATES</option>
+                                                            <option value="99">UNITED KINGDOM</option>
+                                                            <option value="270">UNITED STATES</option>
+                                                            <option value="264">UNITED STATES MINOR OUTLYING ISLANDS
+                                                            </option>
+                                                            <option value="291">UNSPECIFIED</option>
+                                                            <option value="124">UPPER VOLTA (HAUTE-VOLTA)</option>
+                                                            <option value="269">URUGUAY</option>
+                                                            <option value="271">UZBEKISTAN</option>
+                                                            <option value="279">VANUATU</option>
+                                                            <option value="275">VENEZUELA</option>
+                                                            <option value="278">VIET NAM</option>
+                                                            <option value="274">VIET-NAM, DEMOCRATIC REPUBLIC OF (NORTH
+                                                                VIETNAM)</option>
+                                                            <option value="276">VIRGIN ISLANDS, BRITISH</option>
+                                                            <option value="277">VIRGIN ISLANDS, U.S.</option>
+                                                            <option value="280">WAKE ISLAND</option>
+                                                            <option value="281">WALLIS AND FUTUNA</option>
+                                                            <option value="83">WESTERN SAHARA</option>
+                                                            <option value="293">YEMEN</option>
+                                                            <option value="294">YEMEN, DEMOCRATIC (SOUTH YEMEN)</option>
+                                                            <option value="292">YUGOSLAVIA</option>
+                                                            <option value="296">ZAIRE</option>
+                                                            <option value="297">ZAMBIA</option>
+                                                            <option value="298">ZIMBABWE</option>
+                                                        </select><span
+                                                            class="select2 select2-container select2-container--default"
+                                                            dir="ltr" style="width: 345px;"><span
+                                                                class="selection"><span
+                                                                    class="select2-selection select2-selection--single"
+                                                                    role="combobox" aria-haspopup="true"
+                                                                    aria-expanded="false" tabindex="0"
+                                                                    aria-labelledby="select2-gp_nationality-container"><span
+                                                                        class="select2-selection__rendered"
+                                                                        id="select2-gp_nationality-container"
+                                                                        title="PAKISTAN"><span
+                                                                            class="select2-selection__clear">×</span>PAKISTAN</span><span
+                                                                        class="select2-selection__arrow"
+                                                                        role="presentation"><b
+                                                                            role="presentation"></b></span></span></span><span
+                                                                class="dropdown-wrapper"
+                                                                aria-hidden="true"></span></span>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span id="gp_time"></span>
+                                                    <input type="hidden" name="applicants[][periodslotid]"
+                                                        id="gp_periodslotid" value="">
+                                                </td>
+                                            </tr>
+                                            <tr id="secondTr" class="hidden">
+                                                <td>
+                                                    <span class="form-item required">
+                                                        <input type="text" name="applicants[][surname]" id="ex_surname"
+                                                            class="form-control" placeholder="" maxlength="65"
+                                                            data-parsley-longval2="" data-parsley-trigger="focusout">
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="form-item required">
+                                                        <input type="text" name="applicants[][firstname]"
+                                                            id="ex_firstname" class="form-control" placeholder=""
+                                                            maxlength="65" data-parsley-longval2=""
+                                                            data-parsley-trigger="focusout">
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="form-item required dpicker">
+                                                        <input type="text" name="applicants[][dateofbirth]"
+                                                            id="ex_dateofbirth"
+                                                            class="form-control datepicker hasDatepicker" placeholder=""
+                                                            maxlength="10" data-parsley-valdate=""
+                                                            data-parsley-trigger="focusout"><i
+                                                            class="far fa-calendar-alt"
+                                                            style="top: 4px !important;"></i>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="form-item required">
+                                                        <input type="text" name="applicants[][passportnumber]"
+                                                            id="ex_passportnumber" class="form-control" placeholder=""
+                                                            pattern="^(([A-Z])|(\d)){7,12}" maxlength="12"
+                                                            data-parsley-trigger="focusout"
+                                                            data-parsley-pattern-message="Field should have maximum length of 9 symbols; acceptable symbols: latin-characters(uppercase), numbers">
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="form-item dpicker">
+                                                        <input type="text" name="applicants[][traveldocumentvaliduntil]"
+                                                            id="ex_traveldocumentvaliduntil"
+                                                            class="form-control datepicker lock-before-today hasDatepicker"
+                                                            placeholder="" maxlength="10" afterdays="1"
+                                                            data-parsley-valdate="" data-parsley-trigger="focusout"><i
+                                                            class="far fa-calendar-alt"
+                                                            style="top: 4px !important;"></i>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="form-item">
+                                                        <select name="applicants[][gender[id]]" id="ex_gender"
+                                                            class="form-control select2-hidden-accessible"
+                                                            placeholder="Select an option" tabindex="-1"
+                                                            aria-hidden="true">
+                                                            <option value=""></option>
+                                                            <option value="1">FEMALE</option>
+                                                            <option value="2">MALE</option>
+                                                            <option value="3">OTHER</option>
+                                                        </select><span
+                                                            class="select2 select2-container select2-container--default"
+                                                            dir="ltr" style="width: 100px;"><span
+                                                                class="selection"><span
+                                                                    class="select2-selection select2-selection--single"
+                                                                    role="combobox" aria-haspopup="true"
+                                                                    aria-expanded="false" tabindex="0"
+                                                                    aria-labelledby="select2-ex_gender-container"><span
+                                                                        class="select2-selection__rendered"
+                                                                        id="select2-ex_gender-container"><span
+                                                                            class="select2-selection__placeholder">Select
+                                                                            an option</span></span><span
+                                                                        class="select2-selection__arrow"
+                                                                        role="presentation"><b
+                                                                            role="presentation"></b></span></span></span><span
+                                                                class="dropdown-wrapper"
+                                                                aria-hidden="true"></span></span>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="form-item">
+                                                        <select name="applicants[][nationality[id]]" id="ex_nationality"
+                                                            class="form-control allowclear select2-hidden-accessible"
+                                                            placeholder="Select an option" tabindex="-1"
+                                                            aria-hidden="true">
+                                                            <option value=""></option>
+                                                            <option value="2">AFGHANISTAN</option>
+                                                            <option value="6">ALAND ISLANDS</option>
+                                                            <option value="7">ALBANIA</option>
+                                                            <option value="79">ALGERIA</option>
+                                                            <option value="14">AMERICAN SAMOA</option>
+                                                            <option value="8">ANDORRA</option>
+                                                            <option value="4">ANGOLA</option>
+                                                            <option value="5">ANGUILLA</option>
+                                                            <option value="15">ANTARCTICA</option>
+                                                            <option value="18">ANTIGUA AND BARBUDA</option>
+                                                            <option value="11">ARGENTINA</option>
+                                                            <option value="12">ARMENIA</option>
+                                                            <option value="1">ARUBA</option>
+                                                            <option value="13">ASCENSION ISLAND</option>
+                                                            <option value="20">AUSTRALIA</option>
+                                                            <option value="21">AUSTRIA</option>
+                                                            <option value="22">AZERBAIJAN</option>
+                                                            <option value="31">BAHAMAS</option>
+                                                            <option value="30">BAHRAIN</option>
+                                                            <option value="28">BANGLADESH</option>
+                                                            <option value="39">BARBADOS</option>
+                                                            <option value="34">BELARUS</option>
+                                                            <option value="45">BELARUS SSR</option>
+                                                            <option value="24">BELGIUM</option>
+                                                            <option value="35">BELIZE</option>
+                                                            <option value="25">BENIN</option>
+                                                            <option value="36">BERMUDA</option>
+                                                            <option value="41">BHUTAN</option>
+                                                            <option value="37">BOLIVIA</option>
+                                                            <option value="26">BONAIRE, SAINT EUSTATIUS AND SABA
+                                                            </option>
+                                                            <option value="32">BOSNIA AND HERZEGOVINA</option>
+                                                            <option value="44">BOTSWANA</option>
+                                                            <option value="43">BOUVET ISLAND</option>
+                                                            <option value="38">BRAZIL</option>
+                                                            <option value="16">BRITISH ANTARCTIC TERRITORY</option>
+                                                            <option value="95">BRITISH DEPENDENT TERRITORIES CITIZEN
+                                                            </option>
+                                                            <option value="128">BRITISH INDIAN OCEAN TERRITORY</option>
+                                                            <option value="96">BRITISH NATIONAL (OVERSEAS)</option>
+                                                            <option value="97">BRITISH OVERSEAS CITIZEN</option>
+                                                            <option value="98">BRITISH PROTECTED PERSON</option>
+                                                            <option value="100">BRITISH SUBJECT</option>
+                                                            <option value="40">BRUNEI DARUSSALAM</option>
+                                                            <option value="29">BULGARIA</option>
+                                                            <option value="27">BURKINA FASO</option>
+                                                            <option value="42">BURMA</option>
+                                                            <option value="23">BURUNDI</option>
+                                                            <option value="142">CAMBODIA</option>
+                                                            <option value="53">CAMEROON</option>
+                                                            <option value="47">CANADA</option>
+                                                            <option value="64">CANTON AND ENDERBURY ISLANDS</option>
+                                                            <option value="60">CAPE VERDE</option>
+                                                            <option value="68">CAYMAN ISLANDS</option>
+                                                            <option value="46">CENTRAL AFRICAN REPUBLIC</option>
+                                                            <option value="248">CHAD</option>
+                                                            <option value="50">CHILE</option>
+                                                            <option value="51">CHINA</option>
+                                                            <option value="67">CHRISTMAS ISLAND</option>
+                                                            <option value="59">CLIPPERTON ISLAND</option>
+                                                            <option value="48">COCOS (KEELING) ISLANDS</option>
+                                                            <option value="57">COLOMBIA</option>
+                                                            <option value="58">COMOROS</option>
+                                                            <option value="55">CONGO</option>
+                                                            <option value="54">CONGO, DEMOCRATIC REPUBLIC</option>
+                                                            <option value="56">COOK ISLANDS</option>
+                                                            <option value="62">COSTA RICA</option>
+                                                            <option value="52">COTE D IVOIRE</option>
+                                                            <option value="121">CROATIA</option>
+                                                            <option value="65">CUBA</option>
+                                                            <option value="66">CURACAO</option>
+                                                            <option value="69">CYPRUS</option>
+                                                            <option value="70">CZECH REPUBLIC</option>
+                                                            <option value="63">CZECHOSLOVAKIA</option>
+                                                            <option value="74">DAHOMEY</option>
+                                                            <option value="77">DENMARK</option>
+                                                            <option value="266">DESIGNATES A RESIDENT OF KOSOVO TO WHOM
+                                                                A TRAVEL DOCUMENT HAS BEEN ISSUED BY THE UNITED NATIONS
+                                                            </option>
+                                                            <option value="265">DESIGNATES A SPECIALIZED AGENCY OF THE
+                                                                UNITED NATIONS OR ONE OF ITS OFFICIALS</option>
+                                                            <option value="283">DESIGNATES THE SOVEREIGN MILITARY ORDER
+                                                                OF MALTA OR ONE OF ITS EMISSARIES</option>
+                                                            <option value="267">DESIGNATES THE UNITED NATIONS
+                                                                ORGANIZATION OR ONE OF ITS OFFICIALS</option>
+                                                            <option value="73">DIEGO GARCIA</option>
+                                                            <option value="75">DJIBOUTI</option>
+                                                            <option value="76">DOMINICA</option>
+                                                            <option value="78">DOMINICAN REPUBLIC</option>
+                                                            <option value="19">DRONNING MAUD LAND</option>
+                                                            <option value="80">ECUADOR</option>
+                                                            <option value="81">EGYPT</option>
+                                                            <option value="230">EL SALVADOR</option>
+                                                            <option value="110">EQUATORIAL GUINEA</option>
+                                                            <option value="82">ERITREA</option>
+                                                            <option value="85">ESTONIA</option>
+                                                            <option value="86">ETHIOPIA</option>
+                                                            <option value="89">FALKLAND ISLANDS (MALVINAS)</option>
+                                                            <option value="91">FAROE ISLANDS</option>
+                                                            <option value="88">FIJI</option>
+                                                            <option value="87">FINLAND</option>
+                                                            <option value="90">FRANCE</option>
+                                                            <option value="93">FRANCE, METROPOLITAN</option>
+                                                            <option value="115">FRENCH GUIANA</option>
+                                                            <option value="213">FRENCH POLYNESIA</option>
+                                                            <option value="17">FRENCH SOUTHERN TERRITORIES</option>
+                                                            <option value="3">FRENCH TERRITORY OF THE AFARS AND THE
+                                                                ISSAS</option>
+                                                            <option value="94">GABON</option>
+                                                            <option value="108">GAMBIA</option>
+                                                            <option value="102">GEORGIA</option>
+                                                            <option value="71">GERMAN DEMOCRATIC REPUBLIC</option>
+                                                            <option value="72">GERMANY</option>
+                                                            <option value="104">GHANA</option>
+                                                            <option value="105">GIBRALTAR</option>
+                                                            <option value="101">GILBERT AND ELLIS ISLANDS</option>
+                                                            <option value="111">GREECE</option>
+                                                            <option value="113">GREENLAND</option>
+                                                            <option value="112">GRENADA</option>
+                                                            <option value="107">GUADELOUPE</option>
+                                                            <option value="116">GUAM</option>
+                                                            <option value="114">GUATEMALA</option>
+                                                            <option value="103">GUERNSEY</option>
+                                                            <option value="106">GUINEA</option>
+                                                            <option value="109">GUINEA-BISSAU</option>
+                                                            <option value="117">GUYANA</option>
+                                                            <option value="122">HAITI</option>
+                                                            <option value="119">HEARD ISLAND AND MCDONALD ISLANDS
+                                                            </option>
+                                                            <option value="272">HOLY SEE (VATICAN CITY STATE</option>
+                                                            <option value="120">HONDURAS</option>
+                                                            <option value="118">HONG KONG</option>
+                                                            <option value="123">HUNGARY</option>
+                                                            <option value="131">ICELAND</option>
+                                                            <option value="127">INDIA</option>
+                                                            <option value="125">INDONESIA</option>
+                                                            <option value="61">INTERNATIONAL COMMITTEE OF THE RED CROSS
+                                                            </option>
+                                                            <option value="130">IRAN, ISLAMIC REPUBLIC</option>
+                                                            <option value="299">IRAQ, REPUBLIC OF IRAQ</option>
+                                                            <option value="129">IRELAND</option>
+                                                            <option value="126">ISLE OF MAN</option>
+                                                            <option value="132">ISRAEL</option>
+                                                            <option value="133">ITALY</option>
+                                                            <option value="134">JAMAICA</option>
+                                                            <option value="137">JAPAN</option>
+                                                            <option value="135">JERSEY</option>
+                                                            <option value="138">JOHNSTON ISLAND</option>
+                                                            <option value="136">JORDAN</option>
+                                                            <option value="139">KAZAKHSTAN</option>
+                                                            <option value="140">KENYA</option>
+                                                            <option value="143">KIRIBATI</option>
+                                                            <option value="208">KOREA, DEMOCRATIC PEOPLE'S REPUBLIC
+                                                            </option>
+                                                            <option value="145">KOREA, REPUBLIC</option>
+                                                            <option value="287">KOSOVO/UN SC 1244</option>
+                                                            <option value="146">KUWAIT</option>
+                                                            <option value="141">KYRGYZSTAN</option>
+                                                            <option value="147">LAO PEOPLE'S DEMOCRATIC REPUBLIC
+                                                            </option>
+                                                            <option value="157">LATVIA</option>
+                                                            <option value="148">LEBANON</option>
+                                                            <option value="154">LESOTHO</option>
+                                                            <option value="149">LIBERIA</option>
+                                                            <option value="150">LIBYA</option>
+                                                            <option value="152">LIECHTENSTEIN</option>
+                                                            <option value="155">LITHUANIA</option>
+                                                            <option value="156">LUXEMBOURG</option>
+                                                            <option value="158">MACAO</option>
+                                                            <option value="163">MADAGASCAR</option>
+                                                            <option value="179">MALAWI</option>
+                                                            <option value="180">MALAYSIA</option>
+                                                            <option value="164">MALDIVES</option>
+                                                            <option value="168">MALI</option>
+                                                            <option value="169">MALTA</option>
+                                                            <option value="166">MARSHALL ISLANDS</option>
+                                                            <option value="177">MARTINIQUE</option>
+                                                            <option value="175">MAURITANIA</option>
+                                                            <option value="178">MAURITIUS</option>
+                                                            <option value="181">MAYOTTE</option>
+                                                            <option value="165">MEXICO</option>
+                                                            <option value="92">MICRONESIA, FEDERATED STATES</option>
+                                                            <option value="167">MIDWAY ISLANDS</option>
+                                                            <option value="162">MOLDOVA REPUBLIC</option>
+                                                            <option value="161">MONACO</option>
+                                                            <option value="172">MONGOLIA</option>
+                                                            <option value="171">MONTENEGRO</option>
+                                                            <option value="176">MONTSERRAT</option>
+                                                            <option value="160">MOROCCO</option>
+                                                            <option value="174">MOZAMBIQUE</option>
+                                                            <option value="170">MYANMAR</option>
+                                                            <option value="182">NAMIBIA</option>
+                                                            <option value="193">NAURU</option>
+                                                            <option value="192">NEPAL</option>
+                                                            <option value="190">NETHERLANDS</option>
+                                                            <option value="9">NETHERLANDS ANTILLES</option>
+                                                            <option value="194">NEUTRAL ZONE</option>
+                                                            <option value="183">NEW CALEDONIA</option>
+                                                            <option value="187">NEW HEBRIDES</option>
+                                                            <option value="195">NEW ZEALAND</option>
+                                                            <option value="188">NICARAGUA</option>
+                                                            <option value="184">NIGER</option>
+                                                            <option value="186">NIGERIA</option>
+                                                            <option value="189">NIUE</option>
+                                                            <option value="185">NORFOLK ISLAND</option>
+                                                            <option value="288">NORTH MACEDONIA</option>
+                                                            <option value="173">NORTHERN MARIANA ISLANDS</option>
+                                                            <option value="191">NORWAY</option>
+                                                            <option value="196">OMAN</option>
+                                                            <option value="199">PACIFIC ISLANDS, TRUST TERRITORY OF THE
+                                                            </option>
+                                                            <option value="197">PAKISTAN</option>
+                                                            <option value="204">PALAU</option>
+                                                            <option value="289">PALESTINE</option>
+                                                            <option value="211">PALESTINIAN TERRITORY, OCCUPIED</option>
+                                                            <option value="198">PANAMA</option>
+                                                            <option value="201">PANAMA CANAL ZONE</option>
+                                                            <option value="205">PAPUA NEW GUINEA</option>
+                                                            <option value="210">PARAGUAY</option>
+                                                            <option value="202">PERU</option>
+                                                            <option value="203">PHILIPPINES</option>
+                                                            <option value="200">PITCAIRN</option>
+                                                            <option value="206">POLAND</option>
+                                                            <option value="209">PORTUGAL</option>
+                                                            <option value="207">PUERTO RICO</option>
+                                                            <option value="214">QATAR</option>
+                                                            <option value="285">REFUGEE (1951 CONVENTION)</option>
+                                                            <option value="286">REFUGEE (OTHER)</option>
+                                                            <option value="215">RÉUNION</option>
+                                                            <option value="216">RHODESIA</option>
+                                                            <option value="217">ROMANIA</option>
+                                                            <option value="218">RUSSIAN FEDERATION</option>
+                                                            <option value="219">RWANDA</option>
+                                                            <option value="33">SAINT BARTHÉLEMY</option>
+                                                            <option value="225">SAINT HELENA</option>
+                                                            <option value="144">SAINT KITTS AND NEVIS</option>
+                                                            <option value="151">SAINT LUCIA</option>
+                                                            <option value="159">SAINT MARTIN (FRENCH PART)</option>
+                                                            <option value="233">SAINT PIERRE AND MIQUELON</option>
+                                                            <option value="273">SAINT VINCENT AND THE GRENADINES
+                                                            </option>
+                                                            <option value="282">SAMOA</option>
+                                                            <option value="231">SAN MARINO</option>
+                                                            <option value="236">SAO TOME AND PRINCIPE</option>
+                                                            <option value="220">SAUDI ARABIA</option>
+                                                            <option value="222">SENEGAL</option>
+                                                            <option value="234">SERBIA</option>
+                                                            <option value="244">SEYCHELLES</option>
+                                                            <option value="229">SIERRA LEONE</option>
+                                                            <option value="227">SIKKIM</option>
+                                                            <option value="223">SINGAPORE</option>
+                                                            <option value="243">SINT MAARTEN (DUTCH PART</option>
+                                                            <option value="239">SLOVAKIA</option>
+                                                            <option value="240">SLOVENIA</option>
+                                                            <option value="228">SOLOMON ISLANDS</option>
+                                                            <option value="232">SOMALIA</option>
+                                                            <option value="295">SOUTH AFRICA</option>
+                                                            <option value="224">SOUTH GEORGIA AND THE SOUTH SANDWICH
+                                                                ISLANDS</option>
+                                                            <option value="235">SOUTH SUDAN</option>
+                                                            <option value="237">SOVIET UNION</option>
+                                                            <option value="84">SPAIN</option>
+                                                            <option value="153">SRI LANKA</option>
+                                                            <option value="284">STATELESS (1954 CONVENTION)</option>
+                                                            <option value="221">SUDAN</option>
+                                                            <option value="238">SURINAME</option>
+                                                            <option value="226">SVALBARD AND JAN MAYEN</option>
+                                                            <option value="242">SWAZILAND</option>
+                                                            <option value="241">SWEDEN</option>
+                                                            <option value="49">SWITZERLAND</option>
+                                                            <option value="245">SYRIAN ARAB REPUBLIC</option>
+                                                            <option value="260">TAIWAN, PROVINCE OF CHINA</option>
+                                                            <option value="251">TAJIKISTAN</option>
+                                                            <option value="261">TANZANIA, UNITED REPUBLIC,</option>
+                                                            <option value="250">THAILAND</option>
+                                                            <option value="290">TIBET</option>
+                                                            <option value="254">TIMOR-LESTE</option>
+                                                            <option value="249">TOGO</option>
+                                                            <option value="252">TOKELAU</option>
+                                                            <option value="255">TONGA</option>
+                                                            <option value="256">TRINIDAD AND TOBAGO</option>
+                                                            <option value="246">TRISTAN DA CUNHA</option>
+                                                            <option value="257">TUNISIA</option>
+                                                            <option value="258">TURKEY</option>
+                                                            <option value="253">TURKMENISTAN</option>
+                                                            <option value="247">TURKS AND CAICOS ISLANDS</option>
+                                                            <option value="259">TUVALU</option>
+                                                            <option value="212">U.S. MISCELLANEOUS PACIFIC ISLANDS
+                                                            </option>
+                                                            <option value="262">UGANDA</option>
+                                                            <option value="263">UKRAINE</option>
+                                                            <option value="268">UNHCR</option>
+                                                            <option value="10">UNITED ARAB EMIRATES</option>
+                                                            <option value="99">UNITED KINGDOM</option>
+                                                            <option value="270">UNITED STATES</option>
+                                                            <option value="264">UNITED STATES MINOR OUTLYING ISLANDS
+                                                            </option>
+                                                            <option value="291">UNSPECIFIED</option>
+                                                            <option value="124">UPPER VOLTA (HAUTE-VOLTA)</option>
+                                                            <option value="269">URUGUAY</option>
+                                                            <option value="271">UZBEKISTAN</option>
+                                                            <option value="279">VANUATU</option>
+                                                            <option value="275">VENEZUELA</option>
+                                                            <option value="278">VIET NAM</option>
+                                                            <option value="274">VIET-NAM, DEMOCRATIC REPUBLIC OF (NORTH
+                                                                VIETNAM)</option>
+                                                            <option value="276">VIRGIN ISLANDS, BRITISH</option>
+                                                            <option value="277">VIRGIN ISLANDS, U.S.</option>
+                                                            <option value="280">WAKE ISLAND</option>
+                                                            <option value="281">WALLIS AND FUTUNA</option>
+                                                            <option value="83">WESTERN SAHARA</option>
+                                                            <option value="293">YEMEN</option>
+                                                            <option value="294">YEMEN, DEMOCRATIC (SOUTH YEMEN)</option>
+                                                            <option value="292">YUGOSLAVIA</option>
+                                                            <option value="296">ZAIRE</option>
+                                                            <option value="297">ZAMBIA</option>
+                                                            <option value="298">ZIMBABWE</option>
+                                                        </select><span
+                                                            class="select2 select2-container select2-container--default"
+                                                            dir="ltr" style="width: 100px;"><span
+                                                                class="selection"><span
+                                                                    class="select2-selection select2-selection--single"
+                                                                    role="combobox" aria-haspopup="true"
+                                                                    aria-expanded="false" tabindex="0"
+                                                                    aria-labelledby="select2-ex_nationality-container"><span
+                                                                        class="select2-selection__rendered"
+                                                                        id="select2-ex_nationality-container"><span
+                                                                            class="select2-selection__placeholder">Select
+                                                                            an option</span></span><span
+                                                                        class="select2-selection__arrow"
+                                                                        role="presentation"><b
+                                                                            role="presentation"></b></span></span></span><span
+                                                                class="dropdown-wrapper"
+                                                                aria-hidden="true"></span></span>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span id="ex_time"></span>
+                                                    <input type="hidden" name="applicants[][periodslotid]"
+                                                        id="ex_periodslotid">
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div>
+                                    <table style="width:50%;float:left;">
+                                        <tbody>
+                                            <tr>
+                                                <td style="width:40%;vertical-align: top">
+                                                    <div class="form-item dpicker required">
+                                                        <label for="datefrom">Appointment Date</label>
+                                                        <input type="text" name="datefrom" id="datefrom"
+                                                            class="form-control datepicker lock-before-today enable-today hasDatepicker"
+                                                            required="required" placeholder="" maxlength="10"
+                                                            data-parsley-valdate="" data-parsley-trigger="focusout"
+                                                            value="02/07/2026" afterdays="1">
+                                                        <i class="far fa-calendar-alt"></i>
+                                                        <input type="hidden" name="selectedtime" id="selectedtime">
+                                                        <input type="hidden" name="init_selecteddate"
+                                                            id="init_selecteddate" value="">
+                                                        <input type="hidden" name="init_selectedtime"
+                                                            id="init_selectedtime" value="">
+                                                        <input type="hidden" name="init_periodslotid"
+                                                            id="init_periodslotid" value="">
+                                                    </div>
+                                                </td>
+                                                <td nowrap="" style="width:40%;vertical-align: top"
+                                                    id="appointmentmethodDiv" class="form-item hidden">
+                                                    <label for="appointmentmethod" style="width: 220px;">Allocation
+                                                        method</label>
+                                                    <select name="appointmentmethod" id="appointmentmethod"
+                                                        class="form-control select2-hidden-accessible"
+                                                        placeholder="Select an option" tabindex="-1" aria-hidden="true">
+                                                        <option value="1">Same time</option>
+                                                        <option value="2">Consecutive time slots</option>
+                                                        <option value="3">Next available slots</option>
+                                                        <option value="4">Select one by one</option>
+                                                    </select><span
+                                                        class="select2 select2-container select2-container--default"
+                                                        dir="ltr" style="width: 100px;"><span class="selection"><span
+                                                                class="select2-selection select2-selection--single"
+                                                                role="combobox" aria-haspopup="true"
+                                                                aria-expanded="false" tabindex="0"
+                                                                aria-labelledby="select2-appointmentmethod-container"><span
+                                                                    class="select2-selection__rendered"
+                                                                    id="select2-appointmentmethod-container"
+                                                                    title="Same time">Same time</span><span
+                                                                    class="select2-selection__arrow"
+                                                                    role="presentation"><b
+                                                                        role="presentation"></b></span></span></span><span
+                                                            class="dropdown-wrapper" aria-hidden="true"></span></span>
+                                                </td>
+                                                <td style="width:20%;vertical-align: top;padding-left: 10px;">
+                                                    <div class="form-button-wrapper">
+                                                        <button type="button" id="btn-search" class="btn blue"
+                                                            form="appointment"
+                                                            onclick="selectPeriodslot(this);"><span>Search</span></button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div style="width:50%;float:right;padding-top:30px;" class="form-item">
+                                        <div id="appointmentmethodDetails1" class="form-item hidden"><strong>Same
+                                                time</strong>: Select this option if you want to book appointments for
+                                            all members of the group at exactly the same time. If there is no
+                                            availability, please select another allocation method.</div>
+                                        <div id="appointmentmethodDetails2" class="form-item hidden"><strong>Consecutive
+                                                time slots</strong>: Select this option if you want to book appointments
+                                            at consecutive time slots so all members of the group are served one after
+                                            the other, e.g. 09:00, 09:15 etc. If there is no availability, please select
+                                            another allocation method.</div>
+                                        <div id="appointmentmethodDetails3" class="form-item hidden"><strong>Next
+                                                available slots</strong>: Select this option if you want to book the
+                                            earliest appointments for all members of the group at time slots close to
+                                            each other. If there is no availability, please select another allocation
+                                            method.</div>
+                                        <div id="appointmentmethodDetails4" class="form-item hidden"><strong>Select one
+                                                by one</strong>: Select this option if you want to select time slots for
+                                            each member of the group.</div>
+                                    </div>
+                                </div>
+
+
+
+                                <div id="resultMessage" class="appointment_alert appointment_alert-danger hidden">You
+                                    cannot book an appointment on this date. Please choose another date.</div>
+
+                                <div id="appointment_box" class="hidden">
+
+                                    <h4 style="padding: 10px 0px 10px 0px;">To complete your reservation press BOOK
+                                        APPOINTMENT from below</h4>
+                                    <!--<h4 th:text="#{appointments.choosetip}" style='padding: 15px 0px 20px 0px;font-weight: 700;'>Choose available dates</h4>-->
+
+                                    <div class="appointment_box">
+
+                                        <div id="split-main">
+                                            <!-- TABS -->
+
+                                            <nav id="form-tabs">
+                                                <ul>
+                                                    <li id="tab-monday" class="active"><span
+                                                            class="menu-label">Monday</span> </li>
+                                                    <li id="tab-tuesday"><span class="menu-label">Tuesday</span> </li>
+                                                    <li id="tab-wednesday"><span class="menu-label">Wednesday</span>
+                                                    </li>
+                                                    <li id="tab-thursday"><span class="menu-label">Thursday</span> </li>
+                                                    <li id="tab-friday"><span class="menu-label">Friday</span> </li>
+                                                    <li id="tab-saturday"><span class="menu-label">Saturday</span> </li>
+                                                    <li id="tab-sunday"><span class="menu-label">Sunday</span> </li>
+                                                </ul>
+                                            </nav>
+
+                                            <div id="main-area" class="tabs-monday" style="padding: 10px !important">
+                                                <table style="border-width: 0px">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td
+                                                                style="width: 50%; border-right: 2px solid #cfcfcf; padding-right: 10px; vertical-align: top">
+                                                                <div class="form-item" id="resultDiv">
+
+                                                                </div>
+                                                            </td>
+                                                            <td
+                                                                style="width: 50%;text-align: center; line-height: 2; vertical-align: top">
+                                                                <div class="info_area">
+
+                                                                    <div
+                                                                        style="border:#22BC66 solid;background-color:white;color:#22BC66;">
+                                                                        Available appointments</div>
+                                                                    <div
+                                                                        style="border:#773838 solid;background-color:#D1D1D1;color:#fff;">
+                                                                        Booked appointments</div>
+                                                                    <br>
+                                                                    <br>
+                                                                    <div>You have chosen to book appointment(s) on</div>
+                                                                    <div style="font-weight: bold"><span
+                                                                            id="selectedDateMsg"
+                                                                            style="text-decoration: underline">02/07/2026</span>
+                                                                        <span>at</span>
+                                                                        <span id="selectedTimeMsg"
+                                                                            style="text-decoration: underline"><span></span></span>
+                                                                    </div>
+
+                                                                    <div id="alertmsg"
+                                                                        class="appointment_alert appointment_alert-warning">
+                                                                        Please select time slot to proceed with your
+                                                                        reservation.</div>
+
+
+                                                                    <div>Please press BOOK APPOINTMENT from below to
+                                                                        complete your reservation.</div>
+
+                                                                    <div style="padding-top: 50px"><strong>* All time
+                                                                            zones refer to our office local
+                                                                            time</strong></div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+
+                                                <div id="btn-onetimepassword-wrap" class="form-item nolabel">
+                                                    <button id="btn-onetimepassword" class="btn blue" type="button"
+                                                        onclick="sendOTP()" data-redirect="stay">
+                                                        <span><span>Request OTP code (via Mobile) for
+                                                                Appointment</span></span>
+                                                    </button>
+                                                </div>
+
+                                                <div class="form-button-wrapper">
+                                                    <div class="form-item required" style="padding-top:10px;">
+                                                        <span id="submissiontext"
+                                                            style="background-color: rgb(255, 255, 255) !important; font-weight: bold; display: none;">I
+                                                            have read and accepted the <a target="_blank"
+                                                                href="https://pk-gr.gvcworld.eu/en/terms-of-use"><u>Terms
+                                                                    of Use</u></a> and <a target="_blank"
+                                                                href="https://pk-gr.gvcworld.eu/en/privacy-policy-gdpr-compliance"><u>Privacy
+                                                                    Policy</u></a></span>
+                                                        <input type="checkbox" id="submitinfo" name="submitinfo"
+                                                            class="form-control" data-parsley-multiple="submitinfo"
+                                                            style="display: none;">
+                                                        <input type="hidden" id="submissionMsgCheck"
+                                                            name="submissionMsgCheck"
+                                                            value="Make sure that you have checked the required checkbox"
+                                                            style="display: none;">
+                                                    </div>
+
+                                                    <button type="button" id="btn-new-appointment" class="btn blue"
+                                                        form="appointment" onclick="checkAmount(this, 'post')"
+                                                        data-submit="/appointments" data-redirect="stay"
+                                                        style="display: none;"><span>Book your
+                                                            appointment</span></button>
+
+                                                    <!-- th:onclick="${appointment == null} ? 'test(this, \'post\')' : 'test(this, \'put\')'" -->
+
+                                                </div>
+
+
+                                                <div id="onetimepassword-wrap" class="form-item nolabel"
+                                                    style="display: none;">
+                                                    <input type="text" id="onetimepassword" class="tc noupper"
+                                                        name="onetimepassword" placeholder="Enter the OTP code"
+                                                        autocapitalize="none">
+                                                </div>
+                                                <div class="form-item resetrequired">
+                                                    <br>
+                                                    <div id="recaptcha" class="g-recaptcha"
+                                                        data-sitekey="6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2"
+                                                        data-lang="en" style="display: none;">
+                                                        <div style="width: 304px; height: 78px;">
+                                                            <div><iframe title="reCAPTCHA" width="304" height="78"
+                                                                    role="presentation" name="a-6x8srd54fqwj"
+                                                                    frameborder="0" scrolling="no"
+                                                                    sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox allow-storage-access-by-user-activation"
+                                                                    src="https://www.google.com/recaptcha/api2/anchor?ar=2&amp;k=6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2&amp;co=aHR0cHM6Ly9way1nci1zZXJ2aWNlcy5ndmN3b3JsZC5ldTo0NDM.&amp;hl=en&amp;v=TnA7HacJFoBWt9hnlunBlYfK&amp;size=normal&amp;anchor-ms=20000&amp;execute-ms=30000&amp;cb=zfp9ncfmqgm"></iframe>
+                                                            </div><textarea id="g-recaptcha-response"
+                                                                name="g-recaptcha-response" class="g-recaptcha-response"
+                                                                style="width: 250px; height: 40px; border: 1px solid rgb(193, 193, 193); margin: 10px 25px; padding: 0px; resize: none; display: none;"></textarea>
+                                                        </div><iframe style="display: none;"></iframe>
+                                                    </div>
+                                                    <!--                      <div th:if="${recaptcha != null && !recaptcha}" id="recaptcha" class="cf-turnstile" th:attr="data-sitekey=${recaptchakeysite},data-lang=${recaptchalanguage!=null? recaptchalanguage : 'en'}">-->
+                                                    <!--                      </div>-->
+                                                </div>
+
+
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div>
+
+                    </div>
+                </main>
+            </div>
+
+            <aside id="layout-sidebar-first" class="tr" role="complementary">
+
+                <div id="logo">
+                    <a href="javascript:ubi.home()"><img src="/dist/images/logo_pk.png"></a>
+                </div>
+
+                <nav id="menu-wrapper">
+
+                    <div id="menu">
+
+                        <div id="menu-top-left" class="menu-corners"></div>
+                        <div id="menu-top-right" class="menu-corners"></div>
+                        <div id="menu-bottom-right" class="menu-corners"></div>
+                        <div id="menu-bottom-left" class="menu-corners"></div>
+
+
+
+                        <ul>
+                            <!--ToDo: delete element
+                                TEMPORARY: display username& user-roles-->
+                            <li>
+                                <div><a href="#" class="tr" style="color: #e85353 !important"><i class="fas fa-user"
+                                            aria-hidden="true"></i>===<span>siddiquez296@gmail.com</span>===
+
+                                        <span><br>VAC:[<span>Lahore</span>]</span></a>
+
+                                </div>
+                            </li>
+
+
+                            <li id="menu-dashboard" class="">
+                                <a href="javascript:ubi.home()" class="tr">
+                                    <i class="fas fa-home" aria-hidden="true"></i>
+
+                                    <span>Dashboard</span>
+                                </a>
+                            </li>
+
+                            <!--                                <li sec:authorize="hasAnyRole('FRONTDESK')" id="menu-appointment">
+                                    <a href="/appointment" class="tr">
+                                        <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
+                             /appointment           <span th:text="#{navigation.appointments}"></span>
+                                    </a>
+                                </li>-->
+
+                            <li id="menu-visa-request">
+                                <a href="/visa-request" class="tr">
+                                    <i class="fas fa-passport" aria-hidden="true"></i>
+                                    <span>My Draft Applications</span>
+
+                                </a>
+                            </li>
+
+                            <li id="menu-visa-request-add">
+                                <a href="/visa-request/add" class="tr">
+                                    <i class="fas fa-passport" aria-hidden="true"></i>
+                                    <span>New Online Application</span>
+
+                                </a>
+                            </li>
+
+
+
+
+                            <li id="menu-visa-submitted">
+                                <a href="/visa-request/submitted" class="tr">
+                                    <i class="fas fa-passport" aria-hidden="true"></i>
+                                    <span>My Submitted Applications</span>
+                                </a>
+                            </li>
+                            <li id="menu-visa-request-track">
+                                <a href="/visa-request/track" class="tr">
+                                    <i class="fas fa-passport" aria-hidden="true"></i>
+                                    <span>Track my Application</span>
+                                </a>
+                            </li>
+                            <!-- /*th:if="${@environment.getActiveProfiles()[0] eq 'development'}"*/-->
+                            <li id="menu-appointments">
+                                <a href="/appointments" class="tr">
+                                    <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+                                    <span>My Appointments</span>
+
+                                </a>
+                            </li>
+
+
+                            <li id="menu-appointments-add" class="active">
+                                <a href="/appointments/add" class="tr">
+                                    <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+                                    <span>Book Appointment</span>
+                                </a>
+                            </li>
+
+
+                            <li id="menu-insurance">
+                                <a href="/insurance" class="tr">
+                                    <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                                    <span>Book my Travel Medical Insurance</span>
+                                </a>
+                            </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            <!--                                &lt;!&ndash; add admin payment &ndash;&gt;-->
+                            <!--                                <li th:if="${(@environment.getActiveProfiles()[0] eq 'portal')}" sec:authorize="hasAnyRole('SUPERADMIN','VACADMIN') " id="payments">-->
+                            <!--                                    <a href="/canceledpayments" class="tr">-->
+                            <!--                                        <i class="fas fa-dumpster"></i>-->
+                            <!--                                        <span th:text="Payments"></span>-->
+                            <!--                                    </a>-->
+                            <!--                                </li>-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            <!--     <li sec:authorize="hasAnyRole('TRANSLATIONMANAGER')" id="menu-translation-element">
+                                    <a href="/translation-element" class="tr">
+                                        <i class="fas fa-globe"></i>
+                                        <span th:text="#{navigation.translationelements}"></span>
+                                    </a>
+                                </li>-->
+
+
+
+
+
+
+
+
+                        </ul>
+
+                    </div>
+
+                    <!--<div id="tech-borders"></div>-->
+                </nav>
+
+                <footer id="footer-wrapper" role="contentinfo">
+                    <div class="copyright">© <span>2026</span>
+                        <span>GVCW</span>
+                        <br>
+                        <div style="margin-top:3px"><a
+                                href="https://www.gvcworld.eu/page/about-global-visa-center-world-gvcw"><span>About</span></a>
+                            | <a href="https://www.gvcworld.eu/page/terms-use"><span>Terms of Service</span></a></div>
+                    </div>
+                </footer>
+            </aside>
+
+        </div>
+
+        <div id="modal" onclick="modal.closeListener(event)">
+            <div class="loader tr hide"></div>
+            <div id="mc">
+                <div id="cl-modal" onclick="modal.close()"></div>
+                <div id="mc-inner"></div>
+            </div>
+        </div>
+
+        <div id="dm" onclick="dmActions()">ddd</div>
+
+    </div>
+
+    <script type="text/javascript" src="/dist/js/vendor.js"></script>
+    <script type="text/javascript" src="/dist/js/app.js"></script>
+
+
+
+    <div id="ui-datepicker-div" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all">
+    </div>
+    <div
+        style="background-color: rgb(255, 255, 255); border: 1px solid rgb(204, 204, 204); box-shadow: rgba(0, 0, 0, 0.2) 2px 2px 3px; position: absolute; transition: visibility linear 0.3s, opacity 0.3s linear; opacity: 0; visibility: hidden; z-index: 2000000000; left: 0px; top: -10000px;">
+        <div
+            style="width: 100%; height: 100%; position: fixed; top: 0px; left: 0px; z-index: 2000000000; background-color: rgb(255, 255, 255); opacity: 0.05;">
+        </div>
+        <div class="g-recaptcha-bubble-arrow"
+            style="border: 11px solid transparent; width: 0px; height: 0px; position: absolute; pointer-events: none; margin-top: -11px; z-index: 2000000000;">
+        </div>
+        <div class="g-recaptcha-bubble-arrow"
+            style="border: 10px solid transparent; width: 0px; height: 0px; position: absolute; pointer-events: none; margin-top: -10px; z-index: 2000000000;">
+        </div>
+        <div style="z-index: 2000000000; position: relative;"><iframe title="recaptcha challenge expires in two minutes"
+                name="c-6x8srd54fqwj" frameborder="0" scrolling="no"
+                sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox allow-storage-access-by-user-activation"
+                src="https://www.google.com/recaptcha/api2/bframe?hl=en&amp;v=TnA7HacJFoBWt9hnlunBlYfK&amp;k=6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2&amp;bft=0dAFcWeA6WHcTt03CXDlCcmM4zBoS6yU4lYLO1SfBTTCYUXNXuz7GJ_ctlajGFrwI80cWkGIPKQY0JYc5B_x2ZgJTvD2A58yVX5w"
+                style="width: 100%; height: 100%;"></iframe></div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,26 @@
+# PortalMind Intelligence Platform Implementation Tasks
+
+- `[x]` Scaffold Python Package Structure
+  - `[x]` Delete old standalone scripts (`analyze_har.py`, `analyze_dom.py`, etc.)
+  - `[x]` Create directories (`cli`, `ingest`, `normalize`, `analyzers`, `models`, `storage`, `writers`)
+  - `[x]` Setup basic `__init__.py` files
+- `[x]` Implement Models & Knowledge Graph
+  - `[x]` Define generic `Node`, `Edge`, and `KnowledgeGraph` in `models/graph.py`
+  - `[x]` Define normalized data models in `models/`
+- `[x]` Implement Ingestion & Normalization
+  - `[x]` Build generic HAR ingestion in `ingest/har.py`
+  - `[x]` Implement normalization pipeline to map HAR to normalized models
+- `[x]` Implement Analyzers
+  - `[x]` `endpoint.py`
+  - `[x]` `schema.py`
+  - `[x]` `auth.py`
+- `[x]` Implement Storage
+  - `[x]` `storage/filesystem.py` to write JSON exports
+- `[x]` Implement CLI
+  - `[x]` Command-line entry points in `cli.py`
+- `[x]` Implement Tests
+  - `[x]` Create `synthetic.har` fixture
+  - `[x]` Write end-to-end tests for `test_pipeline.py`
+  - `[x]` Run unit tests successfully against the synthetic fixture
+- `[x]` Verify against Example Fixture
+  - `[x]` Run `portalmind ingest har` on the provided `login-data-entry-search-slots.txt` file (ensuring no contents are processed beyond execution validation).
