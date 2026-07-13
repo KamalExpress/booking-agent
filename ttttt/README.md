@@ -1,110 +1,61 @@
-# Booking Agent Platform - Setup Guide
+# Visa Booking Automation Agent
 
-This guide provides comprehensive setup instructions for each application within the `bookingagent` project.
+This repository contains an automated agent designed to monitor and book visa appointments, along with mock portals for local testing and development.
 
----
+## Project Structure
 
-## 1. Operator Agent (`/operator-agent`)
-The Operator Agent is a Python application that uses Playwright for browser automation and can be compiled into a standalone Windows executable.
+- **`booking-portal/`**: Contains `mock_portal.py`, a Flask server mocking the real visa booking website.
+- **`internal-portal/`**: Contains `internal_api.py`, a Flask server mocking an internal CRM/Database that holds applicant details and SMS OTPs.
+- **`operator-agent/`**: Contains the core python scripts:
+  - `demo-operator.py` / `main_operator.py`: The actual bot logic that logs in and books a slot.
+  - `slot_monitor.py`: A continuous background monitor that alerts you when slots open up.
+  - `run_parallel.bat`: A script to launch a swarm of parallel bots to book multiple slots simultaneously.
 
-### Setup Instructions
-1. **Navigate to the directory**:
-   ```bash
-   cd operator-agent
+## 1. Setup & Configuration
+
+1. **Environment Setup:** Ensure you are using the provided Python virtual environment.
+   ```powershell
+   .\venv\Scripts\activate
    ```
-2. **Environment Configuration**:
-   - Copy `.env.example` to `.env`.
-   - Fill in your actual credentials, Captcha keys, and applicant data inside the `.env` file. Do NOT commit the `.env` file.
-3. **Install Dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   playwright install chromium
-   ```
-4. **Running Locally (Development)**:
-   You can run the mock operator directly using Python:
-   ```bash
-   python demo-operator.py
-   ```
-   Or run multiple parallel operators using the batch script:
-   ```cmd
-   run_parallel.bat [NUMBER_OF_INSTANCES]
-   ```
-5. **Building the Executable**:
-   To compile the agent into a portable Windows application, run:
-   ```cmd
-   build.bat
-   ```
-   The output will be generated inside the `dist/appt-monitor` directory.
+2. **Configuration (`.env`):**
+   Open the `.env` file in the root directory and ensure your settings are correct. 
+   - Set `BASE_URL=http://localhost:5000` for local testing, or change it to the real production URL.
+   - Set `MAX_SLOTS_TO_BOOK` to limit how many slots the parallel swarm will grab.
+   - Set `MONITOR_INTERVAL_MINUTES` to control how often the slot monitor checks for openings.
 
----
+## 2. Running Local Mock Portals (For Testing)
 
-## 2. Cloud SaaS Platform (`/cloud-saas`)
-The Cloud SaaS application is a Dockerized service that manages the cloud backend, likely using FastAPI and PostgreSQL.
+If you are testing locally, you must start the two mock portals in separate terminal windows.
 
-### Setup Instructions
-1. **Navigate to the directory**:
-   ```bash
-   cd cloud-saas
-   ```
-2. **Environment & Keys**:
-   - The application relies on VAPID keys for push notifications. Ensure `private_key.pem` and `public_key.pem` exist in this directory.
-   - Database connection and Secret Keys are passed as environment variables in the Docker Compose file.
-3. **Docker Network**:
-   The service requires an external Docker network named `sam-agent-platform_default`. Create it if it doesn't exist:
-   ```bash
-   docker network create sam-agent-platform_default
-   ```
-4. **Build and Run**:
-   Start the services using Docker Compose:
-   ```bash
-   docker-compose up --build -d
-   ```
-   The platform will be accessible on `http://localhost:8000`.
+**Terminal 1 (Mock Booking Portal):**
+```powershell
+cd booking-portal
+..\venv\Scripts\python mock_portal.py
+```
 
----
+**Terminal 2 (Internal CRM/OTP Portal):**
+```powershell
+cd internal-portal
+..\venv\Scripts\python internal_api.py
+```
 
-## 3. Booking Portal (Mock) (`/booking-portal`)
-This is a mock Flask-based portal used for testing the operator agent without hitting the live production systems.
+## 3. Running the Continuous Slot Monitor
 
-### Setup Instructions
-1. **Navigate to the directory**:
-   ```bash
-   cd booking-portal
-   ```
-2. **Install Dependencies**:
-   Ensure you have `flask` and `python-dotenv` installed in your environment.
-   ```bash
-   pip install flask python-dotenv
-   ```
-3. **Configuration**:
-   This app reads the root `.env` file for configurations like `AVAILABLE_SLOTS`. 
-4. **Run the Portal**:
-   ```bash
-   python mock_portal.py
-   ```
-   By default, this will start a local Flask development server.
+If you just want to watch the calendar and get notified when slots become available, run the slot monitor. It will check every X minutes (based on your `.env`) and write an alert to `slots_notification.txt` in the root directory.
 
----
+```powershell
+cd operator-agent
+..\venv\Scripts\python slot_monitor.py
+```
 
-## 4. Internal API Portal (`/internal-portal`)
-This is an internal API interface built with Flask.
+## 4. Running the Booking Swarm
 
-### Setup Instructions
-1. **Navigate to the directory**:
-   ```bash
-   cd internal-portal
-   ```
-2. **Run the API**:
-   ```bash
-   python internal_api.py
-   ```
+When slots are available, you can launch a swarm of parallel agents to book them instantly. The agents will pull applicants from the internal portal, fetch their OTPs, and book random available slots to avoid collisions.
 
----
+```powershell
+cd operator-agent
+.\run_parallel.bat 3
+```
+*(Replace `3` with the number of parallel bot instances you want to spawn).*
 
-## General Requirements
-- **Python Version**: Ensure Python 3.9+ is installed.
-- **Virtual Environment**: It is highly recommended to use the provided virtual environment (`venv`) located in the root directory. Activate it before installing dependencies or running Python scripts:
-  ```cmd
-  # On Windows
-  venv\Scripts\activate
-  ```
+The bots use a shared file-locking mechanism (`booked.txt` and `lock.txt`) to ensure they don't exceed the `MAX_SLOTS_TO_BOOK` limit defined in your `.env` file. Once the limit is reached, all parallel bots will safely terminate.
