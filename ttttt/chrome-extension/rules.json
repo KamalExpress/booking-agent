@@ -21,7 +21,8 @@
       "urlFilter": "*://www.google.com/recaptcha/*",
       "initiatorDomains": [
         "keagent.alamiaconnect.com",
-        "localhost"
+        "localhost",
+        "www.google.com"
       ],
       "resourceTypes": [
         "sub_frame",
