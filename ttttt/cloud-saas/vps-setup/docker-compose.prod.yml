@@ -16,6 +16,8 @@ services:
       - SECRET_KEY
       - VAPID_PUBLIC_KEY
       - VAPID_PRIVATE_KEY
+      - SUPER_ADMIN_EMAIL
+      - SUPER_ADMIN_PASSWORD
     depends_on:
       - db
     networks:

@@ -47,7 +47,10 @@ logging.getLogger().setLevel(logging.INFO)
 @app.on_event("startup")
 def startup_event():
     global monitor_thread
-    Base.metadata.create_all(bind=engine)
+    # Auto-seed the database if it's empty
+    from init_db import init_db
+    init_db()
+    
     monitor_thread = SlotMonitorEngine()
     monitor_thread.start()
 
