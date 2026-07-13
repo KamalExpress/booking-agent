@@ -10,8 +10,9 @@ If you have Portainer installed on your VPS, you can deploy this entire applicat
 
 1. In Portainer, go to **Stacks** -> **Add Stack**.
 2. Select **Repository** (Git) and paste your GitHub repository URL.
-3. For the **Compose path**, enter: `vps-setup/docker-compose.prod.yml`
-4. Click **Deploy the Stack**. 
+3. For the **Compose path**, enter: `ttttt/cloud-saas/vps-setup/docker-compose.prod.yml`
+4. In the **Environment variables** section, select "Load variables from .env file" and paste the contents of `.env.prod`.
+5. Click **Deploy the Stack**. 
 5. Portainer will build the Docker image and start the containers. Point your Cloudflare Tunnel to `http://localhost:8743`.
 
 ---
