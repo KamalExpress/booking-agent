@@ -80,6 +80,14 @@ class MonitorConfig(Base):
     is_active = Column(Boolean, default=False) # Switch to easily pause entire global scraping
     is_demo = Column(Boolean, default=False)
 
+class ScraperAccount(Base):
+    __tablename__ = "scraper_accounts"
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True, nullable=False)
+    password = Column(String, nullable=False)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
 def get_db():
     db = SessionLocal()
     try:

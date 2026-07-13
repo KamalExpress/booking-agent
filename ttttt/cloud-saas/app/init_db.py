@@ -1,6 +1,6 @@
 import os
 from sqlalchemy.orm import Session
-from models import Base, engine, Tenant, User, RoleEnum, MonitorConfig
+from models import Base, engine, Tenant, User, RoleEnum, MonitorConfig, ScraperAccount
 from auth import get_password_hash
 
 def init_db():
@@ -40,6 +40,16 @@ def init_db():
             db.add(config)
             db.commit()
             print("Created default Monitor Config.")
+
+        # 4. Create Default Scraper Accounts if not exists
+        if db.query(ScraperAccount).count() == 0:
+            accounts = [
+                ScraperAccount(username="mnoon2404@gmail.com", password="Shani@1122"),
+                ScraperAccount(username="ammarashrafsialkot@gmail.com", password="Shani@1122")
+            ]
+            db.add_all(accounts)
+            db.commit()
+            print("Created default Scraper Accounts.")
 
 if __name__ == "__main__":
     init_db()

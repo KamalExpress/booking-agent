@@ -61,6 +61,64 @@ class NopeChaService(CaptchaService):
         logging.error("NopeCha polling timed out.")
         return ""
 
+class CapSolverService(CaptchaService):
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.create_task_url = "https://api.capsolver.com/createTask"
+        self.get_result_url = "https://api.capsolver.com/getTaskResult"
+
+    def solve(self, sitekey: str, url: str, **kwargs) -> str:
+        max_attempts = 2
+        
+        for attempt in range(1, max_attempts + 1):
+            logging.info(f"[Attempt {attempt}/{max_attempts}] Submitting CapSolver job for sitekey {sitekey} on {url}...")
+            
+            payload = {
+                "clientKey": self.api_key,
+                "task": {
+                    "type": "ReCaptchaV2TaskProxyless",
+                    "websiteURL": url,
+                    "websiteKey": sitekey
+                }
+            }
+            
+            try:
+                res = requests.post(self.create_task_url, json=payload).json()
+                if res.get("errorId") != 0:
+                    logging.error(f"CapSolver creation failed: {res}")
+                    continue
+                
+                task_id = res.get("taskId")
+                logging.info(f"CapSolver job submitted successfully. Task ID: {task_id}")
+                
+                # Poll for completion
+                logging.info("Polling for CapSolver completion... (Max 150 seconds)")
+                for _ in range(50): # poll for max 150 seconds (50 * 3s)
+                    time.sleep(3)
+                    poll_payload = {
+                        "clientKey": self.api_key,
+                        "taskId": task_id
+                    }
+                    poll_res = requests.post(self.get_result_url, json=poll_payload).json()
+                    status = poll_res.get("status")
+                    
+                    if status == "ready":
+                        token = poll_res.get("solution", {}).get("gRecaptchaResponse", "")
+                        logging.info("CapSolver solved the CAPTCHA successfully!")
+                        return token
+                    elif status == "failed":
+                        logging.error(f"CapSolver task failed: {poll_res.get('errorDescription')}")
+                        break # break inner polling loop, retry outer loop
+                    
+                    logging.debug(f"Waiting for CapSolver... current status: {status}")
+                    
+                logging.warning(f"CapSolver attempt {attempt} timed out or failed.")
+            except Exception as e:
+                logging.error(f"Error during CapSolver job: {e}")
+                
+        logging.error("CapSolver failed after maximum attempts.")
+        return ""
+
 class ManualCaptchaService(CaptchaService):
     def solve(self, sitekey: str, url: str, **kwargs) -> str:
         session = kwargs.get('session')

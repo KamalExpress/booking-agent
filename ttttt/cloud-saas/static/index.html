@@ -250,6 +250,48 @@
                 </div>
             </div>
 
+            <!-- Scraper Accounts Section (Super Admin Only) -->
+            <div id="scraper-accounts-section" class="glass-card p-6 hidden">
+                <div class="flex items-center gap-3 mb-6 border-b border-slate-700 pb-4">
+                    <div class="w-10 h-10 bg-indigo-500/20 text-indigo-400 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div>
+                    <h2 class="text-xl font-bold text-white">Scraper Accounts <span class="text-xs font-normal bg-purple-500/20 text-purple-300 px-2 py-1 rounded ml-2">Super Admin</span></h2>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-white mb-2">Add Scraper Account</h3>
+                    <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                        <div class="flex-1 space-y-1 w-full">
+                            <label class="block text-sm font-medium text-slate-400">Portal Username (Email)</label>
+                            <input type="email" id="new-scraper-email" class="premium-input w-full" placeholder="mnoon2404@gmail.com">
+                        </div>
+                        <div class="flex-1 space-y-1 w-full">
+                            <label class="block text-sm font-medium text-slate-400">Portal Password</label>
+                            <input type="password" id="new-scraper-pass" class="premium-input w-full" placeholder="••••••••">
+                        </div>
+                        <div class="mt-2 sm:mt-5 w-full sm:w-auto">
+                            <button onclick="createScraperAccount()" class="btn btn-primary w-full whitespace-nowrap">Add Account</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-700 text-slate-400 text-sm uppercase tracking-wider">
+                                <th class="p-3 font-medium">Username</th>
+                                <th class="p-3 font-medium">Status</th>
+                                <th class="p-3 font-medium">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scraper-accounts-tbody" class="text-sm">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- Live Bot Terminal (Super Admin Only) -->
             <div id="terminal-section" class="glass-card hidden flex flex-col h-[500px]">
                 <div class="flex items-center justify-between p-4 border-b border-slate-700/50 bg-slate-800/30">

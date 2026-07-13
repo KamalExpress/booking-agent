@@ -1,32 +1,47 @@
 import os
 import time
-from curl_cffi import requests
+import requests
 import logging
-from bs4 import BeautifulSoup
 from datetime import datetime
 from dotenv import load_dotenv
-from core.captcha_service import CaptchaService, NopeChaService
+from core.captcha_service import CaptchaService, NopeChaService, CapSolverService
 from core.mock_captcha import MockCaptchaService
 from core.otp_service import OTPService
 
 load_dotenv()
 
+import sys
 os.makedirs('logs', exist_ok=True)
 log_filename = f"logs/runlog_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
 
 # Configure logging to write to both the file and the console
+handlers = [logging.FileHandler(log_filename, mode='a', encoding='utf-8')]
+if sys.stderr is not None and sys.stdout is not None:
+    handlers.append(logging.StreamHandler())
+
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler(log_filename),
-        logging.StreamHandler()
-    ]
+    handlers=handlers,
+    force=True
 )
 
 class OperatorAgent:
     def __init__(self, captcha_service: CaptchaService, username: str = None, password: str = None):
-        self.session = requests.Session(impersonate="chrome120")
+        self.session = requests.Session()
+        
+        # Add retry logic to handle RemoteDisconnected (server drops keep-alive)
+        from requests.adapters import HTTPAdapter
+        from urllib3.util.retry import Retry
+        retry_strategy = Retry(
+            total=3,
+            backoff_factor=1,
+            status_forcelist=[429, 500, 502, 503, 504],
+            allowed_methods=["HEAD", "GET", "OPTIONS", "POST", "PUT"]
+        )
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        self.session.mount("https://", adapter)
+        self.session.mount("http://", adapter)
         
         # Standardize headers to match Playwright context and bypass anti-bot
         self.session.headers.update({
@@ -46,41 +61,52 @@ class OperatorAgent:
         
         otp_endpoint = os.getenv('OTP_API_ENDPOINT')
         otp_key = os.getenv('OTP_API_KEY')
-        self.otp_service = OTPService(api_endpoint=otp_endpoint, api_key=otp_key)
+        self.otp_service = OTPService(api_endpoint=otp_endpoint, api_key=otp_key) if otp_endpoint else None
+        
+        # In cloud-saas, we might run this from the app root.
+        os.makedirs(os.path.join(os.path.dirname(__file__), 'sessions'), exist_ok=True)
+        self.cookie_file = os.path.join(os.path.dirname(__file__), f"sessions/{self.username}.pkl")
+        self.load_session()
+
+    def load_session(self):
+        import pickle
+        if os.path.exists(self.cookie_file):
+            try:
+                with open(self.cookie_file, 'rb') as f:
+                    self.session.cookies.update(pickle.load(f))
+                logging.info("Loaded previous session cookies from file.")
+            except Exception as e:
+                logging.warning(f"Could not load previous session: {e}")
+
+    def save_session(self):
+        import pickle
+        try:
+            with open(self.cookie_file, 'wb') as f:
+                pickle.dump(self.session.cookies, f)
+            logging.info("Saved session cookies to file for future runs.")
+        except Exception as e:
+            logging.warning(f"Could not save session: {e}")
+
+    def clear_session(self):
+        self.session.cookies.clear()
+        if os.path.exists(self.cookie_file):
+            try:
+                os.remove(self.cookie_file)
+                logging.info("Cleared expired session cookies file.")
+            except Exception:
+                pass
 
     def login(self):
         logging.info(f"Attempting login for {self.username}...")
         
-        # 1. Initial GET to fetch Incapsula cookies and any CSRF tokens
-        logging.info("Fetching initial login page to collect cookies...")
-        login_page_url = f"{self.base_url}/login"
-        try:
-            get_response = self.session.get(login_page_url)
-            logging.debug(f"Initial GET status: {get_response.status_code}")
-        except Exception as e:
-            logging.error(f"Initial GET failed: {e}")
-            return False
-
-        # 2. Parse CSRF or hidden fields
-        hidden_inputs = {}
-        if get_response and get_response.text:
-            soup = BeautifulSoup(get_response.text, 'html.parser')
-            for hidden in soup.find_all('input', type='hidden'):
-                name = hidden.get('name')
-                value = hidden.get('value', '')
-                if name:
-                    hidden_inputs[name] = value
-            if hidden_inputs:
-                logging.info(f"Found hidden form inputs: {list(hidden_inputs.keys())}")
-
-        captcha_token = self.captcha_service.solve(self.sitekey, login_page_url, session=self.session)
+        captcha_token = self.captcha_service.solve(self.sitekey, f"{self.base_url}/login", session=self.session)
         
         # Intelligent fallback to Manual mode if Auto mode fails
-        if not captcha_token and self.captcha_service.__class__.__name__ == 'NopeChaService':
-            logging.warning("NopeCha Auto-solver failed! Falling back to Manual Captcha Delegation...")
-            from core.captcha_service import CloudManualCaptchaService
-            manual_svc = CloudManualCaptchaService()
-            captcha_token = manual_svc.solve(self.sitekey, login_page_url, session=self.session)
+        if not captcha_token and self.captcha_service.__class__.__name__ in ['NopeChaService', 'CapSolverService']:
+            logging.warning(f"{self.captcha_service.__class__.__name__} failed! Falling back to Manual Browser Captcha...")
+            from captcha_service import ManualCaptchaService
+            manual_svc = ManualCaptchaService()
+            captcha_token = manual_svc.solve(self.sitekey, f"{self.base_url}/login", session=self.session)
         
         url = f"{self.base_url}/api/v1/auth/login"
         payload = {
@@ -89,33 +115,26 @@ class OperatorAgent:
             "g-recaptcha-response": captcha_token
         }
         
-        # Merge any extracted hidden CSRF fields
-        payload.update(hidden_inputs)
-        
         logging.debug(f"Login payload: {payload}")
-        
-        # Log cookies before POST (excluding full values for brevity/security)
-        cookie_keys = list(self.session.cookies.get_dict().keys())
-        logging.info(f"Cookies attached to POST: {cookie_keys}")
-        
         response = self.session.post(url, json=payload)
         logging.debug(f"Login response status: {response.status_code}, text: {response.text}")
         
         if response.status_code == 200:
             logging.info("Login successful!")
+            self.save_session()
+            # Save auth token if returned in JSON (sometimes it's a cookie, sometimes an Authorization header)
+            # data = response.json()
+            # if 'token' in data:
+            #     self.session.headers.update({'Authorization': f"Bearer {data['token']}"})
             return True
         else:
             logging.error(f"Login failed. Status Code: {response.status_code}")
             logging.error(f"Response: {response.text}")
-            if response.status_code == 403 and "_Incapsula_Resource" in response.text:
-                logging.error("FATAL: Incapsula WAF blocked the POST request despite curl_cffi and cookies!")
-                logging.error("NEXT ARCHITECTURE STEP: Transition to pure Playwright/Chromium session for authentication.")
             return False
 
     def search_slots(self, date_from, app_type, vac_id):
-        logging.info(f"Searching for slots from {date_from}...")
-        
         url = f"{self.base_url}/api/v1/periodslot/slots"
+        logging.info(f"Searching for slots from {date_from}... Endpoint: {url}")
         
         payload = {
             "datefrom": date_from,
@@ -129,6 +148,8 @@ class OperatorAgent:
             "id": 0,
             "vac": {"id": int(vac_id)}
         }
+        
+        logging.info(f"Form Data (Payload) sent: {payload}")
         
         logging.debug(f"Search slots payload: {payload}")
         response = self.session.put(url, json=payload)
@@ -169,13 +190,6 @@ class OperatorAgent:
         
         captcha_token = self.captcha_service.solve(self.sitekey, f"{self.base_url}/appointments/add", session=self.session)
         
-        # Intelligent fallback to Manual mode if Auto mode fails
-        if not captcha_token and self.captcha_service.__class__.__name__ == 'NopeChaService':
-            logging.warning("NopeCha Auto-solver failed! Falling back to Manual Captcha Delegation...")
-            from core.captcha_service import CloudManualCaptchaService
-            manual_svc = CloudManualCaptchaService()
-            captcha_token = manual_svc.solve(self.sitekey, f"{self.base_url}/appointments/add", session=self.session)
-        
         # We will assume standard form submission endpoint or API endpoint
         url = f"{self.base_url}/appointments/add"
         
@@ -215,9 +229,9 @@ def main():
         logging.info("Using Mock Captcha Service for local demo.")
         captcha_svc = MockCaptchaService()
     elif strategy == 'MANUAL':
-        from core.captcha_service import CloudManualCaptchaService
-        logging.info("Using Cloud Manual Captcha Service.")
-        captcha_svc = CloudManualCaptchaService()
+        from captcha_service import ManualCaptchaService
+        logging.info("Using Manual Browser Captcha Service.")
+        captcha_svc = ManualCaptchaService()
     else:
         nopecha_key = os.getenv('NOPECHA_API_KEY')
         if not nopecha_key:

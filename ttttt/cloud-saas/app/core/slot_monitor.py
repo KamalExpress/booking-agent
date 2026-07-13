@@ -104,7 +104,8 @@ class SlotMonitorEngine(threading.Thread):
                         self._wake_event.wait(30)
                         self._wake_event.clear()
                         continue
-                    captcha_svc = NopeChaService(config.captcha_api_key)
+                    from core.captcha_service import CapSolverService
+                    captcha_svc = CapSolverService(config.captcha_api_key)
                 else:
                     from core.captcha_service import CloudManualCaptchaService
                     logging.info("Using Cloud Manual Captcha Service.")
@@ -136,41 +137,70 @@ class SlotMonitorEngine(threading.Thread):
                     self._wake_event.clear()
                     continue
                     
-                # We need one central account to scrape. For MVP, we can use a mock or environment variable account.
-                # In full SaaS, SuperAdmin provides a scraping pool.
-                agent = OperatorAgent(captcha_service=captcha_svc, username="demo_saas@gmail.com", password="password")
-                
-                logging.info("Waking up to check for slots...")
-                if not agent.login():
-                    logging.error("Cloud Scraper failed to login. Retrying next cycle.")
-                    self._wake_event.wait(interval_seconds)
+                from models import ScraperAccount
+                accounts = db.query(ScraperAccount).filter(ScraperAccount.is_active == True).all()
+                if not accounts:
+                    logging.error("No active Scraper Accounts found in database!")
+                    self._wake_event.wait(60)
                     self._wake_event.clear()
                     continue
-                    
+                
                 available_slots = []
-                for target_date in dates_to_check:
-                    if self._stop_event.is_set(): break
-                    
-                    if config.is_demo:
-                        logging.info("DEMO MODE ACTIVE. Simulating slot discovery...")
-                        time.sleep(5)
-                        self.send_push_notifications(db, "DEMO SLOT FOUND: 10:00")
-                        time.sleep(30)
-                        continue
-                        
-                    slots_response = agent.search_slots(target_date, config.app_type, config.vac_id)
-                    if slots_response and slots_response.get("code") == "SUCCESS":
-                        ret_obj = slots_response.get("returnobject")
-                        slots = ret_obj.get("slots", []) if isinstance(ret_obj, dict) else (ret_obj if isinstance(ret_obj, list) else [])
-                        for slot in slots:
-                            if slot.get('isavailable') and slot.get('isselectable'):
-                                available_slots.append({"id": slot['id'], "time": slot['starttime'], "date": target_date})
-                                
-                        if available_slots:
-                            break # Found slots, break early
+                scraper_success = False
+                
+                for account in accounts:
+                    logging.info(f"Waking up to check for slots using account {account.username}...")
+                    try:
+                        agent = OperatorAgent(captcha_service=captcha_svc, username=account.username, password=account.password)
+                        if not agent.login():
+                            logging.error(f"Cloud Scraper failed to login for {account.username}. Trying next account...")
+                            continue
                             
-                    time.sleep(2)
-                    
+                        account_failed = False
+                        for target_date in dates_to_check:
+                            if self._stop_event.is_set(): break
+                            
+                            if config.is_demo:
+                                logging.info("DEMO MODE ACTIVE. Simulating slot discovery...")
+                                time.sleep(5)
+                                self.send_push_notifications(db, "DEMO SLOT FOUND: 10:00")
+                                time.sleep(30)
+                                scraper_success = True
+                                break
+                                
+                            slots_response = agent.search_slots(target_date, config.app_type, config.vac_id)
+                            if slots_response is None:
+                                logging.error(f"WAF Block or session expired for {account.username} during search.")
+                                agent.clear_session()
+                                account_failed = True
+                                break
+                                
+                            if slots_response and slots_response.get("code") == "SUCCESS":
+                                ret_obj = slots_response.get("returnobject")
+                                slots = ret_obj.get("slots", []) if isinstance(ret_obj, dict) else (ret_obj if isinstance(ret_obj, list) else [])
+                                for slot in slots:
+                                    if slot.get('isavailable') and slot.get('isselectable'):
+                                        available_slots.append({"id": slot['id'], "time": slot['starttime'], "date": target_date})
+                                        
+                                if available_slots:
+                                    break
+                                    
+                            time.sleep(2)
+                            
+                        if not account_failed:
+                            scraper_success = True
+                            agent.save_session()
+                            break
+                            
+                    except Exception as e:
+                        logging.error(f"Exception during scraping with {account.username}: {e}")
+                        import traceback
+                        traceback.print_exc()
+                        continue
+                
+                if not scraper_success:
+                    logging.error("All scraper accounts failed! Will retry next cycle.")
+                
                 if not available_slots:
                     self.previously_seen_slot_ids.clear()
                 else:

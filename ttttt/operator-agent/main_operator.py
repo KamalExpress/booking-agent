@@ -10,17 +10,20 @@ from otp_service import OTPService
 
 load_dotenv()
 
+import sys
 os.makedirs('logs', exist_ok=True)
 log_filename = f"logs/runlog_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
 
 # Configure logging to write to both the file and the console
+handlers = [logging.FileHandler(log_filename, mode='a', encoding='utf-8')]
+if sys.stderr is not None and sys.stdout is not None:
+    handlers.append(logging.StreamHandler())
+
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler(log_filename),
-        logging.StreamHandler()
-    ]
+    handlers=handlers,
+    force=True
 )
 
 class OperatorAgent:
@@ -58,12 +61,50 @@ class OperatorAgent:
         
         otp_endpoint = os.getenv('OTP_API_ENDPOINT')
         otp_key = os.getenv('OTP_API_KEY')
-        self.otp_service = OTPService(api_endpoint=otp_endpoint, api_key=otp_key)
+        self.otp_service = OTPService(api_endpoint=otp_endpoint, api_key=otp_key) if otp_endpoint else None
+        
+        self.cookie_file = "last-login-token.pkl"
+        self.load_session()
+
+    def load_session(self):
+        import pickle
+        if os.path.exists(self.cookie_file):
+            try:
+                with open(self.cookie_file, 'rb') as f:
+                    self.session.cookies.update(pickle.load(f))
+                logging.info("Loaded previous session cookies from file.")
+            except Exception as e:
+                logging.warning(f"Could not load previous session: {e}")
+
+    def save_session(self):
+        import pickle
+        try:
+            with open(self.cookie_file, 'wb') as f:
+                pickle.dump(self.session.cookies, f)
+            logging.info("Saved session cookies to file for future runs.")
+        except Exception as e:
+            logging.warning(f"Could not save session: {e}")
+
+    def clear_session(self):
+        self.session.cookies.clear()
+        if os.path.exists(self.cookie_file):
+            try:
+                os.remove(self.cookie_file)
+                logging.info("Cleared expired session cookies file.")
+            except Exception:
+                pass
 
     def login(self):
         logging.info(f"Attempting login for {self.username}...")
         
         captcha_token = self.captcha_service.solve(self.sitekey, f"{self.base_url}/login", session=self.session)
+        
+        # Intelligent fallback to Manual mode if Auto mode fails
+        if not captcha_token and self.captcha_service.__class__.__name__ in ['NopeChaService', 'CapSolverService']:
+            logging.warning(f"{self.captcha_service.__class__.__name__} failed! Falling back to Manual Browser Captcha...")
+            from captcha_service import ManualCaptchaService
+            manual_svc = ManualCaptchaService()
+            captcha_token = manual_svc.solve(self.sitekey, f"{self.base_url}/login", session=self.session)
         
         url = f"{self.base_url}/api/v1/auth/login"
         payload = {
@@ -78,6 +119,7 @@ class OperatorAgent:
         
         if response.status_code == 200:
             logging.info("Login successful!")
+            self.save_session()
             # Save auth token if returned in JSON (sometimes it's a cookie, sometimes an Authorization header)
             # data = response.json()
             # if 'token' in data:
@@ -89,9 +131,8 @@ class OperatorAgent:
             return False
 
     def search_slots(self, date_from, app_type, vac_id):
-        logging.info(f"Searching for slots from {date_from}...")
-        
         url = f"{self.base_url}/api/v1/periodslot/slots"
+        logging.info(f"Searching for slots from {date_from}... Endpoint: {url}")
         
         payload = {
             "datefrom": date_from,
@@ -105,6 +146,8 @@ class OperatorAgent:
             "id": 0,
             "vac": {"id": int(vac_id)}
         }
+        
+        logging.info(f"Form Data (Payload) sent: {payload}")
         
         logging.debug(f"Search slots payload: {payload}")
         response = self.session.put(url, json=payload)

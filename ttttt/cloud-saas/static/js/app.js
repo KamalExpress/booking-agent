@@ -57,12 +57,14 @@ function checkAuth() {
         
         // Reset all admin UI blocks to hidden before evaluating role
         if (document.getElementById("admin-section")) document.getElementById("admin-section").classList.add("hidden");
+        if (document.getElementById("scraper-accounts-section")) document.getElementById("scraper-accounts-section").classList.add("hidden");
         if (document.getElementById("super-admin-tenants-section")) document.getElementById("super-admin-tenants-section").classList.add("hidden");
         if (document.getElementById("tenant-admin-section")) document.getElementById("tenant-admin-section").classList.add("hidden");
         if (document.getElementById("terminal-section")) document.getElementById("terminal-section").classList.add("hidden");
         
         if (role === "SUPER_ADMIN") {
             document.getElementById("admin-section").classList.remove("hidden");
+            document.getElementById("scraper-accounts-section").classList.remove("hidden");
             document.getElementById("super-admin-tenants-section").classList.remove("hidden");
             document.getElementById("tenant-admin-section").classList.remove("hidden");
             if (document.getElementById("btn-debug")) document.getElementById("btn-debug").classList.remove("hidden");
@@ -70,6 +72,7 @@ function checkAuth() {
             loadConfig();
             loadTenants();
             loadStaff();
+            loadScraperAccounts();
         } else if (role === "TENANT_ADMIN") {
             document.getElementById("tenant-admin-section").classList.remove("hidden");
             loadStaff();
@@ -840,3 +843,98 @@ function updateQuickToggleUI(isActive) {
         btn.classList.add('bg-green-600', 'hover:bg-green-500');
     }
 }
+
+// --- Scraper Accounts Admin Logic ---
+
+async function loadScraperAccounts() {
+    try {
+        const res = await fetch("/api/scraper-accounts", {
+            headers: { "Authorization": "Bearer " + localStorage.getItem("token") }
+        });
+        if (res.ok) {
+            const accounts = await res.json();
+            const tbody = document.getElementById("scraper-accounts-tbody");
+            tbody.innerHTML = "";
+            accounts.forEach(acc => {
+                const tr = document.createElement("tr");
+                tr.className = "border-b border-slate-700/50 hover:bg-slate-800/50 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-3 text-white">${acc.username}</td>
+                    <td class="p-3">
+                        <span class="px-2 py-1 text-xs rounded-full ${acc.is_active ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}">
+                            ${acc.is_active ? 'ACTIVE' : 'INACTIVE'}
+                        </span>
+                    </td>
+                    <td class="p-3 flex gap-3 text-sm">
+                        <button onclick="toggleScraperAccount(${acc.id}, ${!acc.is_active})" class="text-indigo-400 hover:text-indigo-300 transition-colors">
+                            ${acc.is_active ? 'Disable' : 'Enable'}
+                        </button>
+                        <button onclick="deleteScraperAccount(${acc.id})" class="text-red-400 hover:text-red-300 transition-colors">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    } catch (e) {
+        console.error("Failed to load scraper accounts:", e);
+    }
+}
+
+async function createScraperAccount() {
+    const email = document.getElementById("new-scraper-email").value;
+    const password = document.getElementById("new-scraper-pass").value;
+    
+    if(!email || !password) {
+        alert("Please provide both username and password");
+        return;
+    }
+    
+    const res = await fetch("/api/scraper-accounts", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        body: JSON.stringify({ username: email, password: password })
+    });
+    
+    if (res.ok) {
+        document.getElementById("new-scraper-email").value = "";
+        document.getElementById("new-scraper-pass").value = "";
+        loadScraperAccounts();
+    } else {
+        const err = await res.json();
+        alert(err.detail || "Failed to create scraper account");
+    }
+}
+
+async function toggleScraperAccount(id, is_active) {
+    const res = await fetch(`/api/scraper-accounts/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
+        body: JSON.stringify({ is_active: is_active })
+    });
+    
+    if (res.ok) {
+        loadScraperAccounts();
+    } else {
+        alert("Failed to update scraper account");
+    }
+}
+
+async function deleteScraperAccount(id) {
+    if(!confirm("Are you sure you want to delete this scraper account?")) return;
+    const res = await fetch("/api/scraper-accounts/" + id, {
+        method: "DELETE",
+        headers: { "Authorization": "Bearer " + localStorage.getItem("token") }
+    });
+    if (res.ok) {
+        loadScraperAccounts();
+    } else {
+        alert("Failed to delete account");
+    }
+}
+

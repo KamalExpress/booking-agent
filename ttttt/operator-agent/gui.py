@@ -78,6 +78,9 @@ class KamalExpressMonitorApp(ctk.CTk):
         self.btn_stop = ctk.CTkButton(self.controls_frame, text="Stop Monitor", fg_color="red", hover_color="darkred", state="disabled", command=self.stop_monitor)
         self.btn_stop.pack(side="left", padx=20, pady=20)
 
+        self.btn_copy_logs = ctk.CTkButton(self.controls_frame, text="Copy Logs", command=self.copy_logs)
+        self.btn_copy_logs.pack(side="left", padx=20, pady=20)
+
         self.status_label = ctk.CTkLabel(self.controls_frame, text="Status: IDLE", text_color="gray")
         self.status_label.pack(side="right", padx=20, pady=20)
 
@@ -158,12 +161,12 @@ class KamalExpressMonitorApp(ctk.CTk):
         lbl_provider = ctk.CTkLabel(self.settings_container, text="Captcha Provider")
         lbl_provider.grid(row=4, column=0, padx=10, pady=10, sticky="w")
         ent_provider = ctk.CTkEntry(self.settings_container, width=300)
-        ent_provider.insert(0, "NopeCha")
+        ent_provider.insert(0, "CapSolver")
         ent_provider.configure(state="disabled") # Disabled as per user request
         ent_provider.grid(row=4, column=1, padx=10, pady=10, sticky="w")
         self.settings_inputs["CAPTCHA_PROVIDER"] = ent_provider
         
-        lbl_apikey = ctk.CTkLabel(self.settings_container, text="NopeCha API Key (If AUTO)")
+        lbl_apikey = ctk.CTkLabel(self.settings_container, text="CapSolver API Key (If AUTO)")
         lbl_apikey.grid(row=5, column=0, padx=10, pady=10, sticky="w")
         ent_apikey = ctk.CTkEntry(self.settings_container, width=300)
         ent_apikey.grid(row=5, column=1, padx=10, pady=10, sticky="w")
@@ -212,6 +215,16 @@ class KamalExpressMonitorApp(ctk.CTk):
     def show_dashboard(self): self.show_frame("Dashboard")
     def show_accounts(self): self.show_frame("Accounts")
     def show_settings(self): self.show_frame("Settings")
+
+    def copy_logs(self):
+        try:
+            self.clipboard_clear()
+            logs = self.log_textbox.get("1.0", ctk.END)
+            self.clipboard_append(logs)
+            self.update()
+            logging.info("Logs successfully copied to clipboard!")
+        except Exception as e:
+            logging.error(f"Failed to copy logs: {e}")
 
     def setup_logging(self):
         # Configure logging to also output to our Textbox
