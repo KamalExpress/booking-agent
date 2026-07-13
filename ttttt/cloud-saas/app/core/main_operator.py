@@ -1,6 +1,6 @@
 import os
 import time
-import requests
+from curl_cffi import requests
 import logging
 from datetime import datetime
 from dotenv import load_dotenv
@@ -28,20 +28,8 @@ logging.basicConfig(
 
 class OperatorAgent:
     def __init__(self, captcha_service: CaptchaService, username: str = None, password: str = None):
-        self.session = requests.Session()
+        self.session = requests.Session(impersonate="chrome110")
         
-        # Add retry logic to handle RemoteDisconnected (server drops keep-alive)
-        from requests.adapters import HTTPAdapter
-        from urllib3.util.retry import Retry
-        retry_strategy = Retry(
-            total=3,
-            backoff_factor=1,
-            status_forcelist=[429, 500, 502, 503, 504],
-            allowed_methods=["HEAD", "GET", "OPTIONS", "POST", "PUT"]
-        )
-        adapter = HTTPAdapter(max_retries=retry_strategy)
-        self.session.mount("https://", adapter)
-        self.session.mount("http://", adapter)
         
         # Standardize headers to match Playwright context and bypass anti-bot
         self.session.headers.update({
