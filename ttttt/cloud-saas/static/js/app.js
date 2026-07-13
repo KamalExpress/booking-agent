@@ -58,6 +58,7 @@ function checkAuth() {
             document.getElementById("admin-section").classList.remove("hidden");
             document.getElementById("super-admin-tenants-section").classList.remove("hidden");
             document.getElementById("tenant-admin-section").classList.remove("hidden");
+            if (document.getElementById("btn-debug")) document.getElementById("btn-debug").classList.remove("hidden");
             if (document.getElementById("terminal-section")) document.getElementById("terminal-section").classList.remove("hidden");
             loadConfig();
             loadTenants();
@@ -768,3 +769,23 @@ async function triggerBot() {
     }
 }
 
+// --- Debug Modal ---
+async function openDebugModal() {
+    document.getElementById("debug-modal").classList.remove("hidden");
+    const debugContent = document.getElementById("debug-content");
+    debugContent.textContent = "Loading database state...";
+    try {
+        const res = await fetch("/api/admin/debug", {
+            headers: {"Authorization": "Bearer " + localStorage.getItem("token")}
+        });
+        if (!res.ok) throw new Error("Failed to fetch debug state");
+        const data = await res.json();
+        debugContent.textContent = JSON.stringify(data, null, 4);
+    } catch (e) {
+        debugContent.textContent = "Error: " + e.message;
+    }
+}
+
+function closeDebugModal() {
+    document.getElementById("debug-modal").classList.add("hidden");
+}

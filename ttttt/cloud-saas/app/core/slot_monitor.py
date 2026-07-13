@@ -16,7 +16,8 @@ from core.captcha_service import NopeChaService
 from core.mock_captcha import MockCaptchaService
 
 # In production, these should be environment variables
-VAPID_PRIVATE_KEY = os.getenv("VAPID_PRIVATE_KEY", os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "private_key.pem"))
+_vapid_env = os.getenv("VAPID_PRIVATE_KEY")
+VAPID_PRIVATE_KEY = _vapid_env.replace('\\n', '\n') if _vapid_env else os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "private_key.pem")
 VAPID_CLAIMS = {"sub": "mailto:admin@samwebdevs.dpdns.org"}
 
 class SlotMonitorEngine(threading.Thread):

@@ -14,6 +14,8 @@ from auth import get_current_user, require_super_admin, require_tenant_admin, cr
 from core.slot_monitor import SlotMonitorEngine
 
 VAPID_PUBLIC_KEY = os.getenv("VAPID_PUBLIC_KEY", "BPiJHAyOHhUN-lfs6ZZbCsJxG0044_Hk7w2ezWWKxRW1NPPCq4OdT_WGakDn6__jhpPtrc0nWLtpYThZk3fIBOM")
+_vapid_env = os.getenv("VAPID_PRIVATE_KEY")
+VAPID_PRIVATE_KEY = _vapid_env.replace('\\n', '\n') if _vapid_env else os.path.join(os.path.dirname(os.path.dirname(__file__)), "private_key.pem")
 
 app = FastAPI(title="Kamal Express SaaS Backend")
 
@@ -404,6 +406,27 @@ def subscribe_push(req: PushSubRequest, current_user: User = Depends(get_current
         db.commit()
     return {"status": "success"}
 
+@app.delete("/api/push/unsubscribe")
+def unsubscribe_push(req: PushSubRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    sub = db.query(PushSubscription).filter(PushSubscription.endpoint == req.endpoint).first()
+    if sub:
+        db.delete(sub)
+    db.commit()
+    return {"status": "success"}
+
+@app.get("/api/admin/debug")
+def get_system_debug(current_user: User = Depends(require_super_admin), db: Session = Depends(get_db)):
+    """Dumps all database core entities for Super Admin debugging."""
+    tenants = db.query(Tenant).all()
+    users = db.query(User).all()
+    subs = db.query(PushSubscription).all()
+    
+    return {
+        "tenants": [{"id": t.id, "name": t.name} for t in tenants],
+        "users": [{"id": u.id, "email": u.email, "tenant_id": u.tenant_id, "role": u.role} for u in users],
+        "push_subscriptions": [{"id": s.id, "user_id": s.user_id, "endpoint": s.endpoint[:40] + "..."} for s in subs]
+    }
+
 class BroadcastRequest(BaseModel):
     message: str
 
@@ -425,7 +448,7 @@ def broadcast_push_alert(req: BroadcastRequest, current_user: User = Depends(req
                 },
                 # We format the payload dynamically based on the input message
                 data=f'{{"title":"Admin Broadcast!","body":"{req.message}","url":"/"}}',
-                vapid_private_key=os.getenv("VAPID_PRIVATE_KEY", os.path.join(os.path.dirname(os.path.dirname(__file__)), "private_key.pem")),
+                vapid_private_key=VAPID_PRIVATE_KEY,
                 vapid_claims={"sub": "mailto:admin@samwebdevs.dpdns.org"}
             )
             success_count += 1
@@ -445,7 +468,7 @@ def test_push_alert(current_user: User = Depends(get_current_user), db: Session 
                     "keys": {"p256dh": sub.p256dh, "auth": sub.auth}
                 },
                 data=f'{{"title":"Test Alarm!","body":"This is a test push notification.","url":"/"}}',
-                vapid_private_key=os.getenv("VAPID_PRIVATE_KEY", os.path.join(os.path.dirname(os.path.dirname(__file__)), "private_key.pem")),
+                vapid_private_key=VAPID_PRIVATE_KEY,
                 vapid_claims={"sub": "mailto:admin@samwebdevs.dpdns.org"}
             )
         except Exception as e:
