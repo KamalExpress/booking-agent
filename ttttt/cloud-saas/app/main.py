@@ -362,6 +362,26 @@ def update_config(req: ConfigUpdate, current_user: User = Depends(require_super_
     log_audit(db, current_user, "Updated global monitor config")
     return {"status": "success"}
 
+@app.post("/api/monitor/quick-toggle")
+def toggle_config_state(current_user: User = Depends(require_tenant_admin), db: Session = Depends(get_db)):
+    config = db.query(MonitorConfig).first()
+    if not config:
+        config = MonitorConfig(is_active=False)
+        db.add(config)
+    
+    config.is_active = not config.is_active
+    db.commit()
+    
+    global monitor_thread
+    if monitor_thread and config.is_active:
+        monitor_thread._wake_event.set()
+        
+    status_str = "RESUMED" if config.is_active else "PAUSED"
+    log_audit(db, current_user, f"Quick Toggled bot state to {status_str}")
+    logger.info(f"*** BOT {status_str} BY USER ***")
+    
+    return {"status": "success", "is_active": config.is_active}
+
 @app.get("/api/monitor/logs")
 def get_monitor_logs(limit: Optional[int] = 200, current_user: User = Depends(require_tenant_admin)):
     logs = list(cloud_log_handler.log_queue)

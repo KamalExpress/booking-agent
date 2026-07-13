@@ -111,6 +111,8 @@ async function loadConfig() {
             document.getElementById("cfg-demo").checked = config.is_demo || false;
         }
 
+        updateQuickToggleUI(config.is_active);
+
         // Handle holiday checkboxes
         const holidaysArray = config.holidays ? config.holidays.split(',') : [];
         const checkboxes = document.querySelectorAll('#cfg-holi-container input[type="checkbox"]');
@@ -800,4 +802,41 @@ async function openDebugModal() {
 
 function closeDebugModal() {
     document.getElementById("debug-modal").classList.add("hidden");
+}
+
+async function quickToggleBot() {
+    try {
+        const res = await fetch('/api/monitor/quick-toggle', {
+            method: 'POST',
+            headers: {'Authorization': 'Bearer ' + localStorage.getItem('token')}
+        });
+        const data = await res.json();
+        if (res.ok) {
+            updateQuickToggleUI(data.is_active);
+            if (document.getElementById('cfg-active')) {
+                document.getElementById('cfg-active').checked = data.is_active;
+            }
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+function updateQuickToggleUI(isActive) {
+    const icon = document.getElementById('quick-toggle-icon');
+    const text = document.getElementById('quick-toggle-text');
+    const btn = document.getElementById('btn-quick-toggle');
+    if (!icon || !text || !btn) return;
+    
+    if (isActive) {
+        icon.textContent = '??';
+        text.textContent = 'Pause Bot';
+        btn.classList.remove('bg-green-600', 'hover:bg-green-500');
+        btn.classList.add('bg-slate-700', 'hover:bg-slate-600');
+    } else {
+        icon.textContent = '??';
+        text.textContent = 'Resume Bot';
+        btn.classList.remove('bg-slate-700', 'hover:bg-slate-600');
+        btn.classList.add('bg-green-600', 'hover:bg-green-500');
+    }
 }
