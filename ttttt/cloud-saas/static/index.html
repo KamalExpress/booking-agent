@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,8 +28,15 @@
         }
     </script>
     <style>
-        body { background-color: #0f172a; color: #f8fafc; }
-        .hidden { display: none !important; }
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
         .glass-card {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(10px);
@@ -36,6 +44,7 @@
             border-radius: 1rem;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
         }
+
         .premium-input {
             background-color: #0f172a;
             border: 1px solid #334155;
@@ -45,11 +54,13 @@
             width: 100%;
             transition: all 0.2s ease;
         }
+
         .premium-input:focus {
             outline: none;
             border-color: #3B82F6;
             box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
         }
+
         .btn {
             padding: 0.75rem 1.5rem;
             border-radius: 0.5rem;
@@ -58,35 +69,76 @@
             cursor: pointer;
             text-align: center;
         }
-        .btn-primary { background: linear-gradient(135deg, #3B82F6, #2563EB); color: white; }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
-        .btn-danger { background-color: #ef4444; color: white; }
-        .btn-danger:hover { background-color: #dc2626; }
-        .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: white; }
-        .btn-success:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); }
-        
-        .pulse-bell { animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3B82F6, #2563EB);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+
+        .pulse-bell {
+            animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
         @keyframes pulse-ring {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
         }
     </style>
 </head>
-<body class="antialiased min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800 to-slate-900">
+
+<body
+    class="antialiased min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800 to-slate-900">
 
     <!-- Login View -->
     <div id="login-view" class="min-h-screen flex items-center justify-center p-4 hidden">
         <div class="glass-card w-full max-w-md p-8 text-center">
             <div class="mb-8">
-                <div class="w-16 h-16 bg-brand-500 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg shadow-brand-500/30">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                <div
+                    class="w-16 h-16 bg-brand-500 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg shadow-brand-500/30">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                        </path>
+                    </svg>
                 </div>
                 <h2 class="text-3xl font-bold tracking-tight text-white">Kamal Express</h2>
                 <p class="text-slate-400 mt-2">Sign in to your dashboard</p>
             </div>
-            
-            <div id="login-error" class="bg-red-500/10 border border-red-500/50 text-red-400 text-sm p-3 rounded-lg mb-6 hidden"></div>
-            
+
+            <div id="login-error"
+                class="bg-red-500/10 border border-red-500/50 text-red-400 text-sm p-3 rounded-lg mb-6 hidden"></div>
+
             <form id="login-form" class="space-y-4 text-left">
                 <div>
                     <label class="block text-sm font-medium text-slate-400 mb-1">Email Address</label>
@@ -102,22 +154,32 @@
     </div>
 
     <!-- Debug Modal -->
-    <div id="debug-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md hidden transition-opacity">
-        <div class="glass-card w-full max-w-4xl p-8 max-h-[90vh] flex flex-col shadow-[0_0_50px_rgba(59,130,246,0.1)] border border-blue-500/30">
+    <div id="debug-modal"
+        class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md hidden transition-opacity">
+        <div
+            class="glass-card w-full max-w-4xl p-8 max-h-[90vh] flex flex-col shadow-[0_0_50px_rgba(59,130,246,0.1)] border border-blue-500/30">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-bold text-white flex items-center gap-2">
-                    <svg class="w-6 h-6 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                    <svg class="w-6 h-6 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                    </svg>
                     System Debug Mode
                 </h3>
                 <button onclick="closeDebugModal()" class="text-slate-400 hover:text-white transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
                 </button>
             </div>
-            <div class="flex-1 overflow-auto bg-slate-950 rounded-lg border border-slate-800 p-4 font-mono text-sm text-green-400">
+            <div
+                class="flex-1 overflow-auto bg-slate-950 rounded-lg border border-slate-800 p-4 font-mono text-sm text-green-400">
                 <pre id="debug-content">Loading database state...</pre>
             </div>
             <div class="mt-6 flex justify-end">
-                <button onclick="closeDebugModal()" class="btn bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors">Close</button>
+                <button onclick="closeDebugModal()"
+                    class="btn bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors">Close</button>
             </div>
         </div>
     </div>
@@ -125,13 +187,17 @@
     <!-- Dashboard View -->
     <div id="dashboard-view" class="min-h-screen p-4 md:p-8 hidden">
         <div class="max-w-5xl mx-auto space-y-6">
-            
+
             <!-- Header -->
-            <header class="flex flex-col sm:flex-row justify-between items-center bg-slate-800/50 border border-slate-700 rounded-2xl p-6 shadow-sm">
+            <header
+                class="flex flex-col sm:flex-row justify-between items-center bg-slate-800/50 border border-slate-700 rounded-2xl p-6 shadow-sm">
                 <div>
                     <h1 class="text-2xl font-bold text-white flex items-center gap-3">
                         <span class="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
                         </span>
                         Kamal Express Hub
                     </h1>
@@ -139,12 +205,20 @@
                 </div>
                 <div class="flex items-center gap-4 mt-4 sm:mt-0">
                     <span id="logged-in-user" class="text-slate-400 text-sm hidden sm:block"></span>
-                    <button id="btn-debug" onclick="openDebugModal()" class="btn bg-slate-700 hover:bg-slate-600 text-sm flex items-center gap-2 hidden">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                    <button id="btn-debug" onclick="openDebugModal()"
+                        class="btn bg-slate-700 hover:bg-slate-600 text-sm flex items-center gap-2 hidden">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                        </svg>
                         System Debug
                     </button>
                     <button onclick="logout()" class="btn btn-danger text-sm flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                            </path>
+                        </svg>
                         Logout
                     </button>
                 </div>
@@ -157,24 +231,42 @@
                     <div class="pulse-bell text-4xl">🔔</div>
                 </div>
                 <h2 class="text-2xl font-bold text-white mb-2">Live Mobile Alerts</h2>
-                <p class="text-slate-400 mb-6 max-w-md mx-auto">Get instant push notifications delivered directly to your device the second an appointment slot opens up.</p>
+                <p class="text-slate-400 mb-6 max-w-md mx-auto">Get instant push notifications delivered directly to
+                    your device the second an appointment slot opens up.</p>
                 <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <button id="btn-subscribe" onclick="subscribeToPush()" class="btn btn-primary text-lg px-8 shadow-lg shadow-brand-500/20">Enable Push Notifications</button>
-                    <button onclick="testPushAlert()" class="btn btn-success text-lg px-8 shadow-lg shadow-emerald-500/20 flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                    <button id="btn-subscribe" onclick="subscribeToPush()"
+                        class="btn btn-primary text-lg px-8 shadow-lg shadow-brand-500/20">Enable Push
+                        Notifications</button>
+                    <button onclick="testPushAlert()"
+                        class="btn btn-success text-lg px-8 shadow-lg shadow-emerald-500/20 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z">
+                            </path>
+                        </svg>
                         Test Sound Alarm
                     </button>
                 </div>
-                <div id="sub-status" class="bg-green-500/10 border border-green-500/50 text-green-400 text-sm p-3 rounded-lg mt-4 max-w-sm mx-auto hidden font-medium"></div>
+                <div id="sub-status"
+                    class="bg-green-500/10 border border-green-500/50 text-green-400 text-sm p-3 rounded-lg mt-4 max-w-sm mx-auto hidden font-medium">
+                </div>
             </div>
 
             <!-- Super Admin Section -->
             <div id="admin-section" class="glass-card p-6 hidden">
                 <div class="flex items-center gap-3 mb-6 border-b border-slate-700 pb-4">
                     <div class="w-10 h-10 bg-purple-500/20 text-purple-400 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                            </path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
                     </div>
-                    <h2 class="text-xl font-bold text-white">Global Bot Configuration <span class="text-xs font-normal bg-purple-500/20 text-purple-300 px-2 py-1 rounded ml-2">Super Admin</span></h2>
+                    <h2 class="text-xl font-bold text-white">Global Monitor Configuration <span
+                            class="text-xs font-normal bg-purple-500/20 text-purple-300 px-2 py-1 rounded ml-2">Super
+                            Admin</span></h2>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -189,13 +281,27 @@
                     <div class="space-y-1">
                         <label class="block text-sm font-medium text-slate-400">Holidays</label>
                         <div class="flex flex-wrap gap-2 mt-1" id="cfg-holi-container">
-                            <label class="inline-flex items-center"><input type="checkbox" value="MON" class="form-checkbox text-brand-500 rounded bg-slate-800 border-slate-600"><span class="ml-1 text-xs">MON</span></label>
-                            <label class="inline-flex items-center"><input type="checkbox" value="TUE" class="form-checkbox text-brand-500 rounded bg-slate-800 border-slate-600"><span class="ml-1 text-xs">TUE</span></label>
-                            <label class="inline-flex items-center"><input type="checkbox" value="WED" class="form-checkbox text-brand-500 rounded bg-slate-800 border-slate-600"><span class="ml-1 text-xs">WED</span></label>
-                            <label class="inline-flex items-center"><input type="checkbox" value="THU" class="form-checkbox text-brand-500 rounded bg-slate-800 border-slate-600"><span class="ml-1 text-xs">THU</span></label>
-                            <label class="inline-flex items-center"><input type="checkbox" value="FRI" class="form-checkbox text-brand-500 rounded bg-slate-800 border-slate-600"><span class="ml-1 text-xs">FRI</span></label>
-                            <label class="inline-flex items-center"><input type="checkbox" value="SAT" class="form-checkbox text-brand-500 rounded bg-slate-800 border-slate-600"><span class="ml-1 text-xs">SAT</span></label>
-                            <label class="inline-flex items-center"><input type="checkbox" value="SUN" class="form-checkbox text-brand-500 rounded bg-slate-800 border-slate-600"><span class="ml-1 text-xs">SUN</span></label>
+                            <label class="inline-flex items-center"><input type="checkbox" value="MON"
+                                    class="form-checkbox text-brand-500 rounded bg-slate-800 border-slate-600"><span
+                                    class="ml-1 text-xs">MON</span></label>
+                            <label class="inline-flex items-center"><input type="checkbox" value="TUE"
+                                    class="form-checkbox text-brand-500 rounded bg-slate-800 border-slate-600"><span
+                                    class="ml-1 text-xs">TUE</span></label>
+                            <label class="inline-flex items-center"><input type="checkbox" value="WED"
+                                    class="form-checkbox text-brand-500 rounded bg-slate-800 border-slate-600"><span
+                                    class="ml-1 text-xs">WED</span></label>
+                            <label class="inline-flex items-center"><input type="checkbox" value="THU"
+                                    class="form-checkbox text-brand-500 rounded bg-slate-800 border-slate-600"><span
+                                    class="ml-1 text-xs">THU</span></label>
+                            <label class="inline-flex items-center"><input type="checkbox" value="FRI"
+                                    class="form-checkbox text-brand-500 rounded bg-slate-800 border-slate-600"><span
+                                    class="ml-1 text-xs">FRI</span></label>
+                            <label class="inline-flex items-center"><input type="checkbox" value="SAT"
+                                    class="form-checkbox text-brand-500 rounded bg-slate-800 border-slate-600"><span
+                                    class="ml-1 text-xs">SAT</span></label>
+                            <label class="inline-flex items-center"><input type="checkbox" value="SUN"
+                                    class="form-checkbox text-brand-500 rounded bg-slate-800 border-slate-600"><span
+                                    class="ml-1 text-xs">SUN</span></label>
                         </div>
                     </div>
                     <div class="space-y-1">
@@ -216,35 +322,57 @@
                     </div>
                 </div>
 
-                <div class="flex flex-col sm:flex-row justify-between items-center mt-8 bg-slate-800/50 p-4 rounded-xl border border-slate-700">
+                <div
+                    class="flex flex-col sm:flex-row justify-between items-center mt-8 bg-slate-800/50 p-4 rounded-xl border border-slate-700">
                     <label class="flex items-center gap-3 cursor-pointer group">
                         <div class="relative">
                             <input type="checkbox" id="cfg-active" class="sr-only">
-                            <div class="block bg-slate-700 w-14 h-8 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out"></div>
-                            <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition transform duration-200 ease-in-out shadow-sm"></div>
+                            <div
+                                class="block bg-slate-700 w-14 h-8 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out">
+                            </div>
+                            <div
+                                class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition transform duration-200 ease-in-out shadow-sm">
+                            </div>
                         </div>
                         <div class="flex flex-col">
-                            <span class="text-sm font-bold text-white group-hover:text-brand-400 transition-colors">Master Scraper Switch</span>
+                            <span
+                                class="text-sm font-bold text-white group-hover:text-brand-400 transition-colors">Master
+                                Scraper Switch</span>
                             <span class="text-xs text-slate-400">Toggles the backend fan-out bot</span>
                         </div>
                     </label>
                     <label class="flex items-center gap-3 cursor-pointer group ml-0 sm:ml-6 mt-4 sm:mt-0">
                         <div class="relative">
                             <input type="checkbox" id="cfg-demo" class="sr-only">
-                            <div class="block bg-slate-700 w-14 h-8 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out"></div>
-                            <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition transform duration-200 ease-in-out shadow-sm"></div>
+                            <div
+                                class="block bg-slate-700 w-14 h-8 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out">
+                            </div>
+                            <div
+                                class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition transform duration-200 ease-in-out shadow-sm">
+                            </div>
                         </div>
                         <div class="flex flex-col">
-                            <span class="text-sm font-bold text-white group-hover:text-yellow-400 transition-colors">Demo Mode</span>
+                            <span
+                                class="text-sm font-bold text-white group-hover:text-yellow-400 transition-colors">Demo
+                                Mode</span>
                             <span class="text-xs text-slate-400">Fakes finding a slot instantly</span>
                         </div>
                     </label>
                     <style>
-                        input:checked ~ .block { background-color: #10b981; }
-                        input:checked ~ .dot { transform: translateX(100%); }
+                        input:checked~.block {
+                            background-color: #10b981;
+                        }
+
+                        input:checked~.dot {
+                            transform: translateX(100%);
+                        }
                     </style>
-                    <button onclick="saveConfig()" class="btn btn-success mt-4 sm:mt-0 w-full sm:w-auto flex items-center justify-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    <button onclick="saveConfig()"
+                        class="btn btn-success mt-4 sm:mt-0 w-full sm:w-auto flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
                         Save Configuration
                     </button>
                 </div>
@@ -254,9 +382,15 @@
             <div id="scraper-accounts-section" class="glass-card p-6 hidden">
                 <div class="flex items-center gap-3 mb-6 border-b border-slate-700 pb-4">
                     <div class="w-10 h-10 bg-indigo-500/20 text-indigo-400 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                            </path>
+                        </svg>
                     </div>
-                    <h2 class="text-xl font-bold text-white">Scraper Accounts <span class="text-xs font-normal bg-purple-500/20 text-purple-300 px-2 py-1 rounded ml-2">Super Admin</span></h2>
+                    <h2 class="text-xl font-bold text-white">Scraper Accounts <span
+                            class="text-xs font-normal bg-purple-500/20 text-purple-300 px-2 py-1 rounded ml-2">Super
+                            Admin</span></h2>
                 </div>
 
                 <div class="mb-6">
@@ -264,14 +398,17 @@
                     <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                         <div class="flex-1 space-y-1 w-full">
                             <label class="block text-sm font-medium text-slate-400">Portal Username (Email)</label>
-                            <input type="email" id="new-scraper-email" class="premium-input w-full" placeholder="mnoon2404@gmail.com">
+                            <input type="email" id="new-scraper-email" class="premium-input w-full"
+                                placeholder="mnoon2404@gmail.com">
                         </div>
                         <div class="flex-1 space-y-1 w-full">
                             <label class="block text-sm font-medium text-slate-400">Portal Password</label>
-                            <input type="password" id="new-scraper-pass" class="premium-input w-full" placeholder="••••••••">
+                            <input type="password" id="new-scraper-pass" class="premium-input w-full"
+                                placeholder="••••••••">
                         </div>
                         <div class="mt-2 sm:mt-5 w-full sm:w-auto">
-                            <button onclick="createScraperAccount()" class="btn btn-primary w-full whitespace-nowrap">Add Account</button>
+                            <button onclick="createScraperAccount()"
+                                class="btn btn-primary w-full whitespace-nowrap">Add Account</button>
                         </div>
                     </div>
                 </div>
@@ -297,22 +434,50 @@
                 <div class="flex items-center justify-between p-4 border-b border-slate-700/50 bg-slate-800/30">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 bg-slate-700 rounded-lg flex items-center justify-center text-slate-400">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M4 17h16a2 2 0 002-2V9a2 2 0 00-2-2H4a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 9l3 3-3 3m5 0h3M4 17h16a2 2 0 002-2V9a2 2 0 00-2-2H4a2 2 0 00-2 2v6a2 2 0 002 2z">
+                                </path>
+                            </svg>
                         </div>
                         <h2 class="text-lg font-bold text-white">Live Terminal Output</h2>
                     </div>
                     <div class="flex items-center gap-3">
-                        <button id="btn-quick-toggle" onclick="quickToggleBot()" class="btn bg-slate-700 hover:bg-slate-600 text-sm flex items-center gap-2 transition-colors duration-200">
+                        <button onclick="copyLogs()"
+                            class="btn bg-slate-700 hover:bg-slate-600 text-sm flex items-center gap-2 transition-colors duration-200">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                            Copy Logs
+                        </button>
+                        <button onclick="clearLogs()"
+                            class="btn bg-slate-700 hover:bg-slate-600 text-sm flex items-center gap-2 transition-colors duration-200">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                </path>
+                            </svg>
+                            Clear Logs
+                        </button>
+                        <button id="btn-quick-toggle" onclick="quickToggleBot()"
+                            class="btn bg-slate-700 hover:bg-slate-600 text-sm flex items-center gap-2 transition-colors duration-200">
                             <span id="quick-toggle-icon">⏸️</span>
                             <span id="quick-toggle-text">Pause Bot</span>
                         </button>
                         <button onclick="triggerBot()" class="btn btn-primary text-sm flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
                             Force Run Now
                         </button>
                     </div>
                 </div>
-                <div id="terminal-output" class="flex-grow bg-slate-950 rounded border border-slate-800 p-4 font-mono text-sm text-green-400 overflow-y-auto" style="height: 300px; max-height: 300px;">
+                <div id="terminal-output"
+                    class="flex-grow bg-slate-950 rounded border border-slate-800 p-4 font-mono text-sm text-green-400 overflow-y-auto"
+                    style="height: 300px; max-height: 300px;">
                     <!-- Logs will be injected here -->
                     <div>[SYSTEM] Terminal Ready. Awaiting Bot Output...</div>
                 </div>
@@ -322,29 +487,43 @@
             <div id="tenant-admin-section" class="glass-card p-6 hidden mt-6">
                 <div class="flex items-center gap-3 mb-6 border-b border-slate-700 pb-4">
                     <div class="w-10 h-10 bg-blue-500/20 text-blue-400 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                            </path>
+                        </svg>
                     </div>
-                    <h2 class="text-xl font-bold text-white">Staff Management <span class="text-xs font-normal bg-blue-500/20 text-blue-300 px-2 py-1 rounded ml-2">Tenant Admin</span></h2>
+                    <h2 class="text-xl font-bold text-white">Staff Management <span
+                            class="text-xs font-normal bg-blue-500/20 text-blue-300 px-2 py-1 rounded ml-2">Tenant
+                            Admin</span></h2>
                 </div>
-                
+
                 <div class="mb-4">
                     <h3 class="text-lg font-semibold text-white mb-2">Create New Staff</h3>
                     <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                         <div class="flex-1 space-y-1 w-full">
                             <label class="block text-sm font-medium text-slate-400">Staff Email</label>
-                            <input type="email" id="new-user-email" class="premium-input w-full" placeholder="staff@agency.com">
+                            <input type="email" id="new-user-email" class="premium-input w-full"
+                                placeholder="staff@agency.com">
                         </div>
                         <div class="flex-1 space-y-1 w-full">
                             <label class="block text-sm font-medium text-slate-400">Temporary Password</label>
-                            <input type="password" id="new-user-pass" class="premium-input w-full" placeholder="••••••••">
+                            <input type="password" id="new-user-pass" class="premium-input w-full"
+                                placeholder="••••••••">
                         </div>
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-2 sm:mt-5 w-full sm:w-auto">
+                        <div
+                            class="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-2 sm:mt-5 w-full sm:w-auto">
                             <label class="flex items-center text-sm text-slate-300 cursor-pointer whitespace-nowrap">
-                                <input type="checkbox" id="new-staff-captcha" class="form-checkbox text-brand-500 rounded bg-slate-800 border-slate-600 mr-2"> 
+                                <input type="checkbox" id="new-staff-captcha"
+                                    class="form-checkbox text-brand-500 rounded bg-slate-800 border-slate-600 mr-2">
                                 Allow solving Captcha
                             </label>
-                            <button onclick="addStaff()" class="btn btn-primary w-full sm:w-auto flex items-center justify-center gap-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            <button onclick="addStaff()"
+                                class="btn btn-primary w-full sm:w-auto flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4v16m8-8H4"></path>
+                                </svg>
                                 Add Staff Member
                             </button>
                         </div>
@@ -357,11 +536,17 @@
                     <h3 class="text-lg font-semibold text-white mb-4">Broadcast to Staff</h3>
                     <div class="flex flex-col sm:flex-row gap-4">
                         <div class="flex-1 space-y-1">
-                            <input type="text" id="broadcast-msg" class="premium-input" placeholder="Type a message to push to all staff...">
+                            <input type="text" id="broadcast-msg" class="premium-input"
+                                placeholder="Type a message to push to all staff...">
                         </div>
                         <div class="flex items-end">
-                            <button onclick="broadcastAlert()" class="btn bg-indigo-500 hover:bg-indigo-600 text-white w-full sm:w-auto flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
+                            <button onclick="broadcastAlert()"
+                                class="btn bg-indigo-500 hover:bg-indigo-600 text-white w-full sm:w-auto flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z">
+                                    </path>
+                                </svg>
                                 Send Broadcast Alert
                             </button>
                         </div>
@@ -389,29 +574,44 @@
             <div id="super-admin-tenants-section" class="glass-card p-6 hidden">
                 <div class="flex items-center gap-3 mb-6 border-b border-slate-700 pb-4">
                     <div class="w-10 h-10 bg-orange-500/20 text-orange-400 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                            </path>
+                        </svg>
                     </div>
-                    <h2 class="text-xl font-bold text-white">Tenant Management <span class="text-xs font-normal bg-orange-500/20 text-orange-300 px-2 py-1 rounded ml-2">Super Admin</span></h2>
+                    <h2 class="text-xl font-bold text-white">Tenant Management <span
+                            class="text-xs font-normal bg-orange-500/20 text-orange-300 px-2 py-1 rounded ml-2">Super
+                            Admin</span></h2>
                 </div>
-                
-                <p class="text-slate-400 text-sm mb-6">Create and manage client Tenants. Creating a Tenant automatically creates their primary Admin account.</p>
 
-                <div class="flex flex-col sm:flex-row gap-4 mb-8 bg-slate-800/30 p-4 rounded-xl border border-slate-700/50">
+                <p class="text-slate-400 text-sm mb-6">Create and manage client Tenants. Creating a Tenant automatically
+                    creates their primary Admin account.</p>
+
+                <div
+                    class="flex flex-col sm:flex-row gap-4 mb-8 bg-slate-800/30 p-4 rounded-xl border border-slate-700/50">
                     <div class="flex-1 space-y-1">
                         <label class="block text-xs font-medium text-slate-400">Company Name</label>
-                        <input type="text" id="new-tenant-name" class="premium-input text-sm" placeholder="e.g. Visa Experts">
+                        <input type="text" id="new-tenant-name" class="premium-input text-sm"
+                            placeholder="e.g. Visa Experts">
                     </div>
                     <div class="flex-1 space-y-1">
                         <label class="block text-xs font-medium text-slate-400">Admin Email</label>
-                        <input type="email" id="new-tenant-email" class="premium-input text-sm" placeholder="admin@visa.com">
+                        <input type="email" id="new-tenant-email" class="premium-input text-sm"
+                            placeholder="admin@visa.com">
                     </div>
                     <div class="flex-1 space-y-1">
                         <label class="block text-xs font-medium text-slate-400">Admin Password</label>
-                        <input type="password" id="new-tenant-pass" class="premium-input text-sm" placeholder="••••••••">
+                        <input type="password" id="new-tenant-pass" class="premium-input text-sm"
+                            placeholder="••••••••">
                     </div>
                     <div class="flex items-end">
-                        <button onclick="addTenant()" class="btn bg-orange-500 hover:bg-orange-600 text-white w-full sm:w-auto flex items-center justify-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        <button onclick="addTenant()"
+                            class="btn bg-orange-500 hover:bg-orange-600 text-white w-full sm:w-auto flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4v16m8-8H4"></path>
+                            </svg>
                             Create Tenant
                         </button>
                     </div>
@@ -442,11 +642,16 @@
     </div>
 
     <!-- Edit User Modal -->
-    <div id="edit-user-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm hidden transition-opacity">
+    <div id="edit-user-modal"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm hidden transition-opacity">
         <div class="glass-card w-full max-w-sm p-6 shadow-2xl border border-slate-700/50">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-bold text-white">Edit Staff Member</h3>
-                <button onclick="closeEditUserModal()" class="text-slate-400 hover:text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                <button onclick="closeEditUserModal()" class="text-slate-400 hover:text-white"><svg class="w-6 h-6"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg></button>
             </div>
             <input type="hidden" id="edit-user-id">
             <div class="space-y-4">
@@ -455,7 +660,8 @@
                     <input type="email" id="edit-user-email" class="premium-input" placeholder="staff@agency.com">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-400 mb-1">New Password (leave blank to keep current)</label>
+                    <label class="block text-sm font-medium text-slate-400 mb-1">New Password (leave blank to keep
+                        current)</label>
                     <input type="password" id="edit-user-password" class="premium-input" placeholder="••••••••">
                 </div>
                 <div id="edit-user-role-group" class="hidden">
@@ -467,7 +673,8 @@
                     </select>
                 </div>
                 <label class="flex items-center text-sm text-slate-300 cursor-pointer pt-2">
-                    <input type="checkbox" id="edit-user-captcha" class="form-checkbox text-brand-500 rounded bg-slate-800 border-slate-600 mr-2"> 
+                    <input type="checkbox" id="edit-user-captcha"
+                        class="form-checkbox text-brand-500 rounded bg-slate-800 border-slate-600 mr-2">
                     Allow solving Captcha
                 </label>
                 <button onclick="updateUser()" class="btn btn-primary w-full mt-2">Save Changes</button>
@@ -476,11 +683,16 @@
     </div>
 
     <!-- Edit Tenant Modal -->
-    <div id="edit-tenant-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm hidden transition-opacity">
+    <div id="edit-tenant-modal"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm hidden transition-opacity">
         <div class="glass-card w-full max-w-sm p-6 shadow-2xl border border-slate-700/50">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-bold text-white">Edit Tenant</h3>
-                <button onclick="closeEditTenantModal()" class="text-slate-400 hover:text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                <button onclick="closeEditTenantModal()" class="text-slate-400 hover:text-white"><svg class="w-6 h-6"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg></button>
             </div>
             <input type="hidden" id="edit-tenant-id">
             <div class="space-y-4">
@@ -502,42 +714,63 @@
     </div>
 
     <!-- Captcha Challenge Modal -->
-    <div id="captcha-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md hidden transition-opacity">
-        <div class="glass-card w-full max-w-md p-8 text-center shadow-[0_0_50px_rgba(239,68,68,0.2)] border border-red-500/50 transform transition-all scale-95 opacity-0" id="captcha-modal-content">
-            <div class="w-16 h-16 bg-red-500/20 text-red-400 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg animate-pulse">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+    <div id="captcha-modal"
+        class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md hidden transition-opacity">
+        <div class="glass-card w-full max-w-md p-8 text-center shadow-[0_0_50px_rgba(239,68,68,0.2)] border border-red-500/50 transform transition-all scale-95 opacity-0"
+            id="captcha-modal-content">
+            <div
+                class="w-16 h-16 bg-red-500/20 text-red-400 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg animate-pulse">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                    </path>
+                </svg>
             </div>
             <h3 class="text-2xl font-bold text-white mb-2">Manual Captcha Required!</h3>
-            <p class="text-slate-300 text-sm mb-6">The bot is currently paused and waiting for you to solve this Captcha to proceed with the booking.</p>
-            
+            <p class="text-slate-300 text-sm mb-6">The bot is currently paused and waiting for you to solve this Captcha
+                to proceed with the booking.</p>
+
             <div class="flex justify-center mb-6">
                 <!-- reCaptcha Widget Container -->
                 <div id="recaptcha-container"></div>
             </div>
-            
-            <button onclick="cancelCaptcha()" class="btn bg-slate-800 hover:bg-slate-700 text-slate-300 w-full mb-4 border border-slate-700 transition-colors">
+
+            <button onclick="cancelCaptcha()"
+                class="btn bg-slate-800 hover:bg-slate-700 text-slate-300 w-full mb-4 border border-slate-700 transition-colors">
                 Skip & Cancel Bot Run
             </button>
-            
-            <p class="text-xs text-slate-500">Do not refresh the page. The bot will automatically resume once solved.</p>
+
+            <p class="text-xs text-slate-500">Do not refresh the page. The bot will automatically resume once solved.
+            </p>
         </div>
     </div>
 
     <!-- PWA Install Modal -->
-    <div id="pwa-install-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm hidden transition-opacity">
-        <div class="glass-card w-full max-w-sm p-6 text-center shadow-2xl border border-slate-700/50 transform transition-all scale-95 opacity-0" id="pwa-modal-content">
-            <div class="w-16 h-16 bg-gradient-to-tr from-brand-600 to-brand-400 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg shadow-brand-500/40">
-                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+    <div id="pwa-install-modal"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm hidden transition-opacity">
+        <div class="glass-card w-full max-w-sm p-6 text-center shadow-2xl border border-slate-700/50 transform transition-all scale-95 opacity-0"
+            id="pwa-modal-content">
+            <div
+                class="w-16 h-16 bg-gradient-to-tr from-brand-600 to-brand-400 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg shadow-brand-500/40">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                </svg>
             </div>
             <h3 class="text-xl font-bold text-white mb-2">Install Kamal Express</h3>
-            <p class="text-slate-400 text-sm mb-6">Install our app on your device for instant access and native push notifications without opening your browser.</p>
+            <p class="text-slate-400 text-sm mb-6">Install our app on your device for instant access and native push
+                notifications without opening your browser.</p>
             <div class="flex flex-col gap-3">
-                <button id="btn-pwa-install" class="btn btn-primary w-full shadow-lg shadow-brand-500/20">Install App</button>
-                <button id="btn-pwa-dismiss" class="btn bg-slate-800 hover:bg-slate-700 text-slate-300 w-full transition-colors border border-slate-700">Maybe Later</button>
+                <button id="btn-pwa-install" class="btn btn-primary w-full shadow-lg shadow-brand-500/20">Install
+                    App</button>
+                <button id="btn-pwa-dismiss"
+                    class="btn bg-slate-800 hover:bg-slate-700 text-slate-300 w-full transition-colors border border-slate-700">Maybe
+                    Later</button>
             </div>
         </div>
     </div>
 
     <script src="/js/app.js?v=11"></script>
 </body>
+
 </html>

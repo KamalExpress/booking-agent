@@ -90,7 +90,7 @@ class SlotMonitorEngine(threading.Thread):
             try:
                 config = db.query(MonitorConfig).first()
                 if not config or not config.is_active:
-                    logging.debug("Monitor is inactive or not configured. Sleeping for 30s...")
+                    logging.info("Monitor is inactive or not configured. Sleeping for 30s...")
                     self._wake_event.wait(30)
                     self._wake_event.clear()
                     continue

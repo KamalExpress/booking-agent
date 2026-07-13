@@ -938,3 +938,30 @@ async function deleteScraperAccount(id) {
     }
 }
 
+async function clearLogs() {
+    try {
+        const res = await fetch("/api/monitor/logs", {
+            method: "DELETE",
+            headers: { "Authorization": "Bearer " + localStorage.getItem("token") }
+        });
+        if (res.ok) {
+            const outputDiv = document.getElementById("terminal-output");
+            if(outputDiv) outputDiv.innerHTML = "<div>[SYSTEM] Terminal logs cleared.</div>";
+        }
+    } catch (e) {
+        console.error("Failed to clear logs:", e);
+    }
+}
+
+function copyLogs() {
+    const outputDiv = document.getElementById("terminal-output");
+    if (outputDiv) {
+        const logs = Array.from(outputDiv.children).map(child => child.innerText).join('\\n');
+        navigator.clipboard.writeText(logs).then(() => {
+            alert("Logs copied to clipboard!");
+        }).catch(err => {
+            alert("Failed to copy logs: " + err);
+        });
+    }
+}
+

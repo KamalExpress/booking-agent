@@ -444,6 +444,11 @@ def get_monitor_logs(limit: Optional[int] = 200, current_user: User = Depends(re
         return logs[-limit:]
     return logs
 
+@app.delete("/api/monitor/logs")
+def clear_monitor_logs(current_user: User = Depends(require_tenant_admin)):
+    cloud_log_handler.log_queue.clear()
+    return {"status": "success"}
+
 @app.post("/api/monitor/trigger")
 def trigger_bot(current_user: User = Depends(require_tenant_admin)):
     global monitor_thread
