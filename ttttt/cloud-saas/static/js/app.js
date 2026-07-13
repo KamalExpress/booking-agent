@@ -687,6 +687,7 @@ function showCaptchaModal(sitekey) {
                 if (captchaWidgetId !== null) {
                     window.grecaptcha.reset(captchaWidgetId);
                 } else {
+                    container.innerHTML = ''; // Clear any failed render garbage
                     captchaWidgetId = window.grecaptcha.render('recaptcha-container', {
                         'sitekey': sitekey,
                         'callback': onCaptchaSolved
