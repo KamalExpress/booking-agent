@@ -4,6 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
+from cryptography.fernet import Fernet
+import tempfile
 
 import os
 import sys
@@ -15,7 +17,17 @@ from core.slot_monitor import SlotMonitorEngine
 
 VAPID_PUBLIC_KEY = os.getenv("VAPID_PUBLIC_KEY", "BPiJHAyOHhUN-lfs6ZZbCsJxG0044_Hk7w2ezWWKxRW1NPPCq4OdT_WGakDn6__jhpPtrc0nWLtpYThZk3fIBOM")
 _vapid_env = os.getenv("VAPID_PRIVATE_KEY")
-VAPID_PRIVATE_KEY = _vapid_env.replace('\\n', '\n') if _vapid_env else os.path.join(os.path.dirname(os.path.dirname(__file__)), "private_key.pem")
+if _vapid_env and "-----BEGIN PRIVATE KEY-----" in _vapid_env:
+    # pywebpush requires a file path for PEM keys, not the raw string
+    pem_data = _vapid_env.replace('\\n', '\n')
+    temp_pem_path = os.path.join(tempfile.gettempdir(), "vapid_private_key.pem")
+    with open(temp_pem_path, "w") as f:
+        f.write(pem_data)
+    VAPID_PRIVATE_KEY = temp_pem_path
+elif _vapid_env:
+    VAPID_PRIVATE_KEY = _vapid_env.replace('\\n', '\n')
+else:
+    VAPID_PRIVATE_KEY = os.path.join(os.path.dirname(os.path.dirname(__file__)), "private_key.pem")
 
 app = FastAPI(title="Kamal Express SaaS Backend")
 
