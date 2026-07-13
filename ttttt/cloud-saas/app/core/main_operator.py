@@ -65,6 +65,13 @@ class OperatorAgent:
         
         captcha_token = self.captcha_service.solve(self.sitekey, f"{self.base_url}/login", session=self.session)
         
+        # Intelligent fallback to Manual mode if Auto mode fails
+        if not captcha_token and self.captcha_service.__class__.__name__ == 'NopeChaService':
+            logging.warning("NopeCha Auto-solver failed! Falling back to Manual Captcha Delegation...")
+            from core.captcha_service import CloudManualCaptchaService
+            manual_svc = CloudManualCaptchaService()
+            captcha_token = manual_svc.solve(self.sitekey, f"{self.base_url}/login", session=self.session)
+        
         url = f"{self.base_url}/api/v1/auth/login"
         payload = {
             "username": self.username,
@@ -144,6 +151,13 @@ class OperatorAgent:
         logging.info("Submitting final booking request...")
         
         captcha_token = self.captcha_service.solve(self.sitekey, f"{self.base_url}/appointments/add", session=self.session)
+        
+        # Intelligent fallback to Manual mode if Auto mode fails
+        if not captcha_token and self.captcha_service.__class__.__name__ == 'NopeChaService':
+            logging.warning("NopeCha Auto-solver failed! Falling back to Manual Captcha Delegation...")
+            from core.captcha_service import CloudManualCaptchaService
+            manual_svc = CloudManualCaptchaService()
+            captcha_token = manual_svc.solve(self.sitekey, f"{self.base_url}/appointments/add", session=self.session)
         
         # We will assume standard form submission endpoint or API endpoint
         url = f"{self.base_url}/appointments/add"
