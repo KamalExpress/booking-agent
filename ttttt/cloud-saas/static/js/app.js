@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 localStorage.setItem("token", data.access_token);
                 localStorage.setItem("role", data.role);
                 localStorage.setItem("can_solve_captcha", data.can_solve_captcha);
+                localStorage.setItem("email", email);
                 checkAuth();
             } else {
                 errDiv.textContent = data.detail || "Login failed";
@@ -43,10 +44,16 @@ document.addEventListener("DOMContentLoaded", () => {
 function checkAuth() {
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
+    const email = localStorage.getItem("email");
     
     if (token) {
         document.getElementById("login-view").classList.add("hidden");
         document.getElementById("dashboard-view").classList.remove("hidden");
+        
+        const userDisplay = document.getElementById("logged-in-user");
+        if (userDisplay && email) {
+            userDisplay.textContent = `Logged in as: ${email}`;
+        }
         
         // Reset all admin UI blocks to hidden before evaluating role
         if (document.getElementById("admin-section")) document.getElementById("admin-section").classList.add("hidden");
@@ -83,6 +90,8 @@ function logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
     localStorage.removeItem("can_solve_captcha");
+    localStorage.removeItem("email");
+    stopBackgroundPolling();
     checkAuth();
 }
 

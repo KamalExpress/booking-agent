@@ -450,6 +450,7 @@ def broadcast_push_alert(req: BroadcastRequest, current_user: User = Depends(req
     user_ids = [u.id for u in users]
     subs = db.query(PushSubscription).filter(PushSubscription.user_id.in_(user_ids)).all()
     
+    logger.info(f"Broadcast Alert: Sending to {len(subs)} devices across {len(users)} users.")
     success_count = 0
     for sub in subs:
         try:
@@ -465,8 +466,10 @@ def broadcast_push_alert(req: BroadcastRequest, current_user: User = Depends(req
             )
             success_count += 1
         except Exception as e:
-            print("Failed to broadcast push:", e)
-    return {"status": "success", "sent": success_count}
+            logger.error(f"Failed to broadcast push to endpoint {sub.endpoint[:30]}... Error: {str(e)}")
+    
+    logger.info(f"Broadcast Complete: Successfully sent to {success_count} out of {len(subs)} devices.")
+    return {"status": "success", "sent": success_count, "total_devices": len(subs), "total_users": len(users)}
 
 @app.post("/api/push/test")
 def test_push_alert(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
