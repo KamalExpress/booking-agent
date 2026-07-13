@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Kamal Express - Captcha Spoof",
+  "version": "1.0.0",
+  "description": "Spoofs Origin and Referer headers for manual Captcha solving on the SaaS Dashboard.",
+  "permissions": [
+    "declarativeNetRequest"
+  ],
+  "host_permissions": [
+    "*://www.google.com/recaptcha/*"
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset_1",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  }
+}

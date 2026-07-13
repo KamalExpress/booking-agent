@@ -1,0 +1,33 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "Origin",
+          "operation": "set",
+          "value": "https://pk-gr-services.gvcworld.eu"
+        },
+        {
+          "header": "Referer",
+          "operation": "set",
+          "value": "https://pk-gr-services.gvcworld.eu/"
+        }
+      ]
+    },
+    "condition": {
+      "urlFilter": "*://www.google.com/recaptcha/*",
+      "initiatorDomains": [
+        "keagent.alamiaconnect.com",
+        "localhost"
+      ],
+      "resourceTypes": [
+        "sub_frame",
+        "script",
+        "xmlhttprequest"
+      ]
+    }
+  }
+]
