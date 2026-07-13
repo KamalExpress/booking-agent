@@ -19,8 +19,7 @@ ENV PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium
 
 COPY app/ ./app/
 COPY static/ ./static/
-# Include the generated VAPID private key
-COPY private_key.pem ./
+# Include the generated VAPID private key via environment variable instead of file
 
 EXPOSE 8000
 
