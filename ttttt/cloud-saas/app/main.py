@@ -57,6 +57,7 @@ import logging
 # Attach cloud log handler to the root logger
 logging.getLogger().addHandler(cloud_log_handler)
 logging.getLogger().setLevel(logging.INFO)
+logger = logging.getLogger(__name__)
 
 @app.on_event("startup")
 def startup_event():
