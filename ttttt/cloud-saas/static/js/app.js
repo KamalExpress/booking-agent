@@ -682,19 +682,21 @@ function showCaptchaModal(sitekey) {
     const container = document.getElementById("recaptcha-container");
     
     if (window.grecaptcha) {
-        try {
-            if (captchaWidgetId !== null) {
-                window.grecaptcha.reset(captchaWidgetId);
-            } else {
-                captchaWidgetId = window.grecaptcha.render('recaptcha-container', {
-                    'sitekey': sitekey,
-                    'callback': onCaptchaSolved
-                });
+        window.grecaptcha.ready(function() {
+            try {
+                if (captchaWidgetId !== null) {
+                    window.grecaptcha.reset(captchaWidgetId);
+                } else {
+                    captchaWidgetId = window.grecaptcha.render('recaptcha-container', {
+                        'sitekey': sitekey,
+                        'callback': onCaptchaSolved
+                    });
+                }
+            } catch (e) {
+                console.error("Failed to render recaptcha:", e);
+                container.innerHTML = `<div class="text-red-500 bg-red-500/10 border border-red-500/50 p-4 rounded text-sm text-left"><b>Widget Render Error:</b><br>${e.message}<br><br><small>If you see 'Invalid site key', double check your API configuration. Ensure the domain is whitelisted in Google reCAPTCHA v2 settings.</small></div>`;
             }
-        } catch (e) {
-            console.error("Failed to render recaptcha:", e);
-            container.innerHTML = `<div class="text-red-500 bg-red-500/10 border border-red-500/50 p-4 rounded text-sm text-left"><b>Widget Render Error:</b><br>${e.message}<br><br><small>If you see 'Invalid site key', double check your API configuration. Ensure the domain is whitelisted in Google reCAPTCHA v2 settings.</small></div>`;
-        }
+        });
     } else {
         console.error("grecaptcha API not loaded!");
         container.innerHTML = `<div class="text-red-500 bg-red-500/10 border border-red-500/50 p-4 rounded text-sm text-left"><b>grecaptcha API Not Loaded!</b><br>The Google reCAPTCHA script failed to load. This could be due to:<br>- An AdBlocker blocking the script<br>- Network issues<br>- The container domain blocking external scripts</div>`;
