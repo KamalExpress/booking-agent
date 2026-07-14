@@ -2,20 +2,16 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install system dependencies including Chromium
-RUN apt-get update && apt-get install -y \
-    chromium \
-    chromium-driver \
+# Install standard tools needed for building dependencies if necessary
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-
-# Setting PLAYWRIGHT_BROWSERS_PATH=0 prevents Playwright from downloading massive browsers during install
-ENV PLAYWRIGHT_BROWSERS_PATH=0
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Set executable path for Playwright to use the system Chromium
-ENV PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium
+# Install Playwright's browser binaries and system dependencies natively
+RUN playwright install --with-deps chromium
 
 COPY app/ ./app/
 COPY static/ ./static/
