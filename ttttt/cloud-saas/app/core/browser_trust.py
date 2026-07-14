@@ -43,8 +43,13 @@ class BrowserTrustService:
             
             try:
                 # Apply stealth mode to bypass Incapsula headless bot detection
-                from playwright_stealth import stealth_sync
-                stealth_sync(page)
+                try:
+                    from playwright_stealth import Stealth
+                    Stealth().apply_stealth_sync(page)
+                except ImportError:
+                    # Fallback for older versions if they happen to be installed
+                    from playwright_stealth import stealth_sync
+                    stealth_sync(page)
                 
                 # 1. Navigate to the page
                 logging.info(f"[BrowserTrust] Navigating to {self.base_url}/login...")
