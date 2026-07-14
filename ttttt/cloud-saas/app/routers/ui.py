@@ -24,7 +24,7 @@ templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 @router.get("/", response_class=HTMLResponse)
 async def overview_page(request: Request, db: Session = Depends(get_db)):
     now = datetime.utcnow()
-    cutoff = now - timedelta(seconds=60)
+    cutoff = now - timedelta(seconds=WorkerNode.WORKER_TIMEOUT_SECONDS)
     
     # Active workers are those not banned/disabled AND have sent a heartbeat in the last 60s
     active_workers = db.query(WorkerNode).filter(
@@ -57,13 +57,8 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
 async def workers_page(request: Request, db: Session = Depends(get_db)):
     workers = db.query(WorkerNode).order_by(WorkerNode.last_heartbeat.desc()).all()
     
-    # Calculate online status (heartbeat < 60s ago since workers ping every 30s)
-    now = datetime.utcnow()
     for w in workers:
-        if w.last_heartbeat and (now - w.last_heartbeat).total_seconds() < 60:
-            w.is_online = True
-        else:
-            w.is_online = False
+        w.is_online = w.is_online # Uses the centralized property on the model
             
     return templates.TemplateResponse(
         request=request,

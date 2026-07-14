@@ -92,6 +92,14 @@ class WorkerNode(Base):
     status = Column(String, default="Active")
     created_at = Column(DateTime, default=datetime.utcnow)
 
+    WORKER_TIMEOUT_SECONDS = 60
+
+    @property
+    def is_online(self):
+        if not self.last_heartbeat:
+            return False
+        return (datetime.utcnow() - self.last_heartbeat).total_seconds() < self.WORKER_TIMEOUT_SECONDS
+
 class ScraperAccount(Base):
     __tablename__ = "scraper_accounts"
     id = Column(Integer, primary_key=True, index=True)
