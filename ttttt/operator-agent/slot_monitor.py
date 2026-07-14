@@ -7,6 +7,7 @@ from api_client import SaaSClient
 # Using existing main_operator since it handles session, WAF, proxies
 from main_operator import OperatorAgent
 from captcha_service import CapSolverService
+from config_manager import load_settings
 
 def generate_dates_between(start_str, end_str):
     date_format = "%d/%m/%Y"
@@ -55,7 +56,8 @@ class SlotMonitorEngine(threading.Thread):
                 logging.info(f"Received Assignment #{assignment_id} for center {visa_center}.")
                 
                 # Setup Agent
-                captcha_svc = CapSolverService()
+                settings = load_settings()
+                captcha_svc = CapSolverService(api_key=settings.get("CAPTCHA_API_KEY", ""))
                 agent = OperatorAgent(captcha_svc, username=account["username"], password=account["password"])
                 
                 # Make sure the session file matches the account so we don't mix cookies
@@ -107,6 +109,14 @@ class SlotMonitorEngine(threading.Thread):
                 
             except Exception as e:
                 logging.error(f"Worker Engine encountered error: {e}", exc_info=True)
+                
+                # Report exception to SaaS so it's not silent on the dashboard
+                try:
+                    # assignment_id might not be bound if exception happened early, default to None
+                    a_id = locals().get('assignment_id', None)
+                    self.api.log_event(a_id, "WORKER_ERROR", "error", {"error": str(e), "traceback": "Check local worker logs for full trace."})
+                except Exception as log_e:
+                    logging.error(f"Failed to push error log to SaaS: {log_e}")
                 
             # If we completed the assignment, wait a tiny bit before grabbing the next
             self._stop_event.wait(1)

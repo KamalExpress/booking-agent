@@ -75,6 +75,12 @@ class KamalExpressMonitorApp(ctk.CTk):
         
         self.btn_stop = ctk.CTkButton(self.controls_frame, text="Stop Worker", fg_color="red", hover_color="darkred", state="disabled", command=self.stop_monitor)
         self.btn_stop.pack(side="left", padx=20, pady=20)
+        
+        self.btn_copy = ctk.CTkButton(self.controls_frame, text="Copy Logs", fg_color="gray", hover_color="darkgray", command=self.copy_logs)
+        self.btn_copy.pack(side="left", padx=10, pady=20)
+        
+        self.btn_clear = ctk.CTkButton(self.controls_frame, text="Clear Logs", fg_color="gray", hover_color="darkgray", command=self.clear_logs)
+        self.btn_clear.pack(side="left", padx=10, pady=20)
 
         self.status_label = ctk.CTkLabel(self.controls_frame, text="Status: IDLE", text_color="gray")
         self.status_label.pack(side="right", padx=20, pady=20)
@@ -89,6 +95,15 @@ class KamalExpressMonitorApp(ctk.CTk):
 
     def change_appearance_mode_event(self, new_appearance_mode: str):
         ctk.set_appearance_mode(new_appearance_mode)
+        
+    def copy_logs(self):
+        self.clipboard_clear()
+        self.clipboard_append(self.log_textbox.get("0.0", "end"))
+        
+    def clear_logs(self):
+        self.log_textbox.configure(state="normal")
+        self.log_textbox.delete("0.0", "end")
+        self.log_textbox.configure(state="disabled")
 
     def setup_logging(self):
         handler = TextboxLogHandler(self.log_textbox)
