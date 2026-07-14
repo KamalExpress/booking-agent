@@ -86,6 +86,9 @@ class ScraperAccount(Base):
     username = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
+    status = Column(String, default="Idle")
+    last_login = Column(DateTime, nullable=True)
+    consecutive_failures = Column(Integer, default=0)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 def get_db():
