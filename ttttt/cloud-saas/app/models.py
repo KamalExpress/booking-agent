@@ -1,6 +1,6 @@
 import os
 import enum
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, DateTime, ForeignKey, Enum
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
@@ -92,13 +92,23 @@ class WorkerNode(Base):
     status = Column(String, default="Active")
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    WORKER_TIMEOUT_SECONDS = 60
+    HEARTBEAT_INTERVAL_SECONDS = 30
+    WORKER_TIMEOUT_SECONDS = 90
+
+    @property
+    def heartbeat_age(self):
+        if not self.last_heartbeat:
+            return None
+        # Use timezone.utc for timezone-aware calculations instead of utcnow()
+        now = datetime.now(timezone.utc).replace(tzinfo=None) # Keep naive comparison if DB is naive
+        return (now - self.last_heartbeat).total_seconds()
 
     @property
     def is_online(self):
-        if not self.last_heartbeat:
+        age = self.heartbeat_age
+        if age is None:
             return False
-        return (datetime.utcnow() - self.last_heartbeat).total_seconds() < self.WORKER_TIMEOUT_SECONDS
+        return age < self.WORKER_TIMEOUT_SECONDS
 
 class ScraperAccount(Base):
     __tablename__ = "scraper_accounts"

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, Depends, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import os
 from models import WorkerNode, Assignment, Lease, EventLog, ScraperAccount
@@ -23,7 +23,7 @@ templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
 @router.get("/", response_class=HTMLResponse)
 async def overview_page(request: Request, db: Session = Depends(get_db)):
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
     cutoff = now - timedelta(seconds=WorkerNode.WORKER_TIMEOUT_SECONDS)
     
     # Active workers are those not banned/disabled AND have sent a heartbeat in the last 60s
@@ -35,7 +35,7 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
     active_assignments = db.query(Assignment).filter(Assignment.status == 'Leased').count()
     
     # Slots found in last 24h
-    yesterday = datetime.utcnow() - timedelta(days=1)
+    yesterday = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=1)
     slots_found = db.query(EventLog).filter(
         EventLog.event_type == 'SLOT_FOUND',
         EventLog.created_at >= yesterday
