@@ -42,14 +42,20 @@ class BrowserTrustService:
             page = context.new_page()
             
             try:
-                # 1. Navigate and wait for Incapsula WAF evaluation
+                # 1. Navigate to the page
                 logging.info(f"[BrowserTrust] Navigating to {self.base_url}/login...")
-                page.goto(f"{self.base_url}/login", wait_until="networkidle")
+                # We don't use networkidle because Incapsula interstitial might trigger it early.
+                page.goto(f"{self.base_url}/login", timeout=30000)
+                
+                # Wait explicitly for the login form to appear (Incapsula might take several seconds to redirect)
+                logging.info("[BrowserTrust] Waiting for Incapsula challenge to clear (if any) and login form to appear...")
+                username_selector = 'input[name="username"], input[type="email"], input[id*="user"]'
+                page.wait_for_selector(username_selector, timeout=30000)
                 
                 # 2. Fill credentials naturally
                 logging.info("[BrowserTrust] Filling credentials...")
-                page.fill('input[name="username"], input[type="email"], input[id*="user"]', username, timeout=5000)
-                page.fill('input[name="password"], input[type="password"], input[id*="pass"]', password, timeout=5000)
+                page.fill(username_selector, username)
+                page.fill('input[name="password"], input[type="password"], input[id*="pass"]', password)
                 
                 # 3. Solve Captcha via CapSolver API
                 captcha_token = self._solve_capsolver(sitekey, page.url)
@@ -99,6 +105,16 @@ class BrowserTrustService:
                 
             except Exception as e:
                 logging.error(f"[BrowserTrust] Error during browser flow: {e}")
+                try:
+                    # Dump the HTML for debugging bot protection issues
+                    html = page.content()
+                    dump_path = os.path.join(os.path.dirname(__file__), "..", "..", "logs", f"waf_block_{int(time.time())}.html")
+                    os.makedirs(os.path.dirname(dump_path), exist_ok=True)
+                    with open(dump_path, 'w', encoding='utf-8') as f:
+                        f.write(html)
+                    logging.info(f"[BrowserTrust] Dumped WAF/Error HTML to {dump_path}")
+                except Exception as dump_err:
+                    logging.error(f"[BrowserTrust] Could not dump HTML: {dump_err}")
                 return None
             finally:
                 browser.close()
