@@ -29,13 +29,17 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
         EventLog.created_at >= yesterday
     ).count()
 
-    return templates.TemplateResponse("index.html", {
-        "request": request,
-        "active_page": "overview",
-        "active_workers": active_workers,
-        "active_assignments": active_assignments,
-        "slots_found": slots_found
-    })
+    return templates.TemplateResponse(
+        request=request,
+        name="index.html",
+        context={
+            "request": request,
+            "active_page": "overview",
+            "active_workers": active_workers,
+            "active_assignments": active_assignments,
+            "slots_found": slots_found
+        }
+    )
 
 @router.get("/workers", response_class=HTMLResponse)
 async def workers_page(request: Request, db: Session = Depends(get_db)):
@@ -49,11 +53,15 @@ async def workers_page(request: Request, db: Session = Depends(get_db)):
         else:
             w.is_online = False
             
-    return templates.TemplateResponse("workers.html", {
-        "request": request,
-        "active_page": "workers",
-        "workers": workers
-    })
+    return templates.TemplateResponse(
+        request=request,
+        name="workers.html",
+        context={
+            "request": request,
+            "active_page": "workers",
+            "workers": workers
+        }
+    )
 
 @router.get("/assignments", response_class=HTMLResponse)
 async def assignments_page(request: Request, db: Session = Depends(get_db)):
@@ -67,18 +75,26 @@ async def assignments_page(request: Request, db: Session = Depends(get_db)):
         lease = db.query(Lease).filter(Lease.assignment_id == asm.id).first()
         asm.leased_to_worker = lease.worker_id if lease else None
         
-    return templates.TemplateResponse("assignments.html", {
-        "request": request,
-        "active_page": "assignments",
-        "assignments": assignments
-    })
+    return templates.TemplateResponse(
+        request=request,
+        name="assignments.html",
+        context={
+            "request": request,
+            "active_page": "assignments",
+            "assignments": assignments
+        }
+    )
 
 @router.get("/logs", response_class=HTMLResponse)
 async def logs_page(request: Request, db: Session = Depends(get_db)):
     logs = db.query(EventLog).order_by(EventLog.id.desc()).limit(100).all()
     
-    return templates.TemplateResponse("logs.html", {
-        "request": request,
-        "active_page": "logs",
-        "logs": logs
-    })
+    return templates.TemplateResponse(
+        request=request,
+        name="logs.html",
+        context={
+            "request": request,
+            "active_page": "logs",
+            "logs": logs
+        }
+    )
