@@ -13,7 +13,8 @@ def init_db():
         for stmt in [
             "ALTER TABLE scraper_accounts ADD COLUMN status VARCHAR DEFAULT 'Idle'",
             "ALTER TABLE scraper_accounts ADD COLUMN last_login TIMESTAMP",
-            "ALTER TABLE scraper_accounts ADD COLUMN preferred_worker_id VARCHAR"
+            "ALTER TABLE scraper_accounts ADD COLUMN preferred_worker_id VARCHAR",
+            "ALTER TABLE scraper_accounts ADD COLUMN proxy_string VARCHAR"
         ]:
             try:
                 conn.execute(text(stmt))

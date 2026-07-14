@@ -97,6 +97,7 @@ class ScraperAccount(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
+    proxy_string = Column(String, nullable=True)
     preferred_worker_id = Column(String, ForeignKey("worker_nodes.worker_id"), nullable=True)
     status = Column(String, default="Idle") # Idle, Leased, Banned
     last_login = Column(DateTime, nullable=True)
