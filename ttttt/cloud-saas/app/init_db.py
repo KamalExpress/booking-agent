@@ -10,19 +10,16 @@ def init_db():
     
     # Ensure new columns exist on older tables
     with engine.connect() as conn:
-        try:
-            conn.execute(text("ALTER TABLE scraper_accounts ADD COLUMN status VARCHAR DEFAULT 'Idle'"))
-        except Exception:
-            pass
-        try:
-            conn.execute(text("ALTER TABLE scraper_accounts ADD COLUMN last_login TIMESTAMP"))
-        except Exception:
-            pass
-        try:
-            conn.execute(text("ALTER TABLE scraper_accounts ADD COLUMN preferred_worker_id VARCHAR"))
-        except Exception:
-            pass
-        conn.commit()
+        for stmt in [
+            "ALTER TABLE scraper_accounts ADD COLUMN status VARCHAR DEFAULT 'Idle'",
+            "ALTER TABLE scraper_accounts ADD COLUMN last_login TIMESTAMP",
+            "ALTER TABLE scraper_accounts ADD COLUMN preferred_worker_id VARCHAR"
+        ]:
+            try:
+                conn.execute(text(stmt))
+                conn.commit()
+            except Exception:
+                conn.rollback()
     
     with Session(engine) as db:
         # 1. Create Default Tenant if not exists
