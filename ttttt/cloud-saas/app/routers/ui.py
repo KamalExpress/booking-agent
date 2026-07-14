@@ -4,6 +4,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 
+import os
 from models import WorkerNode, Assignment, Lease, EventLog, ScraperAccount
 from models import SessionLocal
 
@@ -15,7 +16,10 @@ def get_db():
         db.close()
 
 router = APIRouter(tags=["UI"])
-templates = Jinja2Templates(directory="templates")
+
+# Build absolute path to templates directory to avoid Docker WORKDIR issues
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
 @router.get("/", response_class=HTMLResponse)
 async def overview_page(request: Request, db: Session = Depends(get_db)):
