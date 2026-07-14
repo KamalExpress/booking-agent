@@ -42,6 +42,10 @@ class BrowserTrustService:
             page = context.new_page()
             
             try:
+                # Apply stealth mode to bypass Incapsula headless bot detection
+                from playwright_stealth import stealth_sync
+                stealth_sync(page)
+                
                 # 1. Navigate to the page
                 logging.info(f"[BrowserTrust] Navigating to {self.base_url}/login...")
                 # We don't use networkidle because Incapsula interstitial might trigger it early.
