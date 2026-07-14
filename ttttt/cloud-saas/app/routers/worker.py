@@ -150,6 +150,26 @@ def get_next_assignment(
     if expired_leases:
         db.commit()
         
+    # 1.5. Check if THIS worker already has an active lease (e.g. it crashed and restarted)
+    existing_lease = db.query(Lease).filter(Lease.worker_id == worker.worker_id).first()
+    if existing_lease:
+        best_assignment = db.query(Assignment).filter(Assignment.id == existing_lease.assignment_id).first()
+        if best_assignment:
+            acc = db.query(ScraperAccount).filter(ScraperAccount.id == best_assignment.scraper_account_id).first()
+            return {
+                "lease_id": existing_lease.id,
+                "assignment_id": best_assignment.id,
+                "visa_center": best_assignment.visa_center,
+                "date_from": best_assignment.date_from,
+                "date_to": best_assignment.date_to,
+                "scraper_account": {
+                    "id": acc.id,
+                    "username": acc.username,
+                    "password": acc.password,
+                    "proxy_string": acc.proxy_string
+                } if acc else {}
+            }
+        
     # 2. Find all active, unleased assignments
     assignments = db.query(Assignment).filter(Assignment.status == "Active").all()
     if not assignments:
