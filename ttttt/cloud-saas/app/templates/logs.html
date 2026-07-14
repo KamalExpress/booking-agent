@@ -4,52 +4,50 @@
 
 {% block content %}
 <header class="mb-8">
-    <h2 class="text-3xl font-bold">Real-time Event Logs</h2>
-    <p class="text-gray-400">Streaming firehose of all distributed worker events</p>
+    <h2 class="text-3xl font-bold tracking-tight">Event Logs</h2>
+    <p class="text-muted-foreground mt-1">Live execution streams from distributed worker nodes</p>
 </header>
 
-<div class="glass-card p-4 h-[70vh] flex flex-col">
-    <!-- Filters -->
-    <div class="flex gap-4 mb-4 pb-4 border-b border-gray-700">
-        <select class="bg-gray-800 border border-gray-600 text-white rounded p-2 text-sm" id="severityFilter">
-            <option value="all">All Severities</option>
-            <option value="info">Info</option>
-            <option value="warning">Warning</option>
-            <option value="error">Error</option>
-        </select>
-        <button class="btn bg-gray-700 text-sm py-2 px-4" onclick="window.location.reload()">Refresh Data</button>
-    </div>
-
-    <!-- Logs container -->
-    <div class="flex-1 overflow-y-auto space-y-2 pr-2 font-mono text-sm" id="logsContainer">
-        {% for log in logs %}
-        <div class="p-3 rounded border border-gray-700 
-            {% if log.severity == 'error' %} bg-red-900/20 border-red-800/50
-            {% elif log.severity == 'warning' %} bg-yellow-900/20 border-yellow-800/50
-            {% elif log.event_type == 'SLOT_FOUND' %} bg-green-900/20 border-green-800/50
-            {% else %} bg-gray-800/40 {% endif %}">
-            
-            <div class="flex justify-between items-start mb-1">
-                <div class="flex gap-3 items-center">
-                    <span class="text-gray-500 text-xs">{{ log.created_at.strftime('%H:%M:%S') }}</span>
-                    <span class="font-bold 
-                        {% if log.severity == 'error' %} text-red-400
-                        {% elif log.severity == 'warning' %} text-yellow-400
-                        {% elif log.event_type == 'SLOT_FOUND' %} text-green-400
-                        {% else %} text-blue-400 {% endif %}">
-                        [{{ log.event_type }}]
-                    </span>
-                    <span class="text-gray-400 text-xs">Worker: {{ log.worker_id or 'System' }}</span>
-                </div>
-            </div>
-            
-            <div class="text-gray-300 ml-16">
-                {{ log.payload | tojson if log.payload else 'No payload' }}
-            </div>
-        </div>
-        {% else %}
-        <div class="text-center text-gray-500 p-8">No logs available.</div>
-        {% endfor %}
-    </div>
+<div class="card overflow-hidden">
+    <table class="w-full text-left border-collapse text-sm">
+        <thead>
+            <tr class="border-b border-border bg-muted/50">
+                <th class="p-4 font-medium text-muted-foreground">Timestamp</th>
+                <th class="p-4 font-medium text-muted-foreground">Worker ID</th>
+                <th class="p-4 font-medium text-muted-foreground">Assignment</th>
+                <th class="p-4 font-medium text-muted-foreground">Event Type</th>
+                <th class="p-4 font-medium text-muted-foreground">Message</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr class="border-b border-border hover:bg-muted/50 transition-colors">
+                <td class="p-4 text-muted-foreground whitespace-nowrap">{{ log.created_at.strftime('%H:%M:%S') }}</td>
+                <td class="p-4 font-mono text-xs text-muted-foreground">{{ log.worker_id[:8] if log.worker_id else '-' }}</td>
+                <td class="p-4 text-muted-foreground">#{{ log.assignment_id }}</td>
+                <td class="p-4">
+                    {% if log.event_type == 'SLOT_FOUND' %}
+                        <span class="inline-flex items-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-500">
+                            {{ log.event_type }}
+                        </span>
+                    {% elif log.event_type == 'ERROR' %}
+                        <span class="inline-flex items-center rounded-full border border-destructive/20 bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive">
+                            {{ log.event_type }}
+                        </span>
+                    {% else %}
+                        <span class="inline-flex items-center rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs font-semibold text-foreground">
+                            {{ log.event_type }}
+                        </span>
+                    {% endif %}
+                </td>
+                <td class="p-4 text-foreground">{{ log.message }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" class="p-8 text-center text-muted-foreground">No events logged yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}

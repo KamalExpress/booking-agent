@@ -5,44 +5,82 @@
 {% block content %}
 <header class="mb-8 flex justify-between items-center">
     <div>
-        <h2 class="text-3xl font-bold">Assignments</h2>
-        <p class="text-gray-400">Management of automation tasks and leases</p>
+        <h2 class="text-3xl font-bold tracking-tight">Assignments</h2>
+        <p class="text-muted-foreground mt-1">Management of automation tasks and leases</p>
     </div>
-    <!-- In a full implementation, this button opens a modal to create a new assignment -->
-    <button class="btn btn-primary">+ New Assignment</button>
+    <button class="btn btn-primary" onclick="document.getElementById('createAssignmentModal').classList.remove('hidden')">
+        <i data-lucide="plus" class="w-4 h-4 mr-2"></i> New Assignment
+    </button>
 </header>
 
-<div class="glass-card overflow-hidden">
-    <table class="w-full text-left border-collapse">
+<!-- Create Assignment Modal -->
+<div id="createAssignmentModal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+    <div class="card w-full max-w-md bg-background p-6">
+        <h3 class="text-xl font-bold mb-4 tracking-tight">Create Assignment</h3>
+        <form action="/assignments/create" method="POST" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Scraper Account</label>
+                <select name="scraper_account_id" class="input w-full" required>
+                    {% for acc in accounts %}
+                    <option value="{{ acc.id }}">{{ acc.username }} ({{ acc.status }})</option>
+                    {% else %}
+                    <option value="" disabled>No accounts available</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Target Start Date</label>
+                <input type="date" name="target_start_date" class="input" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Target End Date</label>
+                <input type="date" name="target_end_date" class="input" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Visa Center</label>
+                <input type="text" name="visa_center" class="input" placeholder="e.g., London" required>
+            </div>
+            <div class="flex justify-end gap-2 mt-6">
+                <button type="button" class="btn btn-secondary border border-border" onclick="document.getElementById('createAssignmentModal').classList.add('hidden')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Create</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card overflow-hidden">
+    <table class="w-full text-left border-collapse text-sm">
         <thead>
-            <tr class="bg-gray-800 border-b border-gray-700">
-                <th class="p-4 font-semibold text-gray-300">ID</th>
-                <th class="p-4 font-semibold text-gray-300">Target (Account)</th>
-                <th class="p-4 font-semibold text-gray-300">Visa Center</th>
-                <th class="p-4 font-semibold text-gray-300">Status</th>
-                <th class="p-4 font-semibold text-gray-300">Leased To</th>
+            <tr class="border-b border-border bg-muted/50">
+                <th class="p-4 font-medium text-muted-foreground">ID</th>
+                <th class="p-4 font-medium text-muted-foreground">Target (Account)</th>
+                <th class="p-4 font-medium text-muted-foreground">Visa Center</th>
+                <th class="p-4 font-medium text-muted-foreground">Target Dates</th>
+                <th class="p-4 font-medium text-muted-foreground">Status</th>
+                <th class="p-4 font-medium text-muted-foreground">Leased To</th>
             </tr>
         </thead>
         <tbody>
             {% for asm in assignments %}
-            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition">
-                <td class="p-4 text-gray-400">#{{ asm.id }}</td>
-                <td class="p-4 text-white font-medium">{{ asm.account_username }}</td>
-                <td class="p-4 text-gray-400">{{ asm.visa_center }}</td>
+            <tr class="border-b border-border hover:bg-muted/50 transition-colors">
+                <td class="p-4 text-muted-foreground font-mono">#{{ asm.id }}</td>
+                <td class="p-4 text-foreground font-medium">{{ asm.account_username }}</td>
+                <td class="p-4 text-muted-foreground">{{ asm.visa_center }}</td>
+                <td class="p-4 text-muted-foreground">{{ asm.target_start_date.strftime('%Y-%m-%d') }} to {{ asm.target_end_date.strftime('%Y-%m-%d') }}</td>
                 <td class="p-4">
                     {% if asm.status == 'Leased' %}
-                        <span class="px-2 py-1 rounded bg-blue-900/50 text-blue-300 text-xs border border-blue-700">Leased</span>
+                        <span class="inline-flex items-center rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-500">Leased</span>
                     {% elif asm.status == 'Active' %}
-                        <span class="px-2 py-1 rounded bg-gray-700 text-gray-300 text-xs">Idle</span>
+                        <span class="inline-flex items-center rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">Idle</span>
                     {% else %}
-                        <span class="px-2 py-1 rounded bg-red-900/50 text-red-300 text-xs border border-red-700">{{ asm.status }}</span>
+                        <span class="inline-flex items-center rounded-full border border-destructive/20 bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive">{{ asm.status }}</span>
                     {% endif %}
                 </td>
-                <td class="p-4 font-mono text-sm text-blue-300">{{ asm.leased_to_worker or '-' }}</td>
+                <td class="p-4 font-mono text-xs text-muted-foreground">{{ asm.leased_to_worker[:8] if asm.leased_to_worker else '-' }}</td>
             </tr>
             {% else %}
             <tr>
-                <td colspan="5" class="p-8 text-center text-gray-500">No assignments configured.</td>
+                <td colspan="6" class="p-8 text-center text-muted-foreground">No assignments configured.</td>
             </tr>
             {% endfor %}
         </tbody>

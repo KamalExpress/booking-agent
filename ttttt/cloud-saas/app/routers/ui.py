@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Request, Depends
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, Request, Depends, Form
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
@@ -79,15 +79,75 @@ async def assignments_page(request: Request, db: Session = Depends(get_db)):
         lease = db.query(Lease).filter(Lease.assignment_id == asm.id).first()
         asm.leased_to_worker = lease.worker_id if lease else None
         
+    accounts = db.query(ScraperAccount).all()
     return templates.TemplateResponse(
         request=request,
         name="assignments.html",
         context={
             "request": request,
             "active_page": "assignments",
-            "assignments": assignments
+            "assignments": assignments,
+            "accounts": accounts
         }
     )
+
+@router.post("/assignments/create")
+async def create_assignment(
+    scraper_account_id: int = Form(...),
+    target_start_date: str = Form(...),
+    target_end_date: str = Form(...),
+    visa_center: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    try:
+        start_date = datetime.strptime(target_start_date, '%Y-%m-%d')
+        end_date = datetime.strptime(target_end_date, '%Y-%m-%d')
+        
+        new_assignment = Assignment(
+            scraper_account_id=scraper_account_id,
+            target_start_date=start_date,
+            target_end_date=end_date,
+            visa_center=visa_center,
+            status='Active'
+        )
+        db.add(new_assignment)
+        db.commit()
+    except Exception as e:
+        print(f"Failed to create assignment: {e}")
+        db.rollback()
+        
+    return RedirectResponse(url="/assignments", status_code=303)
+
+@router.get("/accounts", response_class=HTMLResponse)
+async def accounts_page(request: Request, db: Session = Depends(get_db)):
+    accounts = db.query(ScraperAccount).order_by(ScraperAccount.id.desc()).all()
+    
+    return templates.TemplateResponse(
+        request=request,
+        name="accounts.html",
+        context={
+            "request": request,
+            "active_page": "accounts",
+            "accounts": accounts
+        }
+    )
+
+@router.post("/accounts/create")
+async def create_account(
+    username: str = Form(...),
+    password: str = Form(...),
+    proxy_string: str = Form(None),
+    db: Session = Depends(get_db)
+):
+    new_account = ScraperAccount(
+        username=username,
+        password=password,
+        proxy_string=proxy_string,
+        status='Idle'
+    )
+    db.add(new_account)
+    db.commit()
+    return RedirectResponse(url="/accounts", status_code=303)
 
 @router.get("/logs", response_class=HTMLResponse)
 async def logs_page(request: Request, db: Session = Depends(get_db)):

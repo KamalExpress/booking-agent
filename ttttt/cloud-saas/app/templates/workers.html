@@ -3,48 +3,46 @@
 {% block title %}Workers - Kamal Express{% endblock %}
 
 {% block content %}
-<header class="mb-8 flex justify-between items-center">
-    <div>
-        <h2 class="text-3xl font-bold">Worker Nodes</h2>
-        <p class="text-gray-400">Live grid of all registered distributed workers</p>
-    </div>
+<header class="mb-8">
+    <h2 class="text-3xl font-bold tracking-tight">Worker Nodes</h2>
+    <p class="text-muted-foreground mt-1">Live status of distributed execution engines</p>
 </header>
 
-<div class="glass-card overflow-hidden">
-    <table class="w-full text-left border-collapse">
+<div class="card overflow-hidden">
+    <table class="w-full text-left border-collapse text-sm">
         <thead>
-            <tr class="bg-gray-800 border-b border-gray-700">
-                <th class="p-4 font-semibold text-gray-300">Status</th>
-                <th class="p-4 font-semibold text-gray-300">Worker ID</th>
-                <th class="p-4 font-semibold text-gray-300">Version</th>
-                <th class="p-4 font-semibold text-gray-300">Labels</th>
-                <th class="p-4 font-semibold text-gray-300">Last Heartbeat</th>
+            <tr class="border-b border-border bg-muted/50">
+                <th class="p-4 font-medium text-muted-foreground">ID</th>
+                <th class="p-4 font-medium text-muted-foreground">Host OS</th>
+                <th class="p-4 font-medium text-muted-foreground">App Version</th>
+                <th class="p-4 font-medium text-muted-foreground">IP Address</th>
+                <th class="p-4 font-medium text-muted-foreground">Last Heartbeat</th>
+                <th class="p-4 font-medium text-muted-foreground">Status</th>
             </tr>
         </thead>
         <tbody>
             {% for worker in workers %}
-            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition">
+            <tr class="border-b border-border hover:bg-muted/50 transition-colors">
+                <td class="p-4 text-muted-foreground font-mono">{{ worker.id[:8] }}</td>
+                <td class="p-4 text-foreground">{{ worker.host_os }}</td>
+                <td class="p-4 text-muted-foreground">{{ worker.app_version }}</td>
+                <td class="p-4 text-muted-foreground">{{ worker.ip_address or 'Unknown' }}</td>
+                <td class="p-4 text-muted-foreground">{{ worker.last_heartbeat.strftime('%Y-%m-%d %H:%M:%S') if worker.last_heartbeat else 'Never' }}</td>
                 <td class="p-4">
                     {% if worker.is_online %}
-                        <span class="inline-flex h-3 w-3 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
+                        <span class="inline-flex items-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-500">
+                            Online
+                        </span>
                     {% else %}
-                        <span class="inline-flex h-3 w-3 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></span>
+                        <span class="inline-flex items-center rounded-full border border-destructive/20 bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive">
+                            Offline
+                        </span>
                     {% endif %}
                 </td>
-                <td class="p-4 font-mono text-sm text-blue-300">{{ worker.worker_id }}</td>
-                <td class="p-4 text-gray-400">{{ worker.version or 'N/A' }}</td>
-                <td class="p-4">
-                    <div class="flex gap-1 flex-wrap">
-                        {% for label in worker.labels %}
-                        <span class="px-2 py-1 rounded bg-gray-700 text-xs text-gray-300">{{ label }}</span>
-                        {% endfor %}
-                    </div>
-                </td>
-                <td class="p-4 text-gray-400 text-sm">{{ worker.last_heartbeat.strftime('%Y-%m-%d %H:%M:%S') if worker.last_heartbeat else 'Never' }}</td>
             </tr>
             {% else %}
             <tr>
-                <td colspan="5" class="p-8 text-center text-gray-500">No workers registered yet.</td>
+                <td colspan="6" class="p-8 text-center text-muted-foreground">No workers have registered yet.</td>
             </tr>
             {% endfor %}
         </tbody>
