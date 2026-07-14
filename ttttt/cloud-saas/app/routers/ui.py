@@ -56,9 +56,6 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
 @router.get("/workers", response_class=HTMLResponse)
 async def workers_page(request: Request, db: Session = Depends(get_db)):
     workers = db.query(WorkerNode).order_by(WorkerNode.last_heartbeat.desc()).all()
-    
-    for w in workers:
-        w.is_online = w.is_online # Uses the centralized property on the model
             
     return templates.TemplateResponse(
         request=request,
