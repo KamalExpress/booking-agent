@@ -49,10 +49,10 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
 async def workers_page(request: Request, db: Session = Depends(get_db)):
     workers = db.query(WorkerNode).order_by(WorkerNode.last_heartbeat.desc()).all()
     
-    # Calculate online status (heartbeat < 3 mins ago)
+    # Calculate online status (heartbeat < 60s ago since workers ping every 30s)
     now = datetime.utcnow()
     for w in workers:
-        if w.last_heartbeat and (now - w.last_heartbeat).total_seconds() < 180:
+        if w.last_heartbeat and (now - w.last_heartbeat).total_seconds() < 60:
             w.is_online = True
         else:
             w.is_online = False
