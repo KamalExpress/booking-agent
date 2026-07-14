@@ -2,10 +2,27 @@ import os
 from sqlalchemy.orm import Session
 from models import Base, engine, Tenant, User, RoleEnum, MonitorConfig, ScraperAccount
 from auth import get_password_hash
+from sqlalchemy import text
 
 def init_db():
     print("Creating database tables...")
     Base.metadata.create_all(bind=engine)
+    
+    # Ensure new columns exist on older tables
+    with engine.connect() as conn:
+        try:
+            conn.execute(text("ALTER TABLE scraper_accounts ADD COLUMN status VARCHAR DEFAULT 'Idle'"))
+        except Exception:
+            pass
+        try:
+            conn.execute(text("ALTER TABLE scraper_accounts ADD COLUMN last_login TIMESTAMP"))
+        except Exception:
+            pass
+        try:
+            conn.execute(text("ALTER TABLE scraper_accounts ADD COLUMN consecutive_failures INTEGER DEFAULT 0"))
+        except Exception:
+            pass
+        conn.commit()
     
     with Session(engine) as db:
         # 1. Create Default Tenant if not exists
