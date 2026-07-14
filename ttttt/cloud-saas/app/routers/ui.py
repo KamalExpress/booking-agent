@@ -23,7 +23,15 @@ templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
 @router.get("/", response_class=HTMLResponse)
 async def overview_page(request: Request, db: Session = Depends(get_db)):
-    active_workers = db.query(WorkerNode).filter(WorkerNode.status == 'Active').count()
+    now = datetime.utcnow()
+    cutoff = now - timedelta(seconds=60)
+    
+    # Active workers are those not banned/disabled AND have sent a heartbeat in the last 60s
+    active_workers = db.query(WorkerNode).filter(
+        WorkerNode.status == 'Active',
+        WorkerNode.last_heartbeat >= cutoff
+    ).count()
+    
     active_assignments = db.query(Assignment).filter(Assignment.status == 'Leased').count()
     
     # Slots found in last 24h
