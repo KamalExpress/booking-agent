@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Workers - Kamal Express{% endblock %}
+
+{% block content %}
+<header class="mb-8 flex justify-between items-center">
+    <div>
+        <h2 class="text-3xl font-bold">Worker Nodes</h2>
+        <p class="text-gray-400">Live grid of all registered distributed workers</p>
+    </div>
+</header>
+
+<div class="glass-card overflow-hidden">
+    <table class="w-full text-left border-collapse">
+        <thead>
+            <tr class="bg-gray-800 border-b border-gray-700">
+                <th class="p-4 font-semibold text-gray-300">Status</th>
+                <th class="p-4 font-semibold text-gray-300">Worker ID</th>
+                <th class="p-4 font-semibold text-gray-300">Version</th>
+                <th class="p-4 font-semibold text-gray-300">Labels</th>
+                <th class="p-4 font-semibold text-gray-300">Last Heartbeat</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for worker in workers %}
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition">
+                <td class="p-4">
+                    {% if worker.is_online %}
+                        <span class="inline-flex h-3 w-3 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
+                    {% else %}
+                        <span class="inline-flex h-3 w-3 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></span>
+                    {% endif %}
+                </td>
+                <td class="p-4 font-mono text-sm text-blue-300">{{ worker.worker_id }}</td>
+                <td class="p-4 text-gray-400">{{ worker.version or 'N/A' }}</td>
+                <td class="p-4">
+                    <div class="flex gap-1 flex-wrap">
+                        {% for label in worker.labels %}
+                        <span class="px-2 py-1 rounded bg-gray-700 text-xs text-gray-300">{{ label }}</span>
+                        {% endfor %}
+                    </div>
+                </td>
+                <td class="p-4 text-gray-400 text-sm">{{ worker.last_heartbeat.strftime('%Y-%m-%d %H:%M:%S') if worker.last_heartbeat else 'Never' }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" class="p-8 text-center text-gray-500">No workers registered yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -2,6 +2,7 @@ import os
 import enum
 from datetime import datetime
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, DateTime, ForeignKey, Enum
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/booking_saas")
@@ -80,15 +81,56 @@ class MonitorConfig(Base):
     is_active = Column(Boolean, default=False) # Switch to easily pause entire global scraping
     is_demo = Column(Boolean, default=False)
 
+class WorkerNode(Base):
+    __tablename__ = "worker_nodes"
+    worker_id = Column(String, primary_key=True, index=True)
+    secret_hash = Column(String, nullable=False)
+    labels = Column(JSONB, default=list) # e.g., ["pakistan", "residential"]
+    version = Column(String, nullable=True)
+    git_commit = Column(String, nullable=True)
+    last_heartbeat = Column(DateTime, nullable=True)
+    status = Column(String, default="Active")
+    created_at = Column(DateTime, default=datetime.utcnow)
+
 class ScraperAccount(Base):
     __tablename__ = "scraper_accounts"
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
-    is_active = Column(Boolean, default=True)
-    status = Column(String, default="Idle")
+    preferred_worker_id = Column(String, ForeignKey("worker_nodes.worker_id"), nullable=True)
+    status = Column(String, default="Idle") # Idle, Leased, Banned
     last_login = Column(DateTime, nullable=True)
-    consecutive_failures = Column(Integer, default=0)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+class Assignment(Base):
+    __tablename__ = "assignments"
+    id = Column(Integer, primary_key=True, index=True)
+    scraper_account_id = Column(Integer, ForeignKey("scraper_accounts.id"), nullable=False)
+    visa_center = Column(String, default="138")
+    date_from = Column(String, nullable=False)
+    date_to = Column(String, nullable=False)
+    polling_interval = Column(Integer, default=300)
+    priority = Column(Integer, default=0)
+    status = Column(String, default="Active")
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+class Lease(Base):
+    __tablename__ = "leases"
+    id = Column(Integer, primary_key=True, index=True)
+    assignment_id = Column(Integer, ForeignKey("assignments.id"), nullable=False)
+    worker_id = Column(String, ForeignKey("worker_nodes.worker_id"), nullable=False)
+    expires_at = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+class EventLog(Base):
+    __tablename__ = "event_logs"
+    id = Column(Integer, primary_key=True, index=True)
+    source = Column(String, nullable=True)
+    worker_id = Column(String, nullable=True)
+    assignment_id = Column(Integer, nullable=True)
+    severity = Column(String, default="info") # info, warning, error
+    event_type = Column(String, nullable=False) # LOGIN_SUCCESS, RATE_LIMIT, etc
+    payload = Column(JSONB, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 def get_db():

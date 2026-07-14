@@ -13,8 +13,6 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from models import SessionLocal, engine, Base, User, Tenant, RoleEnum, AuditLog, MonitorConfig, PushSubscription, ScraperAccount
 from auth import get_current_user, require_super_admin, require_tenant_admin, create_access_token, verify_password, get_password_hash
-from core.slot_monitor import SlotMonitorEngine
-
 VAPID_PUBLIC_KEY = os.getenv("VAPID_PUBLIC_KEY", "BPiJHAyOHhUN-lfs6ZZbCsJxG0044_Hk7w2ezWWKxRW1NPPCq4OdT_WGakDn6__jhpPtrc0nWLtpYThZk3fIBOM")
 _vapid_env = os.getenv("VAPID_PRIVATE_KEY")
 if _vapid_env and "-----BEGIN PRIVATE KEY-----" in _vapid_env:
@@ -48,9 +46,7 @@ async def add_no_cache_headers(request, call_next):
         response.headers["Expires"] = "0"
     return response
 
-# Global Monitor Thread
-monitor_thread: Optional[SlotMonitorEngine] = None
-
+# No Global Monitor Thread in the new architecture
 from core.state import global_captcha_state, cloud_log_handler
 import logging
 
@@ -59,22 +55,21 @@ logging.getLogger().addHandler(cloud_log_handler)
 logging.getLogger().setLevel(logging.INFO)
 logger = logging.getLogger(__name__)
 
+from routers.worker import router as worker_router
+from routers.ui import router as ui_router
+
+app.include_router(worker_router)
+app.include_router(ui_router)
+
 @app.on_event("startup")
 def startup_event():
-    global monitor_thread
     # Auto-seed the database if it's empty
     from init_db import init_db
     init_db()
-    
-    monitor_thread = SlotMonitorEngine()
-    monitor_thread.start()
 
 @app.on_event("shutdown")
 def shutdown_event():
-    global monitor_thread
-    if monitor_thread:
-        monitor_thread.stop()
-        monitor_thread.join(timeout=5)
+    pass
 
 # --- Dependency ---
 def get_db():
@@ -573,4 +568,4 @@ def test_push_alert(current_user: User = Depends(get_current_user), db: Session 
 
 # Mount Static Files (PWA)
 static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
-app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
+app.mount("/static", StaticFiles(directory=static_dir), name="static")

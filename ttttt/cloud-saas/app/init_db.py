@@ -19,7 +19,7 @@ def init_db():
         except Exception:
             pass
         try:
-            conn.execute(text("ALTER TABLE scraper_accounts ADD COLUMN consecutive_failures INTEGER DEFAULT 0"))
+            conn.execute(text("ALTER TABLE scraper_accounts ADD COLUMN preferred_worker_id VARCHAR"))
         except Exception:
             pass
         conn.commit()

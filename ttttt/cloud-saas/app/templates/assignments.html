@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Assignments - Kamal Express{% endblock %}
+
+{% block content %}
+<header class="mb-8 flex justify-between items-center">
+    <div>
+        <h2 class="text-3xl font-bold">Assignments</h2>
+        <p class="text-gray-400">Management of automation tasks and leases</p>
+    </div>
+    <!-- In a full implementation, this button opens a modal to create a new assignment -->
+    <button class="btn btn-primary">+ New Assignment</button>
+</header>
+
+<div class="glass-card overflow-hidden">
+    <table class="w-full text-left border-collapse">
+        <thead>
+            <tr class="bg-gray-800 border-b border-gray-700">
+                <th class="p-4 font-semibold text-gray-300">ID</th>
+                <th class="p-4 font-semibold text-gray-300">Target (Account)</th>
+                <th class="p-4 font-semibold text-gray-300">Visa Center</th>
+                <th class="p-4 font-semibold text-gray-300">Status</th>
+                <th class="p-4 font-semibold text-gray-300">Leased To</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for asm in assignments %}
+            <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition">
+                <td class="p-4 text-gray-400">#{{ asm.id }}</td>
+                <td class="p-4 text-white font-medium">{{ asm.account_username }}</td>
+                <td class="p-4 text-gray-400">{{ asm.visa_center }}</td>
+                <td class="p-4">
+                    {% if asm.status == 'Leased' %}
+                        <span class="px-2 py-1 rounded bg-blue-900/50 text-blue-300 text-xs border border-blue-700">Leased</span>
+                    {% elif asm.status == 'Active' %}
+                        <span class="px-2 py-1 rounded bg-gray-700 text-gray-300 text-xs">Idle</span>
+                    {% else %}
+                        <span class="px-2 py-1 rounded bg-red-900/50 text-red-300 text-xs border border-red-700">{{ asm.status }}</span>
+                    {% endif %}
+                </td>
+                <td class="p-4 font-mono text-sm text-blue-300">{{ asm.leased_to_worker or '-' }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" class="p-8 text-center text-gray-500">No assignments configured.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

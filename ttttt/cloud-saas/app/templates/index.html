@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Overview - Kamal Express{% endblock %}
+
+{% block content %}
+<header class="mb-8">
+    <h2 class="text-3xl font-bold">System Overview</h2>
+    <p class="text-gray-400">High-level metrics for the distributed orchestrator</p>
+</header>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="glass-card p-6">
+        <h3 class="text-gray-400 text-sm font-medium uppercase tracking-wider">Active Workers</h3>
+        <div class="mt-2 flex items-baseline gap-2">
+            <span class="text-4xl font-bold text-white" id="statWorkers">{{ active_workers }}</span>
+            <span class="text-sm text-green-400">Online</span>
+        </div>
+    </div>
+    
+    <div class="glass-card p-6">
+        <h3 class="text-gray-400 text-sm font-medium uppercase tracking-wider">Active Assignments</h3>
+        <div class="mt-2 flex items-baseline gap-2">
+            <span class="text-4xl font-bold text-white" id="statAssignments">{{ active_assignments }}</span>
+            <span class="text-sm text-blue-400">Leased</span>
+        </div>
+    </div>
+    
+    <div class="glass-card p-6">
+        <h3 class="text-gray-400 text-sm font-medium uppercase tracking-wider">Recent Slots Found (24h)</h3>
+        <div class="mt-2 flex items-baseline gap-2">
+            <span class="text-4xl font-bold text-emerald-400" id="statSlots">{{ slots_found }}</span>
+        </div>
+    </div>
+</div>
+
+<div class="glass-card p-6">
+    <h3 class="text-xl font-bold mb-4">Quick Actions</h3>
+    <div class="flex gap-4">
+        <a href="/assignments" class="btn btn-primary">Manage Assignments</a>
+        <a href="/logs" class="btn bg-gray-700 hover:bg-gray-600">View Live Logs</a>
+    </div>
+</div>
+{% endblock %}

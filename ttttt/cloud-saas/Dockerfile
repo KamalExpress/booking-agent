@@ -10,12 +10,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Playwright's browser binaries and system dependencies natively
-RUN playwright install --with-deps chromium
-
 COPY app/ ./app/
 COPY static/ ./static/
-# Include the generated VAPID private key via environment variable instead of file
 
 EXPOSE 8000
 

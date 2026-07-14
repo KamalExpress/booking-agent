@@ -17,8 +17,6 @@ services:
       - VAPID_PUBLIC_KEY=BOJviVyqeMuXRl9-4a_iJrH67TKwCjV7N4YZs-tZ63ZBHOtqksgujIA_0yMiDaC_EAt-wUJ4YNJN4vZMoBMeuzs
     volumes:
       - ./private_key.pem:/app/private_key.pem
-      - ./app:/app/app
-      - ./static:/app/static
     networks:
       - sam-agent-platform_default
 
