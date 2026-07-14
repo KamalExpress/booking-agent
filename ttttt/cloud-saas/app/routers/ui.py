@@ -105,8 +105,8 @@ async def create_assignment(
         
         new_assignment = Assignment(
             scraper_account_id=scraper_account_id,
-            target_start_date=start_date,
-            target_end_date=end_date,
+            date_from=start_date.strftime('%d/%m/%Y'),
+            date_to=end_date.strftime('%d/%m/%Y'),
             visa_center=visa_center,
             status='Active'
         )
