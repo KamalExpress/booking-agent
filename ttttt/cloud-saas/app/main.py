@@ -466,6 +466,7 @@ def submit_captcha(req: CaptchaSubmitRequest, current_user: User = Depends(get_c
 
 @app.get("/api/push/vapid-public-key")
 def get_vapid_public_key():
+    from notifications import VAPID_PUBLIC_KEY
     return {"public_key": VAPID_PUBLIC_KEY}
 
 @app.post("/api/push/subscribe")

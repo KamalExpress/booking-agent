@@ -158,10 +158,8 @@
             // Get VAPID key
             const vapidRes = await fetch('/api/push/vapid-public-key');
             if (!vapidRes.ok) throw new Error("Failed to fetch VAPID key");
-            let vapidPublicKey = await vapidRes.text();
-            vapidPublicKey = vapidPublicKey.replace(/"/g, ''); // Remove quotes if it's a JSON string
-
-            const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
+            const vapidData = await vapidRes.json();
+            const convertedVapidKey = urlBase64ToUint8Array(vapidData.public_key);
 
             // Subscribe
             const registration = await navigator.serviceWorker.ready;
