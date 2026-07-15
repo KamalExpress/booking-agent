@@ -391,6 +391,7 @@ def submit_logs(
             account = db.query(ScraperAccount).filter(ScraperAccount.id == assignment.scraper_account_id).first()
             if account:
                 account.last_login = datetime.utcnow()
+                send_push_notification(db, "Login Successful", f"Worker successfully logged into {account.username} (Center {assignment.visa_center})")
                 
     elif req.event_type == "NO_SLOTS_FOUND":
         friendly_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
