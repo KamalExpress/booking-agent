@@ -22,6 +22,8 @@ services:
       - db
     networks:
       - saas-network
+    volumes:
+      - saas_data_prod:/app/data
 
   operator-worker:
     image: operator-worker:prod
@@ -55,6 +57,7 @@ services:
 volumes:
   postgres_data_prod:
   operator_data_prod:
+  saas_data_prod:
 
 networks:
   saas-network:

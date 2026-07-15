@@ -16,8 +16,8 @@ class SecretsManager:
         if key:
             return key.encode()
             
-        # Try loading from .env file locally if not in environment
-        env_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")
+        # Try loading from data dir if we have a volume, otherwise local .env
+        env_file = "data/secrets.env" if os.path.exists("data") else os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")
         if os.path.exists(env_file):
             with open(env_file, "r") as f:
                 for line in f:

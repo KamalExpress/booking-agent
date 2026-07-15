@@ -397,6 +397,14 @@ async def update_captcha_settings(
             db.add(key_setting)
         key_setting.encrypted_value = secrets_manager.encrypt(api_key.strip())
         
+    # Bump runtime config version to force workers to refresh
+    version_setting = db.query(SystemSetting).filter(SystemSetting.key == "runtime.config.version").first()
+    if not version_setting:
+        version_setting = SystemSetting(key="runtime.config.version", value="1", updated_by="admin")
+        db.add(version_setting)
+    else:
+        version_setting.value = str(int(version_setting.value) + 1)
+        
     db.commit()
     return RedirectResponse(url="/settings", status_code=303)
 
