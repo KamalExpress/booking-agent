@@ -58,13 +58,15 @@ class SlotMonitorEngine(threading.Thread):
                 runtime_config = self.api.get_runtime_config() or {}
                 captcha_config = runtime_config.get("captcha", {})
                 
+                proxy_string = account.get("proxy_string")
+                
                 if captcha_config.get("provider") == "capsolver":
-                    captcha_svc = CapSolverService(api_key=captcha_config.get("api_key", ""))
+                    captcha_svc = CapSolverService(api_key=captcha_config.get("api_key", ""), proxy_string=proxy_string)
                 else:
                     # Fallback or manual service could be instantiated here
-                    captcha_svc = CapSolverService(api_key="")
+                    captcha_svc = CapSolverService(api_key="", proxy_string=proxy_string)
                     
-                agent = OperatorAgent(captcha_svc, username=account["username"], password=account["password"])
+                agent = OperatorAgent(captcha_svc, username=account["username"], password=account["password"], proxy_string=proxy_string)
                 
                 # Make sure the session file matches the account so we don't mix cookies
                 agent.cookie_file = f"cookies_{account['id']}.pkl"

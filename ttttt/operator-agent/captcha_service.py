@@ -62,8 +62,9 @@ class NopeChaService(CaptchaService):
         return ""
 
 class CapSolverService(CaptchaService):
-    def __init__(self, api_key: str):
+    def __init__(self, api_key: str, proxy_string: str = None):
         self.api_key = api_key
+        self.proxy_string = proxy_string
         self.create_task_url = "https://api.capsolver.com/createTask"
         self.get_result_url = "https://api.capsolver.com/getTaskResult"
 
@@ -81,6 +82,16 @@ class CapSolverService(CaptchaService):
                     "websiteKey": sitekey
                 }
             }
+            
+            if self.proxy_string:
+                from urllib.parse import urlparse
+                parsed = urlparse(self.proxy_string)
+                payload["task"]["type"] = "ReCaptchaV2Task"
+                payload["task"]["proxyType"] = "http"
+                payload["task"]["proxyAddress"] = parsed.hostname
+                payload["task"]["proxyPort"] = parsed.port
+                payload["task"]["proxyLogin"] = parsed.username
+                payload["task"]["proxyPassword"] = parsed.password
             
             try:
                 res = requests.post(self.create_task_url, json=payload).json()

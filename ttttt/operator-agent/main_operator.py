@@ -27,7 +27,7 @@ logging.basicConfig(
 )
 
 class OperatorAgent:
-    def __init__(self, captcha_service: CaptchaService, username: str = None, password: str = None):
+    def __init__(self, captcha_service: CaptchaService, username: str = None, password: str = None, proxy_string: str = None):
         self.session = requests.Session()
         
         # Add retry logic to handle RemoteDisconnected (server drops keep-alive)
@@ -42,6 +42,12 @@ class OperatorAgent:
         adapter = HTTPAdapter(max_retries=retry_strategy)
         self.session.mount("https://", adapter)
         self.session.mount("http://", adapter)
+        
+        if proxy_string:
+            self.session.proxies = {
+                "http": proxy_string,
+                "https": proxy_string
+            }
         
         # Standardize headers to match Playwright context and bypass anti-bot
         self.session.headers.update({
