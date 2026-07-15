@@ -5,9 +5,10 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
 
 import os
-from models import WorkerNode, Assignment, Lease, EventLog, ScraperAccount, SystemSetting
+from models import WorkerNode, Assignment, Lease, EventLog, ScraperAccount, SystemSetting, User
 from models import SessionLocal
 from secrets_manager import secrets_manager
+from auth import get_current_user, require_tenant_admin
 
 def get_db():
     db = SessionLocal()
