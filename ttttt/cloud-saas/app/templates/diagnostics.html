@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-2xl font-semibold tracking-tight text-zinc-100 flex items-center gap-3">
+        <i data-lucide="activity" class="w-6 h-6 text-indigo-400"></i> Diagnostics & Testing
+    </h1>
+    <p class="text-sm text-zinc-400 mt-1">Run system health checks and simulate worker events.</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    <!-- Push Notification Test -->
+    <div class="bg-[#09090b] border border-zinc-800 rounded-xl p-5 shadow-sm">
+        <div class="flex items-start gap-4">
+            <div class="p-3 bg-blue-500/10 rounded-lg text-blue-500">
+                <i data-lucide="bell" class="w-6 h-6"></i>
+            </div>
+            <div class="flex-1">
+                <h3 class="font-medium text-zinc-100 mb-1">Test Push Notifications</h3>
+                <p class="text-sm text-zinc-400 mb-4">Send a dummy push notification to your device to verify WebPush and ServiceWorker functionality.</p>
+                <form action="/api/push/test" method="POST" class="inline-block">
+                    <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 py-2 bg-zinc-800 text-white hover:bg-zinc-700 transition-colors shadow-sm">
+                        <i data-lucide="send" class="w-4 h-4 mr-2"></i> Send Test Push
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Captcha Service Test -->
+    <div class="bg-[#09090b] border border-zinc-800 rounded-xl p-5 shadow-sm">
+        <div class="flex items-start gap-4">
+            <div class="p-3 bg-purple-500/10 rounded-lg text-purple-500">
+                <i data-lucide="shield-check" class="w-6 h-6"></i>
+            </div>
+            <div class="flex-1">
+                <h3 class="font-medium text-zinc-100 mb-1">Test CapSolver API</h3>
+                <p class="text-sm text-zinc-400 mb-4">Checks the configured CapSolver API key by fetching your current balance from their server.</p>
+                <form action="/api/diagnostics/test-captcha" method="POST" class="inline-block" id="captcha-form">
+                    <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 py-2 bg-zinc-800 text-white hover:bg-zinc-700 transition-colors shadow-sm">
+                        <i data-lucide="refresh-cw" class="w-4 h-4 mr-2"></i> Check Balance
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simulate No Slots -->
+    <div class="bg-[#09090b] border border-zinc-800 rounded-xl p-5 shadow-sm">
+        <div class="flex items-start gap-4">
+            <div class="p-3 bg-amber-500/10 rounded-lg text-amber-500">
+                <i data-lucide="search-x" class="w-6 h-6"></i>
+            </div>
+            <div class="flex-1">
+                <h3 class="font-medium text-zinc-100 mb-1">Simulate "No Slots Found"</h3>
+                <p class="text-sm text-zinc-400 mb-4">Triggers a fake event representing a worker finding no slots. Sends a push notification.</p>
+                <form action="/api/diagnostics/simulate-event" method="POST" class="inline-block">
+                    <input type="hidden" name="event_type" value="NO_SLOTS_FOUND">
+                    <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 py-2 bg-zinc-800 text-white hover:bg-zinc-700 transition-colors shadow-sm">
+                        <i data-lucide="play" class="w-4 h-4 mr-2"></i> Simulate No Slots
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simulate Slot Found -->
+    <div class="bg-[#09090b] border border-zinc-800 rounded-xl p-5 shadow-sm border-emerald-500/30">
+        <div class="flex items-start gap-4">
+            <div class="p-3 bg-emerald-500/10 rounded-lg text-emerald-500">
+                <i data-lucide="calendar-check" class="w-6 h-6"></i>
+            </div>
+            <div class="flex-1">
+                <h3 class="font-medium text-zinc-100 mb-1">Simulate "Slot Found"</h3>
+                <p class="text-sm text-zinc-400 mb-4">Sends a success push notification AND automatically pauses ALL active assignments to stop worker polling.</p>
+                <form action="/api/diagnostics/simulate-event" method="POST" class="inline-block">
+                    <input type="hidden" name="event_type" value="SLOT_FOUND">
+                    <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 py-2 bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-sm">
+                        <i data-lucide="play" class="w-4 h-4 mr-2"></i> Simulate Slot Found
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    document.getElementById("captcha-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector("button");
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 mr-2 animate-spin"></i> Checking...`;
+        btn.disabled = true;
+
+        try {
+            const res = await fetch(e.target.action, { method: "POST" });
+            const data = await res.json();
+            if(data.status === "ok") {
+                alert(`CapSolver Balance: $${data.balance}`);
+            } else {
+                alert(`Error: ${data.detail || JSON.stringify(data)}`);
+            }
+        } catch(err) {
+            alert(`Network error: ${err}`);
+        }
+
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        lucide.createIcons();
+    });
+</script>
+{% endblock %}
