@@ -52,7 +52,9 @@
                     <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Target Account</label>
                     <div class="text-sm font-medium text-zinc-100 flex items-center justify-between">
                         {{ account.username if account else 'Unknown' }}
-                        <a href="/accounts" class="text-blue-500 hover:underline text-xs font-normal">View Account</a>
+                        {% if account %}
+                        <a href="/accounts/{{ account.id }}" class="text-blue-500 hover:underline text-xs font-normal">View Account</a>
+                        {% endif %}
                     </div>
                 </div>
                 <div>

@@ -206,6 +206,44 @@ async def create_account(
     db.commit()
     return RedirectResponse(url="/accounts", status_code=303)
 
+@router.get("/accounts/{account_id}", response_class=HTMLResponse)
+async def account_detail_page(account_id: int, request: Request, db: Session = Depends(get_db)):
+    account = db.query(ScraperAccount).filter(ScraperAccount.id == account_id).first()
+    if not account:
+        return RedirectResponse(url="/accounts")
+        
+    assignments = db.query(Assignment).filter(Assignment.scraper_account_id == account_id).all()
+    
+    return templates.TemplateResponse(
+        request=request,
+        name="account_detail.html",
+        context={
+            "request": request,
+            "active_page": "accounts",
+            "account": account,
+            "assignments": assignments
+        }
+    )
+
+@router.post("/accounts/{account_id}/edit")
+async def edit_account(
+    account_id: int,
+    username: str = Form(...),
+    password: str = Form(...),
+    proxy_string: str = Form(None),
+    status: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    account = db.query(ScraperAccount).filter(ScraperAccount.id == account_id).first()
+    if account:
+        account.username = username
+        account.password = password
+        account.proxy_string = proxy_string
+        account.status = status
+        db.commit()
+            
+    return RedirectResponse(url=f"/accounts/{account_id}", status_code=303)
+
 @router.get("/logs", response_class=HTMLResponse)
 async def logs_page(request: Request, db: Session = Depends(get_db)):
     logs = db.query(EventLog).order_by(EventLog.id.desc()).limit(100).all()
