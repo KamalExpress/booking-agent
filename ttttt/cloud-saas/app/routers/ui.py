@@ -23,6 +23,10 @@ router = APIRouter(tags=["UI"])
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
+@router.get("/login", response_class=HTMLResponse)
+async def login_page(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
 @router.get("/", response_class=HTMLResponse)
 async def overview_page(request: Request, db: Session = Depends(get_db)):
     now = datetime.now(timezone.utc).replace(tzinfo=None)
@@ -368,20 +372,20 @@ async def diagnostics_page(request: Request):
     return templates.TemplateResponse("diagnostics.html", {"request": request, "active_tab": "diagnostics"})
 
 @router.post("/api/diagnostics/test-captcha")
-async def test_captcha_api(db: Session = Depends(get_db)):
+async def test_captcha_api(current_user: User = Depends(require_tenant_admin), db: Session = Depends(get_db)):
     import requests
     captcha_api_key_setting = db.query(SystemSetting).filter(SystemSetting.key == "captcha.api_key").first()
     decrypted_api_key = ""
     if captcha_api_key_setting:
-        if captcha_api_key_setting.encrypted_value:
-            from secrets_manager import secrets_manager
-            decrypted_api_key = secrets_manager.decrypt(captcha_api_key_setting.encrypted_value)
-        elif captcha_api_key_setting.value:
-            decrypted_api_key = captcha_api_key_setting.value
-            
+        from secrets_manager import secrets_manager
+        try:
+            decrypted_api_key = secrets_manager.decrypt(captcha_api_key_setting.value)
+        except:
+            pass
+
     if not decrypted_api_key:
-        return {"status": "error", "detail": "No API key configured."}
-        
+        return {"status": "error", "detail": "CapSolver API Key not configured"}
+
     try:
         res = requests.post("https://api.capsolver.com/getBalance", json={"clientKey": decrypted_api_key}, timeout=10)
         data = res.json()
@@ -393,7 +397,7 @@ async def test_captcha_api(db: Session = Depends(get_db)):
         return {"status": "error", "detail": str(e)}
 
 @router.post("/api/diagnostics/simulate-event")
-async def simulate_event(event_type: str = Form(...), db: Session = Depends(get_db)):
+async def simulate_event(event_type: str = Form(...), current_user: User = Depends(require_tenant_admin), db: Session = Depends(get_db)):
     from notifications import send_push_notification
     from datetime import datetime
     
