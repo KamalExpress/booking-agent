@@ -6,7 +6,7 @@ from models import PushSubscription
 
 logger = logging.getLogger(__name__)
 
-VAPID_PUBLIC_KEY = os.getenv("VAPID_PUBLIC_KEY", "BPiJHAyOHhUN-lfs6ZZbCsJxG0044_Hk7w2ezWWKxRW1NPPCq4OdT_WGakDn6__jhpPtrc0nWLtpYThZk3fIBOM")
+VAPID_PUBLIC_KEY = os.getenv("VAPID_PUBLIC_KEY", "BOJviVyqeMuXRl9-4a_iJrH67TKwCjV7N4YZs-tZ63ZBHOtqksgujIA_0yMiDaC_EAt-wUJ4YNJN4vZMoBMeuzs")
 _vapid_env = os.getenv("VAPID_PRIVATE_KEY")
 if _vapid_env and "-----BEGIN PRIVATE KEY-----" in _vapid_env:
     # pywebpush requires a file path for PEM keys, not the raw string
