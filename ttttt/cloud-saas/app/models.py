@@ -149,7 +149,7 @@ class Assignment(Base):
     polling_interval = Column(Integer, default=300)
     priority = Column(Integer, default=0)
     status = Column(String, default="Active")
-    routing_policy_id = Column(Integer, nullable=True)
+    required_labels = Column(JSONB, default=dict)
     last_checked = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 

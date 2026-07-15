@@ -269,6 +269,16 @@ def get_next_assignment(
     best_assignment = None
     
     for asm in valid_assignments:
+        # Check required labels
+        if asm.required_labels:
+            missing_or_mismatch = False
+            for k, v in asm.required_labels.items():
+                if worker.labels.get(k) != v:
+                    missing_or_mismatch = True
+                    break
+            if missing_or_mismatch:
+                continue
+                
         score = 0
         score += asm.priority * 10
         

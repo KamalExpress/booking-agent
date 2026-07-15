@@ -40,9 +40,27 @@
                 <label class="block text-sm font-medium mb-1">Visa Center</label>
                 <input type="text" name="visa_center" class="input" placeholder="e.g., London" required>
             </div>
+            
+            <!-- Required Labels -->
+            <div>
+                <label class="block text-sm font-medium mb-1">Required Worker Labels</label>
+                <input type="hidden" name="required_labels" id="hidden-req-labels-input" value=''>
+                <div id="req-labels-container" class="flex flex-wrap gap-2 mb-2 min-h-[38px] p-2 border border-border rounded-md bg-muted/30 items-center">
+                    <span class="text-xs text-muted-foreground italic px-1">No requirements (any worker can run this)</span>
+                </div>
+                <div class="flex gap-2">
+                    <input type="text" id="req-key-input" placeholder="Key (e.g. location)" class="input flex-1 text-sm py-1.5 h-9">
+                    <input type="text" id="req-value-input" placeholder="Value (e.g. PK)" class="input flex-1 text-sm py-1.5 h-9" onkeypress="if(event.key === 'Enter'){ event.preventDefault(); addReqLabel(); }">
+                    <button type="button" onclick="addReqLabel()" class="btn btn-secondary px-3 w-10 flex justify-center h-9">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <p class="text-xs text-muted-foreground mt-1">If set, only workers matching ALL these labels will be assigned this task.</p>
+            </div>
+            
             <div class="flex justify-end gap-2 mt-6">
                 <button type="button" class="btn btn-secondary border border-border" onclick="document.getElementById('createAssignmentModal').classList.add('hidden')">Cancel</button>
-                <button type="submit" class="btn btn-primary">Create</button>
+                <button type="submit" class="btn btn-primary" onclick="prepareReqLabelsSubmit()">Create</button>
             </div>
         </form>
     </div>
@@ -55,6 +73,7 @@
                 <th class="p-4 font-medium text-muted-foreground">ID</th>
                 <th class="p-4 font-medium text-muted-foreground">Target (Account)</th>
                 <th class="p-4 font-medium text-muted-foreground">Visa Center</th>
+                <th class="p-4 font-medium text-muted-foreground">Requirements</th>
                 <th class="p-4 font-medium text-muted-foreground">Target Dates</th>
                 <th class="p-4 font-medium text-muted-foreground">Status</th>
                 <th class="p-4 font-medium text-muted-foreground">Leased To</th>
@@ -68,6 +87,17 @@
                 </td>
                 <td class="p-4 text-foreground font-medium">{{ asm.account_username }}</td>
                 <td class="p-4 text-muted-foreground">{{ asm.visa_center }}</td>
+                <td class="p-4 text-muted-foreground">
+                    {% if asm.required_labels %}
+                        <div class="flex flex-wrap gap-1">
+                        {% for k, v in asm.required_labels.items() %}
+                            <span class="px-1.5 py-0.5 bg-muted border border-border rounded text-[10px] text-foreground">{{ k }}:{{ v }}</span>
+                        {% endfor %}
+                        </div>
+                    {% else %}
+                        <span class="text-xs italic text-muted-foreground">-</span>
+                    {% endif %}
+                </td>
                 <td class="p-4 text-muted-foreground">{{ asm.date_from }} to {{ asm.date_to }}</td>
                 <td class="p-4">
                     {% if asm.status == 'Leased' %}
@@ -82,10 +112,58 @@
             </tr>
             {% else %}
             <tr>
-                <td colspan="6" class="p-8 text-center text-muted-foreground">No assignments configured.</td>
+                <td colspan="7" class="p-8 text-center text-muted-foreground">No assignments configured.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let reqLabels = {};
+
+    function renderReqLabels() {
+        const container = document.getElementById('req-labels-container');
+        container.innerHTML = '';
+        if (Object.keys(reqLabels).length === 0) {
+            container.innerHTML = '<span class="text-xs text-muted-foreground italic px-1">No requirements (any worker can run this)</span>';
+            return;
+        }
+        for (const [key, val] of Object.entries(reqLabels)) {
+            const tag = document.createElement('div');
+            tag.className = 'px-2 py-1 text-xs bg-muted text-foreground rounded-md border border-border flex items-center gap-1.5 shadow-sm';
+            tag.innerHTML = `
+                <span class="text-muted-foreground font-medium">${key}:</span>${val}
+                <button type="button" onclick="removeReqLabel('${key}')" class="ml-1 text-muted-foreground hover:text-destructive transition-colors"><i data-lucide="x" class="w-3 h-3"></i></button>
+            `;
+            container.appendChild(tag);
+        }
+        if(window.lucide) window.lucide.createIcons();
+    }
+
+    function addReqLabel() {
+        const kInput = document.getElementById('req-key-input');
+        const vInput = document.getElementById('req-value-input');
+        const k = kInput.value.trim();
+        const v = vInput.value.trim();
+        if (k && v) {
+            reqLabels[k] = v;
+            kInput.value = '';
+            vInput.value = '';
+            renderReqLabels();
+            kInput.focus();
+        }
+    }
+
+    function removeReqLabel(key) {
+        delete reqLabels[key];
+        renderReqLabels();
+    }
+
+    function prepareReqLabelsSubmit() {
+        document.getElementById('hidden-req-labels-input').value = JSON.stringify(reqLabels);
+    }
+</script>
 {% endblock %}

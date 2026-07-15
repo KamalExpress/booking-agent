@@ -145,17 +145,27 @@ async def create_assignment(
     target_start_date: str = Form(...),
     target_end_date: str = Form(...),
     visa_center: str = Form(...),
+    required_labels: str = Form(""),
     db: Session = Depends(get_db)
 ):
+    import json
     try:
         start_date = datetime.strptime(target_start_date, '%Y-%m-%d')
         end_date = datetime.strptime(target_end_date, '%Y-%m-%d')
         
+        parsed_labels = {}
+        if required_labels:
+            try:
+                parsed_labels = json.loads(required_labels)
+            except json.JSONDecodeError:
+                pass
+                
         new_assignment = Assignment(
             scraper_account_id=scraper_account_id,
             date_from=start_date.strftime('%d/%m/%Y'),
             date_to=end_date.strftime('%d/%m/%Y'),
             visa_center=visa_center,
+            required_labels=parsed_labels,
             status='Active'
         )
         db.add(new_assignment)
@@ -163,6 +173,21 @@ async def create_assignment(
     except Exception as e:
         print(f"Failed to create assignment: {e}")
         db.rollback()
+
+@router.post("/workers/{worker_id}/edit")
+async def edit_worker(worker_id: str, labels: str = Form(""), max_concurrency: int = Form(1), db: Session = Depends(get_db)):
+    import json
+    worker = db.query(WorkerNode).filter(WorkerNode.worker_id == worker_id).first()
+    if worker:
+        try:
+            parsed_labels = json.loads(labels) if labels else {}
+            worker.labels = parsed_labels
+            worker.max_concurrency = max_concurrency
+            db.commit()
+        except Exception as e:
+            print(f"Failed to update worker: {e}")
+            db.rollback()
+    return RedirectResponse(url=f"/workers/{worker_id}", status_code=303)
         
     return RedirectResponse(url="/assignments", status_code=303)
 
