@@ -170,12 +170,14 @@ def get_runtime_config(worker: WorkerNode = Depends(verify_worker_hmac), db: Ses
     saas_version = int(saas_version_setting.value) if saas_version_setting and saas_version_setting.value else 1
     
     captcha_provider = db.query(SystemSetting).filter(SystemSetting.key == "captcha.provider").first()
+    captcha_api_key = db.query(SystemSetting).filter(SystemSetting.key == "captcha.api_key").first()
     
     return {
         "version": saas_version,
         "ttl": 1800,
         "captcha": {
-            "provider": captcha_provider.value if captcha_provider else "capsolver"
+            "provider": captcha_provider.value if captcha_provider else "capsolver",
+            "api_key": captcha_api_key.value if captcha_api_key else ""
         },
         "proxy": {},
         "browser": {
