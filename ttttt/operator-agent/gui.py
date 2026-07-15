@@ -85,8 +85,22 @@ class KamalExpressMonitorApp(ctk.CTk):
         self.status_label = ctk.CTkLabel(self.controls_frame, text="Status: IDLE", text_color="gray")
         self.status_label.pack(side="right", padx=20, pady=20)
 
+        # --- Test Mode Frame ---
+        self.test_frame = ctk.CTkFrame(self.dashboard_frame)
+        self.test_frame.grid(row=1, column=0, padx=20, pady=(0, 20), sticky="ew")
+        
+        self.test_label = ctk.CTkLabel(self.test_frame, text="Test Mode (E2E):", font=ctk.CTkFont(weight="bold"))
+        self.test_label.pack(side="left", padx=20, pady=10)
+        
+        self.btn_test_slots = ctk.CTkButton(self.test_frame, text="Simulate Slot Found", fg_color="purple", hover_color="darkmagenta", command=self.test_slot_found)
+        self.btn_test_slots.pack(side="left", padx=10, pady=10)
+        
+        self.btn_test_no_slots = ctk.CTkButton(self.test_frame, text="Simulate No Slots", fg_color="orange", hover_color="darkorange", command=self.test_no_slots)
+        self.btn_test_no_slots.pack(side="left", padx=10, pady=10)
+
         self.log_textbox = ctk.CTkTextbox(self.dashboard_frame, wrap="word", state="disabled")
-        self.log_textbox.grid(row=1, column=0, padx=20, pady=(0, 20), sticky="nsew")
+        self.log_textbox.grid(row=2, column=0, padx=20, pady=(0, 20), sticky="nsew")
+        self.dashboard_frame.grid_rowconfigure(2, weight=1)
 
         # Initialize Data & View
         self.monitor_engine = None
@@ -149,6 +163,37 @@ class KamalExpressMonitorApp(ctk.CTk):
         self.btn_start.configure(state="normal")
         self.status_label.configure(text="Status: IDLE", text_color="gray")
         logging.info("Worker fully stopped.")
+        
+    def _run_test_event(self, event_type: str, log_msg: str):
+        base_url = self.url_entry.get().strip()
+        if not base_url:
+            logging.error("SaaS URL cannot be empty to run tests.")
+            return
+            
+        def _send():
+            try:
+                logging.info(f"Test Mode: Sending '{event_type}' to {base_url}...")
+                from api_client import SaaSClient
+                api = SaaSClient(base_url)
+                if not api.worker_id or not api.secret:
+                    # Attempt to register just for testing if no creds
+                    logging.info("Test Mode: Registering temporary worker credentials...")
+                    if not api.register("gui-tester", "local"):
+                        logging.error("Test Mode: Failed to register worker for test event.")
+                        return
+                
+                api.log_event(None, event_type, "info", {"test_mode": True})
+                logging.info(f"Test Mode: Successfully sent '{event_type}'. {log_msg}")
+            except Exception as e:
+                logging.error(f"Test Mode Error: {e}")
+                
+        threading.Thread(target=_send, daemon=True).start()
+
+    def test_slot_found(self):
+        self._run_test_event("SLOT_FOUND", "SaaS should pause assignments and push a notification.")
+        
+    def test_no_slots(self):
+        self._run_test_event("NO_SLOTS_FOUND", "SaaS should push a 'No Slots' notification.")
 
 if __name__ == "__main__":
     app = KamalExpressMonitorApp()
