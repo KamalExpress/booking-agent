@@ -15,7 +15,25 @@ def init_db():
             "ALTER TABLE scraper_accounts ADD COLUMN last_login TIMESTAMP",
             "ALTER TABLE scraper_accounts ADD COLUMN preferred_worker_id VARCHAR",
             "ALTER TABLE scraper_accounts ADD COLUMN proxy_string VARCHAR",
-            "ALTER TABLE assignments ADD COLUMN last_checked TIMESTAMP"
+            "ALTER TABLE assignments ADD COLUMN last_checked TIMESTAMP",
+            # Sprint 5 schema changes
+            "ALTER TABLE worker_nodes ADD COLUMN observed_ip VARCHAR",
+            "ALTER TABLE worker_nodes ADD COLUMN public_ip VARCHAR",
+            "ALTER TABLE worker_nodes ADD COLUMN local_ip VARCHAR",
+            "ALTER TABLE worker_nodes ADD COLUMN os VARCHAR",
+            "ALTER TABLE worker_nodes ADD COLUMN architecture VARCHAR",
+            "ALTER TABLE worker_nodes ADD COLUMN chrome_version VARCHAR",
+            "ALTER TABLE worker_nodes ADD COLUMN playwright_version VARCHAR",
+            "ALTER TABLE worker_nodes ADD COLUMN python_version VARCHAR",
+            "ALTER TABLE worker_nodes ADD COLUMN cpu_cores INTEGER",
+            "ALTER TABLE worker_nodes ADD COLUMN ram VARCHAR",
+            "ALTER TABLE worker_nodes ADD COLUMN max_concurrency INTEGER DEFAULT 1",
+            "ALTER TABLE worker_nodes ADD COLUMN current_concurrency INTEGER DEFAULT 0",
+            "ALTER TABLE worker_nodes ADD COLUMN scheduling_state VARCHAR DEFAULT 'Accepting Jobs'",
+            "ALTER TABLE scraper_accounts ADD COLUMN proxy_mode VARCHAR DEFAULT 'LEGACY'",
+            "ALTER TABLE assignments ADD COLUMN routing_policy_id INTEGER",
+            "ALTER TABLE leases ADD COLUMN last_heartbeat TIMESTAMP",
+            "ALTER TABLE leases ADD COLUMN status VARCHAR DEFAULT 'Pending'"
         ]:
             try:
                 conn.execute(text(stmt))

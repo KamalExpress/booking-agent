@@ -68,6 +68,44 @@ async def workers_page(request: Request, db: Session = Depends(get_db)):
         }
     )
 
+@router.get("/workers/{worker_id}", response_class=HTMLResponse)
+async def worker_detail_page(worker_id: str, request: Request, db: Session = Depends(get_db)):
+    worker = db.query(WorkerNode).filter(WorkerNode.worker_id == worker_id).first()
+    if not worker:
+        return RedirectResponse(url="/workers")
+        
+    leases = db.query(Lease).filter(Lease.worker_id == worker_id).all()
+    logs = db.query(EventLog).filter(EventLog.worker_id == worker_id).order_by(EventLog.created_at.desc()).limit(100).all()
+    
+    return templates.TemplateResponse(
+        request=request,
+        name="worker_detail.html",
+        context={
+            "request": request,
+            "active_page": "workers",
+            "worker": worker,
+            "leases": leases,
+            "logs": logs
+        }
+    )
+
+@router.post("/workers/{worker_id}/action")
+async def worker_action(worker_id: str, action: str = Form(...), db: Session = Depends(get_db)):
+    worker = db.query(WorkerNode).filter(WorkerNode.worker_id == worker_id).first()
+    if worker:
+        if action == "accept_jobs":
+            worker.scheduling_state = "Accepting Jobs"
+        elif action == "stop_accepting":
+            worker.scheduling_state = "Stop Accepting Jobs"
+        elif action == "drain":
+            worker.scheduling_state = "Draining"
+        elif action == "disable":
+            worker.scheduling_state = "Disabled"
+        elif action == "maintenance":
+            worker.scheduling_state = "Maintenance"
+        db.commit()
+    return RedirectResponse(url=f"/workers/{worker_id}", status_code=303)
+
 @router.get("/assignments", response_class=HTMLResponse)
 async def assignments_page(request: Request, db: Session = Depends(get_db)):
     assignments = db.query(Assignment).order_by(Assignment.id.desc()).all()

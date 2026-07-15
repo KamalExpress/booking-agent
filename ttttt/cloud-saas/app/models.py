@@ -83,11 +83,30 @@ class WorkerNode(Base):
     __tablename__ = "worker_nodes"
     worker_id = Column(String, primary_key=True, index=True)
     secret_hash = Column(String, nullable=False)
-    labels = Column(JSONB, default=list) # e.g., ["pakistan", "residential"]
+    labels = Column(JSONB, default=dict) # e.g., {"system.os": "windows"}
     version = Column(String, nullable=True)
     git_commit = Column(String, nullable=True)
+    
+    # Network
+    observed_ip = Column(String, nullable=True)
+    public_ip = Column(String, nullable=True)
+    local_ip = Column(String, nullable=True)
+    
+    # Capabilities
+    os = Column(String, nullable=True)
+    architecture = Column(String, nullable=True)
+    chrome_version = Column(String, nullable=True)
+    playwright_version = Column(String, nullable=True)
+    python_version = Column(String, nullable=True)
+    cpu_cores = Column(Integer, nullable=True)
+    ram = Column(String, nullable=True)
+    max_concurrency = Column(Integer, default=1)
+    current_concurrency = Column(Integer, default=0)
+    
+    # State
     last_heartbeat = Column(DateTime, nullable=True)
-    status = Column(String, default="Active")
+    status = Column(String, default="Offline") # Online, Offline, Error
+    scheduling_state = Column(String, default="Accepting Jobs") # Accepting Jobs, Stop Accepting Jobs, Draining, Disabled, Maintenance
     created_at = Column(DateTime, default=datetime.utcnow)
 
     HEARTBEAT_INTERVAL_SECONDS = 30
@@ -114,6 +133,7 @@ class ScraperAccount(Base):
     username = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
     proxy_string = Column(String, nullable=True)
+    proxy_mode = Column(String, default="LEGACY") # LEGACY, POOL
     preferred_worker_id = Column(String, ForeignKey("worker_nodes.worker_id"), nullable=True)
     status = Column(String, default="Idle") # Idle, Leased, Banned
     last_login = Column(DateTime, nullable=True)
@@ -129,6 +149,7 @@ class Assignment(Base):
     polling_interval = Column(Integer, default=300)
     priority = Column(Integer, default=0)
     status = Column(String, default="Active")
+    routing_policy_id = Column(Integer, nullable=True)
     last_checked = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
@@ -138,6 +159,8 @@ class Lease(Base):
     assignment_id = Column(Integer, ForeignKey("assignments.id"), nullable=False)
     worker_id = Column(String, ForeignKey("worker_nodes.worker_id"), nullable=False)
     expires_at = Column(DateTime, nullable=False)
+    last_heartbeat = Column(DateTime, nullable=True)
+    status = Column(String, default="Pending") # Pending, Leased, Running, Completed, Expired, Cancelled, Failed, Abandoned
     created_at = Column(DateTime, default=datetime.utcnow)
 
 class EventLog(Base):
@@ -149,6 +172,13 @@ class EventLog(Base):
     severity = Column(String, default="info") # info, warning, error
     event_type = Column(String, nullable=False) # LOGIN_SUCCESS, RATE_LIMIT, etc
     payload = Column(JSONB, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+class WorkerVersion(Base):
+    __tablename__ = "worker_versions"
+    version = Column(String, primary_key=True, index=True)
+    is_supported = Column(Boolean, default=True)
+    deprecated_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 class SystemSetting(Base):

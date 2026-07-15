@@ -5,6 +5,8 @@ import hashlib
 import requests
 import logging
 import threading
+import platform
+import sys
 
 class SaaSClient:
     def __init__(self, base_url: str):
@@ -13,7 +15,6 @@ class SaaSClient:
         self.secret = None
         self.session = requests.Session()
         self._config_cache = None
-        self._config_hash = None
         self._config_expires_at = 0
         self.load_credentials()
 
@@ -34,15 +35,29 @@ class SaaSClient:
         if self.worker_id and self.secret:
             return True
             
-        labels = labels or ["desktop"]
+        labels = labels or {"system.location": location, "network.type": "residential"}
+        
+        # Attempt to gather system metrics
+        try:
+            import psutil
+            cpu_cores = psutil.cpu_count(logical=True)
+            ram = f"{round(psutil.virtual_memory().total / (1024**3), 2)}GB"
+        except ImportError:
+            cpu_cores = 2
+            ram = "2GB"
+            
         payload = {
             "hostname": hostname,
             "machine_id": "local",
-            "os": os.name,
-            "cpu": "unknown",
-            "ram": "unknown",
-            "version": "1.0",
-            "location": location,
+            "os": platform.system(),
+            "architecture": platform.machine(),
+            "cpu_cores": cpu_cores,
+            "ram": ram,
+            "version": "1.0.0",
+            "chrome_version": "120.0", # Mocked for now
+            "playwright_version": "1.40.0", # Mocked for now
+            "python_version": platform.python_version(),
+            "max_concurrency": 1,
             "labels": labels
         }
         try:
@@ -97,13 +112,20 @@ class SaaSClient:
         def _heartbeat_loop():
             while True:
                 try:
+                    cfg_ver = self._config_cache.get("version", 0) if self._config_cache else 0
                     res = self._request("POST", "/api/v1/worker/heartbeat", {
                         "cpu_percent": 0,
                         "ram_percent": 0,
-                        "running_assignments": 0
+                        "running_assignments": 0,
+                        "public_ip": None, # Could resolve via icanhazip.com
+                        "local_ip": "127.0.0.1",
+                        "runtime_config_version": cfg_ver
                     })
                     if res and res.status_code == 200:
-                        logging.debug("Heartbeat successful")
+                        data = res.json()
+                        if data.get("refresh_runtime_config"):
+                            logging.info("SaaS requested runtime config refresh")
+                            self.get_runtime_config(force=True)
                     else:
                         logging.warning("Heartbeat failed")
                 except Exception as e:
@@ -113,38 +135,26 @@ class SaaSClient:
         t = threading.Thread(target=_heartbeat_loop, daemon=True)
         t.start()
         
-    def get_runtime_config(self):
+    def get_runtime_config(self, force=False):
         now = time.time()
         
-        # Return cached config if TTL hasn't expired
-        if self._config_cache and now < self._config_expires_at:
+        # Return cached config if TTL hasn't expired and not forced
+        if not force and self._config_cache and now < self._config_expires_at:
             return self._config_cache
             
-        headers = {}
-        if self._config_hash:
-            headers["If-Config-Hash"] = self._config_hash
-            
-        res = self._request("GET", "/api/v1/worker/runtime-config", headers=headers)
+        res = self._request("GET", "/api/v1/worker/runtime-config")
         if not res:
             return self._config_cache # Fallback to stale cache if network fails
-            
-        if res.status_code == 304:
-            # Hash matches, reset TTL using existing cache's TTL
-            ttl = self._config_cache.get("ttl", 1800)
-            self._config_expires_at = now + ttl
-            return self._config_cache
             
         if res.status_code == 200:
             config = res.json()
             self._config_cache = config
-            self._config_hash = config.get("config_hash")
             self._config_expires_at = now + config.get("ttl", 1800)
             return config
             
         return self._config_cache
-
         
-    def get_next_assignment(self):
+    def get_next_lease(self):
         res = self._request("GET", "/api/v1/worker/assignments/next")
         if not res:
             return None, 30
@@ -159,7 +169,8 @@ class SaaSClient:
         return None, 30
 
     def log_event(self, assignment_id: int, event_type: str, severity: str, payload: dict):
-        self._request("POST", f"/api/v1/worker/assignments/{assignment_id}/event", {
+        self._request("POST", f"/api/v1/worker/logs", {
+            "assignment_id": assignment_id,
             "severity": severity,
             "event_type": event_type,
             "payload": payload
@@ -167,4 +178,3 @@ class SaaSClient:
         
     def complete_assignment(self, assignment_id: int):
         self._request("POST", f"/api/v1/worker/assignments/{assignment_id}/complete")
-

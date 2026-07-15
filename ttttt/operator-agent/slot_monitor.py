@@ -38,19 +38,19 @@ class SlotMonitorEngine(threading.Thread):
         while not self._stop_event.is_set():
             try:
                 # 3. Pull next assignment
-                assignment, retry_after = self.api.get_next_assignment()
+                lease, retry_after = self.api.get_next_lease()
                 
-                if not assignment:
+                if not lease:
                     logging.info(f"No assignments available. Sleeping for {retry_after} seconds.")
                     self._stop_event.wait(retry_after)
                     continue
                     
-                # 4. Parse Assignment
-                assignment_id = assignment["assignment_id"]
-                account = assignment["scraper_account"]
-                visa_center = assignment["visa_center"]
-                date_from = assignment["date_from"]
-                date_to = assignment["date_to"]
+                # 4. Parse Lease
+                assignment_id = lease["assignment_context"]["id"]
+                account = lease["scraper_account"]
+                visa_center = lease["assignment_context"]["visa_center"]
+                date_from = lease["assignment_context"]["date_from"]
+                date_to = lease["assignment_context"]["date_to"]
                 
                 logging.info(f"Received Assignment #{assignment_id} for center {visa_center}.")
                 
