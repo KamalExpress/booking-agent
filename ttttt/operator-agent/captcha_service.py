@@ -138,7 +138,12 @@ class ManualCaptchaService(CaptchaService):
             page = context.new_page()
             
             logging.info("Navigating to the login page...")
-            page.goto(url)
+            try:
+                page.goto(url)
+            except Exception as e:
+                logging.error(f"Playwright failed to navigate to login page: {e}")
+                browser.close()
+                return None
             
             # Autofill credentials so the human doesn't have to
             import os

@@ -114,8 +114,12 @@ class OperatorAgent:
         }
         
         logging.debug(f"Login payload: {payload}")
-        response = self.session.post(url, json=payload)
-        logging.debug(f"Login response status: {response.status_code}, text: {response.text}")
+        try:
+            response = self.session.post(url, json=payload)
+            logging.debug(f"Login response status: {response.status_code}, text: {response.text}")
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Network error during login request: {e}")
+            return False
         
         if response.status_code == 200:
             logging.info("Login successful!")

@@ -72,7 +72,12 @@ class SlotMonitorEngine(threading.Thread):
                 
                 # 5. Execute Assignment Logic
                 logging.info(f"Executing login flow for account {account['username']}...")
-                login_success = agent.login()
+                try:
+                    login_success = agent.login()
+                except Exception as e:
+                    logging.error(f"Worker Engine encountered error during login: {e}")
+                    self.api.log_event(assignment_id, "LOGIN_EXCEPTION", "error", {"username": account["username"], "error": str(e)})
+                    login_success = False
                 
                 if not login_success:
                     self.api.log_event(assignment_id, "LOGIN_FAILED", "error", {"username": account["username"]})
