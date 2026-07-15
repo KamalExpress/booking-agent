@@ -20,6 +20,19 @@ services:
     networks:
       - sam-agent-platform_default
 
+  operator-worker:
+    build: 
+      context: ../operator-agent
+      dockerfile: Dockerfile
+    container_name: operator-worker
+    restart: unless-stopped
+    environment:
+      - SAAS_BASE_URL=http://cloud-saas:8000
+    networks:
+      - sam-agent-platform_default
+    depends_on:
+      - cloud-saas
+
 networks:
   sam-agent-platform_default:
     external: true
