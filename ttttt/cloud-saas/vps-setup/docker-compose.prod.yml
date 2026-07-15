@@ -31,7 +31,7 @@ services:
     container_name: operator-worker-prod
     restart: always
     environment:
-      - SAAS_BASE_URL=http://cloud-saas:8000
+      - SAAS_BASE_URL=http://cloud-saas-prod:8000
     depends_on:
       - cloud-saas
     networks:

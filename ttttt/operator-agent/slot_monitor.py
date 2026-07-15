@@ -27,9 +27,17 @@ class SlotMonitorEngine(threading.Thread):
     def run(self):
         logging.info("Starting Worker Node Scheduler Engine...")
         
-        # 1. Register with SaaS
-        if not self.api.register(hostname="worker-01"):
-            logging.error("Failed to register with SaaS. Cannot start worker.")
+        # 1. Register with SaaS (with retries in case FastAPI is still booting)
+        registered = False
+        for attempt in range(10):
+            if self.api.register(hostname="worker-01"):
+                registered = True
+                break
+            logging.info(f"SaaS not ready yet (Attempt {attempt+1}/10). Retrying in 3 seconds...")
+            time.sleep(3)
+            
+        if not registered:
+            logging.error("Failed to register with SaaS after 10 attempts. Cannot start worker.")
             return
             
         # 2. Start Heartbeat thread
