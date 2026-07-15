@@ -117,6 +117,7 @@ class SlotMonitorEngine(threading.Thread):
                 
                 if not slots_found:
                     logging.info("Finished checking assignment date range. No slots found.")
+                    self.api.log_event(assignment_id, "NO_SLOTS_FOUND", "info", {"date_from": date_from, "date_to": date_to})
                 
             except Exception as e:
                 logging.error(f"Worker Engine encountered error: {e}", exc_info=True)

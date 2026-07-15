@@ -361,3 +361,56 @@ async def update_global_settings(
         
     db.commit()
     return RedirectResponse(url="/settings", status_code=303)
+
+@router.get("/diagnostics")
+async def diagnostics_page(request: Request, current_user: User = Depends(get_current_user)):
+    return templates.TemplateResponse("diagnostics.html", {"request": request, "current_user": current_user})
+
+@router.post("/api/diagnostics/test-captcha")
+async def test_captcha_api(current_user: User = Depends(require_tenant_admin), db: Session = Depends(get_db)):
+    import requests
+    captcha_api_key_setting = db.query(SystemSetting).filter(SystemSetting.key == "captcha.api_key").first()
+    decrypted_api_key = ""
+    if captcha_api_key_setting:
+        if captcha_api_key_setting.encrypted_value:
+            from secrets_manager import secrets_manager
+            decrypted_api_key = secrets_manager.decrypt(captcha_api_key_setting.encrypted_value)
+        elif captcha_api_key_setting.value:
+            decrypted_api_key = captcha_api_key_setting.value
+            
+    if not decrypted_api_key:
+        return {"status": "error", "detail": "No API key configured."}
+        
+    try:
+        res = requests.post("https://api.capsolver.com/getBalance", json={"clientKey": decrypted_api_key}, timeout=10)
+        data = res.json()
+        if data.get("errorId") == 0:
+            return {"status": "ok", "balance": data.get("balance", 0)}
+        else:
+            return {"status": "error", "detail": data.get("errorDescription", "Unknown Error")}
+    except Exception as e:
+        return {"status": "error", "detail": str(e)}
+
+@router.post("/api/diagnostics/simulate-event")
+async def simulate_event(event_type: str = Form(...), current_user: User = Depends(require_tenant_admin), db: Session = Depends(get_db)):
+    from notifications import send_push_notification
+    from datetime import datetime
+    
+    if event_type == "NO_SLOTS_FOUND":
+        friendly_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
+        send_push_notification(db, "Slot Monitor", f"No Slots available; last checked: {friendly_time}")
+        
+    elif event_type == "SLOT_FOUND":
+        send_push_notification(db, "Slots Found!", "Slots are available; you can try booking now!")
+        
+        active_assignments = db.query(Assignment).filter(Assignment.status.in_(["Active", "Leased"])).all()
+        for asm in active_assignments:
+            asm.status = "Paused"
+            
+        if active_assignments:
+            assignment_ids = [a.id for a in active_assignments]
+            db.query(Lease).filter(Lease.assignment_id.in_(assignment_ids)).delete(synchronize_session=False)
+            
+        db.commit()
+        
+    return RedirectResponse(url="/diagnostics", status_code=303)

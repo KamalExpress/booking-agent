@@ -10,6 +10,7 @@ import time
 from datetime import datetime, timedelta
 import uuid
 import json
+from notifications import send_push_notification
 
 from models import WorkerNode, Assignment, Lease, EventLog, ScraperAccount, SystemSetting, WorkerVersion
 from secrets_manager import secrets_manager
@@ -362,5 +363,22 @@ def submit_logs(
             if account:
                 account.last_login = datetime.utcnow()
                 
+    elif req.event_type == "NO_SLOTS_FOUND":
+        friendly_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
+        send_push_notification(db, "Slot Monitor", f"No Slots available; last checked: {friendly_time}")
+        
+    elif req.event_type == "SLOT_FOUND":
+        send_push_notification(db, "Slots Found!", "Slots are available; you can try booking now!")
+        
+        # Pause ALL active assignments to stop wasting captcha tokens
+        active_assignments = db.query(Assignment).filter(Assignment.status.in_(["Active", "Leased"])).all()
+        for asm in active_assignments:
+            asm.status = "Paused"
+            
+        # Clean up any active leases for these assignments so workers drop them
+        if active_assignments:
+            assignment_ids = [a.id for a in active_assignments]
+            db.query(Lease).filter(Lease.assignment_id.in_(assignment_ids)).delete(synchronize_session=False)
+
     db.commit()
     return {"status": "ok"}

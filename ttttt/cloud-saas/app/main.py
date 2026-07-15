@@ -13,19 +13,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from models import SessionLocal, engine, Base, User, Tenant, RoleEnum, AuditLog, MonitorConfig, PushSubscription, ScraperAccount
 from auth import get_current_user, require_super_admin, require_tenant_admin, create_access_token, verify_password, get_password_hash
-VAPID_PUBLIC_KEY = os.getenv("VAPID_PUBLIC_KEY", "BPiJHAyOHhUN-lfs6ZZbCsJxG0044_Hk7w2ezWWKxRW1NPPCq4OdT_WGakDn6__jhpPtrc0nWLtpYThZk3fIBOM")
-_vapid_env = os.getenv("VAPID_PRIVATE_KEY")
-if _vapid_env and "-----BEGIN PRIVATE KEY-----" in _vapid_env:
-    # pywebpush requires a file path for PEM keys, not the raw string
-    pem_data = _vapid_env.replace('\\n', '\n')
-    temp_pem_path = os.path.join(tempfile.gettempdir(), "vapid_private_key.pem")
-    with open(temp_pem_path, "w") as f:
-        f.write(pem_data)
-    VAPID_PRIVATE_KEY = temp_pem_path
-elif _vapid_env:
-    VAPID_PRIVATE_KEY = _vapid_env.replace('\\n', '\n')
-else:
-    VAPID_PRIVATE_KEY = os.path.join(os.path.dirname(os.path.dirname(__file__)), "private_key.pem")
+# VAPID setup moved to notifications.py
 
 app = FastAPI(title="Kamal Express SaaS Backend")
 
@@ -520,51 +508,20 @@ class BroadcastRequest(BaseModel):
 
 @app.post("/api/push/broadcast")
 def broadcast_push_alert(req: BroadcastRequest, current_user: User = Depends(require_tenant_admin), db: Session = Depends(get_db)):
-    from pywebpush import webpush
+    from notifications import send_push_notification
     # Get all users for this tenant
     users = db.query(User).filter(User.tenant_id == current_user.tenant_id).all()
     user_ids = [u.id for u in users]
-    subs = db.query(PushSubscription).filter(PushSubscription.user_id.in_(user_ids)).all()
     
-    logger.info(f"Broadcast Alert: Sending to {len(subs)} devices across {len(users)} users.")
-    success_count = 0
-    for sub in subs:
-        try:
-            webpush(
-                subscription_info={
-                    "endpoint": sub.endpoint,
-                    "keys": {"p256dh": sub.p256dh, "auth": sub.auth}
-                },
-                # We format the payload dynamically based on the input message
-                data=f'{{"title":"Admin Broadcast!","body":"{req.message}","url":"/"}}',
-                vapid_private_key=VAPID_PRIVATE_KEY,
-                vapid_claims={"sub": "mailto:admin@samwebdevs.dpdns.org"}
-            )
-            success_count += 1
-        except Exception as e:
-            logger.error(f"Failed to broadcast push to endpoint {sub.endpoint[:30]}... Error: {str(e)}")
+    success_count = send_push_notification(db, "Admin Broadcast!", req.message, user_ids)
     
-    logger.info(f"Broadcast Complete: Successfully sent to {success_count} out of {len(subs)} devices.")
-    return {"status": "success", "sent": success_count, "total_devices": len(subs), "total_users": len(users)}
+    return {"status": "ok", "delivered": success_count}
 
 @app.post("/api/push/test")
 def test_push_alert(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    from pywebpush import webpush
-    subs = db.query(PushSubscription).filter(PushSubscription.user_id == current_user.id).all()
-    for sub in subs:
-        try:
-            webpush(
-                subscription_info={
-                    "endpoint": sub.endpoint,
-                    "keys": {"p256dh": sub.p256dh, "auth": sub.auth}
-                },
-                data=f'{{"title":"Test Alarm!","body":"This is a test push notification.","url":"/"}}',
-                vapid_private_key=VAPID_PRIVATE_KEY,
-                vapid_claims={"sub": "mailto:admin@samwebdevs.dpdns.org"}
-            )
-        except Exception as e:
-            print("Failed to send test push:", e)
-    return {"status": "success"}
+    from notifications import send_push_notification
+    success_count = send_push_notification(db, "Test Push Notification", "This is a test notification from the SaaS dashboard.", [current_user.id])
+    return {"status": "ok", "delivered": success_count}
 
 # Mount Static Files (PWA)
 static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
