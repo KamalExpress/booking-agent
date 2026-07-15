@@ -23,6 +23,20 @@ services:
     networks:
       - saas-network
 
+  operator-worker:
+    image: operator-worker:prod
+    build: 
+      context: ../../operator-agent
+      dockerfile: Dockerfile
+    container_name: operator-worker-prod
+    restart: always
+    environment:
+      - SAAS_BASE_URL=http://cloud-saas:8000
+    depends_on:
+      - cloud-saas
+    networks:
+      - saas-network
+
   db:
     image: postgres:15-alpine
     container_name: cloud-saas-db-prod
