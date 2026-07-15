@@ -170,9 +170,16 @@
 
             // Send to server
             const token = localStorage.getItem("token") || "";
+            const subData = subscription.toJSON();
+            const payload = {
+                endpoint: subData.endpoint,
+                p256dh: subData.keys.p256dh,
+                auth: subData.keys.auth
+            };
+
             const subRes = await fetch("/api/push/subscribe", {
                 method: "POST",
-                body: JSON.stringify(subscription),
+                body: JSON.stringify(payload),
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": "Bearer " + token
@@ -184,7 +191,9 @@
                 statusDiv.className = "text-sm mt-3 text-emerald-500 font-medium";
             } else {
                 const errData = await subRes.json();
-                throw new Error(errData.detail || "Failed to save subscription on server.");
+                let errMsg = errData.detail;
+                if (typeof errMsg === 'object') errMsg = JSON.stringify(errMsg);
+                throw new Error(errMsg || "Failed to save subscription on server.");
             }
 
         } catch (err) {
