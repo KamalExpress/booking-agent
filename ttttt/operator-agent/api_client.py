@@ -73,19 +73,21 @@ class SaaSClient:
             "x-signature": signature
         }
 
-    def _request(self, method: str, path: str, json_data=None):
+    def _request(self, method: str, path: str, json_data=None, headers=None):
         import json
         body = json.dumps(json_data).encode('utf-8') if json_data else b""
-        headers = self._sign_request(method, path, body)
+        req_headers = self._sign_request(method, path, body)
+        if headers:
+            req_headers.update(headers)
         if json_data:
-            headers['Content-Type'] = 'application/json'
+            req_headers['Content-Type'] = 'application/json'
             
         url = f"{self.base_url}{path}"
         try:
             if method == "GET":
-                res = self.session.get(url, headers=headers)
+                res = self.session.get(url, headers=req_headers)
             else:
-                res = self.session.post(url, data=body, headers=headers)
+                res = self.session.post(url, data=body, headers=req_headers)
             return res
         except Exception as e:
             logging.error(f"API request failed: {e}")
