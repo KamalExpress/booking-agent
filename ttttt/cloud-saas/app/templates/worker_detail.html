@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block title %}Worker {{ worker.worker_id }} - Kamal Express SaaS{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <a href="/workers" class="text-sm text-[#a1a1aa] hover:text-[#fafafa] flex items-center gap-1 w-fit mb-4">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Workers
+    </a>
+    
+    <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+            <h1 class="text-2xl font-bold tracking-tight text-[#fafafa] font-mono">{{ worker.worker_id }}</h1>
+            
+            {% if worker.is_online %}
+                <span class="px-2.5 py-1 text-xs bg-emerald-500/10 text-emerald-500 rounded-full border border-emerald-500/20 flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    Online
+                </span>
+            {% else %}
+                <span class="px-2.5 py-1 text-xs bg-zinc-500/10 text-zinc-400 rounded-full border border-zinc-500/20 flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-zinc-500"></span>
+                    Offline
+                </span>
+            {% endif %}
+            
+            <span class="px-2.5 py-1 text-xs bg-[#27272a] text-[#a1a1aa] rounded-full border border-[#3f3f46]">
+                {{ worker.scheduling_state }}
+            </span>
+        </div>
+        
+        <div class="flex gap-2">
+            <form action="/workers/{{ worker.worker_id }}/action" method="POST" class="inline">
+                {% if worker.scheduling_state == 'Accepting Jobs' %}
+                    <button type="submit" name="action" value="stop_accepting" class="btn btn-secondary">Stop Accepting Jobs</button>
+                    <button type="submit" name="action" value="drain" class="btn btn-secondary text-yellow-500">Drain</button>
+                {% else %}
+                    <button type="submit" name="action" value="accept_jobs" class="btn btn-primary">Accept Jobs</button>
+                {% endif %}
+                <button type="submit" name="action" value="maintenance" class="btn btn-secondary">Maintenance</button>
+                <button type="submit" name="action" value="disable" class="btn btn-destructive">Disable</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <div class="card p-6 col-span-1 lg:col-span-2">
+        <h3 class="text-sm font-semibold text-[#a1a1aa] uppercase tracking-wider mb-4">Worker Capabilities</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-8">
+            <div>
+                <p class="text-xs text-[#a1a1aa] mb-1">OS / Architecture</p>
+                <p class="font-medium text-sm">{{ worker.os or 'Unknown' }} ({{ worker.architecture or '?' }})</p>
+            </div>
+            <div>
+                <p class="text-xs text-[#a1a1aa] mb-1">Hardware</p>
+                <p class="font-medium text-sm">{{ worker.cpu_cores or '?' }} Cores, {{ worker.ram or '?' }} RAM</p>
+            </div>
+            <div>
+                <p class="text-xs text-[#a1a1aa] mb-1">Chrome Version</p>
+                <p class="font-medium text-sm">{{ worker.chrome_version or 'Unknown' }}</p>
+            </div>
+            <div>
+                <p class="text-xs text-[#a1a1aa] mb-1">Worker Version</p>
+                <p class="font-medium text-sm">{{ worker.version or 'Unknown' }}</p>
+            </div>
+            <div>
+                <p class="text-xs text-[#a1a1aa] mb-1">Playwright Version</p>
+                <p class="font-medium text-sm">{{ worker.playwright_version or 'Unknown' }}</p>
+            </div>
+            <div>
+                <p class="text-xs text-[#a1a1aa] mb-1">Python Version</p>
+                <p class="font-medium text-sm">{{ worker.python_version or 'Unknown' }}</p>
+            </div>
+            <div>
+                <p class="text-xs text-[#a1a1aa] mb-1">Concurrency</p>
+                <p class="font-medium text-sm">{{ worker.current_concurrency }} / {{ worker.max_concurrency }}</p>
+            </div>
+        </div>
+        
+        {% if worker.labels %}
+        <div class="mt-6 pt-4 border-t border-[#27272a]">
+            <p class="text-xs text-[#a1a1aa] mb-3">Labels</p>
+            <div class="flex flex-wrap gap-2">
+                {% for key, val in worker.labels.items() %}
+                <span class="px-2 py-1 text-xs bg-[#27272a] text-[#fafafa] rounded border border-[#3f3f46]">
+                    <span class="text-[#a1a1aa]">{{ key }}=</span>{{ val }}
+                </span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="card p-6">
+        <h3 class="text-sm font-semibold text-[#a1a1aa] uppercase tracking-wider mb-4">Network Info</h3>
+        <div class="space-y-4">
+            <div>
+                <p class="text-xs text-[#a1a1aa] mb-1">SaaS Observed IP</p>
+                <p class="font-mono text-sm">{{ worker.observed_ip or 'Unknown' }}</p>
+            </div>
+            <div>
+                <p class="text-xs text-[#a1a1aa] mb-1">Worker Public IP (Reported)</p>
+                <p class="font-mono text-sm">
+                    {{ worker.public_ip or 'Unknown' }}
+                    {% if worker.public_ip and worker.observed_ip and worker.public_ip != worker.observed_ip %}
+                        <span class="ml-2 text-yellow-500 text-xs" title="Worker is likely behind a VPN/Proxy">(Mismatch)</span>
+                    {% endif %}
+                </p>
+            </div>
+            <div>
+                <p class="text-xs text-[#a1a1aa] mb-1">Worker Local IP</p>
+                <p class="font-mono text-sm">{{ worker.local_ip or 'Unknown' }}</p>
+            </div>
+            <div>
+                <p class="text-xs text-[#a1a1aa] mb-1">Last Heartbeat</p>
+                <p class="font-medium text-sm">
+                    {% if worker.last_heartbeat %}
+                        {{ worker.last_heartbeat.strftime('%Y-%m-%d %H:%M:%S UTC') }} 
+                        <span class="text-[#a1a1aa] ml-1">({{ worker.heartbeat_age | round | int }}s ago)</span>
+                    {% else %}
+                        Never
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabs Container -->
+<div class="mb-4 border-b border-[#27272a]">
+    <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="workerTabs">
+        <li class="mr-2">
+            <button class="inline-block p-4 border-b-2 border-blue-500 text-blue-500 rounded-t-lg active" id="tab-live-btn" onclick="switchTab('live')">Live Operations</button>
+        </li>
+        <li class="mr-2">
+            <button class="inline-block p-4 border-b-2 border-transparent hover:text-[#a1a1aa] hover:border-[#a1a1aa] text-[#a1a1aa] rounded-t-lg" id="tab-historical-btn" onclick="switchTab('historical')">Historical Data</button>
+        </li>
+    </ul>
+</div>
+
+<!-- Live Tab -->
+<div id="tab-live" class="tab-content block">
+    <h3 class="text-lg font-semibold mb-4">Active Leases</h3>
+    <div class="card overflow-hidden mb-8">
+        <table class="w-full text-sm text-left">
+            <thead class="text-xs text-[#a1a1aa] uppercase bg-[#18181b] border-b border-[#27272a]">
+                <tr>
+                    <th scope="col" class="px-6 py-4 font-medium">Lease ID</th>
+                    <th scope="col" class="px-6 py-4 font-medium">Assignment</th>
+                    <th scope="col" class="px-6 py-4 font-medium">Status</th>
+                    <th scope="col" class="px-6 py-4 font-medium">Expires At</th>
+                    <th scope="col" class="px-6 py-4 font-medium">Last Heartbeat</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-[#27272a]">
+                {% for lease in leases %}
+                <tr class="hover:bg-[#18181b]/50">
+                    <td class="px-6 py-4 font-medium font-mono text-blue-400">Lease #{{ lease.id }}</td>
+                    <td class="px-6 py-4 font-mono"><a href="/assignments/{{ lease.assignment_id }}" class="hover:underline">Asm #{{ lease.assignment_id }}</a></td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 text-xs bg-[#27272a] text-[#a1a1aa] rounded">{{ lease.status }}</span>
+                    </td>
+                    <td class="px-6 py-4 font-mono text-xs">{{ lease.expires_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td class="px-6 py-4 font-mono text-xs">{{ lease.last_heartbeat.strftime('%H:%M:%S') if lease.last_heartbeat else 'N/A' }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="px-6 py-8 text-center text-[#a1a1aa]">No active leases for this worker.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Historical Tab -->
+<div id="tab-historical" class="tab-content hidden">
+    <h3 class="text-lg font-semibold mb-4">Recent Events (Last 100)</h3>
+    <div class="card overflow-hidden">
+        <table class="w-full text-sm text-left">
+            <thead class="text-xs text-[#a1a1aa] uppercase bg-[#18181b] border-b border-[#27272a]">
+                <tr>
+                    <th scope="col" class="px-6 py-3">Timestamp</th>
+                    <th scope="col" class="px-6 py-3">Level</th>
+                    <th scope="col" class="px-6 py-3">Event Type</th>
+                    <th scope="col" class="px-6 py-3">Assignment</th>
+                    <th scope="col" class="px-6 py-3">Payload</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-[#27272a] font-mono text-xs">
+                {% for log in logs %}
+                <tr class="hover:bg-[#18181b]/50 transition-colors">
+                    <td class="px-6 py-4 text-[#a1a1aa] whitespace-nowrap">{{ log.created_at.strftime('%H:%M:%S') }}</td>
+                    <td class="px-6 py-4">
+                        {% if log.severity == 'error' %}
+                            <span class="text-red-500">ERROR</span>
+                        {% elif log.severity == 'warning' %}
+                            <span class="text-yellow-500">WARN</span>
+                        {% else %}
+                            <span class="text-blue-400">INFO</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 font-semibold text-[#fafafa]">{{ log.event_type }}</td>
+                    <td class="px-6 py-4 text-[#a1a1aa]">
+                        {% if log.assignment_id %}<a href="/assignments/{{ log.assignment_id }}" class="hover:underline text-blue-400">#{{ log.assignment_id }}</a>{% else %}-{% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-[#a1a1aa]">
+                        <div class="max-w-xl truncate" title="{{ log.payload | string }}">{{ log.payload | string }}</div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="px-6 py-8 text-center text-[#a1a1aa] font-sans">No events logged yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function switchTab(tabId) {
+        // Hide all tabs
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+        // Show target tab
+        document.getElementById('tab-' + tabId).classList.remove('hidden');
+        
+        // Reset all buttons
+        document.querySelectorAll('#workerTabs button').forEach(el => {
+            el.classList.remove('border-blue-500', 'text-blue-500');
+            el.classList.add('border-transparent', 'text-[#a1a1aa]');
+        });
+        
+        // Highlight active button
+        const activeBtn = document.getElementById('tab-' + tabId + '-btn');
+        activeBtn.classList.remove('border-transparent', 'text-[#a1a1aa]');
+        activeBtn.classList.add('border-blue-500', 'text-blue-500');
+    }
+</script>
+{% endblock %}
