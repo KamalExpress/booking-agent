@@ -373,7 +373,11 @@ async def update_global_settings(
 
 @router.get("/diagnostics", response_class=HTMLResponse)
 async def diagnostics_page(request: Request):
-    return templates.TemplateResponse("diagnostics.html", {"request": request, "active_tab": "diagnostics"})
+    return templates.TemplateResponse(
+        request=request,
+        name="diagnostics.html",
+        context={"request": request, "active_tab": "diagnostics"}
+    )
 
 @router.post("/api/diagnostics/test-captcha")
 async def test_captcha_api(current_user: User = Depends(require_tenant_admin), db: Session = Depends(get_db)):
