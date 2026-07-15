@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-8">
+    <div class="flex items-center gap-4">
+        <a href="/assignments" class="p-2 rounded-md hover:bg-zinc-800 transition-colors text-zinc-400 hover:text-white">
+            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+        </a>
+        <div>
+            <h1 class="text-2xl font-semibold tracking-tight text-zinc-100 flex items-center gap-3">
+                Assignment #{{ assignment.id }}
+                {% if assignment.status == 'Leased' %}
+                    <span class="inline-flex items-center rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-500">Leased</span>
+                {% elif assignment.status == 'Active' %}
+                    <span class="inline-flex items-center rounded-full border border-zinc-700 bg-zinc-800 px-2.5 py-0.5 text-xs font-semibold text-zinc-400">Active</span>
+                {% elif assignment.status == 'Paused' %}
+                    <span class="inline-flex items-center rounded-full border border-amber-500/20 bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-500">Paused</span>
+                {% else %}
+                    <span class="inline-flex items-center rounded-full border border-red-500/20 bg-red-500/10 px-2.5 py-0.5 text-xs font-semibold text-red-500">{{ assignment.status }}</span>
+                {% endif %}
+            </h1>
+            <p class="text-sm text-zinc-400 mt-1">Manage assignment configuration and view logs</p>
+        </div>
+    </div>
+    
+    <div class="flex items-center gap-3">
+        <form action="/assignments/{{ assignment.id }}/status" method="POST">
+            {% if assignment.status == 'Paused' %}
+            <input type="hidden" name="status" value="Active">
+            <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 py-2 bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-sm">
+                <i data-lucide="play" class="w-4 h-4 mr-2"></i> Resume Assignment
+            </button>
+            {% else %}
+            <input type="hidden" name="status" value="Paused">
+            <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 py-2 bg-amber-600 text-white hover:bg-amber-700 transition-colors shadow-sm">
+                <i data-lucide="pause" class="w-4 h-4 mr-2"></i> Pause Assignment
+            </button>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Left Column: Details -->
+    <div class="lg:col-span-1 space-y-6">
+        <div class="bg-[#09090b] border border-zinc-800 rounded-xl shadow-sm overflow-hidden">
+            <div class="px-5 py-4 border-b border-zinc-800 bg-zinc-900/50">
+                <h3 class="font-medium text-zinc-100">Configuration</h3>
+            </div>
+            <div class="p-5 space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Target Account</label>
+                    <div class="text-sm font-medium text-zinc-100 flex items-center justify-between">
+                        {{ account.username if account else 'Unknown' }}
+                        <a href="/accounts" class="text-blue-500 hover:underline text-xs font-normal">View Account</a>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Visa Center</label>
+                    <div class="text-sm font-medium text-zinc-100">{{ assignment.visa_center }}</div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Date Range</label>
+                    <div class="text-sm font-medium text-zinc-100">{{ assignment.date_from }} to {{ assignment.date_to }}</div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Polling Interval</label>
+                    <div class="text-sm font-medium text-zinc-100">{{ assignment.polling_interval }} seconds</div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Last Checked</label>
+                    <div class="text-sm font-medium text-zinc-100">
+                        {% if assignment.last_checked %}
+                            {{ assignment.last_checked.strftime('%Y-%m-%d %H:%M:%S UTC') }}
+                        {% else %}
+                            Never
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Created At</label>
+                    <div class="text-sm font-medium text-zinc-100">{{ assignment.created_at.strftime('%Y-%m-%d %H:%M:%S UTC') }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Column: Logs -->
+    <div class="lg:col-span-2">
+        <div class="bg-[#09090b] border border-zinc-800 rounded-xl shadow-sm overflow-hidden flex flex-col h-[600px]">
+            <div class="px-5 py-4 border-b border-zinc-800 bg-zinc-900/50 flex justify-between items-center">
+                <h3 class="font-medium text-zinc-100 flex items-center gap-2">
+                    <i data-lucide="scroll-text" class="w-4 h-4 text-zinc-400"></i> Recent Execution Logs
+                </h3>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-0">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-xs text-zinc-400 uppercase bg-zinc-900/30 sticky top-0 backdrop-blur-sm">
+                        <tr>
+                            <th class="px-5 py-3 font-medium">Timestamp</th>
+                            <th class="px-5 py-3 font-medium">Severity</th>
+                            <th class="px-5 py-3 font-medium">Event</th>
+                            <th class="px-5 py-3 font-medium">Worker</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-zinc-800">
+                        {% for event in logs %}
+                        <tr class="hover:bg-zinc-800/30 transition-colors group cursor-pointer" onclick="togglePayload('payload-{{ event.id }}')">
+                            <td class="px-5 py-3 text-zinc-400 whitespace-nowrap">{{ event.created_at.strftime('%m/%d %H:%M:%S') }}</td>
+                            <td class="px-5 py-3">
+                                {% if event.severity == 'info' %}
+                                    <span class="inline-flex items-center rounded-md bg-blue-500/10 px-2 py-1 text-xs font-medium text-blue-400 ring-1 ring-inset ring-blue-500/20">INFO</span>
+                                {% elif event.severity == 'warning' %}
+                                    <span class="inline-flex items-center rounded-md bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-400 ring-1 ring-inset ring-amber-500/20">WARN</span>
+                                {% elif event.severity == 'error' %}
+                                    <span class="inline-flex items-center rounded-md bg-red-500/10 px-2 py-1 text-xs font-medium text-red-400 ring-1 ring-inset ring-red-500/20">ERROR</span>
+                                {% else %}
+                                    <span class="inline-flex items-center rounded-md bg-zinc-500/10 px-2 py-1 text-xs font-medium text-zinc-400 ring-1 ring-inset ring-zinc-500/20">{{ event.severity|upper }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-5 py-3 font-medium text-zinc-200">{{ event.event_type }}</td>
+                            <td class="px-5 py-3 text-zinc-400 font-mono text-xs">{{ event.worker_id[:8] if event.worker_id else '-' }}</td>
+                        </tr>
+                        <tr id="payload-{{ event.id }}" class="hidden bg-zinc-900/50">
+                            <td colspan="4" class="px-5 py-4 border-b border-zinc-800">
+                                <pre class="text-xs text-green-400 font-mono bg-black p-4 rounded-md overflow-x-auto border border-zinc-800 shadow-inner whitespace-pre-wrap">{{ event.payload | tojson(indent=2) }}</pre>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="px-5 py-8 text-center text-zinc-500">No logs found for this assignment.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function togglePayload(id) {
+        const el = document.getElementById(id);
+        if (el.classList.contains('hidden')) {
+            el.classList.remove('hidden');
+        } else {
+            el.classList.add('hidden');
+        }
+    }
+</script>
+{% endblock %}

@@ -14,7 +14,8 @@ def init_db():
             "ALTER TABLE scraper_accounts ADD COLUMN status VARCHAR DEFAULT 'Idle'",
             "ALTER TABLE scraper_accounts ADD COLUMN last_login TIMESTAMP",
             "ALTER TABLE scraper_accounts ADD COLUMN preferred_worker_id VARCHAR",
-            "ALTER TABLE scraper_accounts ADD COLUMN proxy_string VARCHAR"
+            "ALTER TABLE scraper_accounts ADD COLUMN proxy_string VARCHAR",
+            "ALTER TABLE assignments ADD COLUMN last_checked TIMESTAMP"
         ]:
             try:
                 conn.execute(text(stmt))

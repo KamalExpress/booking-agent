@@ -164,3 +164,7 @@ class SaaSClient:
             "event_type": event_type,
             "payload": payload
         })
+        
+    def complete_assignment(self, assignment_id: int):
+        self._request("POST", f"/api/v1/worker/assignments/{assignment_id}/complete")
+

@@ -124,7 +124,13 @@ class SlotMonitorEngine(threading.Thread):
                 except Exception as log_e:
                     logging.error(f"Failed to push error log to SaaS: {log_e}")
                 
-            # If we completed the assignment, wait a tiny bit before grabbing the next
+            # If we completed the assignment, mark it complete and wait a tiny bit
+            if 'assignment_id' in locals() and assignment_id:
+                try:
+                    self.api.complete_assignment(assignment_id)
+                except Exception as comp_e:
+                    logging.error(f"Failed to complete assignment: {comp_e}")
+                    
             self._stop_event.wait(1)
             
 if __name__ == "__main__":

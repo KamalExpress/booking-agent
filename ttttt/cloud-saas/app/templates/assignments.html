@@ -63,7 +63,9 @@
         <tbody>
             {% for asm in assignments %}
             <tr class="border-b border-border hover:bg-muted/50 transition-colors">
-                <td class="p-4 text-muted-foreground font-mono">#{{ asm.id }}</td>
+                <td class="p-4 text-muted-foreground font-mono">
+                    <a href="/assignments/{{ asm.id }}" class="text-blue-500 hover:underline">#{{ asm.id }}</a>
+                </td>
                 <td class="p-4 text-foreground font-medium">{{ asm.account_username }}</td>
                 <td class="p-4 text-muted-foreground">{{ asm.visa_center }}</td>
                 <td class="p-4 text-muted-foreground">{{ asm.date_from }} to {{ asm.date_to }}</td>

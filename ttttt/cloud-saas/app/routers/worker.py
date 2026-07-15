@@ -173,7 +173,13 @@ def get_next_assignment(
         
     # 2. Find all active, unleased assignments
     assignments = db.query(Assignment).filter(Assignment.status == "Active").all()
-    if not assignments:
+    
+    valid_assignments = []
+    for asm in assignments:
+        if not asm.last_checked or (now - asm.last_checked).total_seconds() >= asm.polling_interval:
+            valid_assignments.append(asm)
+            
+    if not valid_assignments:
         response.status_code = status.HTTP_204_NO_CONTENT
         response.headers["Retry-After"] = "30"
         return
@@ -182,7 +188,7 @@ def get_next_assignment(
     best_score = -9999
     best_assignment = None
     
-    for asm in assignments:
+    for asm in valid_assignments:
         score = 0
         score += asm.priority * 10
         
@@ -230,6 +236,24 @@ def get_next_assignment(
         "date_to": best_assignment.date_to,
         "polling_interval": best_assignment.polling_interval
     }
+
+@router.post("/assignments/{assignment_id}/complete")
+def complete_assignment(
+    assignment_id: int,
+    worker: WorkerNode = Depends(verify_worker_hmac),
+    db: Session = Depends(get_db)
+):
+    lease = db.query(Lease).filter(Lease.assignment_id == assignment_id, Lease.worker_id == worker.worker_id).first()
+    if lease:
+        db.delete(lease)
+        
+    assignment = db.query(Assignment).filter(Assignment.id == assignment_id).first()
+    if assignment:
+        assignment.status = "Active"
+        assignment.last_checked = datetime.utcnow()
+        
+    db.commit()
+    return {"status": "ok"}
 
 @router.post("/assignments/{assignment_id}/event")
 def log_event(

@@ -119,6 +119,41 @@ async def create_assignment(
         
     return RedirectResponse(url="/assignments", status_code=303)
 
+@router.get("/assignments/{assignment_id}", response_class=HTMLResponse)
+async def assignment_detail_page(assignment_id: int, request: Request, db: Session = Depends(get_db)):
+    assignment = db.query(Assignment).filter(Assignment.id == assignment_id).first()
+    if not assignment:
+        return RedirectResponse(url="/assignments")
+        
+    account = db.query(ScraperAccount).filter(ScraperAccount.id == assignment.scraper_account_id).first()
+    logs = db.query(EventLog).filter(EventLog.assignment_id == assignment_id).order_by(EventLog.created_at.desc()).limit(50).all()
+    
+    return templates.TemplateResponse(
+        request=request,
+        name="assignment_detail.html",
+        context={
+            "request": request,
+            "active_page": "assignments",
+            "assignment": assignment,
+            "account": account,
+            "logs": logs
+        }
+    )
+
+@router.post("/assignments/{assignment_id}/status")
+async def update_assignment_status(
+    assignment_id: int,
+    status: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    assignment = db.query(Assignment).filter(Assignment.id == assignment_id).first()
+    if assignment:
+        if status in ["Active", "Paused", "Completed", "Cancelled"]:
+            assignment.status = status
+            db.commit()
+            
+    return RedirectResponse(url=f"/assignments/{assignment_id}", status_code=303)
+
 @router.get("/accounts", response_class=HTMLResponse)
 async def accounts_page(request: Request, db: Session = Depends(get_db)):
     accounts = db.query(ScraperAccount).order_by(ScraperAccount.id.desc()).all()
@@ -203,6 +238,29 @@ async def update_captcha_settings(
             key_setting = SystemSetting(key="captcha.api_key", updated_by="admin")
             db.add(key_setting)
         key_setting.encrypted_value = secrets_manager.encrypt(api_key.strip())
+        
+    db.commit()
+    return RedirectResponse(url="/settings", status_code=303)
+
+@router.post("/settings/global")
+async def update_global_settings(
+    default_polling_interval: str = Form("300"),
+    default_date_from: str = Form(""),
+    default_date_to: str = Form(""),
+    db: Session = Depends(get_db)
+):
+    settings_to_update = {
+        "global.default_polling_interval": default_polling_interval,
+        "global.default_date_from": default_date_from,
+        "global.default_date_to": default_date_to
+    }
+    
+    for key, value in settings_to_update.items():
+        setting = db.query(SystemSetting).filter(SystemSetting.key == key).first()
+        if not setting:
+            setting = SystemSetting(key=key, updated_by="admin")
+            db.add(setting)
+        setting.value = value
         
     db.commit()
     return RedirectResponse(url="/settings", status_code=303)
