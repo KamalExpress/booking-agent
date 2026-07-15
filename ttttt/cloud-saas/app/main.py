@@ -521,7 +521,7 @@ def broadcast_push_alert(req: BroadcastRequest, current_user: User = Depends(req
 @app.post("/api/push/test")
 def test_push_alert(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     from notifications import send_push_notification
-    success_count = send_push_notification(db, "Test Push Notification", "This is a test notification from the SaaS dashboard.", [current_user.id])
+    success_count = send_push_notification(db, "Test Push Notification", "This is a test notification from the SaaS dashboard.")
     return {"status": "ok", "delivered": success_count}
 
 # Mount Static Files (PWA)
