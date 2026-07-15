@@ -4,3 +4,4 @@ psutil
 
 playwright==1.44.0
 playwright-stealth
+curl-cffi

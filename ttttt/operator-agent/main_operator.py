@@ -28,20 +28,26 @@ logging.basicConfig(
 
 class OperatorAgent:
     def __init__(self, captcha_service: CaptchaService, username: str = None, password: str = None, proxy_string: str = None):
-        self.session = requests.Session()
-        
-        # Add retry logic to handle RemoteDisconnected (server drops keep-alive)
-        from requests.adapters import HTTPAdapter
-        from urllib3.util.retry import Retry
-        retry_strategy = Retry(
-            total=3,
-            backoff_factor=1,
-            status_forcelist=[429, 500, 502, 503, 504],
-            allowed_methods=["HEAD", "GET", "OPTIONS", "POST", "PUT"]
-        )
-        adapter = HTTPAdapter(max_retries=retry_strategy)
-        self.session.mount("https://", adapter)
-        self.session.mount("http://", adapter)
+        try:
+            from curl_cffi import requests as c_requests
+            self.session = c_requests.Session(impersonate="chrome120")
+            logging.info("Using curl_cffi Chrome impersonation to bypass WAF.")
+        except ImportError:
+            self.session = requests.Session()
+            logging.warning("curl_cffi not found. Using standard requests (may trigger WAF).")
+            
+            # Fallback retry logic for standard requests
+            from requests.adapters import HTTPAdapter
+            from urllib3.util.retry import Retry
+            retry_strategy = Retry(
+                total=3,
+                backoff_factor=1,
+                status_forcelist=[429, 500, 502, 503, 504],
+                allowed_methods=["HEAD", "GET", "OPTIONS", "POST", "PUT"]
+            )
+            adapter = HTTPAdapter(max_retries=retry_strategy)
+            self.session.mount("https://", adapter)
+            self.session.mount("http://", adapter)
         
         if proxy_string:
             self.session.proxies = {
