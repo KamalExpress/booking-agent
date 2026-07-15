@@ -33,12 +33,16 @@ def init_db():
             "ALTER TABLE scraper_accounts ADD COLUMN proxy_mode VARCHAR DEFAULT 'LEGACY'",
             "ALTER TABLE assignments ADD COLUMN routing_policy_id INTEGER",
             "ALTER TABLE leases ADD COLUMN last_heartbeat TIMESTAMP",
-            "ALTER TABLE leases ADD COLUMN status VARCHAR DEFAULT 'Pending'"
+            "ALTER TABLE leases ADD COLUMN status VARCHAR DEFAULT 'Pending'",
+            # Sprint 7 schema changes
+            "ALTER TABLE assignments ADD COLUMN required_labels JSONB DEFAULT '{}'::jsonb",
+            "ALTER TABLE assignments DROP COLUMN IF EXISTS routing_policy_id"
         ]:
             try:
                 conn.execute(text(stmt))
                 conn.commit()
-            except Exception:
+            except Exception as e:
+                print(f"Migration error for '{stmt}': {e}")
                 conn.rollback()
 
     # Pre-generate the SECRET_MASTER_KEY if missing
