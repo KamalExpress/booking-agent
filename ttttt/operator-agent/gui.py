@@ -46,17 +46,25 @@ class KamalExpressMonitorApp(ctk.CTk):
         self.logo_label = ctk.CTkLabel(self.sidebar_frame, text="Kamal Express\nWorker Node", font=ctk.CTkFont(size=20, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
 
-        self.btn_dashboard = ctk.CTkButton(self.sidebar_frame, text="Execution Logs")
+        self.btn_dashboard = ctk.CTkButton(self.sidebar_frame, text="Execution Logs", command=self.show_dashboard)
         self.btn_dashboard.grid(row=1, column=0, padx=20, pady=10)
+        
+        self.btn_test_mode = ctk.CTkButton(self.sidebar_frame, text="Test Mode (E2E)", command=self.show_test_mode)
+        self.btn_test_mode.grid(row=2, column=0, padx=20, pady=10)
 
         self.appearance_mode_label = ctk.CTkLabel(self.sidebar_frame, text="Appearance Mode:", anchor="w")
         self.appearance_mode_label.grid(row=5, column=0, padx=20, pady=(10, 0))
         self.appearance_mode_optionemenu = ctk.CTkOptionMenu(self.sidebar_frame, values=["Light", "Dark", "System"], command=self.change_appearance_mode_event)
         self.appearance_mode_optionemenu.grid(row=6, column=0, padx=20, pady=(10, 20))
 
+        # --- Main Frames Container ---
+        self.main_container = ctk.CTkFrame(self, corner_radius=0, fg_color="transparent")
+        self.main_container.grid(row=0, column=1, sticky="nsew")
+        self.main_container.grid_rowconfigure(0, weight=1)
+        self.main_container.grid_columnconfigure(0, weight=1)
+
         # --- Dashboard Frame ---
-        self.dashboard_frame = ctk.CTkFrame(self, corner_radius=0, fg_color="transparent")
-        self.dashboard_frame.grid(row=0, column=1, sticky="nsew")
+        self.dashboard_frame = ctk.CTkFrame(self.main_container, corner_radius=0, fg_color="transparent")
         self.dashboard_frame.grid_rowconfigure(1, weight=1)
         self.dashboard_frame.grid_columnconfigure(0, weight=1)
         
@@ -85,27 +93,45 @@ class KamalExpressMonitorApp(ctk.CTk):
         self.status_label = ctk.CTkLabel(self.controls_frame, text="Status: IDLE", text_color="gray")
         self.status_label.pack(side="right", padx=20, pady=20)
 
-        # --- Test Mode Frame ---
-        self.test_frame = ctk.CTkFrame(self.dashboard_frame)
-        self.test_frame.grid(row=1, column=0, padx=20, pady=(0, 20), sticky="ew")
-        
-        self.test_label = ctk.CTkLabel(self.test_frame, text="Test Mode (E2E):", font=ctk.CTkFont(weight="bold"))
-        self.test_label.pack(side="left", padx=20, pady=10)
-        
-        self.btn_test_slots = ctk.CTkButton(self.test_frame, text="Simulate Slot Found", fg_color="purple", hover_color="darkmagenta", command=self.test_slot_found)
-        self.btn_test_slots.pack(side="left", padx=10, pady=10)
-        
-        self.btn_test_no_slots = ctk.CTkButton(self.test_frame, text="Simulate No Slots", fg_color="orange", hover_color="darkorange", command=self.test_no_slots)
-        self.btn_test_no_slots.pack(side="left", padx=10, pady=10)
-
         self.log_textbox = ctk.CTkTextbox(self.dashboard_frame, wrap="word", state="disabled")
-        self.log_textbox.grid(row=2, column=0, padx=20, pady=(0, 20), sticky="nsew")
-        self.dashboard_frame.grid_rowconfigure(2, weight=1)
+        self.log_textbox.grid(row=1, column=0, padx=20, pady=(0, 20), sticky="nsew")
+
+        # --- Test Mode Frame ---
+        self.test_mode_frame = ctk.CTkFrame(self.main_container, corner_radius=0, fg_color="transparent")
+        self.test_mode_frame.grid_columnconfigure(0, weight=1)
+        
+        self.test_title = ctk.CTkLabel(self.test_mode_frame, text="End-to-End Test Mode", font=ctk.CTkFont(size=24, weight="bold"))
+        self.test_title.grid(row=0, column=0, padx=20, pady=(20, 10), sticky="w")
+        
+        self.test_desc = ctk.CTkLabel(self.test_mode_frame, text="Simulate worker events to test the Cloud SaaS pipeline and push notifications.", text_color="gray")
+        self.test_desc.grid(row=1, column=0, padx=20, pady=(0, 20), sticky="w")
+
+        self.test_controls = ctk.CTkFrame(self.test_mode_frame)
+        self.test_controls.grid(row=2, column=0, padx=20, pady=10, sticky="ew")
+        
+        self.btn_test_slots = ctk.CTkButton(self.test_controls, text="Simulate Slot Found", fg_color="purple", hover_color="darkmagenta", command=self.test_slot_found, width=200, height=40)
+        self.btn_test_slots.pack(side="left", padx=20, pady=20)
+        
+        self.btn_test_no_slots = ctk.CTkButton(self.test_controls, text="Simulate No Slots", fg_color="orange", hover_color="darkorange", command=self.test_no_slots, width=200, height=40)
+        self.btn_test_no_slots.pack(side="left", padx=20, pady=20)
 
         # Initialize Data & View
         self.monitor_engine = None
         self.setup_logging()
         self.appearance_mode_optionemenu.set("Dark")
+        self.show_dashboard()
+
+    def show_dashboard(self):
+        self.test_mode_frame.grid_forget()
+        self.dashboard_frame.grid(row=0, column=0, sticky="nsew")
+        self.btn_dashboard.configure(fg_color=["#3B8ED0", "#1F6AA5"])
+        self.btn_test_mode.configure(fg_color="transparent", text_color=["gray10", "gray90"])
+
+    def show_test_mode(self):
+        self.dashboard_frame.grid_forget()
+        self.test_mode_frame.grid(row=0, column=0, sticky="nsew")
+        self.btn_test_mode.configure(fg_color=["#3B8ED0", "#1F6AA5"], text_color=["gray90", "gray10"])
+        self.btn_dashboard.configure(fg_color="transparent", text_color=["gray10", "gray90"])
 
     def change_appearance_mode_event(self, new_appearance_mode: str):
         ctk.set_appearance_mode(new_appearance_mode)
