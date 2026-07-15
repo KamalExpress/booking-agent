@@ -82,11 +82,19 @@
         <div class="mt-6 pt-4 border-t border-[#27272a]">
             <p class="text-xs text-[#a1a1aa] mb-3">Labels</p>
             <div class="flex flex-wrap gap-2">
-                {% for key, val in worker.labels.items() %}
-                <span class="px-2 py-1 text-xs bg-[#27272a] text-[#fafafa] rounded border border-[#3f3f46]">
-                    <span class="text-[#a1a1aa]">{{ key }}=</span>{{ val }}
-                </span>
-                {% endfor %}
+                {% if worker.labels is mapping %}
+                    {% for key, val in worker.labels.items() %}
+                    <span class="px-2 py-1 text-xs bg-[#27272a] text-[#fafafa] rounded border border-[#3f3f46]">
+                        <span class="text-[#a1a1aa]">{{ key }}=</span>{{ val }}
+                    </span>
+                    {% endfor %}
+                {% elif worker.labels is iterable and worker.labels is not string %}
+                    {% for item in worker.labels %}
+                    <span class="px-2 py-1 text-xs bg-[#27272a] text-[#fafafa] rounded border border-[#3f3f46]">
+                        {{ item }}
+                    </span>
+                    {% endfor %}
+                {% endif %}
             </div>
         </div>
         {% endif %}
