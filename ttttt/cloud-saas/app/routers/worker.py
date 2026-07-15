@@ -354,5 +354,13 @@ def submit_logs(
         payload=req.payload
     )
     db.add(log)
+    
+    if req.event_type == "LOGIN_SUCCESS" and req.assignment_id:
+        assignment = db.query(Assignment).filter(Assignment.id == req.assignment_id).first()
+        if assignment:
+            account = db.query(ScraperAccount).filter(ScraperAccount.id == assignment.scraper_account_id).first()
+            if account:
+                account.last_login_at = datetime.utcnow()
+                
     db.commit()
     return {"status": "ok"}
