@@ -19,7 +19,7 @@
             <div class="flex-1">
                 <h3 class="font-medium text-zinc-100 mb-1">Test Push Notifications</h3>
                 <p class="text-sm text-zinc-400 mb-4">Send a dummy push notification to your device to verify WebPush and ServiceWorker functionality.</p>
-                <form action="/api/push/test" method="POST" class="inline-block">
+                <form action="/api/push/test" method="POST" class="inline-block" id="push-form">
                     <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 py-2 bg-zinc-800 text-white hover:bg-zinc-700 transition-colors shadow-sm">
                         <i data-lucide="send" class="w-4 h-4 mr-2"></i> Send Test Push
                     </button>
@@ -55,7 +55,7 @@
             <div class="flex-1">
                 <h3 class="font-medium text-zinc-100 mb-1">Simulate "No Slots Found"</h3>
                 <p class="text-sm text-zinc-400 mb-4">Triggers a fake event representing a worker finding no slots. Sends a push notification.</p>
-                <form action="/api/diagnostics/simulate-event" method="POST" class="inline-block">
+                <form action="/api/diagnostics/simulate-event" method="POST" class="inline-block sim-form">
                     <input type="hidden" name="event_type" value="NO_SLOTS_FOUND">
                     <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 py-2 bg-zinc-800 text-white hover:bg-zinc-700 transition-colors shadow-sm">
                         <i data-lucide="play" class="w-4 h-4 mr-2"></i> Simulate No Slots
@@ -74,7 +74,7 @@
             <div class="flex-1">
                 <h3 class="font-medium text-zinc-100 mb-1">Simulate "Slot Found"</h3>
                 <p class="text-sm text-zinc-400 mb-4">Sends a success push notification AND automatically pauses ALL active assignments to stop worker polling.</p>
-                <form action="/api/diagnostics/simulate-event" method="POST" class="inline-block">
+                <form action="/api/diagnostics/simulate-event" method="POST" class="inline-block sim-form">
                     <input type="hidden" name="event_type" value="SLOT_FOUND">
                     <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 py-2 bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-sm">
                         <i data-lucide="play" class="w-4 h-4 mr-2"></i> Simulate Slot Found
@@ -117,18 +117,52 @@
         lucide.createIcons();
     });
 
-    document.querySelectorAll(".sim-btn").forEach(btn => {
-        btn.addEventListener("click", async (e) => {
+    document.getElementById("push-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector("button");
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 mr-2 animate-spin"></i> Sending...`;
+        btn.disabled = true;
+
+        try {
+            const token = localStorage.getItem("token") || "";
+            const res = await fetch(e.target.action, { 
+                method: "POST",
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+            const data = await res.json();
+            if(res.ok) {
+                alert(`Test push notification sent! Delivered to ${data.delivered} devices.`);
+            } else {
+                alert(`Error: ${data.detail || JSON.stringify(data)}`);
+            }
+        } catch(err) {
+            alert(`Network error: ${err}`);
+        }
+
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        lucide.createIcons();
+    });
+
+    document.querySelectorAll(".sim-form").forEach(form => {
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector("button");
             const originalText = btn.innerHTML;
+            const eventType = e.target.querySelector('input[name="event_type"]').value;
+            
             btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 mr-2 animate-spin"></i> Simulating...`;
             btn.disabled = true;
 
             try {
                 const token = localStorage.getItem("token") || "";
                 const formData = new FormData();
-                formData.append("event_type", btn.dataset.event);
+                formData.append("event_type", eventType);
                 
-                const res = await fetch("/api/diagnostics/simulate-event", {
+                const res = await fetch(e.target.action, {
                     method: "POST",
                     headers: {
                         "Authorization": "Bearer " + token
@@ -137,7 +171,7 @@
                 });
                 
                 if (res.ok) {
-                    alert(`Successfully simulated: ${btn.dataset.event}`);
+                    alert(`Successfully simulated: ${eventType}`);
                 } else {
                     const data = await res.json();
                     alert(`Simulation failed: ${data.detail || JSON.stringify(data)}`);
