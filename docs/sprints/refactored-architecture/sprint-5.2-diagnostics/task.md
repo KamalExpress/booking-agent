@@ -1,0 +1,15 @@
+- `[x]` 1. Push Notification Refactoring
+  - `[x]` Create `notifications.py` and move `webpush` logic to it
+  - `[x]` Update `main.py` to use the new `notifications.py` module
+- `[x]` 2. Worker Event Logging & Handling
+  - `[x]` Update `slot_monitor.py` to send `NO_SLOTS_FOUND` event
+  - `[x]` Update `worker.py` to intercept `NO_SLOTS_FOUND` and dispatch push
+  - `[x]` Update `worker.py` to intercept `SLOT_FOUND`, dispatch push, and pause ALL assignments
+- `[x]` 3. Diagnostics UI
+  - `[x]` Add `diagnostics.html` template
+  - `[x]` Add `/diagnostics` route in `ui.py`
+  - `[x]` Add Test Push endpoint
+  - `[x]` Add Test Captcha endpoint
+  - `[x]` Add Simulate No Slots endpoint
+  - `[x]` Add Simulate Slot Found endpoint
+  - `[x]` Add Diagnostics link to the sidebar (`base.html`)
