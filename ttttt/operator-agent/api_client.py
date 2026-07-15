@@ -37,25 +37,32 @@ class SaaSClient:
             
         labels = labels or {"system.location": location, "network.type": "residential"}
         
-        # Attempt to gather system metrics
         try:
             import psutil
             cpu_cores = psutil.cpu_count(logical=True)
             ram = f"{round(psutil.virtual_memory().total / (1024**3), 2)}GB"
         except ImportError:
-            cpu_cores = 2
-            ram = "2GB"
+            cpu_cores = None
+            ram = "Unknown"
+            
+        try:
+            import importlib.metadata
+            playwright_version = importlib.metadata.version("playwright")
+        except Exception:
+            playwright_version = "Unknown"
+            
+        import platform
             
         payload = {
             "hostname": hostname,
-            "machine_id": "local",
+            "machine_id": platform.node(),
             "os": platform.system(),
             "architecture": platform.machine(),
             "cpu_cores": cpu_cores,
             "ram": ram,
-            "version": "1.0.0",
-            "chrome_version": "120.0", # Mocked for now
-            "playwright_version": "1.40.0", # Mocked for now
+            "version": "1.1.0",
+            "chrome_version": "Managed by Playwright",
+            "playwright_version": playwright_version,
             "python_version": platform.python_version(),
             "max_concurrency": 1,
             "labels": labels
