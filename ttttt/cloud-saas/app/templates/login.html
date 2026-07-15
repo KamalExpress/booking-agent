@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Kamal Express{% endblock %}
+
+{% block content %}
+<div class="min-h-[80vh] flex items-center justify-center">
+    <div class="card w-full max-w-md p-8">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold tracking-tight mb-2">Welcome Back</h1>
+            <p class="text-slate-400">Sign in to the Orchestrator Dashboard</p>
+        </div>
+
+        <div id="login-error" class="bg-red-500/10 border border-red-500/50 text-red-400 text-sm p-3 rounded-lg mb-6 hidden"></div>
+
+        <form id="login-form" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-slate-400 mb-1">Email Address</label>
+                <input type="email" id="email" class="input w-full" placeholder="admin@example.com" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-400 mb-1">Password</label>
+                <input type="password" id="password" class="input w-full" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-full mt-4">
+                Sign In
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Hide sidebar and header elements if on login page
+    document.addEventListener("DOMContentLoaded", () => {
+        const sidebar = document.getElementById("sidebar");
+        const header = document.querySelector("header.sticky");
+        const mainContent = document.querySelector("main");
+        
+        if (sidebar) sidebar.style.display = "none";
+        if (header) header.style.display = "none";
+        if (mainContent) mainContent.style.marginLeft = "0";
+    });
+
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector("button");
+        const originalText = btn.innerHTML;
+        const errDiv = document.getElementById("login-error");
+        
+        btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 mr-2 animate-spin"></i> Signing in...`;
+        btn.disabled = true;
+        errDiv.classList.add("hidden");
+
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        try {
+            const res = await fetch("/api/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+            
+            if(res.ok) {
+                // Save to localStorage
+                localStorage.setItem("token", data.access_token);
+                if(data.role) localStorage.setItem("role", data.role);
+                
+                // Save to cookie (so base.html logout works properly)
+                document.cookie = `token=${data.access_token}; path=/; max-age=86400`; // 1 day
+                
+                window.location.href = "/";
+            } else {
+                errDiv.textContent = data.detail || "Invalid credentials";
+                errDiv.classList.remove("hidden");
+            }
+        } catch(err) {
+            errDiv.textContent = `Network error: ${err}`;
+            errDiv.classList.remove("hidden");
+        }
+
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        lucide.createIcons();
+    });
+</script>
+{% endblock %}
