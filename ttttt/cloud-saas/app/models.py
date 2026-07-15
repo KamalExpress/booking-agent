@@ -74,8 +74,6 @@ class MonitorConfig(Base):
     date_to = Column(String, default="15/09/2026")
     holidays = Column(String, default="SAT,SUN")
     interval_minutes = Column(Integer, default=5)
-    captcha_strategy = Column(String, default="AUTO")
-    captcha_api_key = Column(String, default="")
     app_type = Column(String, default="26")
     vac_id = Column(String, default="138")
     is_active = Column(Boolean, default=False) # Switch to easily pause entire global scraping
@@ -151,6 +149,14 @@ class EventLog(Base):
     event_type = Column(String, nullable=False) # LOGIN_SUCCESS, RATE_LIMIT, etc
     payload = Column(JSONB, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+class SystemSetting(Base):
+    __tablename__ = "system_settings"
+    key = Column(String, primary_key=True, index=True)
+    value = Column(String, nullable=True) # Used for plaintext settings
+    encrypted_value = Column(String, nullable=True) # Used for secrets
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_by = Column(String, nullable=True)
 
 def get_db():
     db = SessionLocal()

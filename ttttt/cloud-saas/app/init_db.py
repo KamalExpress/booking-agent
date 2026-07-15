@@ -1,6 +1,6 @@
 import os
 from sqlalchemy.orm import Session
-from models import Base, engine, Tenant, User, RoleEnum, MonitorConfig, ScraperAccount
+from models import Base, engine, Tenant, User, RoleEnum, MonitorConfig, ScraperAccount, SystemSetting
 from auth import get_password_hash
 from sqlalchemy import text
 
@@ -21,6 +21,9 @@ def init_db():
                 conn.commit()
             except Exception:
                 conn.rollback()
+
+    # Pre-generate the SECRET_MASTER_KEY if missing
+    from secrets_manager import secrets_manager
     
     with Session(engine) as db:
         # 1. Create Default Tenant if not exists
@@ -49,14 +52,19 @@ def init_db():
             print(f"Created Super Admin: {super_admin.email} (Password: {super_admin_password})")
             
         # 3. Create Default Global Monitor Config if not exists
-        config = db.query(MonitorConfig).first()
-        if not config:
-            config = MonitorConfig(is_active=False)
-            db.add(config)
+        if not db.query(MonitorConfig).first():
+            db.add(MonitorConfig(is_active=False))
             db.commit()
             print("Created default Monitor Config.")
+            
+        # 4. Create default system settings
+        if not db.query(SystemSetting).filter(SystemSetting.key == "captcha.provider").first():
+            db.add(SystemSetting(key="captcha.provider", value="capsolver", updated_by="system"))
+            db.commit()
 
-        # 4. Create Default Scraper Accounts if not exists
+        print("Database initialization complete.")
+
+        # 5. Create Default Scraper Accounts if not exists
         if db.query(ScraperAccount).count() == 0:
             accounts = [
                 ScraperAccount(username="mnoon2404@gmail.com", password="Shani@1122"),

@@ -11,7 +11,8 @@ from datetime import datetime, timedelta
 import uuid
 import json
 
-from models import WorkerNode, Assignment, Lease, EventLog, ScraperAccount
+from models import WorkerNode, Assignment, Lease, EventLog, ScraperAccount, SystemSetting
+from secrets_manager import secrets_manager
 # We need to import get_db, but main.py imports routers, so we'll put get_db in a separate module or just depend on models.SessionLocal
 from models import SessionLocal
 
@@ -253,3 +254,43 @@ def log_event(
         
     db.commit()
     return {"status": "ok"}
+
+@router.get("/runtime-config")
+def get_runtime_config(
+    request: Request,
+    response: Response,
+    worker: WorkerNode = Depends(verify_worker_hmac),
+    db: Session = Depends(get_db)
+):
+    provider_setting = db.query(SystemSetting).filter(SystemSetting.key == "captcha.provider").first()
+    api_key_setting = db.query(SystemSetting).filter(SystemSetting.key == "captcha.api_key").first()
+    
+    provider = provider_setting.value if provider_setting else "capsolver"
+    api_key = secrets_manager.decrypt(api_key_setting.encrypted_value) if api_key_setting and api_key_setting.encrypted_value else ""
+    
+    config_payload = {
+        "version": 1,
+        "ttl": 1800,
+        "captcha": {
+            "provider": provider,
+            "api_key": api_key
+        },
+        "worker": {
+            "heartbeat_interval": worker.HEARTBEAT_INTERVAL_SECONDS
+        },
+        "features": {
+            "stealth": True,
+            "headless": True
+        }
+    }
+    
+    config_json = json.dumps(config_payload, sort_keys=True)
+    config_hash = hashlib.sha256(config_json.encode()).hexdigest()
+    
+    if_config_hash = request.headers.get("If-Config-Hash")
+    if if_config_hash == config_hash:
+        response.status_code = 304
+        return Response(status_code=304)
+        
+    config_payload["config_hash"] = config_hash
+    return config_payload

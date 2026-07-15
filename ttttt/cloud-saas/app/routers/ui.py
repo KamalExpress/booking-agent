@@ -5,8 +5,9 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
 
 import os
-from models import WorkerNode, Assignment, Lease, EventLog, ScraperAccount
+from models import WorkerNode, Assignment, Lease, EventLog, ScraperAccount, SystemSetting
 from models import SessionLocal
+from secrets_manager import secrets_manager
 
 def get_db():
     db = SessionLocal()
@@ -162,3 +163,46 @@ async def logs_page(request: Request, db: Session = Depends(get_db)):
             "logs": logs
         }
     )
+
+@router.get("/settings", response_class=HTMLResponse)
+async def settings_page(request: Request, db: Session = Depends(get_db)):
+    settings_db = db.query(SystemSetting).all()
+    settings_dict = {s.key: s for s in settings_db}
+    
+    # Check if captcha API key is configured
+    captcha_configured = "captcha.api_key" in settings_dict and settings_dict["captcha.api_key"].encrypted_value
+    
+    return templates.TemplateResponse(
+        request=request,
+        name="settings.html",
+        context={
+            "request": request,
+            "active_page": "settings",
+            "settings": settings_dict,
+            "captcha_configured": captcha_configured
+        }
+    )
+
+@router.post("/settings/captcha")
+async def update_captcha_settings(
+    provider: str = Form(...),
+    api_key: str = Form(""),
+    db: Session = Depends(get_db)
+):
+    # Update Provider (Plaintext)
+    prov_setting = db.query(SystemSetting).filter(SystemSetting.key == "captcha.provider").first()
+    if not prov_setting:
+        prov_setting = SystemSetting(key="captcha.provider", updated_by="admin")
+        db.add(prov_setting)
+    prov_setting.value = provider
+    
+    # Update API Key (Encrypted) if provided
+    if api_key.strip():
+        key_setting = db.query(SystemSetting).filter(SystemSetting.key == "captcha.api_key").first()
+        if not key_setting:
+            key_setting = SystemSetting(key="captcha.api_key", updated_by="admin")
+            db.add(key_setting)
+        key_setting.encrypted_value = secrets_manager.encrypt(api_key.strip())
+        
+    db.commit()
+    return RedirectResponse(url="/settings", status_code=303)

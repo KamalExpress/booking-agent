@@ -7,7 +7,6 @@ from api_client import SaaSClient
 # Using existing main_operator since it handles session, WAF, proxies
 from main_operator import OperatorAgent
 from captcha_service import CapSolverService
-from config_manager import load_settings
 
 def generate_dates_between(start_str, end_str):
     date_format = "%d/%m/%Y"
@@ -55,9 +54,16 @@ class SlotMonitorEngine(threading.Thread):
                 
                 logging.info(f"Received Assignment #{assignment_id} for center {visa_center}.")
                 
-                # Setup Agent
-                settings = load_settings()
-                captcha_svc = CapSolverService(api_key=settings.get("CAPTCHA_API_KEY", ""))
+                # Setup Agent using dynamic runtime config
+                runtime_config = self.api.get_runtime_config() or {}
+                captcha_config = runtime_config.get("captcha", {})
+                
+                if captcha_config.get("provider") == "capsolver":
+                    captcha_svc = CapSolverService(api_key=captcha_config.get("api_key", ""))
+                else:
+                    # Fallback or manual service could be instantiated here
+                    captcha_svc = CapSolverService(api_key="")
+                    
                 agent = OperatorAgent(captcha_svc, username=account["username"], password=account["password"])
                 
                 # Make sure the session file matches the account so we don't mix cookies

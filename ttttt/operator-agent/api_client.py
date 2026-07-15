@@ -12,6 +12,9 @@ class SaaSClient:
         self.worker_id = None
         self.secret = None
         self.session = requests.Session()
+        self._config_cache = None
+        self._config_hash = None
+        self._config_expires_at = 0
         self.load_credentials()
 
     def load_credentials(self):
@@ -107,6 +110,37 @@ class SaaSClient:
                 
         t = threading.Thread(target=_heartbeat_loop, daemon=True)
         t.start()
+        
+    def get_runtime_config(self):
+        now = time.time()
+        
+        # Return cached config if TTL hasn't expired
+        if self._config_cache and now < self._config_expires_at:
+            return self._config_cache
+            
+        headers = {}
+        if self._config_hash:
+            headers["If-Config-Hash"] = self._config_hash
+            
+        res = self._request("GET", "/api/v1/worker/runtime-config", headers=headers)
+        if not res:
+            return self._config_cache # Fallback to stale cache if network fails
+            
+        if res.status_code == 304:
+            # Hash matches, reset TTL using existing cache's TTL
+            ttl = self._config_cache.get("ttl", 1800)
+            self._config_expires_at = now + ttl
+            return self._config_cache
+            
+        if res.status_code == 200:
+            config = res.json()
+            self._config_cache = config
+            self._config_hash = config.get("config_hash")
+            self._config_expires_at = now + config.get("ttl", 1800)
+            return config
+            
+        return self._config_cache
+
         
     def get_next_assignment(self):
         res = self._request("GET", "/api/v1/worker/assignments/next")
