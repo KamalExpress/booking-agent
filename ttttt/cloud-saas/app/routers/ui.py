@@ -154,6 +154,27 @@ async def update_assignment_status(
             
     return RedirectResponse(url=f"/assignments/{assignment_id}", status_code=303)
 
+@router.post("/assignments/{assignment_id}/edit")
+async def edit_assignment(
+    assignment_id: int,
+    visa_center: str = Form(...),
+    date_from: str = Form(...),
+    date_to: str = Form(...),
+    polling_interval: int = Form(...),
+    priority: int = Form(...),
+    db: Session = Depends(get_db)
+):
+    assignment = db.query(Assignment).filter(Assignment.id == assignment_id).first()
+    if assignment:
+        assignment.visa_center = visa_center
+        assignment.date_from = date_from
+        assignment.date_to = date_to
+        assignment.polling_interval = polling_interval
+        assignment.priority = priority
+        db.commit()
+            
+    return RedirectResponse(url=f"/assignments/{assignment_id}", status_code=303)
+
 @router.get("/accounts", response_class=HTMLResponse)
 async def accounts_page(request: Request, db: Session = Depends(get_db)):
     accounts = db.query(ScraperAccount).order_by(ScraperAccount.id.desc()).all()

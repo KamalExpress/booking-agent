@@ -47,7 +47,7 @@
             <div class="px-5 py-4 border-b border-zinc-800 bg-zinc-900/50">
                 <h3 class="font-medium text-zinc-100">Configuration</h3>
             </div>
-            <div class="p-5 space-y-4">
+            <form action="/assignments/{{ assignment.id }}/edit" method="POST" class="p-5 space-y-4">
                 <div>
                     <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Target Account</label>
                     <div class="text-sm font-medium text-zinc-100 flex items-center justify-between">
@@ -56,17 +56,39 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Visa Center</label>
-                    <div class="text-sm font-medium text-zinc-100">{{ assignment.visa_center }}</div>
+                    <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Visa Center ID</label>
+                    <input type="text" name="visa_center" value="{{ assignment.visa_center }}" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
                 </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Date From</label>
+                        <input type="text" name="date_from" value="{{ assignment.date_from }}" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Date To</label>
+                        <input type="text" name="date_to" value="{{ assignment.date_to }}" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Interval (s)</label>
+                        <input type="number" name="polling_interval" value="{{ assignment.polling_interval }}" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Priority</label>
+                        <input type="number" name="priority" value="{{ assignment.priority }}" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
+                    </div>
+                </div>
+                
+                <div class="pt-2">
+                    <button type="submit" class="w-full inline-flex justify-center items-center rounded-md text-sm font-medium h-9 px-4 py-2 bg-white text-black hover:bg-zinc-200 transition-colors shadow-sm">
+                        Save Configuration
+                    </button>
+                </div>
+                
+                <hr class="border-zinc-800 my-4">
+                
                 <div>
-                    <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Date Range</label>
-                    <div class="text-sm font-medium text-zinc-100">{{ assignment.date_from }} to {{ assignment.date_to }}</div>
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Polling Interval</label>
-                    <div class="text-sm font-medium text-zinc-100">{{ assignment.polling_interval }} seconds</div>
-                </div>
                 <div>
                     <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Last Checked</label>
                     <div class="text-sm font-medium text-zinc-100">
@@ -81,7 +103,7 @@
                     <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Created At</label>
                     <div class="text-sm font-medium text-zinc-100">{{ assignment.created_at.strftime('%Y-%m-%d %H:%M:%S UTC') }}</div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
     
