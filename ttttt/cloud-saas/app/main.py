@@ -488,7 +488,15 @@ def unsubscribe_push(req: PushSubRequest, current_user: User = Depends(get_curre
     sub = db.query(PushSubscription).filter(PushSubscription.endpoint == req.endpoint).first()
     if sub:
         db.delete(sub)
-    db.commit()
+        db.commit()
+    return {"status": "success"}
+
+@app.post("/api/push/delete/{sub_id}")
+def delete_push_sub(sub_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    sub = db.query(PushSubscription).filter(PushSubscription.id == sub_id).first()
+    if sub:
+        db.delete(sub)
+        db.commit()
     return {"status": "success"}
 
 @app.get("/api/admin/debug")

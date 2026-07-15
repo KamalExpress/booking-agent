@@ -10,6 +10,41 @@
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
+    <!-- Registered Subscribers -->
+    <div class="bg-[#09090b] border border-zinc-800 rounded-xl p-5 shadow-sm md:col-span-2">
+        <div class="flex items-start gap-4">
+            <div class="p-3 bg-emerald-500/10 rounded-lg text-emerald-500 shrink-0">
+                <i data-lucide="users" class="w-6 h-6"></i>
+            </div>
+            <div class="flex-1 w-full overflow-hidden">
+                <h3 class="font-medium text-zinc-100 mb-1">Registered Push Subscribers</h3>
+                <p class="text-sm text-zinc-400 mb-4">A list of all active device subscriptions in the database.</p>
+                
+                <div class="max-h-64 overflow-y-auto pr-2 space-y-2">
+                    {% if subs %}
+                        {% for sub in subs %}
+                        <div class="bg-black/50 border border-zinc-800/50 rounded-lg p-3 text-sm flex items-center justify-between group" id="sub-{{ sub.id }}">
+                            <div class="overflow-hidden pr-4">
+                                <div class="font-medium text-zinc-300">User ID: {{ sub.user_id }}</div>
+                                <div class="text-xs text-zinc-500 truncate" title="{{ sub.endpoint }}">{{ sub.endpoint }}</div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-1 bg-zinc-800 rounded text-xs text-zinc-400 whitespace-nowrap">ID: {{ sub.id }}</span>
+                                <button onclick="deleteSubscription({{ sub.id }})" class="p-1.5 text-zinc-500 hover:text-red-400 hover:bg-red-400/10 rounded-md transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100" title="Delete Subscription">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-sm text-zinc-500 italic p-4 text-center border border-dashed border-zinc-800 rounded-lg">
+                            No devices are currently subscribed.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Push Notification Test -->
     <div class="bg-[#09090b] border border-zinc-800 rounded-xl p-5 shadow-sm">
         <div class="flex items-start gap-4">
@@ -185,5 +220,29 @@
             lucide.createIcons();
         });
     });
+
+    async function deleteSubscription(subId) {
+        if (!confirm("Are you sure you want to delete this device's subscription?")) return;
+        
+        try {
+            const token = localStorage.getItem("token") || "";
+            const res = await fetch(`/api/push/delete/${subId}`, {
+                method: "POST",
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+            
+            if (res.ok) {
+                const el = document.getElementById(`sub-${subId}`);
+                if (el) el.remove();
+            } else {
+                const data = await res.json();
+                alert(`Failed to delete: ${data.detail || JSON.stringify(data)}`);
+            }
+        } catch(err) {
+            alert(`Network error: ${err}`);
+        }
+    }
 </script>
 {% endblock %}

@@ -372,11 +372,13 @@ async def update_global_settings(
     return RedirectResponse(url="/settings", status_code=303)
 
 @router.get("/diagnostics", response_class=HTMLResponse)
-async def diagnostics_page(request: Request):
+async def diagnostics_page(request: Request, db: Session = Depends(get_db)):
+    from models import PushSubscription
+    subs = db.query(PushSubscription).all()
     return templates.TemplateResponse(
         request=request,
         name="diagnostics.html",
-        context={"request": request, "active_tab": "diagnostics"}
+        context={"request": request, "active_tab": "diagnostics", "subs": subs}
     )
 
 @router.get("/manifest.json")
