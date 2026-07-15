@@ -360,7 +360,7 @@ def submit_logs(
         if assignment:
             account = db.query(ScraperAccount).filter(ScraperAccount.id == assignment.scraper_account_id).first()
             if account:
-                account.last_login_at = datetime.utcnow()
+                account.last_login = datetime.utcnow()
                 
     db.commit()
     return {"status": "ok"}
