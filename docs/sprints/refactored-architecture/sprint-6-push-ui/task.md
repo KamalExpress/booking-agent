@@ -1,0 +1,5 @@
+- `[x]` Add Push Notification & App Setup card to `settings.html`
+  - Add HTML structure
+  - Add JavaScript for subscription flow
+- `[/]` Commit and push changes
+- `[ ]` Write walkthrough
