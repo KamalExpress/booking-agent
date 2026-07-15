@@ -86,6 +86,15 @@ async def worker_detail_page(worker_id: str, request: Request, db: Session = Dep
     leases = db.query(Lease).filter(Lease.worker_id == worker_id).all()
     logs = db.query(EventLog).filter(EventLog.worker_id == worker_id).order_by(EventLog.created_at.desc()).limit(100).all()
     
+    import os
+    terminal_logs = ""
+    logs_dir = os.path.join(os.path.dirname(__file__), "..", "..", "worker_logs")
+    log_file = os.path.join(logs_dir, f"{worker_id}.log")
+    if os.path.exists(log_file):
+        with open(log_file, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+            terminal_logs = "".join(lines[-500:]) # Keep last 500 lines for UI
+            
     return templates.TemplateResponse(
         request=request,
         name="worker_detail.html",
@@ -94,9 +103,27 @@ async def worker_detail_page(worker_id: str, request: Request, db: Session = Dep
             "active_page": "workers",
             "worker": worker,
             "leases": leases,
-            "logs": logs
+            "logs": logs,
+            "terminal_logs": terminal_logs
         }
     )
+
+@router.get("/workers/{worker_id}/logs/download")
+async def download_worker_logs(worker_id: str, db: Session = Depends(get_db)):
+    import os
+    from fastapi.responses import FileResponse
+    log_file = os.path.join(os.path.dirname(__file__), "..", "..", "worker_logs", f"{worker_id}.log")
+    if not os.path.exists(log_file):
+        return RedirectResponse(url=f"/workers/{worker_id}", status_code=303)
+    return FileResponse(path=log_file, filename=f"worker_{worker_id}.log", media_type="text/plain")
+
+@router.post("/workers/{worker_id}/logs/clear")
+async def clear_worker_logs(worker_id: str, db: Session = Depends(get_db)):
+    import os
+    log_file = os.path.join(os.path.dirname(__file__), "..", "..", "worker_logs", f"{worker_id}.log")
+    if os.path.exists(log_file):
+        open(log_file, 'w').close()
+    return RedirectResponse(url=f"/workers/{worker_id}", status_code=303)
 
 @router.post("/workers/{worker_id}/action")
 async def worker_action(worker_id: str, action: str = Form(...), db: Session = Depends(get_db)):

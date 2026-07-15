@@ -350,6 +350,25 @@ def complete_assignment(
     db.commit()
     return {"status": "ok"}
 
+class StreamLogsRequest(BaseModel):
+    logs: list[str]
+
+@router.post("/stream-logs")
+def stream_logs(
+    req: StreamLogsRequest,
+    worker: WorkerNode = Depends(verify_worker_hmac),
+):
+    import os
+    logs_dir = os.path.join(os.path.dirname(__file__), "..", "..", "worker_logs")
+    os.makedirs(logs_dir, exist_ok=True)
+    
+    log_file = os.path.join(logs_dir, f"{worker.worker_id}.log")
+    with open(log_file, "a", encoding="utf-8") as f:
+        for line in req.logs:
+            f.write(line + "\n")
+            
+    return {"status": "ok"}
+
 @router.post("/logs")
 def submit_logs(
     req: EventLogRequest,

@@ -185,3 +185,8 @@ class SaaSClient:
         
     def complete_assignment(self, assignment_id: int):
         self._request("POST", f"/api/v1/worker/assignments/{assignment_id}/complete")
+
+    def stream_logs(self, log_lines: list):
+        if not log_lines:
+            return
+        self._request("POST", f"/api/v1/worker/stream-logs", {"logs": log_lines})
