@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, Depends, Form
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
@@ -378,6 +378,22 @@ async def diagnostics_page(request: Request):
         name="diagnostics.html",
         context={"request": request, "active_tab": "diagnostics"}
     )
+
+@router.get("/manifest.json")
+async def get_manifest():
+    return FileResponse(os.path.join(BASE_DIR, "..", "static", "manifest.json"))
+
+@router.get("/sw.js")
+async def get_sw():
+    return FileResponse(os.path.join(BASE_DIR, "..", "static", "sw.js"))
+
+@router.get("/icon-192.png")
+async def get_icon192():
+    return FileResponse(os.path.join(BASE_DIR, "..", "static", "icon-192.png"))
+
+@router.get("/icon-512.png")
+async def get_icon512():
+    return FileResponse(os.path.join(BASE_DIR, "..", "static", "icon-512.png"))
 
 @router.post("/api/diagnostics/test-captcha")
 async def test_captcha_api(current_user: User = Depends(require_tenant_admin), db: Session = Depends(get_db)):

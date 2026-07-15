@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Kamal Express SaaS{% endblock %}</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#09090b">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -156,6 +158,15 @@
             logoutBtn.addEventListener('click', () => {
                 document.cookie = 'token=; Max-Age=-99999999; path=/';
                 window.location.href = '/login';
+            });
+        }
+        
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('ServiceWorker registered with scope:', reg.scope))
+                    .catch(err => console.log('ServiceWorker registration failed:', err));
             });
         }
     </script>
