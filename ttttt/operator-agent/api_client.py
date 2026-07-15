@@ -20,15 +20,19 @@ class SaaSClient:
 
     def load_credentials(self):
         try:
-            if os.path.exists("worker_creds.txt"):
-                with open("worker_creds.txt", "r") as f:
+            cred_path = "data/worker_creds.txt" if os.path.exists("data") else "worker_creds.txt"
+            if os.path.exists(cred_path):
+                with open(cred_path, "r") as f:
                     self.worker_id, self.secret = f.read().strip().split(':')
                 logging.info(f"Loaded existing worker credentials: {self.worker_id}")
         except Exception as e:
             logging.error(f"Could not load worker credentials: {e}")
 
     def save_credentials(self):
-        with open("worker_creds.txt", "w") as f:
+        if not os.path.exists("data"):
+            os.makedirs("data", exist_ok=True)
+        cred_path = "data/worker_creds.txt"
+        with open(cred_path, "w") as f:
             f.write(f"{self.worker_id}:{self.secret}")
 
     def register(self, hostname="worker", location="unknown", labels=None):

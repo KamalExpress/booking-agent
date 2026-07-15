@@ -36,6 +36,8 @@ services:
       - cloud-saas
     networks:
       - saas-network
+    volumes:
+      - operator_data_prod:/app/data
 
   db:
     image: postgres:15-alpine
@@ -52,6 +54,7 @@ services:
 
 volumes:
   postgres_data_prod:
+  operator_data_prod:
 
 networks:
   saas-network:
