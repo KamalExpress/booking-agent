@@ -67,6 +67,13 @@ class SlotMonitorEngine(threading.Thread):
                 captcha_config = runtime_config.get("captcha", {})
                 
                 proxy_string = account.get("proxy_string")
+                if proxy_string and not proxy_string.startswith("http"):
+                    parts = proxy_string.split(":")
+                    if len(parts) == 4:
+                        host, port, user, pwd = parts
+                        proxy_string = f"http://{user}:{pwd}@{host}:{port}"
+                    else:
+                        proxy_string = f"http://{proxy_string}"
                 
                 if captcha_config.get("provider") == "capsolver":
                     captcha_svc = CapSolverService(api_key=captcha_config.get("api_key", ""), proxy_string=proxy_string)
