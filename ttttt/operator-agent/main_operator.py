@@ -56,13 +56,17 @@ class OperatorAgent:
             }
         
         # Standardize headers to match Playwright context and bypass anti-bot
+        # Do NOT override User-Agent, let curl_cffi match the TLS fingerprint precisely
         self.session.headers.update({
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
             "Accept": "application/json, text/plain, */*",
             "Accept-Language": "en-US,en;q=0.9",
             "Connection": "keep-alive",
             "Origin": "https://pk-gr-services.gvcworld.eu",
-            "Referer": "https://pk-gr-services.gvcworld.eu/"
+            "Referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+            "X-Requested-With": "XMLHttpRequest",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin"
         })
         
         self.username = username or os.getenv('GVC_USERNAME')
@@ -110,6 +114,21 @@ class OperatorAgent:
     def login(self):
         logging.info(f"Attempting login for {self.username}...")
         
+        # 1. PRE-FLIGHT NAVIGATION: Establish Incapsula TLS Fingerprint & Session Cookies
+        logging.info("Executing pre-flight navigation to establish WAF trust...")
+        try:
+            # We explicitly override the API fetch headers to standard document navigation headers for this single request
+            preflight_headers = {
+                "Sec-Fetch-Dest": "document",
+                "Sec-Fetch-Mode": "navigate",
+                "Sec-Fetch-Site": "same-origin",
+                "X-Requested-With": None # Remove X-Requested-With for the document request
+            }
+            self.session.get(f"{self.base_url}/?lang=en_US", headers=preflight_headers, timeout=15)
+        except Exception as e:
+            logging.warning(f"Pre-flight navigation failed (WAF might still block us): {e}")
+
+        # 2. Solve CAPTCHA
         captcha_token = self.captcha_service.solve(self.sitekey, f"{self.base_url}/login", session=self.session)
         
         # Intelligent fallback to Manual mode if Auto mode fails
