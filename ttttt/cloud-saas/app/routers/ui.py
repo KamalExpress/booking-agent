@@ -580,8 +580,32 @@ async def diagnostics_page(request: Request, db: Session = Depends(get_db)):
     }, db)
 
 @router.get("/manifest.json")
-async def get_manifest():
-    return FileResponse(os.path.join(BASE_DIR, "..", "static", "manifest.json"))
+async def get_manifest(db: Session = Depends(get_db)):
+    brand_name_setting = db.query(SystemSetting).filter(SystemSetting.key == "global.brand_name").first()
+    brand_name = brand_name_setting.value if brand_name_setting and brand_name_setting.value else "Alamia Automation"
+    
+    return {
+      "name": brand_name,
+      "short_name": brand_name,
+      "start_url": "/",
+      "display": "standalone",
+      "background_color": "#111827",
+      "theme_color": "#3B82F6",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "any maskable"
+        },
+        {
+          "src": "/icon-512.png",
+          "sizes": "512x512",
+          "type": "image/png",
+          "purpose": "any maskable"
+        }
+      ]
+    }
 
 @router.get("/sw.js")
 async def get_sw():
