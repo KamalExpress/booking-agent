@@ -50,11 +50,8 @@ def init_db():
     from secrets_manager import secrets_manager
     
     with Session(engine) as db:
-        # 1. Create Default Tenant if not exists, and enforce it as active
-        default_tenant = db.query(Tenant).filter(Tenant.name.in_(["Kamal Express", "Default Tenant"])).first()
-        if not default_tenant:
-            # Fallback to ID 1 if renamed
-            default_tenant = db.query(Tenant).filter(Tenant.id == 1).first()
+        # 1. Create Default Tenant if not exists
+        default_tenant = db.query(Tenant).filter(Tenant.id == 1).first()
             
         if not default_tenant:
             default_tenant = Tenant(name="Default Tenant", is_active=True)
@@ -63,8 +60,7 @@ def init_db():
             db.refresh(default_tenant)
             print(f"Created Default Tenant: {default_tenant.name} (ID: {default_tenant.id})")
         else:
-            # Ensure name is updated and it is NEVER suspended
-            default_tenant.name = "Default Tenant"
+            # Ensure it is NEVER suspended
             default_tenant.is_active = True
             
             # Reactivate ALL users under the default tenant to prevent lockouts

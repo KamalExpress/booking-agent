@@ -75,7 +75,7 @@
                     </td>
                     <td class="p-4 text-muted-foreground">{{ tenant.created_at.strftime('%Y-%m-%d') if tenant.created_at else '-' }}</td>
                     <td class="p-4 text-right">
-                        {% if tenant.name != "Default Tenant" %}
+                        {% if tenant.id != 1 %}
                         <form action="/tenants/{{ tenant.id }}/status" method="post" class="inline-block">
                             {% if tenant.is_active %}
                             <input type="hidden" name="status" value="suspended">
