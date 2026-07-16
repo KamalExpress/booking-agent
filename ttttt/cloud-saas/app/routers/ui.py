@@ -327,6 +327,8 @@ async def create_assignment(
     except Exception as e:
         print(f"Failed to create assignment: {e}")
         db.rollback()
+        
+    return RedirectResponse(url="/assignments", status_code=303)
 
 @router.post("/workers/{worker_id}/edit")
 async def edit_worker(worker_id: str, request: Request, labels: str = Form(""), max_concurrency: int = Form(1), db: Session = Depends(get_db)):
