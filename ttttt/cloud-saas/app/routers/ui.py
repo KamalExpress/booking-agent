@@ -301,8 +301,8 @@ async def create_assignment(
 
     import json
     try:
-        start_date = datetime.strptime(target_start_date, '%Y-%m-%d')
-        end_date = datetime.strptime(target_end_date, '%Y-%m-%d')
+        start_date = datetime.strptime(target_start_date, '%d/%m/%Y')
+        end_date = datetime.strptime(target_end_date, '%d/%m/%Y')
         
         parsed_labels = {}
         if required_labels:
