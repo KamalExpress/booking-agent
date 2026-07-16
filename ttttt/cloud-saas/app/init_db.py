@@ -49,14 +49,28 @@ def init_db():
     from secrets_manager import secrets_manager
     
     with Session(engine) as db:
-        # 1. Create Default Tenant if not exists
-        default_tenant = db.query(Tenant).filter(Tenant.name == "Kamal Express").first()
+        # 1. Create Default Tenant if not exists, and enforce it as active
+        default_tenant = db.query(Tenant).filter(Tenant.name.in_(["Kamal Express", "Default Tenant"])).first()
         if not default_tenant:
-            default_tenant = Tenant(name="Kamal Express")
+            # Fallback to ID 1 if renamed
+            default_tenant = db.query(Tenant).filter(Tenant.id == 1).first()
+            
+        if not default_tenant:
+            default_tenant = Tenant(name="Default Tenant", is_active=True)
             db.add(default_tenant)
             db.commit()
             db.refresh(default_tenant)
             print(f"Created Default Tenant: {default_tenant.name} (ID: {default_tenant.id})")
+        else:
+            # Ensure name is updated and it is NEVER suspended
+            default_tenant.name = "Default Tenant"
+            default_tenant.is_active = True
+            
+            # Reactivate ALL users under the default tenant to prevent lockouts
+            for u in default_tenant.users:
+                u.is_active = True
+                
+            db.commit()
             
         # 2. Create Super Admin User if not exists
         super_admin_email = os.getenv("SUPER_ADMIN_EMAIL", "superadmin@samwebdevs.dpdns.org")
@@ -68,11 +82,16 @@ def init_db():
                 tenant_id=default_tenant.id,
                 email=super_admin_email,
                 hashed_password=get_password_hash(super_admin_password),
-                role=RoleEnum.SUPER_ADMIN
+                role=RoleEnum.SUPER_ADMIN,
+                is_active=True
             )
             db.add(super_admin)
             db.commit()
             print(f"Created Super Admin: {super_admin.email} (Password: {super_admin_password})")
+        else:
+            # Ensure super admin is always active
+            super_admin.is_active = True
+            db.commit()
             
         # 3. Create Default Global Monitor Config if not exists
         if not db.query(MonitorConfig).first():

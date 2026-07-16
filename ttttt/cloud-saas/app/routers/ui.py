@@ -687,6 +687,10 @@ async def update_tenant_status(
         
     tenant = db.query(Tenant).filter(Tenant.id == tenant_id).first()
     if tenant:
+        # Prevent suspension of the Default Tenant
+        if tenant.name == "Default Tenant" and status != "active":
+            return RedirectResponse(url="/tenants", status_code=303)
+            
         tenant.is_active = (status == "active")
         # Update active state for all users under tenant
         for u in tenant.users:
