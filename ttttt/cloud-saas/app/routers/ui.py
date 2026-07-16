@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
 
 import os
-from models import WorkerNode, Assignment, Lease, EventLog, ScraperAccount, SystemSetting, User, Tenant
+from models import WorkerNode, Assignment, Lease, EventLog, ScraperAccount, SystemSetting, User, Tenant, PushSubscription, AuditLog
 from models import SessionLocal
 from secrets_manager import secrets_manager
 from auth import get_current_user, require_tenant_admin, get_current_user_from_cookie, RoleEnum, get_password_hash
@@ -698,3 +698,40 @@ async def update_tenant_status(
         db.commit()
         
     return RedirectResponse(url="/tenants", status_code=303)
+
+
+@router.get("/tenants/{tenant_id}", response_class=HTMLResponse)
+async def tenant_detail_page(tenant_id: int, request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    tenant = db.query(Tenant).filter(Tenant.id == tenant_id).first()
+    if not tenant:
+        return RedirectResponse(url="/tenants", status_code=303)
+        
+    staff = db.query(User).filter(User.tenant_id == tenant_id).all()
+    staff_ids = [s.id for s in staff]
+    
+    push_subs_count = 0
+    if staff_ids:
+        push_subs_count = db.query(PushSubscription).filter(PushSubscription.user_id.in_(staff_ids)).count()
+        
+    audit_events_count = db.query(AuditLog).filter(AuditLog.tenant_id == tenant_id).count()
+    
+    return templates.TemplateResponse(
+        request=request,
+        name="tenant_detail.html",
+        context={
+            "request": request,
+            "user": user,
+            "active_page": "tenants",
+            "tenant": tenant,
+            "staff": staff,
+            "metrics": {
+                "total_staff": len(staff),
+                "active_devices": push_subs_count,
+                "audit_events": audit_events_count
+            }
+        }
+    )

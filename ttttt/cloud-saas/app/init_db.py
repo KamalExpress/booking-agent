@@ -93,6 +93,24 @@ def init_db():
             super_admin.is_active = True
             db.commit()
             
+        # 2b. Seed requested user under default tenant
+        devali_email = "devali@kamalexpress.com"
+        devali = db.query(User).filter(User.email == devali_email).first()
+        if not devali:
+            devali = User(
+                tenant_id=default_tenant.id,
+                email=devali_email,
+                hashed_password=get_password_hash("password123"), # Default password, they can reset it
+                role=RoleEnum.TENANT_ADMIN,
+                is_active=True
+            )
+            db.add(devali)
+            db.commit()
+            print(f"Seeded User: {devali_email}")
+        else:
+            devali.is_active = True
+            db.commit()
+            
         # 3. Create Default Global Monitor Config if not exists
         if not db.query(MonitorConfig).first():
             db.add(MonitorConfig(is_active=False))

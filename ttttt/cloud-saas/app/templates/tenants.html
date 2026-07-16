@@ -59,8 +59,12 @@
             <tbody>
                 {% for tenant in tenants %}
                 <tr class="border-b border-border hover:bg-muted/50 transition-colors">
-                    <td class="p-4 text-muted-foreground font-mono">#{{ tenant.id }}</td>
-                    <td class="p-4 text-foreground font-medium">{{ tenant.name }}</td>
+                    <td class="p-4 text-muted-foreground font-mono">
+                        <a href="/tenants/{{ tenant.id }}" class="text-blue-500 hover:underline">#{{ tenant.id }}</a>
+                    </td>
+                    <td class="p-4 text-foreground font-medium">
+                        <a href="/tenants/{{ tenant.id }}" class="hover:underline">{{ tenant.name }}</a>
+                    </td>
                     <td class="p-4 text-muted-foreground">{{ tenant.admin_email }}</td>
                     <td class="p-4">
                         {% if tenant.is_active %}
