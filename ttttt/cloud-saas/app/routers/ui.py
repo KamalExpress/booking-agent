@@ -860,3 +860,24 @@ async def staff_page(request: Request, db: Session = Depends(get_db)):
             "tenant": tenant
         }
     )
+
+@router.get("/directory", response_class=HTMLResponse)
+async def directory_page(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    users = db.query(User).order_by(User.id.desc()).all()
+    push_devices = db.query(PushSubscription).order_by(PushSubscription.created_at.desc()).all()
+    
+    return templates.TemplateResponse(
+        request=request,
+        name="directory.html",
+        context={
+            "request": request,
+            "user": user,
+            "active_page": "directory",
+            "users": users,
+            "push_devices": push_devices
+        }
+    )
