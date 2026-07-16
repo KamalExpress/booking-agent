@@ -433,7 +433,8 @@ def submit_logs(
                     assignment_id=assignment.id,
                     visa_center=visa_center,
                     date=target_date,
-                    slots_data=req.payload.get("slots", []) if req.payload else []
+                    slots_data=req.payload.get("slots", []) if req.payload else [],
+                    found_by=worker.worker_id
                 )
                 db.add(availability)
         

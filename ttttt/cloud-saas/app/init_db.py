@@ -44,7 +44,8 @@ def init_db():
             "ALTER TABLE push_subscriptions ADD COLUMN user_agent VARCHAR",
             "ALTER TABLE push_subscriptions ADD COLUMN browser VARCHAR",
             "ALTER TABLE push_subscriptions ADD COLUMN os_name VARCHAR",
-            "ALTER TABLE push_subscriptions ADD COLUMN device_name VARCHAR"
+            "ALTER TABLE push_subscriptions ADD COLUMN device_name VARCHAR",
+            "ALTER TABLE slot_availability ADD COLUMN found_by VARCHAR"
         ]:
             try:
                 conn.execute(text(stmt))

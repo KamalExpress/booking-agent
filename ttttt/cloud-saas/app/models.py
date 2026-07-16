@@ -200,6 +200,7 @@ class SlotAvailability(Base):
     visa_center = Column(String, nullable=False)
     date = Column(String, nullable=False)
     slots_data = Column(JSONB, nullable=False)
+    found_by = Column(String, nullable=True) # The worker_id that found the slot
     created_at = Column(DateTime, default=datetime.utcnow)
 
 class WorkerVersion(Base):
