@@ -8,7 +8,14 @@ import os
 from models import WorkerNode, Assignment, Lease, EventLog, ScraperAccount, SystemSetting, User
 from models import SessionLocal
 from secrets_manager import secrets_manager
-from auth import get_current_user, require_tenant_admin
+from auth import get_current_user, require_tenant_admin, get_current_user_from_cookie, RoleEnum
+from fastapi import HTTPException
+
+def get_ui_user(request: Request, db: Session):
+    try:
+        return get_current_user_from_cookie(request, db)
+    except HTTPException:
+        return None
 
 def get_db():
     db = SessionLocal()
@@ -33,6 +40,10 @@ async def login_page(request: Request):
 
 @router.get("/", response_class=HTMLResponse)
 async def overview_page(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+        
     now = datetime.now(timezone.utc).replace(tzinfo=None)
     cutoff = now - timedelta(seconds=WorkerNode.WORKER_TIMEOUT_SECONDS)
     
@@ -51,20 +62,30 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
         EventLog.created_at >= yesterday
     ).count()
 
+    recent_logs = db.query(EventLog).order_by(EventLog.created_at.desc()).limit(10).all()
+    
     return templates.TemplateResponse(
         request=request,
         name="index.html",
         context={
             "request": request,
+            "user": user,
             "active_page": "overview",
             "active_workers": active_workers,
             "active_assignments": active_assignments,
-            "slots_found": slots_found
+            "slots_found": slots_found,
+            "recent_logs": recent_logs
         }
     )
 
 @router.get("/workers", response_class=HTMLResponse)
 async def workers_page(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+    if user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
     workers = db.query(WorkerNode).order_by(WorkerNode.last_heartbeat.desc()).all()
             
     return templates.TemplateResponse(
@@ -72,6 +93,7 @@ async def workers_page(request: Request, db: Session = Depends(get_db)):
         name="workers.html",
         context={
             "request": request,
+            "user": user,
             "active_page": "workers",
             "workers": workers
         }
@@ -79,6 +101,12 @@ async def workers_page(request: Request, db: Session = Depends(get_db)):
 
 @router.get("/workers/{worker_id}", response_class=HTMLResponse)
 async def worker_detail_page(worker_id: str, request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+    if user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
     worker = db.query(WorkerNode).filter(WorkerNode.worker_id == worker_id).first()
     if not worker:
         return RedirectResponse(url="/workers")
@@ -100,6 +128,7 @@ async def worker_detail_page(worker_id: str, request: Request, db: Session = Dep
         name="worker_detail.html",
         context={
             "request": request,
+            "user": user,
             "active_page": "workers",
             "worker": worker,
             "leases": leases,
@@ -109,7 +138,11 @@ async def worker_detail_page(worker_id: str, request: Request, db: Session = Dep
     )
 
 @router.get("/workers/{worker_id}/logs/download")
-async def download_worker_logs(worker_id: str, db: Session = Depends(get_db)):
+async def download_worker_logs(worker_id: str, request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
     import os
     from fastapi.responses import FileResponse
     log_file = os.path.join(os.path.dirname(__file__), "..", "..", "worker_logs", f"{worker_id}.log")
@@ -118,7 +151,11 @@ async def download_worker_logs(worker_id: str, db: Session = Depends(get_db)):
     return FileResponse(path=log_file, filename=f"worker_{worker_id}.log", media_type="text/plain")
 
 @router.post("/workers/{worker_id}/logs/clear")
-async def clear_worker_logs(worker_id: str, db: Session = Depends(get_db)):
+async def clear_worker_logs(worker_id: str, request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
     import os
     log_file = os.path.join(os.path.dirname(__file__), "..", "..", "worker_logs", f"{worker_id}.log")
     if os.path.exists(log_file):
@@ -126,7 +163,11 @@ async def clear_worker_logs(worker_id: str, db: Session = Depends(get_db)):
     return RedirectResponse(url=f"/workers/{worker_id}", status_code=303)
 
 @router.post("/workers/{worker_id}/action")
-async def worker_action(worker_id: str, action: str = Form(...), db: Session = Depends(get_db)):
+async def worker_action(worker_id: str, request: Request, action: str = Form(...), db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
     worker = db.query(WorkerNode).filter(WorkerNode.worker_id == worker_id).first()
     if worker:
         if action == "accept_jobs":
@@ -144,6 +185,10 @@ async def worker_action(worker_id: str, action: str = Form(...), db: Session = D
 
 @router.get("/assignments", response_class=HTMLResponse)
 async def assignments_page(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
     assignments = db.query(Assignment).order_by(Assignment.id.desc()).all()
     
     # Attach scraper account info and current lease
@@ -160,6 +205,7 @@ async def assignments_page(request: Request, db: Session = Depends(get_db)):
         name="assignments.html",
         context={
             "request": request,
+            "user": user,
             "active_page": "assignments",
             "assignments": assignments,
             "accounts": accounts
@@ -168,6 +214,7 @@ async def assignments_page(request: Request, db: Session = Depends(get_db)):
 
 @router.post("/assignments/create")
 async def create_assignment(
+    request: Request,
     scraper_account_id: int = Form(...),
     target_start_date: str = Form(...),
     target_end_date: str = Form(...),
@@ -175,6 +222,10 @@ async def create_assignment(
     required_labels: str = Form(""),
     db: Session = Depends(get_db)
 ):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+
     import json
     try:
         start_date = datetime.strptime(target_start_date, '%Y-%m-%d')
@@ -202,7 +253,11 @@ async def create_assignment(
         db.rollback()
 
 @router.post("/workers/{worker_id}/edit")
-async def edit_worker(worker_id: str, labels: str = Form(""), max_concurrency: int = Form(1), db: Session = Depends(get_db)):
+async def edit_worker(worker_id: str, request: Request, labels: str = Form(""), max_concurrency: int = Form(1), db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
     import json
     worker = db.query(WorkerNode).filter(WorkerNode.worker_id == worker_id).first()
     if worker:
@@ -220,6 +275,10 @@ async def edit_worker(worker_id: str, labels: str = Form(""), max_concurrency: i
 
 @router.get("/assignments/{assignment_id}", response_class=HTMLResponse)
 async def assignment_detail_page(assignment_id: int, request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
     assignment = db.query(Assignment).filter(Assignment.id == assignment_id).first()
     if not assignment:
         return RedirectResponse(url="/assignments")
@@ -232,6 +291,7 @@ async def assignment_detail_page(assignment_id: int, request: Request, db: Sessi
         name="assignment_detail.html",
         context={
             "request": request,
+            "user": user,
             "active_page": "assignments",
             "assignment": assignment,
             "account": account,
@@ -242,9 +302,14 @@ async def assignment_detail_page(assignment_id: int, request: Request, db: Sessi
 @router.post("/assignments/{assignment_id}/status")
 async def update_assignment_status(
     assignment_id: int,
+    request: Request,
     status: str = Form(...),
     db: Session = Depends(get_db)
 ):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
     assignment = db.query(Assignment).filter(Assignment.id == assignment_id).first()
     if assignment:
         if status in ["Active", "Paused", "Completed", "Cancelled"]:
@@ -256,6 +321,7 @@ async def update_assignment_status(
 @router.post("/assignments/{assignment_id}/edit")
 async def edit_assignment(
     assignment_id: int,
+    request: Request,
     visa_center: str = Form(...),
     date_from: str = Form(...),
     date_to: str = Form(...),
@@ -263,6 +329,10 @@ async def edit_assignment(
     priority: int = Form(...),
     db: Session = Depends(get_db)
 ):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+
     assignment = db.query(Assignment).filter(Assignment.id == assignment_id).first()
     if assignment:
         assignment.visa_center = visa_center
@@ -276,6 +346,10 @@ async def edit_assignment(
 
 @router.get("/accounts", response_class=HTMLResponse)
 async def accounts_page(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
     accounts = db.query(ScraperAccount).order_by(ScraperAccount.id.desc()).all()
     
     return templates.TemplateResponse(
@@ -283,6 +357,7 @@ async def accounts_page(request: Request, db: Session = Depends(get_db)):
         name="accounts.html",
         context={
             "request": request,
+            "user": user,
             "active_page": "accounts",
             "accounts": accounts
         }
@@ -290,11 +365,15 @@ async def accounts_page(request: Request, db: Session = Depends(get_db)):
 
 @router.post("/accounts/create")
 async def create_account(
+    request: Request,
     username: str = Form(...),
     password: str = Form(...),
     proxy_string: str = Form(None),
     db: Session = Depends(get_db)
 ):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
     new_account = ScraperAccount(
         username=username,
         password=password,
@@ -307,6 +386,10 @@ async def create_account(
 
 @router.get("/accounts/{account_id}", response_class=HTMLResponse)
 async def account_detail_page(account_id: int, request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
     account = db.query(ScraperAccount).filter(ScraperAccount.id == account_id).first()
     if not account:
         return RedirectResponse(url="/accounts")
@@ -318,6 +401,7 @@ async def account_detail_page(account_id: int, request: Request, db: Session = D
         name="account_detail.html",
         context={
             "request": request,
+            "user": user,
             "active_page": "accounts",
             "account": account,
             "assignments": assignments
@@ -345,6 +429,10 @@ async def edit_account(
 
 @router.get("/logs", response_class=HTMLResponse)
 async def logs_page(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+        
     logs = db.query(EventLog).order_by(EventLog.id.desc()).limit(100).all()
     
     return templates.TemplateResponse(
@@ -352,6 +440,7 @@ async def logs_page(request: Request, db: Session = Depends(get_db)):
         name="logs.html",
         context={
             "request": request,
+            "user": user,
             "active_page": "logs",
             "logs": logs
         }
@@ -359,6 +448,10 @@ async def logs_page(request: Request, db: Session = Depends(get_db)):
 
 @router.get("/settings", response_class=HTMLResponse)
 async def settings_page(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
     settings_db = db.query(SystemSetting).all()
     settings_dict = {s.key: s for s in settings_db}
     
@@ -370,6 +463,7 @@ async def settings_page(request: Request, db: Session = Depends(get_db)):
         name="settings.html",
         context={
             "request": request,
+            "user": user,
             "active_page": "settings",
             "settings": settings_dict,
             "captcha_configured": captcha_configured
@@ -378,10 +472,14 @@ async def settings_page(request: Request, db: Session = Depends(get_db)):
 
 @router.post("/settings/captcha")
 async def update_captcha_settings(
+    request: Request,
     provider: str = Form(...),
     api_key: str = Form(""),
     db: Session = Depends(get_db)
 ):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
     # Update Provider (Plaintext)
     prov_setting = db.query(SystemSetting).filter(SystemSetting.key == "captcha.provider").first()
     if not prov_setting:
@@ -410,15 +508,25 @@ async def update_captcha_settings(
 
 @router.post("/settings/global")
 async def update_global_settings(
+    request: Request,
     default_polling_interval: str = Form("300"),
     default_date_from: str = Form(""),
     default_date_to: str = Form(""),
+    notify_login_success: str = Form(None),
+    notify_slots_found: str = Form(None),
+    notify_no_slots_found: str = Form(None),
     db: Session = Depends(get_db)
 ):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
     settings_to_update = {
         "global.default_polling_interval": default_polling_interval,
         "global.default_date_from": default_date_from,
-        "global.default_date_to": default_date_to
+        "global.default_date_to": default_date_to,
+        "notify.login_success": "true" if notify_login_success else "false",
+        "notify.slots_found": "true" if notify_slots_found else "false",
+        "notify.no_slots_found": "true" if notify_no_slots_found else "false",
     }
     
     for key, value in settings_to_update.items():
@@ -433,12 +541,16 @@ async def update_global_settings(
 
 @router.get("/diagnostics", response_class=HTMLResponse)
 async def diagnostics_page(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
     from models import PushSubscription
     subs = db.query(PushSubscription).all()
     return templates.TemplateResponse(
         request=request,
         name="diagnostics.html",
-        context={"request": request, "active_tab": "diagnostics", "subs": subs}
+        context={"request": request, "user": user, "active_tab": "diagnostics", "subs": subs}
     )
 
 @router.get("/manifest.json")

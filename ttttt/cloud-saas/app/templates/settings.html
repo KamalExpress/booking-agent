@@ -35,6 +35,21 @@
                         <input type="text" name="default_date_to" value="{{ settings.get('global.default_date_to').value if settings.get('global.default_date_to') else '' }}" placeholder="DD/MM/YYYY" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
                     </div>
                 </div>
+                <div class="border-t border-zinc-800 pt-4 mt-4 space-y-2">
+                    <label class="block text-sm font-medium text-zinc-300 mb-2">Notification Preferences</label>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="notify_login_success" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if not settings.get('notify.login_success') or settings.get('notify.login_success').value == 'true' %}checked{% endif %}>
+                        <span class="text-sm text-zinc-300">Send Login Notifications</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="notify_slots_found" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if not settings.get('notify.slots_found') or settings.get('notify.slots_found').value == 'true' %}checked{% endif %}>
+                        <span class="text-sm text-zinc-300">Send Slots Found Notifications</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="notify_no_slots_found" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if not settings.get('notify.no_slots_found') or settings.get('notify.no_slots_found').value == 'true' %}checked{% endif %}>
+                        <span class="text-sm text-zinc-300">Send No Slots Found Notifications</span>
+                    </label>
+                </div>
                 
                 <div class="pt-4 mt-auto">
                     <button type="submit" class="w-full inline-flex justify-center items-center rounded-md text-sm font-medium h-9 px-4 py-2 bg-white text-black hover:bg-zinc-200 transition-colors shadow-sm">

@@ -391,14 +391,20 @@ def submit_logs(
             account = db.query(ScraperAccount).filter(ScraperAccount.id == assignment.scraper_account_id).first()
             if account:
                 account.last_login = datetime.utcnow()
-                send_push_notification(db, "Login Successful", f"Worker successfully logged into {account.username} (Center {assignment.visa_center})")
+                notify_login = db.query(SystemSetting).filter(SystemSetting.key == "notify.login_success").first()
+                if not notify_login or notify_login.value == "true":
+                    send_push_notification(db, "Login Successful", f"Worker successfully logged into {account.username} (Center {assignment.visa_center})")
                 
     elif req.event_type == "NO_SLOTS_FOUND":
-        friendly_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
-        send_push_notification(db, "Slot Monitor", f"No Slots available; last checked: {friendly_time}")
+        notify_no_slots = db.query(SystemSetting).filter(SystemSetting.key == "notify.no_slots_found").first()
+        if not notify_no_slots or notify_no_slots.value == "true":
+            friendly_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
+            send_push_notification(db, "Slot Monitor", f"No Slots available; last checked: {friendly_time}")
         
     elif req.event_type == "SLOT_FOUND":
-        send_push_notification(db, "Slots Found!", "Slots are available; you can try booking now!")
+        notify_slots = db.query(SystemSetting).filter(SystemSetting.key == "notify.slots_found").first()
+        if not notify_slots or notify_slots.value == "true":
+            send_push_notification(db, "Slots Found!", "Slots are available; you can try booking now!")
         
         # Pause ALL active assignments to stop wasting captcha tokens
         active_assignments = db.query(Assignment).filter(Assignment.status.in_(["Active", "Leased"])).all()
