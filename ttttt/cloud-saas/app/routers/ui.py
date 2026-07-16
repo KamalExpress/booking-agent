@@ -65,6 +65,9 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
     from models import SlotAvailability
     recent_slot_records = db.query(SlotAvailability).order_by(SlotAvailability.created_at.desc()).limit(5).all()
     
+    last_check_event = db.query(EventLog).filter(EventLog.event_type.in_(['SLOT_FOUND', 'NO_SLOTS_FOUND'])).order_by(EventLog.created_at.desc()).first()
+    last_checked_time = last_check_event.created_at if last_check_event else None
+    
     recent_logs = db.query(EventLog).order_by(EventLog.created_at.desc()).limit(10).all()
     
     return templates.TemplateResponse(
@@ -78,6 +81,7 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
             "active_assignments": active_assignments,
             "slots_found": slots_found,
             "recent_slot_records": recent_slot_records,
+            "last_checked_time": last_checked_time,
             "recent_logs": recent_logs
         }
     )

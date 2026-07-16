@@ -78,6 +78,26 @@
         </div>
     </div>
 </div>
+{% else %}
+<div class="card p-6 border-zinc-800 bg-zinc-900/50 mb-8 relative overflow-hidden">
+    <div class="absolute top-0 right-0 p-4 opacity-5">
+        <i data-lucide="calendar-off" class="w-24 h-24 text-zinc-500"></i>
+    </div>
+    <div class="relative z-10">
+        <h3 class="text-xl font-bold text-zinc-400 mb-2 flex items-center gap-2">
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-zinc-600"></span>
+            Slots are CLOSED
+        </h3>
+        <p class="text-zinc-500 mb-4">Worker nodes are actively monitoring the Visa Centers, but no open slots have been detected recently.</p>
+        <div class="text-sm font-medium text-zinc-600">
+            {% if last_checked_time %}
+            Last checked: {{ last_checked_time.strftime('%Y-%m-%d %H:%M:%S UTC') }}
+            {% else %}
+            Waiting for first worker report...
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endif %}
 
 <div class="card p-6 border-border">
