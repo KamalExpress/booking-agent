@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, Header, status, Response
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, and_, desc
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Union
 from pydantic import BaseModel
 import secrets
 import hashlib
@@ -61,7 +61,7 @@ class EventLogRequest(BaseModel):
 
 class WorkerLogRequest(BaseModel):
     assignment_id: Optional[int] = None
-    payload: Dict[str, Any]
+    payload: Union[Dict[str, Any], List[Any]]
 
 # --- HMAC Authentication Dependency ---
 
