@@ -30,13 +30,24 @@ router = APIRouter(tags=["UI"])
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
+def render_template(name: str, context: dict, db: Session):
+    # Fetch branding settings
+    brand_name = db.query(SystemSetting).filter(SystemSetting.key == "global.brand_name").first()
+    brand_subtitle = db.query(SystemSetting).filter(SystemSetting.key == "global.brand_subtitle").first()
+    admin_notice = db.query(SystemSetting).filter(SystemSetting.key == "global.admin_notice").first()
+    
+    branding = {
+        "brand_name": brand_name.value if brand_name and brand_name.value else "Alamia Automation",
+        "brand_subtitle": brand_subtitle.value if brand_subtitle and brand_subtitle.value else "Automating Business Solutions",
+        "admin_notice": admin_notice.value if admin_notice else ""
+    }
+    
+    context["branding"] = branding
+    return templates.TemplateResponse(request=context["request"], name=name, context=context)
+
 @router.get("/login", response_class=HTMLResponse)
-async def login_page(request: Request):
-    return templates.TemplateResponse(
-        request=request,
-        name="login.html",
-        context={"request": request}
-    )
+async def login_page(request: Request, db: Session = Depends(get_db)):
+    return render_template("login.html", {"request": request}, db)
 
 @router.get("/", response_class=HTMLResponse)
 async def overview_page(request: Request, db: Session = Depends(get_db)):
@@ -70,21 +81,17 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
     
     recent_logs = db.query(EventLog).order_by(EventLog.created_at.desc()).limit(10).all()
     
-    return templates.TemplateResponse(
-        request=request,
-        name="index.html",
-        context={
-            "request": request,
-            "user": user,
-            "active_page": "overview",
-            "active_workers": active_workers,
-            "active_assignments": active_assignments,
-            "slots_found": slots_found,
-            "recent_slot_records": recent_slot_records,
-            "last_checked_time": last_checked_time,
-            "recent_logs": recent_logs
-        }
-    )
+    return render_template("index.html", {
+        "request": request,
+        "user": user,
+        "active_page": "overview",
+        "active_workers": active_workers,
+        "active_assignments": active_assignments,
+        "slots_found": slots_found,
+        "recent_slot_records": recent_slot_records,
+        "last_checked_time": last_checked_time,
+        "recent_logs": recent_logs
+    }, db)
 
 @router.get("/workers", response_class=HTMLResponse)
 async def workers_page(request: Request, db: Session = Depends(get_db)):
@@ -96,16 +103,12 @@ async def workers_page(request: Request, db: Session = Depends(get_db)):
         
     workers = db.query(WorkerNode).order_by(WorkerNode.last_heartbeat.desc()).all()
             
-    return templates.TemplateResponse(
-        request=request,
-        name="workers.html",
-        context={
-            "request": request,
-            "user": user,
-            "active_page": "workers",
-            "workers": workers
-        }
-    )
+    return render_template("workers.html", {
+        "request": request,
+        "user": user,
+        "active_page": "workers",
+        "workers": workers
+    }, db)
 
 @router.get("/workers/{worker_id}", response_class=HTMLResponse)
 async def worker_detail_page(worker_id: str, request: Request, db: Session = Depends(get_db)):
@@ -132,20 +135,16 @@ async def worker_detail_page(worker_id: str, request: Request, db: Session = Dep
             lines = f.readlines()
             terminal_logs = "".join(lines[-500:]) # Keep last 500 lines for UI
             
-    return templates.TemplateResponse(
-        request=request,
-        name="worker_detail.html",
-        context={
-            "request": request,
-            "user": user,
-            "active_page": "workers",
-            "worker": worker,
-            "leases": leases,
-            "logs": logs,
-            "network_logs": network_logs,
-            "terminal_logs": terminal_logs
-        }
-    )
+    return render_template("worker_detail.html", {
+        "request": request,
+        "user": user,
+        "active_page": "workers",
+        "worker": worker,
+        "leases": leases,
+        "logs": logs,
+        "network_logs": network_logs,
+        "terminal_logs": terminal_logs
+    }, db)
 
 @router.get("/workers/{worker_id}/logs/download")
 async def download_worker_logs(worker_id: str, request: Request, db: Session = Depends(get_db)):
@@ -240,17 +239,13 @@ async def assignments_page(request: Request, db: Session = Depends(get_db)):
         asm.leased_to_worker = lease.worker_id if lease else None
         
     accounts = db.query(ScraperAccount).all()
-    return templates.TemplateResponse(
-        request=request,
-        name="assignments.html",
-        context={
-            "request": request,
-            "user": user,
-            "active_page": "assignments",
-            "assignments": assignments,
-            "accounts": accounts
-        }
-    )
+    return render_template("assignments.html", {
+        "request": request,
+        "user": user,
+        "active_page": "assignments",
+        "assignments": assignments,
+        "accounts": accounts
+    }, db)
 
 @router.post("/assignments/create")
 async def create_assignment(
@@ -326,18 +321,14 @@ async def assignment_detail_page(assignment_id: int, request: Request, db: Sessi
     account = db.query(ScraperAccount).filter(ScraperAccount.id == assignment.scraper_account_id).first()
     logs = db.query(EventLog).filter(EventLog.assignment_id == assignment_id).order_by(EventLog.created_at.desc()).limit(50).all()
     
-    return templates.TemplateResponse(
-        request=request,
-        name="assignment_detail.html",
-        context={
-            "request": request,
-            "user": user,
-            "active_page": "assignments",
-            "assignment": assignment,
-            "account": account,
-            "logs": logs
-        }
-    )
+    return render_template("assignment_detail.html", {
+        "request": request,
+        "user": user,
+        "active_page": "assignments",
+        "assignment": assignment,
+        "account": account,
+        "logs": logs
+    }, db)
 
 @router.post("/assignments/{assignment_id}/status")
 async def update_assignment_status(
@@ -392,16 +383,12 @@ async def accounts_page(request: Request, db: Session = Depends(get_db)):
         
     accounts = db.query(ScraperAccount).order_by(ScraperAccount.id.desc()).all()
     
-    return templates.TemplateResponse(
-        request=request,
-        name="accounts.html",
-        context={
-            "request": request,
-            "user": user,
-            "active_page": "accounts",
-            "accounts": accounts
-        }
-    )
+    return render_template("accounts.html", {
+        "request": request,
+        "user": user,
+        "active_page": "accounts",
+        "accounts": accounts
+    }, db)
 
 @router.post("/accounts/create")
 async def create_account(
@@ -436,17 +423,13 @@ async def account_detail_page(account_id: int, request: Request, db: Session = D
         
     assignments = db.query(Assignment).filter(Assignment.scraper_account_id == account_id).all()
     
-    return templates.TemplateResponse(
-        request=request,
-        name="account_detail.html",
-        context={
-            "request": request,
-            "user": user,
-            "active_page": "accounts",
-            "account": account,
-            "assignments": assignments
-        }
-    )
+    return render_template("account_detail.html", {
+        "request": request,
+        "user": user,
+        "active_page": "accounts",
+        "account": account,
+        "assignments": assignments
+    }, db)
 
 @router.post("/accounts/{account_id}/edit")
 async def edit_account(
@@ -475,16 +458,12 @@ async def logs_page(request: Request, db: Session = Depends(get_db)):
         
     logs = db.query(EventLog).order_by(EventLog.id.desc()).limit(100).all()
     
-    return templates.TemplateResponse(
-        request=request,
-        name="logs.html",
-        context={
-            "request": request,
-            "user": user,
-            "active_page": "logs",
-            "logs": logs
-        }
-    )
+    return render_template("logs.html", {
+        "request": request,
+        "user": user,
+        "active_page": "logs",
+        "logs": logs
+    }, db)
 
 @router.get("/settings", response_class=HTMLResponse)
 async def settings_page(request: Request, db: Session = Depends(get_db)):
@@ -498,17 +477,13 @@ async def settings_page(request: Request, db: Session = Depends(get_db)):
     # Check if captcha API key is configured
     captcha_configured = "captcha.api_key" in settings_dict and settings_dict["captcha.api_key"].encrypted_value
     
-    return templates.TemplateResponse(
-        request=request,
-        name="settings.html",
-        context={
-            "request": request,
-            "user": user,
-            "active_page": "settings",
-            "settings": settings_dict,
-            "captcha_configured": captcha_configured
-        }
-    )
+    return render_template("settings.html", {
+        "request": request,
+        "user": user,
+        "active_page": "settings",
+        "settings": settings_dict,
+        "captcha_configured": captcha_configured
+    }, db)
 
 @router.post("/settings/captcha")
 async def update_captcha_settings(
@@ -554,6 +529,9 @@ async def update_global_settings(
     default_date_to: str = Form(""),
     min_slot_delay: str = Form("4"),
     max_slot_delay: str = Form("8"),
+    brand_name: str = Form("Alamia Automation"),
+    brand_subtitle: str = Form("Automating Business Solutions"),
+    admin_notice: str = Form(""),
     notify_login_success: str = Form(None),
     notify_slots_found: str = Form(None),
     notify_no_slots_found: str = Form(None),
@@ -568,6 +546,9 @@ async def update_global_settings(
         "global.default_date_to": default_date_to,
         "global.min_slot_delay": min_slot_delay,
         "global.max_slot_delay": max_slot_delay,
+        "global.brand_name": brand_name,
+        "global.brand_subtitle": brand_subtitle,
+        "global.admin_notice": admin_notice,
         "notify.login_success": "true" if notify_login_success else "false",
         "notify.slots_found": "true" if notify_slots_found else "false",
         "notify.no_slots_found": "true" if notify_no_slots_found else "false",
@@ -591,11 +572,12 @@ async def diagnostics_page(request: Request, db: Session = Depends(get_db)):
         
     from models import PushSubscription
     subs = db.query(PushSubscription).all()
-    return templates.TemplateResponse(
-        request=request,
-        name="diagnostics.html",
-        context={"request": request, "user": user, "active_tab": "diagnostics", "subs": subs}
-    )
+    return render_template("diagnostics.html", {
+        "request": request,
+        "user": user,
+        "active_tab": "diagnostics",
+        "subs": subs
+    }, db)
 
 @router.get("/manifest.json")
 async def get_manifest():
@@ -674,16 +656,12 @@ async def tenants_page(request: Request, db: Session = Depends(get_db)):
     for t in tenants:
         t.admin_email = next((u.email for u in t.users if u.role == RoleEnum.TENANT_ADMIN), "-")
         
-    return templates.TemplateResponse(
-        request=request,
-        name="tenants.html",
-        context={
-            "request": request,
-            "user": user,
-            "active_page": "tenants",
-            "tenants": tenants
-        }
-    )
+    return render_template("tenants.html", {
+        "request": request,
+        "user": user,
+        "active_page": "tenants",
+        "tenants": tenants
+    }, db)
 
 @router.post("/tenants/create")
 async def create_tenant(
@@ -763,22 +741,18 @@ async def tenant_detail_page(tenant_id: int, request: Request, db: Session = Dep
         
     audit_events_count = db.query(AuditLog).filter(AuditLog.tenant_id == tenant_id).count()
     
-    return templates.TemplateResponse(
-        request=request,
-        name="tenant_detail.html",
-        context={
-            "request": request,
-            "user": user,
-            "active_page": "tenants",
-            "tenant": tenant,
-            "staff": staff,
-            "metrics": {
-                "total_staff": len(staff),
-                "active_devices": push_subs_count,
-                "audit_events": audit_events_count
-            }
+    return render_template("tenant_detail.html", {
+        "request": request,
+        "user": user,
+        "active_page": "tenants",
+        "tenant": tenant,
+        "staff": staff,
+        "metrics": {
+            "total_staff": len(staff),
+            "active_devices": push_subs_count,
+            "audit_events": audit_events_count
         }
-    )
+    }, db)
 
 @router.post("/users/{user_id}/edit")
 async def edit_user(
@@ -893,17 +867,13 @@ async def staff_page(request: Request, db: Session = Depends(get_db)):
     staff = db.query(User).filter(User.tenant_id == user.tenant_id).all()
     tenant = db.query(Tenant).filter(Tenant.id == user.tenant_id).first()
     
-    return templates.TemplateResponse(
-        request=request,
-        name="staff.html",
-        context={
-            "request": request,
-            "user": user,
-            "active_page": "staff",
-            "staff": staff,
-            "tenant": tenant
-        }
-    )
+    return render_template("staff.html", {
+        "request": request,
+        "user": user,
+        "active_page": "staff",
+        "staff": staff,
+        "tenant": tenant
+    }, db)
 
 @router.get("/directory", response_class=HTMLResponse)
 async def directory_page(request: Request, db: Session = Depends(get_db)):
@@ -914,17 +884,13 @@ async def directory_page(request: Request, db: Session = Depends(get_db)):
     users = db.query(User).order_by(User.id.desc()).all()
     push_devices = db.query(PushSubscription).order_by(PushSubscription.created_at.desc()).all()
     
-    return templates.TemplateResponse(
-        request=request,
-        name="directory.html",
-        context={
-            "request": request,
-            "user": user,
-            "active_page": "directory",
-            "users": users,
-            "push_devices": push_devices
-        }
-    )
+    return render_template("directory.html", {
+        "request": request,
+        "user": user,
+        "active_page": "directory",
+        "users": users,
+        "push_devices": push_devices
+    }, db)
 
 @router.post("/directory/devices/{device_id}/delete")
 async def delete_device(device_id: int, request: Request, db: Session = Depends(get_db)):

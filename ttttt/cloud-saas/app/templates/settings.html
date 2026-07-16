@@ -48,6 +48,28 @@
                         <input type="text" name="default_date_to" value="{{ settings.get('global.default_date_to').value if settings.get('global.default_date_to') else '' }}" placeholder="DD/MM/YYYY" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
                     </div>
                 </div>
+
+                <div class="pt-4 border-t border-zinc-800">
+                    <h4 class="text-md font-semibold text-zinc-200 mb-4">Branding & Notices</h4>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-300 mb-1">Brand Name</label>
+                            <input type="text" name="brand_name" value="{{ settings.get('global.brand_name').value if settings.get('global.brand_name') else 'Alamia Automation' }}" placeholder="Alamia Automation" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-300 mb-1">Brand Subtitle</label>
+                            <input type="text" name="brand_subtitle" value="{{ settings.get('global.brand_subtitle').value if settings.get('global.brand_subtitle') else 'Automating Business Solutions' }}" placeholder="Automating Business Solutions" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-300 mb-1">Global Admin Notice</label>
+                        <textarea name="admin_notice" rows="2" placeholder="System maintenance scheduled for tonight..." class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">{{ settings.get('global.admin_notice').value if settings.get('global.admin_notice') else '' }}</textarea>
+                        <p class="text-xs text-zinc-500 mt-1">Leave blank to hide. If set, this notice will broadcast on all dashboards immediately.</p>
+                    </div>
+                </div>
+
                 <div class="border-t border-zinc-800 pt-4 mt-4 space-y-2">
                     <label class="block text-sm font-medium text-zinc-300 mb-2">Notification Preferences</label>
                     <label class="flex items-center gap-2 cursor-pointer">

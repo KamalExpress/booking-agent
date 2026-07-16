@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Login - Kamal Express{% endblock %}
+{% block title %}Login - {{ branding.brand_name | default('Alamia Automation') }}{% endblock %}
 
 {% block content %}
 <div class="min-h-[80vh] flex items-center justify-center">
     <div class="card w-full max-w-md p-8">
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold tracking-tight mb-2">Welcome Back</h1>
-            <p class="text-slate-400">Sign in to the Orchestrator Dashboard</p>
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold tracking-tight mb-1">{{ branding.brand_name | default('Alamia Automation') }}</h1>
+            <p class="text-zinc-400">Login to the Orchestrator SaaS</p>
         </div>
 
         <div id="login-error" class="bg-red-500/10 border border-red-500/50 text-red-400 text-sm p-3 rounded-lg mb-6 hidden"></div>
