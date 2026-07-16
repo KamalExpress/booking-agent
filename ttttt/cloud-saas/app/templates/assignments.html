@@ -37,8 +37,15 @@
                 <input type="date" name="target_end_date" class="input" required>
             </div>
             <div>
-                <label class="block text-sm font-medium mb-1">Visa Center</label>
-                <input type="text" name="visa_center" class="input" placeholder="e.g., London" required>
+                <label class="block text-sm font-medium mb-1">Visa Centers to Monitor</label>
+                <div class="space-y-2 p-3 border border-border bg-muted/30 rounded-md">
+                    {% for vc in available_centers %}
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="visa_center" value="{{ vc.value }}" class="rounded border-zinc-700 bg-black text-indigo-500 focus:ring-indigo-500/20" checked>
+                        <span class="text-sm text-zinc-300">{{ vc.name }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
             </div>
             
             <!-- Required Labels -->

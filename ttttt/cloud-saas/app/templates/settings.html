@@ -68,6 +68,12 @@
                         <textarea name="admin_notice" rows="2" placeholder="System maintenance scheduled for tonight..." class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">{{ settings.get('global.admin_notice').value if settings.get('global.admin_notice') else '' }}</textarea>
                         <p class="text-xs text-zinc-500 mt-1">Leave blank to hide. If set, this notice will broadcast on all dashboards immediately.</p>
                     </div>
+
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-zinc-300 mb-1">Monitored Visa Centers</label>
+                        <textarea name="visa_centers_config" rows="3" placeholder="138:26:Lahore, 137:26:Islamabad, 140:24:Doc Verification" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">{{ settings.get('global.visa_centers_config').value if settings.get('global.visa_centers_config') else '138:26:Lahore, 137:26:Islamabad, 140:24:Doc Verification' }}</textarea>
+                        <p class="text-xs text-zinc-500 mt-1">Format: <code>VAC_ID:TYPE_ID:Name</code> separated by commas. (e.g. 138:26:Lahore, 140:24:Doc Verification)</p>
+                    </div>
                 </div>
 
                 <div class="border-t border-zinc-800 pt-4 mt-4 space-y-2">

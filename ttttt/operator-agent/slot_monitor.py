@@ -110,37 +110,53 @@ class SlotMonitorEngine(threading.Thread):
                 
                 dates_to_check = generate_dates_between(date_from, date_to)
                 
+                centers_to_check = [c.strip() for c in visa_center.split(",") if c.strip()]
+                if not centers_to_check:
+                    centers_to_check = ["138:26"] # Fallback to Lahore Standard
+                    
                 slots_found = False
                 for target_date in dates_to_check:
                     if self._stop_event.is_set():
                         break
                         
-                    logging.info(f"Checking slots for {target_date}...")
-                    slots_response = agent.search_slots(target_date, "26", visa_center)
-                    
-                    if slots_response and slots_response.get("code") == "SUCCESS":
-                        ret_obj = slots_response.get("returnobject")
-                        slots = ret_obj.get("slots", []) if isinstance(ret_obj, dict) else (ret_obj if isinstance(ret_obj, list) else [])
+                    for center_str in centers_to_check:
+                        if self._stop_event.is_set():
+                            break
+                            
+                        parts = center_str.split(":")
+                        vac_id = parts[0]
+                        app_type = parts[1] if len(parts) > 1 else "26"
                         
-                        available = [s for s in slots if s.get('isavailable') and s.get('isselectable')]
-                        if available:
-                            logging.info(f"Found {len(available)} slots on {target_date}!")
-                            self.api.log_event(assignment_id, "SLOT_FOUND", "info", {
-                                "date": target_date,
-                                "slots": available
-                            })
-                            slots_found = True
-                            break # Just alert once per cycle to avoid spam
-                    elif slots_response and slots_response.get("status_code") == 429:
-                        logging.warning("Hit 429 Rate Limit. Pausing slot checks for this run.")
-                        self.api.log_event(assignment_id, "RATE_LIMIT_HIT", "warning", {"date": target_date})
+                        logging.info(f"Checking slots for {target_date} at VAC {vac_id} (Type {app_type})...")
+                        slots_response = agent.search_slots(target_date, app_type, vac_id)
+                        
+                        if slots_response and slots_response.get("code") == "SUCCESS":
+                            ret_obj = slots_response.get("returnobject")
+                            slots = ret_obj.get("slots", []) if isinstance(ret_obj, dict) else (ret_obj if isinstance(ret_obj, list) else [])
+                            
+                            available = [s for s in slots if s.get('isavailable') and s.get('isselectable')]
+                            if available:
+                                logging.info(f"Found {len(available)} slots on {target_date} for VAC {vac_id}!")
+                                self.api.log_event(assignment_id, "SLOT_FOUND", "info", {
+                                    "date": target_date,
+                                    "visa_center": vac_id,
+                                    "slots": available
+                                })
+                                slots_found = True
+                                # Don't break here! We want to check other centers for this date too.
+                        elif slots_response and slots_response.get("status_code") == 429:
+                            logging.warning("Hit 429 Rate Limit. Pausing slot checks for this run.")
+                            self.api.log_event(assignment_id, "RATE_LIMIT_HIT", "warning", {"date": target_date})
+                            break
+                        
+                        # Prevent hammering the API with a human-like randomized delay between checks
+                        import random
+                        delay = random.uniform(min_delay, max_delay)
+                        logging.info(f"Waiting {delay:.2f}s before next check...")
+                        self._stop_event.wait(delay)
+                        
+                    if slots_response and slots_response.get("status_code") == 429:
                         break
-                    
-                    # Prevent hammering the API with a human-like randomized delay
-                    import random
-                    delay = random.uniform(min_delay, max_delay)
-                    logging.info(f"Waiting {delay:.2f}s before next check...")
-                    self._stop_event.wait(delay)
                 
                 if not slots_found:
                     logging.info("Finished checking assignment date range. No slots found.")

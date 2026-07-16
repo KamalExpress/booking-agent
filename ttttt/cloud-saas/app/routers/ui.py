@@ -74,10 +74,33 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
     ).count()
 
     from models import SlotAvailability
-    recent_slot_records = db.query(SlotAvailability).order_by(SlotAvailability.created_at.desc()).limit(5).all()
     
     last_check_event = db.query(EventLog).filter(EventLog.event_type.in_(['SLOT_FOUND', 'NO_SLOTS_FOUND'])).order_by(EventLog.created_at.desc()).first()
-    last_checked_time = last_check_event.created_at if last_check_event else None
+    global_last_checked_time = last_check_event.created_at if last_check_event else None
+    
+    # Build status per visa center
+    vc_setting = db.query(SystemSetting).filter(SystemSetting.key == "global.visa_centers_config").first()
+    vc_config_str = vc_setting.value if vc_setting and vc_setting.value else "138:26:Lahore, 137:26:Islamabad, 140:24:Doc Verification"
+    
+    center_statuses = []
+    for center_str in vc_config_str.split(","):
+        parts = center_str.strip().split(":")
+        if len(parts) >= 3:
+            c_id = parts[0]
+            c_name = parts[2]
+            
+            recent_slots = db.query(SlotAvailability).filter(
+                SlotAvailability.visa_center == c_id,
+                SlotAvailability.created_at >= yesterday
+            ).order_by(SlotAvailability.created_at.desc()).limit(10).all()
+            
+            center_statuses.append({
+                "id": c_id,
+                "name": c_name,
+                "is_open": len(recent_slots) > 0,
+                "recent_slots": recent_slots,
+                "last_checked_time": global_last_checked_time
+            })
     
     recent_logs = db.query(EventLog).order_by(EventLog.created_at.desc()).limit(10).all()
     
@@ -88,8 +111,7 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
         "active_workers": active_workers,
         "active_assignments": active_assignments,
         "slots_found": slots_found,
-        "recent_slot_records": recent_slot_records,
-        "last_checked_time": last_checked_time,
+        "center_statuses": center_statuses,
         "recent_logs": recent_logs
     }, db)
 
@@ -229,22 +251,38 @@ async def assignments_page(request: Request, db: Session = Depends(get_db)):
         return RedirectResponse(url="/", status_code=303)
         
     assignments = db.query(Assignment).order_by(Assignment.id.desc()).all()
-    
-    # Attach scraper account info and current lease
+    # attach lease status
     for asm in assignments:
         acc = db.query(ScraperAccount).filter(ScraperAccount.id == asm.scraper_account_id).first()
         asm.account_username = acc.username if acc else "Unknown"
         
-        lease = db.query(Lease).filter(Lease.assignment_id == asm.id).first()
+        lease = db.query(Lease).filter(Lease.assignment_id == asm.id).order_by(Lease.id.desc()).first()
+        asm.lease_status = lease.status if lease else "No Lease"
         asm.leased_to_worker = lease.worker_id if lease else None
         
     accounts = db.query(ScraperAccount).all()
+    
+    # Parse available centers from settings
+    vc_setting = db.query(SystemSetting).filter(SystemSetting.key == "global.visa_centers_config").first()
+    vc_config_str = vc_setting.value if vc_setting and vc_setting.value else "138:26:Lahore, 137:26:Islamabad, 140:24:Doc Verification"
+    available_centers = []
+    for center_str in vc_config_str.split(","):
+        parts = center_str.strip().split(":")
+        if len(parts) >= 3:
+            available_centers.append({
+                "id": parts[0],
+                "type": parts[1],
+                "name": parts[2],
+                "value": f"{parts[0]}:{parts[1]}"
+            })
+            
     return render_template("assignments.html", {
         "request": request,
         "user": user,
         "active_page": "assignments",
         "assignments": assignments,
-        "accounts": accounts
+        "accounts": accounts,
+        "available_centers": available_centers
     }, db)
 
 @router.post("/assignments/create")
@@ -253,7 +291,7 @@ async def create_assignment(
     scraper_account_id: int = Form(...),
     target_start_date: str = Form(...),
     target_end_date: str = Form(...),
-    visa_center: str = Form(...),
+    visa_center: list[str] = Form(...),
     required_labels: str = Form(""),
     db: Session = Depends(get_db)
 ):
@@ -273,11 +311,14 @@ async def create_assignment(
             except json.JSONDecodeError:
                 pass
                 
+        # Join multiple visa centers into a comma-separated string
+        vc_string = ",".join(visa_center)
+        
         new_assignment = Assignment(
             scraper_account_id=scraper_account_id,
             date_from=start_date.strftime('%d/%m/%Y'),
             date_to=end_date.strftime('%d/%m/%Y'),
-            visa_center=visa_center,
+            visa_center=vc_string,
             required_labels=parsed_labels,
             status='Active'
         )
@@ -532,6 +573,7 @@ async def update_global_settings(
     brand_name: str = Form("Alamia Automation"),
     brand_subtitle: str = Form("Automating Business Solutions"),
     admin_notice: str = Form(""),
+    visa_centers_config: str = Form("138:26:Lahore, 137:26:Islamabad, 140:24:Doc Verification"),
     notify_login_success: str = Form(None),
     notify_slots_found: str = Form(None),
     notify_no_slots_found: str = Form(None),
@@ -549,6 +591,7 @@ async def update_global_settings(
         "global.brand_name": brand_name,
         "global.brand_subtitle": brand_subtitle,
         "global.admin_notice": admin_notice,
+        "global.visa_centers_config": visa_centers_config,
         "notify.login_success": "true" if notify_login_success else "false",
         "notify.slots_found": "true" if notify_slots_found else "false",
         "notify.no_slots_found": "true" if notify_no_slots_found else "false",

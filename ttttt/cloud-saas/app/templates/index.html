@@ -50,62 +50,75 @@
 {% endif %}
 
 <!-- LIVE STATUS WIDGET -->
-{% if recent_slot_records %}
-<div class="card p-6 border-emerald-500/30 bg-emerald-500/5 mb-8 relative overflow-hidden">
-    <div class="absolute top-0 right-0 p-4 opacity-10">
-        <i data-lucide="calendar-check" class="w-24 h-24 text-emerald-500"></i>
-    </div>
-    <div class="relative z-10">
-        <h3 class="text-xl font-bold text-emerald-400 mb-2 flex items-center gap-2">
-            <span class="relative flex h-3 w-3">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-            </span>
-            Slots are OPEN!
-        </h3>
-        <p class="text-zinc-200 mb-4">Worker nodes have detected open slots for the following dates. You should attempt to book immediately.</p>
-        
-        <div class="space-y-3">
-            {% for record in recent_slot_records %}
-            <div class="bg-black/40 border border-emerald-500/20 rounded-lg p-3">
-                <div class="flex justify-between items-center mb-1">
-                    <span class="font-medium text-emerald-300">Center {{ record.visa_center }}</span>
-                    <span class="text-xs text-zinc-400 local-time" data-utc="{{ record.created_at.isoformat() }}Z">{{ record.created_at.strftime('%Y-%m-%d %H:%M:%S UTC') }}</span>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+    {% for center in center_statuses %}
+    {% if center.is_open %}
+    <div class="card p-6 border-emerald-500/30 bg-emerald-500/5 relative overflow-hidden">
+        <div class="absolute top-0 right-0 p-4 opacity-10">
+            <i data-lucide="calendar-check" class="w-16 h-16 text-emerald-500"></i>
+        </div>
+        <div class="relative z-10">
+            <h3 class="text-xl font-bold text-emerald-400 mb-1 flex items-center gap-2">
+                <span class="relative flex h-3 w-3">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                </span>
+                {{ center.name }}
+            </h3>
+            <p class="text-xs font-medium text-emerald-500 mb-4">OPEN</p>
+            
+            <div class="space-y-3">
+                {% for record in center.recent_slots %}
+                <div class="bg-black/40 border border-emerald-500/20 rounded-lg p-3">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-medium text-emerald-300">Slots Found</span>
+                        <span class="text-xs text-zinc-400 local-time" data-utc="{{ record.created_at.isoformat() }}Z">{{ record.created_at.strftime('%Y-%m-%d %H:%M:%S UTC') }}</span>
+                    </div>
+                    <div class="text-lg font-bold text-white mb-2">{{ record.date }}</div>
+                    <div class="flex flex-wrap gap-2">
+                        {% for slot in record.slots_data %}
+                            <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                {{ slot.get('time', 'Available') }}
+                            </span>
+                        {% endfor %}
+                    </div>
                 </div>
-                <div class="text-lg font-bold text-white mb-2">{{ record.date }}</div>
-                <div class="flex flex-wrap gap-2">
-                    {% for slot in record.slots_data %}
-                        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                            {{ slot.get('time', 'Available') }}
-                        </span>
-                    {% endfor %}
-                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
+            
+            <div class="text-xs font-medium text-zinc-500 mt-4">
+                {% if center.last_checked_time %}
+                Last checked: <span class="local-time" data-utc="{{ center.last_checked_time.isoformat() }}Z">{{ center.last_checked_time.strftime('%Y-%m-%d %H:%M:%S UTC') }}</span>
+                {% else %}
+                Waiting for worker...
+                {% endif %}
+            </div>
         </div>
     </div>
-</div>
-{% else %}
-<div class="card p-6 border-zinc-800 bg-zinc-900/50 mb-8 relative overflow-hidden">
-    <div class="absolute top-0 right-0 p-4 opacity-5">
-        <i data-lucide="calendar-off" class="w-24 h-24 text-zinc-500"></i>
-    </div>
-    <div class="relative z-10">
-        <h3 class="text-xl font-bold text-zinc-400 mb-2 flex items-center gap-2">
-            <span class="relative inline-flex rounded-full h-3 w-3 bg-zinc-600"></span>
-            Slots are CLOSED
-        </h3>
-        <p class="text-zinc-500 mb-4">Worker nodes are actively monitoring the Visa Centers, but no open slots have been detected recently.</p>
-        <div class="text-sm font-medium text-zinc-600">
-            {% if last_checked_time %}
-            Last checked: <span class="local-time" data-utc="{{ last_checked_time.isoformat() }}Z">{{ last_checked_time.strftime('%Y-%m-%d %H:%M:%S UTC') }}</span>
+    {% else %}
+    <div class="card p-6 border-zinc-800 bg-zinc-900/50 relative overflow-hidden flex flex-col justify-between min-h-[220px]">
+        <div class="absolute top-0 right-0 p-4 opacity-5">
+            <i data-lucide="calendar-off" class="w-16 h-16 text-zinc-500"></i>
+        </div>
+        <div class="relative z-10">
+            <h3 class="text-xl font-bold text-zinc-400 mb-1 flex items-center gap-2">
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-zinc-600"></span>
+                {{ center.name }}
+            </h3>
+            <p class="text-xs font-medium text-zinc-500 mb-4">CLOSED</p>
+            <p class="text-sm text-zinc-400">No open slots detected recently.</p>
+        </div>
+        <div class="relative z-10 text-xs font-medium text-zinc-600 mt-4">
+            {% if center.last_checked_time %}
+            Last checked: <span class="local-time" data-utc="{{ center.last_checked_time.isoformat() }}Z">{{ center.last_checked_time.strftime('%Y-%m-%d %H:%M:%S UTC') }}</span>
             {% else %}
-            Waiting for first worker report...
+            Waiting for worker...
             {% endif %}
         </div>
     </div>
+    {% endif %}
+    {% endfor %}
 </div>
-{% endif %}
 
 {% if user.role.value == 'SUPER_ADMIN' %}
 <div class="card p-6 border-border">
