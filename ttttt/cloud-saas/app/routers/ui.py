@@ -747,20 +747,27 @@ async def edit_user(
     db: Session = Depends(get_db)
 ):
     current_user = get_ui_user(request, db)
-    if not current_user or current_user.role != RoleEnum.SUPER_ADMIN:
+    if not current_user or current_user.role not in [RoleEnum.SUPER_ADMIN, RoleEnum.TENANT_ADMIN]:
         return RedirectResponse(url="/", status_code=303)
         
     target_user = db.query(User).filter(User.id == user_id).first()
     if not target_user:
-        return RedirectResponse(url="/tenants", status_code=303)
+        return RedirectResponse(url="/", status_code=303)
+        
+    # Tenant Admins can only edit users within their own tenant
+    if current_user.role == RoleEnum.TENANT_ADMIN and target_user.tenant_id != current_user.tenant_id:
+        return RedirectResponse(url="/", status_code=303)
         
     target_user.email = email
     target_user.full_name = full_name
     try:
         new_role = RoleEnum(role)
-        # Prevent self-demotion
+        # Prevent self-demotion for SUPER_ADMIN
         if target_user.id == current_user.id and target_user.role == RoleEnum.SUPER_ADMIN and new_role != RoleEnum.SUPER_ADMIN:
             pass # Ignore the demotion attempt
+        # Prevent TENANT_ADMIN from creating a SUPER_ADMIN
+        elif current_user.role == RoleEnum.TENANT_ADMIN and new_role == RoleEnum.SUPER_ADMIN:
+            pass # Ignore the upgrade attempt
         else:
             target_user.role = new_role
     except ValueError:
@@ -771,4 +778,85 @@ async def edit_user(
         
     db.commit()
     
-    return RedirectResponse(url=f"/tenants/{target_user.tenant_id}", status_code=303)
+    if current_user.role == RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url=f"/tenants/{target_user.tenant_id}", status_code=303)
+    return RedirectResponse(url="/staff", status_code=303)
+
+@router.post("/users/create")
+async def create_user(
+    request: Request,
+    email: str = Form(...),
+    full_name: str = Form(None),
+    role: str = Form(...),
+    password: str = Form(...),
+    tenant_id: int = Form(None),
+    db: Session = Depends(get_db)
+):
+    current_user = get_ui_user(request, db)
+    if not current_user or current_user.role not in [RoleEnum.SUPER_ADMIN, RoleEnum.TENANT_ADMIN]:
+        return RedirectResponse(url="/", status_code=303)
+        
+    # Validation & Context Switching
+    if current_user.role == RoleEnum.TENANT_ADMIN:
+        # Force the tenant ID to the admin's tenant ID
+        assigned_tenant_id = current_user.tenant_id
+        # Prevent TENANT_ADMIN from creating a SUPER_ADMIN
+        try:
+            assigned_role = RoleEnum(role)
+        except ValueError:
+            assigned_role = RoleEnum.STAFF
+            
+        if assigned_role == RoleEnum.SUPER_ADMIN:
+            assigned_role = RoleEnum.STAFF # Fallback
+    else:
+        # SUPER_ADMIN must provide a valid tenant_id
+        if not tenant_id:
+            return RedirectResponse(url="/tenants", status_code=303)
+        assigned_tenant_id = tenant_id
+        try:
+            assigned_role = RoleEnum(role)
+        except ValueError:
+            assigned_role = RoleEnum.STAFF
+        
+    # Check if email exists
+    existing = db.query(User).filter(User.email == email).first()
+    if existing:
+        if current_user.role == RoleEnum.SUPER_ADMIN:
+            return RedirectResponse(url=f"/tenants/{assigned_tenant_id}", status_code=303)
+        return RedirectResponse(url="/staff", status_code=303)
+        
+    new_user = User(
+        tenant_id=assigned_tenant_id,
+        email=email,
+        full_name=full_name,
+        hashed_password=get_password_hash(password),
+        role=assigned_role,
+        is_active=True
+    )
+    db.add(new_user)
+    db.commit()
+    
+    if current_user.role == RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url=f"/tenants/{assigned_tenant_id}", status_code=303)
+    return RedirectResponse(url="/staff", status_code=303)
+
+@router.get("/staff", response_class=HTMLResponse)
+async def staff_page(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role not in [RoleEnum.TENANT_ADMIN, RoleEnum.SUPER_ADMIN]:
+        return RedirectResponse(url="/", status_code=303)
+        
+    staff = db.query(User).filter(User.tenant_id == user.tenant_id).all()
+    tenant = db.query(Tenant).filter(Tenant.id == user.tenant_id).first()
+    
+    return templates.TemplateResponse(
+        request=request,
+        name="staff.html",
+        context={
+            "request": request,
+            "user": user,
+            "active_page": "staff",
+            "staff": staff,
+            "tenant": tenant
+        }
+    )
