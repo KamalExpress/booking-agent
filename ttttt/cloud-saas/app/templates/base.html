@@ -111,11 +111,9 @@
             <a href="/assignments" class="nav-link {% if active_page == 'assignments' %}active{% endif %}">
                 <i data-lucide="briefcase" class="w-4 h-4"></i> Assignments
             </a>
-            {% endif %}
             <a href="/logs" class="nav-link {% if active_page == 'logs' %}active{% endif %}">
                 <i data-lucide="scroll-text" class="w-4 h-4"></i> Event Logs
             </a>
-            {% if user and user.role.value == 'SUPER_ADMIN' %}
             <a href="/settings" class="nav-link {% if active_page == 'settings' %}active{% endif %}">
                 <i data-lucide="settings" class="w-4 h-4"></i> Settings
             </a>
