@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
 
 import os
-from models import WorkerNode, Assignment, Lease, EventLog, ScraperAccount, SystemSetting, User, Tenant, PushSubscription, AuditLog
+from models import WorkerNode, Assignment, Lease, EventLog, ScraperAccount, SystemSetting, User, Tenant, PushSubscription, AuditLog, WorkerLog
 from models import SessionLocal
 from secrets_manager import secrets_manager
 from auth import get_current_user, require_tenant_admin, get_current_user_from_cookie, RoleEnum, get_password_hash
@@ -113,6 +113,7 @@ async def worker_detail_page(worker_id: str, request: Request, db: Session = Dep
         
     leases = db.query(Lease).filter(Lease.worker_id == worker_id).all()
     logs = db.query(EventLog).filter(EventLog.worker_id == worker_id).order_by(EventLog.created_at.desc()).limit(100).all()
+    network_logs = db.query(WorkerLog).filter(WorkerLog.worker_id == worker_id).order_by(WorkerLog.created_at.desc()).limit(50).all()
     
     import os
     terminal_logs = ""
@@ -133,6 +134,7 @@ async def worker_detail_page(worker_id: str, request: Request, db: Session = Dep
             "worker": worker,
             "leases": leases,
             "logs": logs,
+            "network_logs": network_logs,
             "terminal_logs": terminal_logs
         }
     )
@@ -160,6 +162,36 @@ async def clear_worker_logs(worker_id: str, request: Request, db: Session = Depe
     log_file = os.path.join(os.path.dirname(__file__), "..", "..", "worker_logs", f"{worker_id}.log")
     if os.path.exists(log_file):
         open(log_file, 'w').close()
+    return RedirectResponse(url=f"/workers/{worker_id}", status_code=303)
+
+@router.get("/workers/{worker_id}/network-logs/{log_id}/download")
+async def download_network_log(worker_id: str, log_id: int, request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    import json
+    from fastapi.responses import Response
+    log = db.query(WorkerLog).filter(WorkerLog.id == log_id, WorkerLog.worker_id == worker_id).first()
+    if not log:
+        return RedirectResponse(url=f"/workers/{worker_id}", status_code=303)
+        
+    json_str = json.dumps(log.payload, indent=2)
+    filename = f"worker_{worker_id}_network_log_{log.id}.json"
+    return Response(
+        content=json_str, 
+        media_type="application/json", 
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+@router.post("/workers/{worker_id}/network-logs/clear")
+async def clear_network_logs(worker_id: str, request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    db.query(WorkerLog).filter(WorkerLog.worker_id == worker_id).delete(synchronize_session=False)
+    db.commit()
     return RedirectResponse(url=f"/workers/{worker_id}", status_code=303)
 
 @router.post("/workers/{worker_id}/action")

@@ -194,3 +194,11 @@ class SaaSClient:
         if not log_lines:
             return
         self._request("POST", f"/api/v1/worker/stream-logs", {"logs": log_lines})
+
+    def submit_network_logs(self, assignment_id: int, logs: list):
+        if not logs:
+            return
+        self._request("POST", "/api/v1/worker/worker-logs", {
+            "assignment_id": assignment_id,
+            "payload": logs
+        })

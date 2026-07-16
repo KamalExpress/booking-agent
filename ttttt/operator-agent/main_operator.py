@@ -81,6 +81,56 @@ class OperatorAgent:
         
         self.cookie_file = "last-login-token.pkl"
         self.load_session()
+        
+        # Monkey-patch session.request to intercept network logs
+        self.network_logs = []
+        original_request = self.session.request
+        
+        def intercepted_request(method, url, *args, **kwargs):
+            req_time = datetime.utcnow()
+            try:
+                response = original_request(method, url, *args, **kwargs)
+                res_time = datetime.utcnow()
+                
+                req_body = kwargs.get('json') or kwargs.get('data') or ""
+                if isinstance(req_body, dict):
+                    import json
+                    req_body = json.dumps(req_body)
+                    
+                log_entry = {
+                    "startedDateTime": req_time.isoformat() + "Z",
+                    "time": (res_time - req_time).total_seconds() * 1000,
+                    "request": {
+                        "method": method.upper(),
+                        "url": url,
+                        "headers": dict(response.request.headers) if hasattr(response, 'request') else kwargs.get('headers', dict(self.session.headers)),
+                        "body": str(req_body)
+                    },
+                    "response": {
+                        "status": response.status_code,
+                        "headers": dict(response.headers),
+                        "body": response.text[:5000] # Truncate to 5000 chars to avoid massive DB bloat
+                    }
+                }
+                self.network_logs.append(log_entry)
+                return response
+            except Exception as e:
+                log_entry = {
+                    "startedDateTime": req_time.isoformat() + "Z",
+                    "request": {
+                        "method": method.upper(),
+                        "url": url,
+                        "headers": kwargs.get('headers', dict(self.session.headers)),
+                    },
+                    "error": str(e)
+                }
+                self.network_logs.append(log_entry)
+                raise
+                
+        self.session.request = intercepted_request
+
+    def get_network_logs(self):
+        return self.network_logs
 
     def load_session(self):
         import json

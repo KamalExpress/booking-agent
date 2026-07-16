@@ -12,7 +12,7 @@ import uuid
 import json
 from notifications import send_push_notification
 
-from models import WorkerNode, Assignment, Lease, EventLog, ScraperAccount, SystemSetting, WorkerVersion
+from models import WorkerNode, Assignment, Lease, EventLog, ScraperAccount, SystemSetting, WorkerVersion, WorkerLog
 from secrets_manager import secrets_manager
 from models import SessionLocal
 
@@ -57,6 +57,10 @@ class EventLogRequest(BaseModel):
     assignment_id: Optional[int] = None
     severity: str = "info"
     event_type: str
+    payload: Dict[str, Any]
+
+class WorkerLogRequest(BaseModel):
+    assignment_id: Optional[int] = None
     payload: Dict[str, Any]
 
 # --- HMAC Authentication Dependency ---
@@ -418,3 +422,20 @@ def submit_logs(
 
     db.commit()
     return {"status": "ok"}
+
+@router.post("/worker-logs")
+def submit_worker_logs(
+    req: WorkerLogRequest,
+    worker: WorkerNode = Depends(verify_worker_hmac),
+    db: Session = Depends(get_db)
+):
+    """Endpoint for headless workers to upload their captured HTTP request/response logs."""
+    log = WorkerLog(
+        worker_id=worker.worker_id,
+        assignment_id=req.assignment_id,
+        payload=req.payload
+    )
+    db.add(log)
+    db.commit()
+    return {"status": "ok", "log_id": log.id}
+

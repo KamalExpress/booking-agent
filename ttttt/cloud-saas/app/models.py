@@ -184,6 +184,16 @@ class EventLog(Base):
     payload = Column(JSONB, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
+class WorkerLog(Base):
+    """Stores HAR-like network intercepts from headless workers for WAF debugging."""
+    __tablename__ = "worker_logs"
+    id = Column(Integer, primary_key=True, index=True)
+    worker_id = Column(String, ForeignKey("worker_nodes.worker_id"), nullable=False)
+    assignment_id = Column(Integer, ForeignKey("assignments.id"), nullable=True)
+    payload = Column(JSONB, nullable=False) # The JSON dump of network requests/responses
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
 class WorkerVersion(Base):
     __tablename__ = "worker_versions"
     version = Column(String, primary_key=True, index=True)

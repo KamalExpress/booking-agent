@@ -1,0 +1,16 @@
+- `[x]` 1. **SaaS Database & Models**
+  - `[x]` Define `WorkerLog` model in `models.py`
+  - `[x]` Update database initialization (`init_db.py`) to create the table
+- `[x]` 2. **SaaS API Endpoints**
+  - `[x]` Create `POST /api/worker/logs` endpoint to receive log payload from worker
+  - `[x]` Create `GET /api/admin/logs/{log_id}` endpoint to download log as JSON
+  - `[x]` Create `DELETE /api/admin/logs` endpoint to clear the logs table
+- `[x]` 3. **SaaS Admin UI**
+  - `[x]` Add a section or modal to view existing logs for a worker/assignment
+  - `[x]` Add "Download Log" button
+  - `[x]` Add "Clear All Logs" button
+- `[x]` 4. **Worker Node Network Interceptor**
+  - `[x]` Create `NetworkLogger` in `main_operator.py` to record `curl_cffi` requests/responses
+  - `[x]` Hook `session.request` to capture HTTP traffic
+- `[x]` 5. **Worker Node Log Transmission**
+  - `[x]` Update the worker run script (`worker_node.py` or `main_operator.py`) to `POST` the captured log to the SaaS API after the run is complete/failed

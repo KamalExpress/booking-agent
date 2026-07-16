@@ -146,15 +146,27 @@ class SlotMonitorEngine(threading.Thread):
                     self.api.log_event(a_id, "WORKER_ERROR", "error", {"error": str(e), "traceback": "Check local worker logs for full trace."})
                 except Exception as log_e:
                     logging.error(f"Failed to push error log to SaaS: {log_e}")
-                
-            # If we completed the assignment, mark it complete and wait a tiny bit
-            if 'assignment_id' in locals() and assignment_id:
-                try:
-                    self.api.complete_assignment(assignment_id)
-                except Exception as comp_e:
-                    logging.error(f"Failed to complete assignment: {comp_e}")
                     
-            self._stop_event.wait(1)
+            finally:
+                # Transmit Network Logs
+                if 'agent' in locals() and hasattr(agent, 'get_network_logs'):
+                    net_logs = agent.get_network_logs()
+                    if net_logs:
+                        a_id = locals().get('assignment_id', None)
+                        try:
+                            self.api.submit_network_logs(a_id, net_logs)
+                            logging.info(f"Transmitted {len(net_logs)} network logs to SaaS.")
+                        except Exception as log_e:
+                            logging.error(f"Failed to transmit network logs to SaaS: {log_e}")
+                
+                # If we completed the assignment, mark it complete and wait a tiny bit
+                if 'assignment_id' in locals() and assignment_id:
+                    try:
+                        self.api.complete_assignment(assignment_id)
+                    except Exception as comp_e:
+                        logging.error(f"Failed to complete assignment: {comp_e}")
+                        
+                self._stop_event.wait(1)
             
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
