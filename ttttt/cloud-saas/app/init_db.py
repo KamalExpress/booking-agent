@@ -50,8 +50,9 @@ def init_db():
                 conn.execute(text(stmt))
                 conn.commit()
             except Exception as e:
-                print(f"Migration error for '{stmt}': {e}")
                 conn.rollback()
+                if "DuplicateColumn" not in str(e) and "already exists" not in str(e):
+                    print(f"Migration error for '{stmt}': {e}")
 
     # Pre-generate the SECRET_MASTER_KEY if missing
     from secrets_manager import secrets_manager
