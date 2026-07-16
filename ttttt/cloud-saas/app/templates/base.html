@@ -122,6 +122,9 @@
                 <p class="text-[10px] text-zinc-500 font-medium uppercase tracking-wider mb-0.5">Logged in as</p>
                 <p class="text-sm text-zinc-300 truncate font-medium" title="{{ user.email }}">{{ user.email }}</p>
             </div>
+            <button id="globalPushBtn" class="nav-link w-full text-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-300 mb-1 flex justify-between items-center group">
+                <span class="flex items-center gap-3"><i data-lucide="bell-ring" class="w-4 h-4"></i> Enable Push Alerts</span>
+            </button>
             {% endif %}
             <button id="logoutBtn" class="nav-link w-full text-red-500 hover:bg-red-500/10 hover:text-red-400">
                 <i data-lucide="log-out" class="w-4 h-4"></i> Logout
@@ -232,6 +235,80 @@
             installBanner.classList.add('translate-y-full', 'opacity-0');
             setTimeout(() => installBanner.classList.add('hidden'), 300);
         });
+
+        // Push Subscription Logic
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
+        }
+
+        const globalPushBtn = document.getElementById("globalPushBtn");
+        if (globalPushBtn) {
+            globalPushBtn.addEventListener("click", async (e) => {
+                const btn = e.currentTarget;
+                const originalContent = btn.innerHTML;
+                
+                btn.innerHTML = `<span class="flex items-center gap-3"><i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Subscribing...</span>`;
+                btn.disabled = true;
+
+                try {
+                    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                        throw new Error("Not supported.");
+                    }
+                    const permission = await Notification.requestPermission();
+                    if (permission !== 'granted') throw new Error("Permission denied.");
+
+                    const vapidRes = await fetch('/api/push/vapid-public-key');
+                    if (!vapidRes.ok) throw new Error("VAPID key error");
+                    const vapidData = await vapidRes.json();
+                    const convertedVapidKey = urlBase64ToUint8Array(vapidData.public_key);
+
+                    const registration = await navigator.serviceWorker.ready;
+                    const subscription = await registration.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: convertedVapidKey
+                    });
+
+                    const subData = subscription.toJSON();
+                    const payload = {
+                        endpoint: subData.endpoint,
+                        p256dh: subData.keys.p256dh,
+                        auth: subData.keys.auth
+                    };
+
+                    const subRes = await fetch("/api/push/subscribe", {
+                        method: "POST",
+                        body: JSON.stringify(payload),
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Bearer " + (localStorage.getItem("token") || "")
+                        }
+                    });
+
+                    if (subRes.ok) {
+                        btn.innerHTML = `<span class="flex items-center gap-3 text-emerald-500"><i data-lucide="check" class="w-4 h-4"></i> Subscribed!</span>`;
+                    } else {
+                        throw new Error("Server error.");
+                    }
+                } catch (err) {
+                    console.error(err);
+                    btn.innerHTML = `<span class="flex items-center gap-3 text-red-500"><i data-lucide="x" class="w-4 h-4"></i> Failed</span>`;
+                    setTimeout(() => {
+                        btn.innerHTML = originalContent;
+                        btn.disabled = false;
+                        if (window.lucide) window.lucide.createIcons();
+                    }, 3000);
+                }
+                
+                if (window.lucide) window.lucide.createIcons();
+            });
+        }
     </script>
     {% block scripts %}{% endblock %}
 </body>
