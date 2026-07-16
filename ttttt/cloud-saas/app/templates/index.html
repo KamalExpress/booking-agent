@@ -4,8 +4,13 @@
 
 {% block content %}
 <header class="mb-8">
+    {% if user.role.value == 'SUPER_ADMIN' %}
     <h2 class="text-3xl font-bold tracking-tight">System Overview</h2>
     <p class="text-muted-foreground mt-1">High-level metrics for the distributed orchestrator</p>
+    {% else %}
+    <h2 class="text-3xl font-bold tracking-tight">Visa Slots Monitor</h2>
+    <p class="text-muted-foreground mt-1">Live availability tracking for booking slots</p>
+    {% endif %}
 </header>
 
 {% if user.role.value == 'SUPER_ADMIN' %}
