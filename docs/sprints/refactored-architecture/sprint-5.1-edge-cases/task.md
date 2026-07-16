@@ -1,0 +1,5 @@
+- `[x]` Handle Unhandled Exceptions in Worker
+  - `[x]` Wrap `agent.login()` in `slot_monitor.py` with broad exception handler
+  - `[x]` Wrap HTTP POST in `main_operator.py` with `requests.exceptions.RequestException` handler
+  - `[x]` Wrap Playwright `page.goto` in `captcha_service.py` with generic exception handler
+- `[ ]` Mirror documentation to `docs/sprints`
