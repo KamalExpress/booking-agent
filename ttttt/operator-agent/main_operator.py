@@ -79,20 +79,21 @@ class OperatorAgent:
         self.load_session()
 
     def load_session(self):
-        import pickle
+        import json
         if os.path.exists(self.cookie_file):
             try:
-                with open(self.cookie_file, 'rb') as f:
-                    self.session.cookies.update(pickle.load(f))
+                with open(self.cookie_file, 'r', encoding='utf-8') as f:
+                    cookies_dict = json.load(f)
+                    self.session.cookies.update(cookies_dict)
                 logging.info("Loaded previous session cookies from file.")
             except Exception as e:
                 logging.warning(f"Could not load previous session: {e}")
 
     def save_session(self):
-        import pickle
+        import json
         try:
-            with open(self.cookie_file, 'wb') as f:
-                pickle.dump(self.session.cookies, f)
+            with open(self.cookie_file, 'w', encoding='utf-8') as f:
+                json.dump(self.session.cookies.get_dict(), f)
             logging.info("Saved session cookies to file for future runs.")
         except Exception as e:
             logging.warning(f"Could not save session: {e}")
