@@ -364,13 +364,31 @@ async def assignment_detail_page(assignment_id: int, request: Request, db: Sessi
     account = db.query(ScraperAccount).filter(ScraperAccount.id == assignment.scraper_account_id).first()
     logs = db.query(EventLog).filter(EventLog.assignment_id == assignment_id).order_by(EventLog.created_at.desc()).limit(50).all()
     
+    # Parse available centers from settings
+    vc_setting = db.query(SystemSetting).filter(SystemSetting.key == "global.visa_centers_config").first()
+    vc_config_str = vc_setting.value if vc_setting and vc_setting.value else "138:26:Lahore, 137:26:Islamabad, 140:24:Doc Verification"
+    available_centers = []
+    for center_str in vc_config_str.split(","):
+        parts = center_str.strip().split(":")
+        if len(parts) >= 3:
+            available_centers.append({
+                "id": parts[0],
+                "type": parts[1],
+                "name": parts[2],
+                "value": f"{parts[0]}:{parts[1]}"
+            })
+            
+    selected_centers = [c.strip() for c in assignment.visa_center.split(",")] if assignment.visa_center else []
+    
     return render_template("assignment_detail.html", {
         "request": request,
         "user": user,
         "active_page": "assignments",
         "assignment": assignment,
         "account": account,
-        "logs": logs
+        "logs": logs,
+        "available_centers": available_centers,
+        "selected_centers": selected_centers
     }, db)
 
 @router.post("/assignments/{assignment_id}/status")
@@ -396,7 +414,7 @@ async def update_assignment_status(
 async def edit_assignment(
     assignment_id: int,
     request: Request,
-    visa_center: str = Form(...),
+    visa_center: list[str] = Form(...),
     date_from: str = Form(...),
     date_to: str = Form(...),
     polling_interval: int = Form(...),
@@ -409,7 +427,7 @@ async def edit_assignment(
 
     assignment = db.query(Assignment).filter(Assignment.id == assignment_id).first()
     if assignment:
-        assignment.visa_center = visa_center
+        assignment.visa_center = ",".join(visa_center)
         assignment.date_from = date_from
         assignment.date_to = date_to
         assignment.polling_interval = polling_interval

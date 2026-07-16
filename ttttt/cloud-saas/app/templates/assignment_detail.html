@@ -58,17 +58,24 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Visa Center ID</label>
-                    <input type="text" name="visa_center" value="{{ assignment.visa_center }}" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
+                    <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Visa Centers to Monitor</label>
+                    <div class="space-y-2 p-3 border border-zinc-800 bg-black rounded-md shadow-sm">
+                        {% for vc in available_centers %}
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="visa_center" value="{{ vc.value }}" class="rounded border-zinc-700 bg-black text-indigo-500 focus:ring-indigo-500/20" {% if vc.value in selected_centers %}checked{% endif %}>
+                            <span class="text-sm text-zinc-300">{{ vc.name }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Date From</label>
-                        <input type="text" name="date_from" value="{{ assignment.date_from }}" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
+                        <input type="text" name="date_from" value="{{ assignment.date_from }}" placeholder="DD/MM/YYYY" pattern="\d{2}/\d{2}/\d{4}" title="Format: DD/MM/YYYY" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Date To</label>
-                        <input type="text" name="date_to" value="{{ assignment.date_to }}" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
+                        <input type="text" name="date_to" value="{{ assignment.date_to }}" placeholder="DD/MM/YYYY" pattern="\d{2}/\d{2}/\d{4}" title="Format: DD/MM/YYYY" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
