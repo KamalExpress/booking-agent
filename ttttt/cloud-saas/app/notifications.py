@@ -48,5 +48,13 @@ def send_push_notification(db: Session, title: str, body: str, user_ids: list = 
             success_count += 1
         except Exception as e:
             logger.error(f"Failed to push to endpoint {sub.endpoint[:30]}... Error: {str(e)}")
+            if hasattr(e, 'response') and e.response is not None:
+                if e.response.status_code in [404, 410]:
+                    logger.info(f"Endpoint {sub.endpoint[:30]} is dead ({e.response.status_code}). Cleaning up.")
+                    try:
+                        db.delete(sub)
+                        db.commit()
+                    except:
+                        db.rollback()
             
     return success_count

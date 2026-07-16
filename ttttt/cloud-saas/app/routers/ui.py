@@ -881,3 +881,16 @@ async def directory_page(request: Request, db: Session = Depends(get_db)):
             "push_devices": push_devices
         }
     )
+
+@router.post("/directory/devices/{device_id}/delete")
+async def delete_device(device_id: int, request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    device = db.query(PushSubscription).filter(PushSubscription.id == device_id).first()
+    if device:
+        db.delete(device)
+        db.commit()
+        
+    return RedirectResponse(url="/directory", status_code=303)

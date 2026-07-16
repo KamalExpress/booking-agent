@@ -63,6 +63,15 @@ class PushSubscription(Base):
     endpoint = Column(String, unique=True, nullable=False)
     p256dh = Column(String, nullable=False)
     auth = Column(String, nullable=False)
+    
+    # Metadata
+    ip_address = Column(String, nullable=True)
+    location = Column(String, nullable=True)
+    user_agent = Column(String, nullable=True)
+    browser = Column(String, nullable=True)
+    os_name = Column(String, nullable=True)
+    device_name = Column(String, nullable=True)
+    
     created_at = Column(DateTime, default=datetime.utcnow)
     
     user = relationship("User", back_populates="push_subscriptions")

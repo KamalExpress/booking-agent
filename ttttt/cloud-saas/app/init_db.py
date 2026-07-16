@@ -37,7 +37,14 @@ def init_db():
             # Sprint 7 schema changes
             "ALTER TABLE assignments ADD COLUMN required_labels JSONB DEFAULT '{}'::jsonb",
             "ALTER TABLE assignments DROP COLUMN IF EXISTS routing_policy_id",
-            "ALTER TABLE users ADD COLUMN full_name VARCHAR"
+            "ALTER TABLE users ADD COLUMN full_name VARCHAR",
+            # Device Metadata Sprint
+            "ALTER TABLE push_subscriptions ADD COLUMN ip_address VARCHAR",
+            "ALTER TABLE push_subscriptions ADD COLUMN location VARCHAR",
+            "ALTER TABLE push_subscriptions ADD COLUMN user_agent VARCHAR",
+            "ALTER TABLE push_subscriptions ADD COLUMN browser VARCHAR",
+            "ALTER TABLE push_subscriptions ADD COLUMN os_name VARCHAR",
+            "ALTER TABLE push_subscriptions ADD COLUMN device_name VARCHAR"
         ]:
             try:
                 conn.execute(text(stmt))

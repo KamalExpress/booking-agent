@@ -470,14 +470,51 @@ def get_vapid_public_key():
     return {"public_key": VAPID_PUBLIC_KEY}
 
 @app.post("/api/push/subscribe")
-def subscribe_push(req: PushSubRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    existing = db.query(PushSubscription).filter(PushSubscription.endpoint == req.endpoint).first()
+def subscribe_push(req_body: PushSubRequest, request: Request, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    existing = db.query(PushSubscription).filter(PushSubscription.endpoint == req_body.endpoint).first()
     if not existing:
+        user_agent_str = request.headers.get("user-agent", "")
+        ip_addr = request.client.host if request.client else ""
+        
+        browser = ""
+        os_name = ""
+        device_name = ""
+        location = ""
+        
+        if ip_addr and ip_addr not in ["127.0.0.1", "localhost", "::1"]:
+            try:
+                import requests
+                res = requests.get(f"http://ip-api.com/json/{ip_addr}", timeout=2)
+                if res.status_code == 200:
+                    data = res.json()
+                    if data.get("status") == "success":
+                        location = f"{data.get('city', '')}, {data.get('country', '')}".strip(", ")
+            except Exception:
+                pass
+        
+        if user_agent_str:
+            try:
+                from user_agents import parse
+                ua = parse(user_agent_str)
+                browser = f"{ua.browser.family} {ua.browser.version_string}".strip()
+                os_name = f"{ua.os.family} {ua.os.version_string}".strip()
+                device_name = f"{ua.device.brand} {ua.device.model}".strip()
+                if device_name == "None None" or not device_name:
+                    device_name = ua.device.family
+            except Exception:
+                pass
+
         sub = PushSubscription(
             user_id=current_user.id,
-            endpoint=req.endpoint,
-            p256dh=req.p256dh,
-            auth=req.auth
+            endpoint=req_body.endpoint,
+            p256dh=req_body.p256dh,
+            auth=req_body.auth,
+            ip_address=ip_addr,
+            location=location,
+            user_agent=user_agent_str,
+            browser=browser,
+            os_name=os_name,
+            device_name=device_name
         )
         db.add(sub)
         db.commit()

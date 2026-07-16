@@ -8,3 +8,4 @@ pywebpush
 requests
 jinja2
 cryptography
+user-agents
