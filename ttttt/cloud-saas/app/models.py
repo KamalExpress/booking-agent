@@ -193,6 +193,14 @@ class WorkerLog(Base):
     payload = Column(JSONB, nullable=False) # The JSON dump of network requests/responses
     created_at = Column(DateTime, default=datetime.utcnow)
 
+class SlotAvailability(Base):
+    __tablename__ = "slot_availability"
+    id = Column(Integer, primary_key=True, index=True)
+    assignment_id = Column(Integer, ForeignKey("assignments.id"), nullable=True)
+    visa_center = Column(String, nullable=False)
+    date = Column(String, nullable=False)
+    slots_data = Column(JSONB, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 class WorkerVersion(Base):
     __tablename__ = "worker_versions"

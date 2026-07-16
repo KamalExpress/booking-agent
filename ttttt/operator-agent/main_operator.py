@@ -246,7 +246,7 @@ class OperatorAgent:
         else:
             logging.error(f"Failed to search slots. Status Code: {response.status_code}")
             logging.error(f"Response: {response.text}")
-            return None
+            return {"error": True, "status_code": response.status_code, "text": response.text}
 
     def request_otp(self, phone_number):
         """

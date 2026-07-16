@@ -65,6 +65,9 @@ class SlotMonitorEngine(threading.Thread):
                 # Setup Agent using dynamic runtime config
                 runtime_config = self.api.get_runtime_config() or {}
                 captcha_config = runtime_config.get("captcha", {})
+                behavior_config = runtime_config.get("behavior", {})
+                min_delay = behavior_config.get("min_slot_delay", 4.0)
+                max_delay = behavior_config.get("max_slot_delay", 8.0)
                 
                 proxy_string = account.get("proxy_string")
                 if proxy_string and not proxy_string.startswith("http"):
@@ -128,9 +131,16 @@ class SlotMonitorEngine(threading.Thread):
                             })
                             slots_found = True
                             break # Just alert once per cycle to avoid spam
+                    elif slots_response and slots_response.get("status_code") == 429:
+                        logging.warning("Hit 429 Rate Limit. Pausing slot checks for this run.")
+                        self.api.log_event(assignment_id, "RATE_LIMIT_HIT", "warning", {"date": target_date})
+                        break
                     
-                    # Prevent hammering the API
-                    self._stop_event.wait(1.5)
+                    # Prevent hammering the API with a human-like randomized delay
+                    import random
+                    delay = random.uniform(min_delay, max_delay)
+                    logging.info(f"Waiting {delay:.2f}s before next check...")
+                    self._stop_event.wait(delay)
                 
                 if not slots_found:
                     logging.info("Finished checking assignment date range. No slots found.")

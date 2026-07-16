@@ -62,6 +62,9 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
         EventLog.created_at >= yesterday
     ).count()
 
+    from models import SlotAvailability
+    recent_slot_records = db.query(SlotAvailability).order_by(SlotAvailability.created_at.desc()).limit(5).all()
+    
     recent_logs = db.query(EventLog).order_by(EventLog.created_at.desc()).limit(10).all()
     
     return templates.TemplateResponse(
@@ -74,6 +77,7 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
             "active_workers": active_workers,
             "active_assignments": active_assignments,
             "slots_found": slots_found,
+            "recent_slot_records": recent_slot_records,
             "recent_logs": recent_logs
         }
     )
@@ -544,6 +548,8 @@ async def update_global_settings(
     default_polling_interval: str = Form("300"),
     default_date_from: str = Form(""),
     default_date_to: str = Form(""),
+    min_slot_delay: str = Form("4"),
+    max_slot_delay: str = Form("8"),
     notify_login_success: str = Form(None),
     notify_slots_found: str = Form(None),
     notify_no_slots_found: str = Form(None),
@@ -556,6 +562,8 @@ async def update_global_settings(
         "global.default_polling_interval": default_polling_interval,
         "global.default_date_from": default_date_from,
         "global.default_date_to": default_date_to,
+        "global.min_slot_delay": min_slot_delay,
+        "global.max_slot_delay": max_slot_delay,
         "notify.login_success": "true" if notify_login_success else "false",
         "notify.slots_found": "true" if notify_slots_found else "false",
         "notify.no_slots_found": "true" if notify_no_slots_found else "false",

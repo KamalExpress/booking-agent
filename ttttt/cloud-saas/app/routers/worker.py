@@ -183,6 +183,9 @@ def get_runtime_config(worker: WorkerNode = Depends(verify_worker_hmac), db: Ses
             decrypted_api_key = secrets_manager.decrypt(captcha_api_key_setting.encrypted_value)
         elif captcha_api_key_setting.value:
             decrypted_api_key = captcha_api_key_setting.value
+            
+    min_slot_delay = db.query(SystemSetting).filter(SystemSetting.key == "global.min_slot_delay").first()
+    max_slot_delay = db.query(SystemSetting).filter(SystemSetting.key == "global.max_slot_delay").first()
     
     return {
         "version": saas_version,
@@ -199,6 +202,10 @@ def get_runtime_config(worker: WorkerNode = Depends(verify_worker_hmac), db: Ses
         },
         "polling": {
             "interval_seconds": 300
+        },
+        "behavior": {
+            "min_slot_delay": float(min_slot_delay.value) if min_slot_delay else 4.0,
+            "max_slot_delay": float(max_slot_delay.value) if max_slot_delay else 8.0
         },
         "feature_flags": {
             "enable_telemetry": True
@@ -406,9 +413,33 @@ def submit_logs(
             send_push_notification(db, "Slot Monitor", f"No Slots available; last checked: {friendly_time}")
         
     elif req.event_type == "SLOT_FOUND":
+        # Extract slot information
+        target_date = "Unknown Date"
+        slot_count = 0
+        visa_center = "Unknown Center"
+        if req.payload and "date" in req.payload:
+            target_date = req.payload["date"]
+            if "slots" in req.payload and isinstance(req.payload["slots"], list):
+                slot_count = len(req.payload["slots"])
+        
+        if req.assignment_id:
+            assignment = db.query(Assignment).filter(Assignment.id == req.assignment_id).first()
+            if assignment:
+                visa_center = assignment.visa_center
+                
+                # Save to SlotAvailability database
+                from models import SlotAvailability
+                availability = SlotAvailability(
+                    assignment_id=assignment.id,
+                    visa_center=visa_center,
+                    date=target_date,
+                    slots_data=req.payload.get("slots", []) if req.payload else []
+                )
+                db.add(availability)
+        
         notify_slots = db.query(SystemSetting).filter(SystemSetting.key == "notify.slots_found").first()
         if not notify_slots or notify_slots.value == "true":
-            send_push_notification(db, "Slots Found!", "Slots are available; you can try booking now!")
+            send_push_notification(db, "Slots Found!", f"Found {slot_count} slots on {target_date} for center {visa_center}. You can try booking now!")
         
         # Pause ALL active assignments to stop wasting captcha tokens
         active_assignments = db.query(Assignment).filter(Assignment.status.in_(["Active", "Leased"])).all()

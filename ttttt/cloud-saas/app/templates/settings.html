@@ -27,6 +27,19 @@
                 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
+                        <label class="block text-sm font-medium text-zinc-300 mb-1">Min Slot Delay (seconds)</label>
+                        <input type="number" step="0.1" name="min_slot_delay" value="{{ settings.get('global.min_slot_delay').value if settings.get('global.min_slot_delay') else '4' }}" placeholder="4" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
+                        <p class="text-xs text-zinc-500 mt-1">Minimum wait between checking dates.</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-300 mb-1">Max Slot Delay (seconds)</label>
+                        <input type="number" step="0.1" name="max_slot_delay" value="{{ settings.get('global.max_slot_delay').value if settings.get('global.max_slot_delay') else '8' }}" placeholder="8" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
+                        <p class="text-xs text-zinc-500 mt-1">Maximum wait between checking dates.</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
                         <label class="block text-sm font-medium text-zinc-300 mb-1">Default Date From</label>
                         <input type="text" name="default_date_from" value="{{ settings.get('global.default_date_from').value if settings.get('global.default_date_from') else '' }}" placeholder="DD/MM/YYYY" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
                     </div>
