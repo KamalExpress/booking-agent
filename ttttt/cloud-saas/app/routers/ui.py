@@ -5,10 +5,10 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
 
 import os
-from models import WorkerNode, Assignment, Lease, EventLog, ScraperAccount, SystemSetting, User
+from models import WorkerNode, Assignment, Lease, EventLog, ScraperAccount, SystemSetting, User, Tenant
 from models import SessionLocal
 from secrets_manager import secrets_manager
-from auth import get_current_user, require_tenant_admin, get_current_user_from_cookie, RoleEnum
+from auth import get_current_user, require_tenant_admin, get_current_user_from_cookie, RoleEnum, get_password_hash
 from fastapi import HTTPException
 
 def get_ui_user(request: Request, db: Session):
@@ -617,3 +617,80 @@ async def simulate_event(event_type: str = Form(...), current_user: User = Depen
         db.commit()
         
     return RedirectResponse(url="/diagnostics", status_code=303)
+
+
+@router.get("/tenants", response_class=HTMLResponse)
+async def tenants_page(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    tenants = db.query(Tenant).order_by(Tenant.id.desc()).all()
+    # also fetch the first admin user for each tenant to show their email
+    for t in tenants:
+        t.admin_email = next((u.email for u in t.users if u.role == RoleEnum.TENANT_ADMIN), "-")
+        
+    return templates.TemplateResponse(
+        request=request,
+        name="tenants.html",
+        context={
+            "request": request,
+            "user": user,
+            "active_page": "tenants",
+            "tenants": tenants
+        }
+    )
+
+@router.post("/tenants/create")
+async def create_tenant(
+    request: Request,
+    tenant_name: str = Form(...),
+    admin_email: str = Form(...),
+    admin_password: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    # Check if tenant or user exists
+    existing_tenant = db.query(Tenant).filter(Tenant.name == tenant_name).first()
+    existing_user = db.query(User).filter(User.email == admin_email).first()
+    
+    if not existing_tenant and not existing_user:
+        new_tenant = Tenant(name=tenant_name)
+        db.add(new_tenant)
+        db.commit()
+        db.refresh(new_tenant)
+        
+        new_user = User(
+            tenant_id=new_tenant.id,
+            email=admin_email,
+            hashed_password=get_password_hash(admin_password),
+            role=RoleEnum.TENANT_ADMIN
+        )
+        db.add(new_user)
+        db.commit()
+        
+    return RedirectResponse(url="/tenants", status_code=303)
+
+@router.post("/tenants/{tenant_id}/status")
+async def update_tenant_status(
+    tenant_id: int,
+    request: Request,
+    status: str = Form(...), # "active" or "suspended"
+    db: Session = Depends(get_db)
+):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    tenant = db.query(Tenant).filter(Tenant.id == tenant_id).first()
+    if tenant:
+        tenant.is_active = (status == "active")
+        # Update active state for all users under tenant
+        for u in tenant.users:
+            u.is_active = tenant.is_active
+        db.commit()
+        
+    return RedirectResponse(url="/tenants", status_code=303)

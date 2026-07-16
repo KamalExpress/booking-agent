@@ -91,6 +91,9 @@
                 <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Overview
             </a>
             {% if user and user.role.value == 'SUPER_ADMIN' %}
+            <a href="/tenants" class="nav-link {% if active_page == 'tenants' %}active{% endif %}">
+                <i data-lucide="building-2" class="w-4 h-4"></i> Tenants
+            </a>
             <a href="/workers" class="nav-link {% if active_page == 'workers' %}active{% endif %}">
                 <i data-lucide="server" class="w-4 h-4"></i> Workers
             </a>
@@ -145,6 +148,18 @@
         </div>
     </main>
 
+    <!-- PWA Install Banner -->
+    <div id="pwaInstallBanner" class="hidden fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-zinc-900 border border-zinc-700 p-4 rounded-xl shadow-2xl z-50 flex items-start gap-4 transform transition-all translate-y-full opacity-0">
+        <div class="flex-1">
+            <h4 class="text-sm font-semibold text-white mb-1">Install Kamal Express</h4>
+            <p class="text-xs text-zinc-400">Add to your home screen for quick access and full-screen mobile experience.</p>
+        </div>
+        <div class="flex flex-col gap-2">
+            <button id="pwaInstallBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors">Install</button>
+            <button id="pwaDismissBtn" class="text-zinc-500 hover:text-zinc-300 text-xs font-medium px-3 py-1.5 transition-colors">Not now</button>
+        </div>
+    </div>
+
     <script>
         lucide.createIcons();
         
@@ -181,6 +196,42 @@
                     .catch(err => console.log('ServiceWorker registration failed:', err));
             });
         }
+        
+        // PWA Install Logic
+        let deferredPrompt;
+        const installBanner = document.getElementById('pwaInstallBanner');
+        const installBtn = document.getElementById('pwaInstallBtn');
+        const dismissBtn = document.getElementById('pwaDismissBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            deferredPrompt = e;
+            // Update UI to notify the user they can install the PWA
+            installBanner.classList.remove('hidden');
+            // Slight delay for animation
+            setTimeout(() => {
+                installBanner.classList.remove('translate-y-full', 'opacity-0');
+            }, 100);
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            // Show the install prompt
+            deferredPrompt.prompt();
+            // Wait for the user to respond to the prompt
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User response to the install prompt: ${outcome}`);
+            deferredPrompt = null;
+            // Hide the banner
+            installBanner.classList.add('translate-y-full', 'opacity-0');
+            setTimeout(() => installBanner.classList.add('hidden'), 300);
+        });
+
+        dismissBtn.addEventListener('click', () => {
+            installBanner.classList.add('translate-y-full', 'opacity-0');
+            setTimeout(() => installBanner.classList.add('hidden'), 300);
+        });
     </script>
     {% block scripts %}{% endblock %}
 </body>
