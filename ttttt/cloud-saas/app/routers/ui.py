@@ -757,7 +757,12 @@ async def edit_user(
     target_user.email = email
     target_user.full_name = full_name
     try:
-        target_user.role = RoleEnum(role)
+        new_role = RoleEnum(role)
+        # Prevent self-demotion
+        if target_user.id == current_user.id and target_user.role == RoleEnum.SUPER_ADMIN and new_role != RoleEnum.SUPER_ADMIN:
+            pass # Ignore the demotion attempt
+        else:
+            target_user.role = new_role
     except ValueError:
         pass # Handle invalid role gracefully
     
