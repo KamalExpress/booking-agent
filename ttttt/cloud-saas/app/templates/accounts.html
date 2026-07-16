@@ -39,8 +39,9 @@
 </div>
 
 <div class="card overflow-hidden">
-    <table class="w-full text-left border-collapse text-sm">
-        <thead>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-sm">
+            <thead>
             <tr class="border-b border-border bg-muted/50">
                 <th class="p-4 font-medium text-muted-foreground">ID</th>
                 <th class="p-4 font-medium text-muted-foreground">Username</th>
@@ -80,6 +81,7 @@
             </tr>
             {% endfor %}
         </tbody>
-    </table>
+        </table>
+    </div>
 </div>
 {% endblock %}

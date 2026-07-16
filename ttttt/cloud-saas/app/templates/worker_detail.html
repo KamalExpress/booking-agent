@@ -153,8 +153,9 @@
 <div id="tab-live" class="tab-content block">
     <h3 class="text-lg font-semibold mb-4">Active Leases</h3>
     <div class="card overflow-hidden mb-8">
-        <table class="w-full text-sm text-left">
-            <thead class="text-xs text-[#a1a1aa] uppercase bg-[#18181b] border-b border-[#27272a]">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+                <thead class="text-xs text-[#a1a1aa] uppercase bg-[#18181b] border-b border-[#27272a]">
                 <tr>
                     <th scope="col" class="px-6 py-4 font-medium">Lease ID</th>
                     <th scope="col" class="px-6 py-4 font-medium">Assignment</th>
@@ -180,7 +181,8 @@
                 </tr>
                 {% endfor %}
             </tbody>
-        </table>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -188,8 +190,9 @@
 <div id="tab-historical" class="tab-content hidden">
     <h3 class="text-lg font-semibold mb-4">Recent Events (Last 100)</h3>
     <div class="card overflow-hidden">
-        <table class="w-full text-sm text-left">
-            <thead class="text-xs text-[#a1a1aa] uppercase bg-[#18181b] border-b border-[#27272a]">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+                <thead class="text-xs text-[#a1a1aa] uppercase bg-[#18181b] border-b border-[#27272a]">
                 <tr>
                     <th scope="col" class="px-6 py-3">Timestamp</th>
                     <th scope="col" class="px-6 py-3">Level</th>
@@ -225,7 +228,8 @@
                 </tr>
                 {% endfor %}
             </tbody>
-        </table>
+            </table>
+        </div>
     </div>
 </div>
 
