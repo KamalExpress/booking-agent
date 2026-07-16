@@ -71,15 +71,21 @@
                     <th class="px-5 py-3 font-medium">Role</th>
                     <th class="px-5 py-3 font-medium">Status</th>
                     <th class="px-5 py-3 font-medium">Joined</th>
+                    <th class="px-5 py-3 font-medium text-right">Actions</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-zinc-800">
                 {% for s in staff %}
                 <tr class="hover:bg-zinc-800/30 transition-colors">
                     <td class="px-5 py-4 font-mono text-zinc-400">#{{ s.id }}</td>
-                    <td class="px-5 py-4 text-white">{{ s.email }}</td>
+                    <td class="px-5 py-4 text-white">
+                        <div class="font-medium">{{ s.full_name or 'No Name Set' }}</div>
+                        <div class="text-xs text-zinc-400">{{ s.email }}</div>
+                    </td>
                     <td class="px-5 py-4">
-                        {% if s.role.value == 'TENANT_ADMIN' %}
+                        {% if s.role.value == 'SUPER_ADMIN' %}
+                            <span class="inline-flex items-center rounded bg-indigo-500/10 px-2 py-1 text-xs font-medium text-indigo-400 border border-indigo-500/20">Super Admin</span>
+                        {% elif s.role.value == 'TENANT_ADMIN' %}
                             <span class="inline-flex items-center rounded bg-zinc-800 px-2 py-1 text-xs font-medium text-zinc-300 border border-zinc-700">Admin</span>
                         {% else %}
                             <span class="inline-flex items-center rounded bg-zinc-900 px-2 py-1 text-xs font-medium text-zinc-500 border border-zinc-800">Staff</span>
@@ -93,14 +99,71 @@
                         {% endif %}
                     </td>
                     <td class="px-5 py-4 text-zinc-400">{{ s.created_at.strftime('%Y-%m-%d') if s.created_at else '-' }}</td>
+                    <td class="px-5 py-4 text-right">
+                        <button onclick="openEditUserModal('{{ s.id }}', '{{ s.email }}', '{{ s.full_name or '' }}', '{{ s.role.value }}')" class="text-blue-500 hover:text-blue-400 transition-colors">
+                            <i data-lucide="edit" class="w-4 h-4"></i>
+                        </button>
+                    </td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="5" class="px-5 py-8 text-center text-zinc-500">No staff members found.</td>
+                    <td colspan="6" class="px-5 py-8 text-center text-zinc-500">No staff members found.</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
+
+<!-- Edit User Modal -->
+<div id="editUserModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div class="bg-zinc-900 border border-zinc-700 w-full max-w-md rounded-xl shadow-xl overflow-hidden">
+        <div class="px-6 py-4 border-b border-zinc-800 flex justify-between items-center bg-zinc-900/50">
+            <h3 class="font-semibold text-lg text-white">Edit User</h3>
+            <button class="text-zinc-500 hover:text-zinc-300 transition-colors" onclick="document.getElementById('editUserModal').classList.add('hidden')">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <form id="editUserForm" method="post" class="p-6">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-zinc-300">Full Name</label>
+                    <input type="text" id="editFullName" name="full_name" class="input bg-zinc-950 border-zinc-800 text-white" placeholder="John Doe">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-zinc-300">Email Address</label>
+                    <input type="email" id="editEmail" name="email" class="input bg-zinc-950 border-zinc-800 text-white" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-zinc-300">Role</label>
+                    <select id="editRole" name="role" class="input bg-zinc-950 border-zinc-800 text-white" required>
+                        <option value="STAFF">Staff</option>
+                        <option value="TENANT_ADMIN">Tenant Admin</option>
+                        <option value="SUPER_ADMIN">Super Admin</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-zinc-300">New Password (Optional)</label>
+                    <input type="password" name="password" class="input bg-zinc-950 border-zinc-800 text-white" placeholder="Leave blank to keep current" minlength="6">
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 mt-6">
+                <button type="button" class="btn border border-zinc-700 text-zinc-300 hover:bg-zinc-800" onclick="document.getElementById('editUserModal').classList.add('hidden')">Cancel</button>
+                <button type="submit" class="btn bg-indigo-600 hover:bg-indigo-700 text-white">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function openEditUserModal(userId, email, fullName, role) {
+    document.getElementById('editUserForm').action = `/users/${userId}/edit`;
+    document.getElementById('editEmail').value = email;
+    document.getElementById('editFullName').value = fullName;
+    document.getElementById('editRole').value = role;
+    document.getElementById('editUserModal').classList.remove('hidden');
+}
+</script>
 {% endblock %}

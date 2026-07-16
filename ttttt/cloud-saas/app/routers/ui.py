@@ -735,3 +735,35 @@ async def tenant_detail_page(tenant_id: int, request: Request, db: Session = Dep
             }
         }
     )
+
+@router.post("/users/{user_id}/edit")
+async def edit_user(
+    user_id: int,
+    request: Request,
+    email: str = Form(...),
+    full_name: str = Form(None),
+    role: str = Form(...),
+    password: str = Form(None),
+    db: Session = Depends(get_db)
+):
+    current_user = get_ui_user(request, db)
+    if not current_user or current_user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    target_user = db.query(User).filter(User.id == user_id).first()
+    if not target_user:
+        return RedirectResponse(url="/tenants", status_code=303)
+        
+    target_user.email = email
+    target_user.full_name = full_name
+    try:
+        target_user.role = RoleEnum(role)
+    except ValueError:
+        pass # Handle invalid role gracefully
+    
+    if password and password.strip():
+        target_user.hashed_password = get_password_hash(password.strip())
+        
+    db.commit()
+    
+    return RedirectResponse(url=f"/tenants/{target_user.tenant_id}", status_code=303)

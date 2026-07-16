@@ -36,7 +36,8 @@ def init_db():
             "ALTER TABLE leases ADD COLUMN status VARCHAR DEFAULT 'Pending'",
             # Sprint 7 schema changes
             "ALTER TABLE assignments ADD COLUMN required_labels JSONB DEFAULT '{}'::jsonb",
-            "ALTER TABLE assignments DROP COLUMN IF EXISTS routing_policy_id"
+            "ALTER TABLE assignments DROP COLUMN IF EXISTS routing_policy_id",
+            "ALTER TABLE users ADD COLUMN full_name VARCHAR"
         ]:
             try:
                 conn.execute(text(stmt))
