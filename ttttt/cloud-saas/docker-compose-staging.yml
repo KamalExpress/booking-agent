@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  cloud-saas-staging:
+    image: cloud-saas:staging
+    build: .
+    container_name: cloud-saas-staging
+    restart: unless-stopped
+    ports:
+      - "9743:8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - SECRET_KEY=${SECRET_KEY}
+      - VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}
+      - VAPID_PUBLIC_KEY=${VAPID_PUBLIC_KEY}
+      - SUPER_ADMIN_EMAIL=${SUPER_ADMIN_EMAIL}
+      - SUPER_ADMIN_PASSWORD=${SUPER_ADMIN_PASSWORD}
+    volumes:
+      - ./private_key.pem:/app/private_key.pem
+    networks:
+      - sam-agent-platform_default
+
+networks:
+  sam-agent-platform_default:
+    external: true
