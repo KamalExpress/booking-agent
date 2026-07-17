@@ -1,6 +1,19 @@
 version: '3.8'
 
 services:
+  postgres_staging:
+    image: postgres:15
+    container_name: postgres_staging
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: booking
+      POSTGRES_PASSWORD: vps_secure_db_pass_123
+      POSTGRES_DB: booking_saas_staging
+    volumes:
+      - postgres_staging_data:/var/lib/postgresql/data
+    networks:
+      - sam-agent-platform_staging
+
   cloud-saas-staging:
     image: cloud-saas:staging
     build: .
@@ -17,9 +30,14 @@ services:
       - SUPER_ADMIN_PASSWORD=${SUPER_ADMIN_PASSWORD}
     volumes:
       - ./private_key.pem:/app/private_key.pem
+    depends_on:
+      - postgres_staging
     networks:
-      - sam-agent-platform_default
+      - sam-agent-platform_staging
 
 networks:
-  sam-agent-platform_default:
-    external: true
+  sam-agent-platform_staging:
+    driver: bridge
+
+volumes:
+  postgres_staging_data:
