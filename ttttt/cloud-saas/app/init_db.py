@@ -48,8 +48,9 @@ def init_db():
             db.commit()
             print(f"Created Super Admin: {super_admin.email} (Password: {super_admin_password})")
         else:
-            # Ensure super admin is always active
+            # Ensure super admin is always active and sync password from env vars
             super_admin.is_active = True
+            super_admin.hashed_password = get_password_hash(super_admin_password)
             db.commit()
             
         # 2b. Seed requested user under default tenant
