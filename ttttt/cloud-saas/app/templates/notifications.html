@@ -18,7 +18,8 @@
                     <th class="px-6 py-4 font-medium border-b border-border">Title</th>
                     <th class="px-6 py-4 font-medium border-b border-border">Message Body</th>
                     <th class="px-6 py-4 font-medium border-b border-border">Scope</th>
-                    <th class="px-6 py-4 font-medium border-b border-border">Delivered</th>
+                    <th class="px-6 py-4 font-medium border-b border-border text-center">Successful</th>
+                    <th class="px-6 py-4 font-medium border-b border-border text-center">Failed</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-border">
@@ -62,25 +63,32 @@
                             </span>
                         {% endif %}
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    <td class="px-6 py-4 whitespace-nowrap text-center">
                         {% if log.event_type == 'PUSH_SENT' %}
-                            <div class="flex items-center gap-2">
-                                <span class="text-green-500 font-medium">{{ log.payload.get('success_count', 0) }}</span>
-                                <span class="text-muted-foreground">/</span>
-                                <span class="text-foreground font-medium">{{ log.payload.get('success_count', 0) + log.payload.get('failure_count', 0) }}</span>
-                            </div>
+                            <span class="text-green-500 font-medium">{{ log.payload.get('success_count', 0) }}</span>
                         {% else %}
                             {% if log.payload.get('status') == 'success' %}
-                                <span class="text-green-500 font-medium"><i data-lucide="check" class="w-4 h-4"></i></span>
+                                <span class="text-green-500 font-medium inline-block"><i data-lucide="check" class="w-4 h-4"></i></span>
                             {% else %}
-                                <span class="text-destructive font-medium"><i data-lucide="x" class="w-4 h-4"></i></span>
+                                <span class="text-muted-foreground">-</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                        {% if log.event_type == 'PUSH_SENT' %}
+                            <span class="text-destructive font-medium">{{ log.payload.get('failure_count', 0) }}</span>
+                        {% else %}
+                            {% if log.payload.get('status') == 'failed' %}
+                                <span class="text-destructive font-medium inline-block"><i data-lucide="x" class="w-4 h-4"></i></span>
+                            {% else %}
+                                <span class="text-muted-foreground">-</span>
                             {% endif %}
                         {% endif %}
                     </td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="6" class="px-6 py-12 text-center text-muted-foreground">
+                    <td colspan="7" class="px-6 py-12 text-center text-muted-foreground">
                         <div class="flex flex-col items-center justify-center">
                             <i data-lucide="bell-off" class="w-12 h-12 mb-3 text-muted-foreground/50"></i>
                             <p>No push notifications found in the database.</p>
