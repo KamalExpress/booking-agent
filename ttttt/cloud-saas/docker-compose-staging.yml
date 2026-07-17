@@ -35,6 +35,20 @@ services:
     networks:
       - sam-agent-platform_staging
 
+  operator-agent-staging:
+    image: operator-agent:staging
+    build:
+      context: ../operator-agent
+      dockerfile: Dockerfile
+    container_name: operator-agent-staging
+    restart: unless-stopped
+    environment:
+      - BASE_URL=http://cloud-saas-staging:8000
+    depends_on:
+      - cloud-saas-staging
+    networks:
+      - sam-agent-platform_staging
+
 networks:
   sam-agent-platform_staging:
     driver: bridge
