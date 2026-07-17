@@ -17,7 +17,10 @@ class SecretsManager:
             return key.encode()
             
         # Try loading from data dir if we have a volume, otherwise local .env
-        env_file = "data/secrets.env" if os.path.exists("data") else os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")
+        base_dir = os.path.dirname(os.path.dirname(__file__)) # /app
+        data_dir = os.path.join(base_dir, "data")
+        env_file = os.path.join(data_dir, "secrets.env") if os.path.exists(data_dir) else os.path.join(base_dir, ".env")
+        
         if os.path.exists(env_file):
             with open(env_file, "r") as f:
                 for line in f:
