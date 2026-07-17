@@ -27,7 +27,11 @@ To manage the fleet of distributed Worker Nodes, monitor their health, route ass
 
 ## Failure Modes
 - **Worker Crash:** The worker stops sending heartbeats. Next time any worker hits `/assignments/next`, the `MaintenanceService` will mark the dead worker `Offline` and `LeaseService` will mark its leases `Expired`, allowing re-assignment.
+- **Worker Identity Loss:** If the `operator_data` Docker volume is destroyed, the worker generates a new ID. The `MaintenanceService` eventually disables the stale ID.
 - **Worker enters `Draining` state:** It finishes its current lease but refuses new assignments (useful for seamless deployments).
+
+## Worker Identity Persistence
+- **Docker Persistent Data Volume (`operator_data`):** The worker stores its unique identity (`worker_creds.txt`) inside `/app/data`. This volume ensures that workers retain their unique identity and HMAC secret across stack redeployments, preventing identity drift and `401 Unauthorized` API rejections.
 
 ## Related Source Directories
 - `ttttt/cloud-saas/app/services/worker_service.py`
