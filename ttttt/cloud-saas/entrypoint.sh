@@ -24,15 +24,14 @@ echo "Applying Alembic Migrations..."
 # Check if alembic_version table exists. If not, stamp it.
 python -c "
 from sqlalchemy import create_engine, inspect
-import os
+import os, sys, subprocess
 engine = create_engine(os.environ['DATABASE_URL'])
 if not inspect(engine).has_table('alembic_version'):
     print('Fresh database detected. Stamping Alembic head.')
-    import subprocess
-    subprocess.run(['alembic', 'stamp', 'head'])
+    subprocess.run([sys.executable, '-m', 'alembic', 'stamp', 'head'])
 "
 
-alembic upgrade head
+python -m alembic upgrade head
 
 echo "Starting FastAPI Server..."
 cd /app
