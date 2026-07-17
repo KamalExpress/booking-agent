@@ -49,6 +49,8 @@ services:
       - cloud-saas-staging
     networks:
       - sam-agent-platform_staging
+    volumes:
+      - operator_data_staging:/app/data
 
 networks:
   sam-agent-platform_staging:
@@ -57,3 +59,4 @@ networks:
 volumes:
   postgres_staging_data:
   cloud_saas_data:
+  operator_data_staging:
