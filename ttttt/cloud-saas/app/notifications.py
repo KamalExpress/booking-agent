@@ -23,8 +23,12 @@ else:
 
 def send_push_notification(db: Session, title: str, body: str, user_ids: list = None):
     from pywebpush import webpush
+    from models import SystemSetting, EventLog, User
     
-    query = db.query(PushSubscription)
+    detailed_setting = db.query(SystemSetting).filter(SystemSetting.key == "global.detailed_push_logging").first()
+    detailed_logging = detailed_setting.value.lower() == 'true' if (detailed_setting and detailed_setting.value) else False
+    
+    query = db.query(PushSubscription, User).join(User, PushSubscription.user_id == User.id)
     if user_ids is not None:
         query = query.filter(PushSubscription.user_id.in_(user_ids))
     
@@ -34,7 +38,16 @@ def send_push_notification(db: Session, title: str, body: str, user_ids: list = 
         
     logger.info(f"Sending push notification to {len(subs)} endpoints...")
     success_count = 0
-    for sub in subs:
+    
+    success_by_tenant = {}
+    failure_by_tenant = {}
+    
+    for sub, user in subs:
+        t_id = user.tenant_id
+        if t_id not in success_by_tenant:
+            success_by_tenant[t_id] = 0
+            failure_by_tenant[t_id] = 0
+            
         try:
             webpush(
                 subscription_info={
@@ -46,15 +59,46 @@ def send_push_notification(db: Session, title: str, body: str, user_ids: list = 
                 vapid_claims={"sub": "mailto:admin@samwebdevs.dpdns.org"}
             )
             success_count += 1
+            success_by_tenant[t_id] += 1
+            
+            if detailed_logging:
+                db.add(EventLog(
+                    event_type="PUSH_SENT_DEVICE",
+                    severity="info",
+                    payload={"tenant_id": t_id, "user_id": user.id, "endpoint": sub.endpoint[:30], "status": "success", "title": title}
+                ))
         except Exception as e:
+            failure_by_tenant[t_id] += 1
             logger.error(f"Failed to push to endpoint {sub.endpoint[:30]}... Error: {str(e)}")
+            if detailed_logging:
+                db.add(EventLog(
+                    event_type="PUSH_SENT_DEVICE",
+                    severity="error",
+                    payload={"tenant_id": t_id, "user_id": user.id, "endpoint": sub.endpoint[:30], "status": "failed", "error": str(e), "title": title}
+                ))
+                
             if hasattr(e, 'response') and e.response is not None:
                 if e.response.status_code in [404, 410]:
                     logger.info(f"Endpoint {sub.endpoint[:30]} is dead ({e.response.status_code}). Cleaning up.")
                     try:
                         db.delete(sub)
-                        db.commit()
                     except:
-                        db.rollback()
+                        pass
+                        
+    for t_id in success_by_tenant:
+        sc = success_by_tenant[t_id]
+        fc = failure_by_tenant[t_id]
+        if sc > 0 or fc > 0:
+            db.add(EventLog(
+                event_type="PUSH_SENT",
+                severity="info",
+                payload={"tenant_id": t_id, "success_count": sc, "failure_count": fc, "title": title, "body": body}
+            ))
+            
+    try:
+        db.commit()
+    except Exception as e:
+        logger.error(f"Failed to commit push notification logs: {e}")
+        db.rollback()
             
     return success_count

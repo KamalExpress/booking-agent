@@ -94,6 +94,9 @@
             <a href="/staff" class="nav-link {% if active_page == 'staff' %}active{% endif %}">
                 <i data-lucide="users" class="w-4 h-4"></i> Staff Management
             </a>
+            <a href="/notifications" class="nav-link {% if active_page == 'notifications' %}active{% endif %}">
+                <i data-lucide="bell" class="w-4 h-4"></i> Push History
+            </a>
             {% endif %}
             {% if user and user.role.value == 'SUPER_ADMIN' %}
             <a href="/tenants" class="nav-link {% if active_page == 'tenants' %}active{% endif %}">
@@ -113,6 +116,12 @@
             </a>
             <a href="/logs" class="nav-link {% if active_page == 'logs' %}active{% endif %}">
                 <i data-lucide="scroll-text" class="w-4 h-4"></i> Event Logs
+            </a>
+            <a href="/notifications" class="nav-link {% if active_page == 'notifications' %}active{% endif %}">
+                <i data-lucide="bell" class="w-4 h-4"></i> Push History
+            </a>
+            <a href="/system-dbms" class="nav-link" target="_blank">
+                <i data-lucide="database" class="w-4 h-4"></i> System DBMS
             </a>
             <a href="/settings" class="nav-link {% if active_page == 'settings' %}active{% endif %}">
                 <i data-lucide="settings" class="w-4 h-4"></i> Settings

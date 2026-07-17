@@ -104,6 +104,23 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
     
     recent_logs = db.query(EventLog).order_by(EventLog.created_at.desc()).limit(10).all()
     
+    # Calculate monthly push count
+    from sqlalchemy import extract
+    current_month = datetime.now(timezone.utc).month
+    current_year = datetime.now(timezone.utc).year
+    
+    push_query = db.query(EventLog).filter(
+        EventLog.event_type == 'PUSH_SENT',
+        extract('month', EventLog.created_at) == current_month,
+        extract('year', EventLog.created_at) == current_year
+    )
+    if user.role == RoleEnum.TENANT_ADMIN:
+        from sqlalchemy import cast, String
+        push_query = push_query.filter(EventLog.payload['tenant_id'].astext == str(user.tenant_id))
+    
+    push_logs = push_query.all()
+    monthly_push_count = sum(log.payload.get('success_count', 0) if log.payload else 0 for log in push_logs)
+    
     return render_template("index.html", {
         "request": request,
         "user": user,
@@ -112,7 +129,8 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
         "active_assignments": active_assignments,
         "slots_found": slots_found,
         "center_statuses": center_statuses,
-        "recent_logs": recent_logs
+        "recent_logs": recent_logs,
+        "monthly_push_count": monthly_push_count
     }, db)
 
 @router.get("/workers", response_class=HTMLResponse)
@@ -130,6 +148,64 @@ async def workers_page(request: Request, db: Session = Depends(get_db)):
         "user": user,
         "active_page": "workers",
         "workers": workers
+    }, db)
+
+@router.get("/notifications", response_class=HTMLResponse)
+async def notifications_page(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+        
+    query = db.query(EventLog).filter(EventLog.event_type.in_(['PUSH_SENT', 'PUSH_SENT_DEVICE']))
+    
+    if user.role == RoleEnum.TENANT_ADMIN:
+        # PostgreSQL JSONB querying to filter by tenant_id inside payload
+        from sqlalchemy import cast, String
+        query = query.filter(EventLog.payload['tenant_id'].astext == str(user.tenant_id))
+    elif user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    logs = query.order_by(EventLog.created_at.desc()).limit(200).all()
+            
+    return render_template("notifications.html", {
+        "request": request,
+        "user": user,
+        "active_page": "notifications",
+        "logs": logs
+    }, db)
+
+@router.get("/slots", response_class=HTMLResponse)
+async def slots_history_page(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+        
+    from models import SlotAvailability
+    slots = db.query(SlotAvailability).order_by(SlotAvailability.created_at.desc()).limit(200).all()
+            
+    return render_template("slot_history.html", {
+        "request": request,
+        "user": user,
+        "active_page": "slots",
+        "slots": slots
+    }, db)
+
+@router.get("/slots/{slot_id}", response_class=HTMLResponse)
+async def slot_detail_page(slot_id: int, request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+        
+    from models import SlotAvailability
+    slot = db.query(SlotAvailability).filter(SlotAvailability.id == slot_id).first()
+    if not slot:
+        return RedirectResponse(url="/slots")
+            
+    return render_template("slot_detail.html", {
+        "request": request,
+        "user": user,
+        "active_page": "slots",
+        "slot": slot
     }, db)
 
 @router.get("/workers/{worker_id}", response_class=HTMLResponse)

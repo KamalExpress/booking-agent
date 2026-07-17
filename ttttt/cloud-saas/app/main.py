@@ -49,6 +49,14 @@ from routers.ui import router as ui_router
 app.include_router(worker_router)
 app.include_router(ui_router)
 
+# Mount sqladmin for built-in DBMS
+from sqladmin import Admin
+from admin import AdminAuth, views
+admin_auth = AdminAuth(secret_key="sqladmin-session-secret")
+admin = Admin(app, engine, authentication_backend=admin_auth, base_url="/system-dbms")
+for view in views:
+    admin.add_view(view)
+
 @app.on_event("startup")
 def startup_event():
     # Auto-seed the database if it's empty

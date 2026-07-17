@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<header class="flex justify-between items-center mb-8">
+    <div>
+        <h1 class="text-2xl font-semibold tracking-tight">Push Notifications History</h1>
+        <p class="text-sm text-muted-foreground mt-1">Review all automated push notifications dispatched to user devices.</p>
+    </div>
+</header>
+
+<div class="bg-card border border-border rounded-xl shadow-sm overflow-hidden mb-8">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+            <thead class="bg-muted/50 text-muted-foreground uppercase text-xs">
+                <tr>
+                    <th class="px-6 py-4 font-medium border-b border-border">Timestamp</th>
+                    <th class="px-6 py-4 font-medium border-b border-border">Type</th>
+                    <th class="px-6 py-4 font-medium border-b border-border">Title</th>
+                    <th class="px-6 py-4 font-medium border-b border-border">Message Body</th>
+                    <th class="px-6 py-4 font-medium border-b border-border">Scope</th>
+                    <th class="px-6 py-4 font-medium border-b border-border">Delivered</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+                {% for log in logs %}
+                <tr class="hover:bg-muted/30 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="font-medium">{{ log.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                        <div class="text-xs text-muted-foreground">{{ log.created_at.strftime('%S') }}s</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if log.event_type == 'PUSH_SENT' %}
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-500/10 text-blue-500">
+                                Broadcast
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-500/10 text-gray-500">
+                                Per Device
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 font-medium">
+                        {{ log.payload.get('title', 'Notification') }}
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if log.payload.get('body') %}
+                            <span class="text-muted-foreground">{{ log.payload.get('body') }}</span>
+                        {% elif log.payload.get('error') %}
+                            <span class="text-destructive">{{ log.payload.get('error') }}</span>
+                        {% else %}
+                            <span class="text-muted-foreground italic">No body</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if log.payload.get('tenant_id') %}
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-500/10 text-purple-500">
+                                Tenant #{{ log.payload.get('tenant_id') }}
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary/10 text-primary">
+                                Global
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if log.event_type == 'PUSH_SENT' %}
+                            <div class="flex items-center gap-2">
+                                <span class="text-green-500 font-medium">{{ log.payload.get('success_count', 0) }}</span>
+                                <span class="text-muted-foreground">/</span>
+                                <span class="text-destructive font-medium">{{ log.payload.get('failure_count', 0) }}</span>
+                            </div>
+                        {% else %}
+                            {% if log.payload.get('status') == 'success' %}
+                                <span class="text-green-500 font-medium"><i data-lucide="check" class="w-4 h-4"></i></span>
+                            {% else %}
+                                <span class="text-destructive font-medium"><i data-lucide="x" class="w-4 h-4"></i></span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="px-6 py-12 text-center text-muted-foreground">
+                        <div class="flex flex-col items-center justify-center">
+                            <i data-lucide="bell-off" class="w-12 h-12 mb-3 text-muted-foreground/50"></i>
+                            <p>No push notifications found in the database.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

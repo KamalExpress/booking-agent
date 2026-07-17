@@ -14,7 +14,7 @@
 </header>
 
 {% if user.role.value == 'SUPER_ADMIN' %}
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
     <div class="card p-6 flex flex-col justify-between">
         <div class="flex flex-row items-center justify-between space-y-0 pb-2">
             <h3 class="tracking-tight text-sm font-medium">Active Workers</h3>
@@ -46,6 +46,29 @@
             <span class="text-3xl font-bold text-emerald-500" id="statSlots">{{ slots_found }}</span>
         </div>
     </div>
+
+    <div class="card p-6 flex flex-col justify-between">
+        <div class="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 class="tracking-tight text-sm font-medium">Push Sent (Month)</h3>
+            <i data-lucide="bell" class="w-4 h-4 text-muted-foreground"></i>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+            <span class="text-3xl font-bold text-indigo-500">{{ monthly_push_count }}</span>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="card p-6 flex flex-col justify-between border-indigo-500/20 bg-indigo-500/5">
+        <div class="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 class="tracking-tight text-sm font-medium text-indigo-400">Push Notifications Used</h3>
+            <i data-lucide="bell-ring" class="w-4 h-4 text-indigo-400"></i>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+            <span class="text-3xl font-bold text-indigo-500">{{ monthly_push_count }}</span>
+            <span class="text-xs text-muted-foreground">this month</span>
+        </div>
+    </div>
 </div>
 {% endif %}
 
@@ -75,12 +98,17 @@
                         <span class="text-xs text-zinc-400 local-time" data-utc="{{ record.created_at.isoformat() }}Z">{{ record.created_at.strftime('%Y-%m-%d %H:%M:%S UTC') }}</span>
                     </div>
                     <div class="text-lg font-bold text-white mb-2">{{ record.date }}</div>
-                    <div class="flex flex-wrap gap-2">
-                        {% for slot in record.slots_data %}
-                            <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                                {{ slot.get('time', 'Available') }}
-                            </span>
-                        {% endfor %}
+                    <div class="flex justify-between items-center">
+                        <div class="flex flex-wrap gap-2">
+                            {% for slot in record.slots_data %}
+                                {% if slot.get('isselectable') or slot.get('isavailable') %}
+                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                    {{ slot.get('starttime', 'Available') }}
+                                </span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <a href="/slots/{{ record.id }}" class="text-xs text-emerald-400 hover:text-emerald-300 underline underline-offset-2">Details</a>
                     </div>
                 </div>
                 {% endfor %}

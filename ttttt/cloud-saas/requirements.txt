@@ -9,3 +9,5 @@ requests
 jinja2
 cryptography
 user-agents
+sqladmin
+itsdangerous

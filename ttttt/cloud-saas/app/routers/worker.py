@@ -416,31 +416,60 @@ def submit_logs(
         # Extract slot information
         target_date = "Unknown Date"
         slot_count = 0
-        visa_center = "Unknown Center"
-        if req.payload and "date" in req.payload:
-            target_date = req.payload["date"]
+        vac_id = "Unknown Center"
+        start_time_str = ""
+        app_type = ""
+        
+        if req.payload:
+            target_date = req.payload.get("date", target_date)
+            vac_id = req.payload.get("visa_center", vac_id)
             if "slots" in req.payload and isinstance(req.payload["slots"], list):
-                slot_count = len(req.payload["slots"])
+                slots = req.payload["slots"]
+                slot_count = len(slots)
+                if slots and "starttime" in slots[0]:
+                    try:
+                        from datetime import datetime
+                        time_obj = datetime.strptime(slots[0]['starttime'], "%H:%M")
+                        start_time_str = f" at {time_obj.strftime('%I:%M %p')}"
+                    except:
+                        start_time_str = f" at {slots[0]['starttime']}"
         
         if req.assignment_id:
             assignment = db.query(Assignment).filter(Assignment.id == req.assignment_id).first()
             if assignment:
-                visa_center = assignment.visa_center
-                
-                # Save to SlotAvailability database
+                # Save to SlotAvailability database using the vac_id from the worker payload
                 from models import SlotAvailability
                 availability = SlotAvailability(
                     assignment_id=assignment.id,
-                    visa_center=visa_center,
+                    visa_center=vac_id,
                     date=target_date,
                     slots_data=req.payload.get("slots", []) if req.payload else [],
                     found_by=worker.worker_id
                 )
                 db.add(availability)
+                
+        # Resolve center name and type string from global config
+        center_name = f"Center {vac_id}"
+        type_str = ""
+        vc_setting = db.query(SystemSetting).filter(SystemSetting.key == "global.visa_centers_config").first()
+        if vc_setting and vc_setting.value:
+            for center_str in vc_setting.value.split(","):
+                parts = center_str.strip().split(":")
+                if len(parts) >= 3 and parts[0] == vac_id:
+                    center_name = f"{parts[2]} Visa Center"
+                    app_type = parts[1]
+                    if app_type == "26": type_str = " for Type D Long Stay"
+                    elif app_type == "6": type_str = " for National Visa"
+                    elif app_type == "2": type_str = " for Legalization"
+                    elif app_type == "0": type_str = " for Standard"
+                    else: type_str = f" for Type {app_type}"
+                    break
+        
+        push_message = f"{slot_count} Slot{'s' if slot_count != 1 else ''} found on {target_date}{start_time_str} - {center_name}{type_str}"
         
         notify_slots = db.query(SystemSetting).filter(SystemSetting.key == "notify.slots_found").first()
         if not notify_slots or notify_slots.value == "true":
-            send_push_notification(db, "Slots Found!", f"Found {slot_count} slots on {target_date} for center {visa_center}. You can try booking now!")
+            send_push_notification(db, "Slots Found!", push_message)
         
         # Pause ALL active assignments to stop wasting captcha tokens
         active_assignments = db.query(Assignment).filter(Assignment.status.in_(["Active", "Leased"])).all()

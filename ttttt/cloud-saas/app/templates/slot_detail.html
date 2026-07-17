@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<header class="flex justify-between items-center mb-8">
+    <div>
+        <h1 class="text-2xl font-semibold tracking-tight">Slot Details</h1>
+        <p class="text-sm text-muted-foreground mt-1">Found on {{ slot.created_at.strftime('%Y-%m-%d at %H:%M') }} by Worker {{ slot.found_by or 'Unknown' }}</p>
+    </div>
+    <a href="/slots" class="btn btn-secondary border border-border">
+        <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i> Back to History
+    </a>
+</header>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-card border border-border rounded-xl p-6 shadow-sm">
+        <div class="text-sm text-muted-foreground mb-1">Target Date</div>
+        <div class="text-2xl font-semibold text-primary">{{ slot.date }}</div>
+    </div>
+    <div class="bg-card border border-border rounded-xl p-6 shadow-sm">
+        <div class="text-sm text-muted-foreground mb-1">Visa Center</div>
+        <div class="text-2xl font-semibold text-blue-500">{{ slot.visa_center }}</div>
+    </div>
+    <div class="bg-card border border-border rounded-xl p-6 shadow-sm">
+        <div class="text-sm text-muted-foreground mb-1">Total Available Slots</div>
+        <div class="text-2xl font-semibold text-green-500">{{ slot.slots_data|length }}</div>
+    </div>
+</div>
+
+<h2 class="text-lg font-semibold mb-4">Available Time Intervals</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+    {% for s in slot.slots_data %}
+        {% if s.isselectable or s.isavailable %}
+        <div class="bg-green-500/10 border border-green-500/20 rounded-lg p-4 text-center hover:bg-green-500/20 transition-colors">
+            <div class="text-green-600 font-bold text-lg mb-1">{{ s.starttime }}</div>
+            <div class="text-green-600/80 text-xs">to {{ s.endtime }}</div>
+            <div class="mt-2 text-[10px] text-green-600/60 font-mono">ID: {{ s.id or 'N/A' }}</div>
+        </div>
+        {% endif %}
+    {% else %}
+        <div class="col-span-full p-8 text-center text-muted-foreground bg-muted/30 rounded-xl border border-border">
+            No valid slots payload found in this record.
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
