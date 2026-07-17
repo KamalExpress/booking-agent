@@ -43,7 +43,7 @@ services:
     container_name: operator-agent-staging
     restart: unless-stopped
     environment:
-      - BASE_URL=http://cloud-saas-staging:8000
+      - SAAS_BASE_URL=http://cloud-saas-staging:8000
     depends_on:
       - cloud-saas-staging
     networks:
