@@ -1,0 +1,125 @@
+[
+  {
+    "time": 1853.144,
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+      "body": "",
+      "method": "GET",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "document",
+        "sec-fetch-mode": "navigate",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": null
+      }
+    },
+    "response": {
+      "body": "<!DOCTYPE html>\n<html dir=\"ltr\">\n<head>\n    <title>GVCW</title>\n\n    <meta charset=\"utf-8\"/>\n\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0\"/>\n\n    <!--<link rel=\"shortcut icon\" type=\"image/png\" href=\"/dist/images/favicon.png\"/>-->\n\n    <link href=\"//fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i\" async=\"async\" rel=\"stylesheet\"/>\n\n    <link rel=\"stylesheet\" type=\"text/css\" href=\"/dist/css/vendor.css\" media=\"all\"/>\n    <link rel=\"stylesheet\" type=\"text/css\" href=\"/dist/css/app.css\" media=\"all\"/>\n</head>\n\n<body>\n\n\n\n<div id=\"layout-container\"></div>\n\n<script type=\"text/javascript\" src=\"/dist/js/vendor.js\"></script>\n<script type=\"text/javascript\" src=\"/dist/js/app.js\"></script>\n\n<script type=\"text/javascript\" src=\"/_Incapsula_Resource?SWJIYLWA=719d34d31c8e3a6e6fffd425f7e032f3&ns=1&cb=1205007660\" async></script></body>\n</html>\n",
+      "status": 200,
+      "headers": {
+        "date": "Thu, 16 Jul 2026 12:28:14 GMT",
+        "vary": "accept-encoding",
+        "x-cdn": "Imperva",
+        "pragma": "no-cache",
+        "server": "Apache",
+        "expires": "0",
+        "x-iinfo": "51-120947314-120947598 NNNY CT(171 168 0) RT(1784204894086 947) q(0 0 0 0) r(2 2) U12",
+        "set-cookie": "org.springframework.web.servlet.i18n.CookieLocaleResolver.LOCALE=en-US; Path=/;HttpOnly;Secure, cookiesession1=678A3E0D51805E66BB0E3671B35E120C;Expires=Fri, 16 Jul 2027 12:28:15 GMT;Path=/;HttpOnly, visid_incap_3343172=W+XFLvcfRuG5TWRxwXLF0V7OWGoAAAAAQUIPAAAAAADydfZ4lm6eVp/lDAyTPxQx; expires=Thu, 15 Jul 2027 16:38:02 GMT; HttpOnly; path=/; Domain=.gvcworld.eu, incap_ses_867_3343172=r/r7HSGlrgYhojxo+DMIDF7OWGoAAAAAEMNE1s2AxO7NWKH8R9y8sQ==; path=/; Domain=.gvcworld.eu",
+        "content-type": "text/html;charset=UTF-8",
+        "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+        "x-frame-options": "DENY",
+        "content-encoding": "gzip",
+        "content-language": "en-US",
+        "x-xss-protection": "1; mode=block",
+        "x-content-type-options": "nosniff",
+        "strict-transport-security": "max-age=31536000 ; includeSubDomains"
+      }
+    },
+    "startedDateTime": "2026-07-16T12:28:13.667615Z"
+  },
+  {
+    "time": 3908.565,
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/api/v1/auth/login",
+      "body": "{\"username\": \"mnoon2404@gmail.com\", \"password\": \"Shani@1122\", \"g-recaptcha-response\": \"0cAFcWeA45kPL5Pn3nuFSTpe1aAmODAObaL43QqV5PvvRruOhlO8WaSyPk9roEv5wqrqED4-73hojkWZayJNTORjaAjUs5tlBe_fYx7JQu6m9f0QRRsMdYtSvPx7KH8wrnXNkNiFBIn1iAlBlKBy7ikSkW939_KphRYrXytsCBTl-zOBAzcicHkfLVwf7ggN23YfDiK9Ji2BF4RGixBRg27_8VUokIis1R_oTAar3_90TRtu_ETA2oxlFgvxIQBr081fOSSOpVbWB_mWZ_vQ07q2vmRGkoLDOGDktJzd6QRvbZl5YAtMkMSNr4pbvCaWcvd6np-XYTbxMlYi4ozalgZoLFepZzL422YoCng20HRbSZSx3d9YVREp72PAl2dyrXxrYy7I4oUfRxBFLix4UwwDrzdUWYZPTUMRhnpP01czNEAjsmhbYmdL8g3I-t8TL670v5oID1PMaHIDfWckIO9SN3gPHOssaomO3S8jf8SKC1R8EYQGrOJ5VX_CnXXfaxbfGvrQ9SPW5qJYYYfn2Y530DW1hzrGfLykYsx5rO3K26Uq0J5SaN7nlAp0JgjWsfX7MtGCKCdr4LNlfUj35xLQCYZlq49xm2MzHpFb39gE8lQ-j6aYcWbezqSZMyNo5RqTO0mvpBGdzWzOYt19X8Ao5MI7bdsWdqUBIv9kZ2_9TJPZ1khoxTbA_Wbb4B2U-UuHFL8m7MCPbDB1m3dmSWL2O7gjW-qS7V_wd01csBbkLnN3vhwugJxrI91YL8N2gZYKT-BKF9DXOjEY_CH803rhwulHGWidz8tVl00ouO_APlsygleU1-X1MzO5eJoXTf3fIjwuc1usoHuHuQ2e6HPM6b4-bHz7zAnqcGLh4r5Ojo-rcHjssN-1rgStl8u8mYp5SHOIO8kiUGolEsNJ7KEWeYKOrcXf7TvKuLRFRo6sVY_uIQxMLlKhjg7vLy3JoPOjzwlkyaWmSfPbXWYffdIhQ1etEGOd-nDE6-IYkJjhmXYdpvS_UWzvZJau10DbPjOIs0M6vsoXPlZjj7GgBiLZJcrcrNjn4GN3m_UpemlS3R6HyBM63E27otHJ5-7BnQ9upOLZp80xQ2cz-GmdYxzVvR6stE2qGcuyzvgeJty-bCZ3YhP8zMYvccrlJYMNVhc4htfLX5jLf-WUFGleCpN4GpY_xneeIX1cPAkxh6hvc6X8yl_Qq7F2Ohoj7CFPLa5jsvo_GW_dWwN3YREYQeRM1YC4KzZTeZFr4frq3xdz28Hb1-IPXNqQqYQk1sQc9KRz2Qzk02fRXndkTC254u5uMozKVaJ_6MEppal3xWl3I-coCSgnOs8hOCeRLmWRMnqjMXNU9y0aDykDav6OjWgMv2zyTBHO08lFIfqVBG1-Xvx_JVe53SlMXMiG6u0saiUUxPXVdV5BsXVFOoGekIvLTh5SKU6F6AWLziqmdP4ncdSrZWUUDQZkx-Omw3wtOIIUI3O2CYiuiupAJ4xS6ULukz4zG45_qNCqMnMlqU3vwCVDfpd1z32sCX2FHKCw-0sFERorcfZUGZ7FChuSqk9W1hBEKwdwId7YY2EdUchNfS60azWInnP0U7wqj15jUim1boGjGXqWkKiMDUdFNa1kf0zpbX1Pm_SsHMyggxq3XOkgs1uVQocc-2xKsSXUrwc2ndfdnf4_IQOlmBxYbbuL9b6jICaZqTy78iysQObXEH5b2UvY8-1eBtLOSLYU3VNVC7MOWW7t_0RdrR0VlPG7zzn8Gi5pKf6NhjMJqVBFaSDg3ZRybUwnMPbGXGoswndS_rPz9tz2svKlyZGasrBTLQJrSadACb17Wx_G9Od-s3WppKsrh0oVAL-67sU80JtvIh0erA6aOKNXrSR9XF9t-uvgrpwd0BggYOs7d_EeQc6wNkCZpIS0Y-2WaPF7i22e1lA5E59CPS4yeg8vlF4N18rDUR6NKRTJOPq1jucVHZ1_oX9b3qe3J_-ApdcNqf5OOliRl_08oMo8oTG6HWtkcdEumsDuLbdEVzPyV_zsS90Xv6x7KnOOdxcQxSg_b1rPuHWboECENRab9DRl4AnbTIBwCZqBT_zUxFJJr3LqYz-Hy_bytsiiPd8SBp9DXPUMTiDj8O6VDl1-EFP6Y3I3Cn4g5pySgkuSE9Fe3DMYghfl9hxATCbW6YXP3foJ876k1Eh6GJzxeFt6W-oLBiE1tgj0Zcm_cXSJAeExLmAEsBaYgvv-CXsRUgTYZlAbb_czJVv3cbxTezL5Y4P5i9HK6Ye_9MEYLQxZzr4kVjq6TbamJNwEyCcB4jaCqk0siWJ5mvatudCsI86KWrNCrl3LFDjkiRzuByMI2vfp5xt4tKC_O7MS9ajSA1DWqqf_JuABp7Dtsu9135b9R6UUkCXrvoCwOCW3l-3pLUWKaLNGV4F3oo93q1IZQxxGjYNximtp1_IrsNx3Nxc_xTmH7UJFDSKoEuX42j7yJ9ITpzjerQjPLWOvua9IqIhswPOheCRE_mtLBCo8U2\"}",
+      "method": "POST",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "response": {
+      "body": "",
+      "status": 200,
+      "headers": {
+        "date": "Thu, 16 Jul 2026 12:29:05 GMT",
+        "x-cdn": "Imperva",
+        "pragma": "no-cache",
+        "server": "Apache",
+        "expires": "0",
+        "x-iinfo": "51-120947314-120960816 NNNY CT(179 179 0) RT(1784204894086 48336) q(0 0 0 -1) r(33 33) U6",
+        "set-cookie": "auth_token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNVUhBTU1BRE5PT04iLCJyb2xlIjoiUk9MRV9BUFBMSUNBTlQiLCJpc3MiOiJndmN3LWFwcCIsImV4cCI6MTc4NjAwNDk0NSwiaWF0IjoxNzg0MjA0OTQ1LCJqdGkiOiJmNmI3Y2E2Mi00YzJjLTQ1OTUtYmJjMy05YjI5OGVhMjE0ZGUifQ.1z5qM8vnLj4sWyrpJlkmp0qiWadivDnwsE_Id38m_Oo; Max-Age=864000000; Expires=Mon, 01-Dec-2053 12:29:05 GMT; Path=/;HttpOnly;Secure",
+        "authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJNVUhBTU1BRE5PT04iLCJyb2xlIjoiUk9MRV9BUFBMSUNBTlQiLCJpc3MiOiJndmN3LWFwcCIsImV4cCI6MTc4NjAwNDk0NSwiaWF0IjoxNzg0MjA0OTQ1LCJqdGkiOiI5Yjk2MjM2NS1kYTUzLTQyM2MtYTFjYy1hYmEzY2JlMmIwOWMifQ.rmCsmhj39BzTwmm4h6bkrpe1lCNJM6y0x0slXbYgDC4",
+        "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+        "content-length": "0",
+        "x-frame-options": "DENY",
+        "x-xss-protection": "1; mode=block",
+        "x-content-type-options": "nosniff",
+        "strict-transport-security": "max-age=31536000 ; includeSubDomains"
+      }
+    },
+    "startedDateTime": "2026-07-16T12:29:02.106186Z"
+  },
+  {
+    "time": 764.102,
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots",
+      "body": "{\"datefrom\": \"04/09/2026\", \"type\": 26, \"bookingfor\": 0, \"members\": 1, \"method\": 1, \"travelpurposes\": -1, \"howmanyapplicantsareunder12\": 0, \"appointmentId\": \"undefined\", \"id\": 0, \"vac\": {\"id\": 138}}",
+      "method": "PUT",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "response": {
+      "body": "{\"message\":\"\",\"returnobject\":{\"slots\":[],\"paidAmount\":0.0,\"serviceFee\":null,\"vasFee\":null,\"currency\":null,\"paymenthours\":null,\"payment\":false,\"visapaidAmount\":null,\"visafee\":null,\"visacurrency\":null,\"visapaymenthours\":null,\"visapayment\":false,\"visafeeAmount\":null,\"commission\":null},\"code\":\"SUCCESS\"}",
+      "status": 200,
+      "headers": {
+        "date": "Thu, 16 Jul 2026 12:29:06 GMT",
+        "vary": "accept-encoding",
+        "x-cdn": "Imperva",
+        "pragma": "no-cache",
+        "server": "Apache",
+        "expires": "0",
+        "x-iinfo": "51-120947314-120960816 PNNy RT(1784204894086 52412) q(0 0 0 -1) r(3 3) U6",
+        "content-type": "application/json;charset=UTF-8",
+        "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+        "content-length": "201",
+        "x-frame-options": "DENY",
+        "content-encoding": "gzip",
+        "x-xss-protection": "1; mode=block",
+        "x-content-type-options": "nosniff",
+        "strict-transport-security": "max-age=31536000 ; includeSubDomains"
+      }
+    },
+    "startedDateTime": "2026-07-16T12:29:06.299786Z"
+  }
+]

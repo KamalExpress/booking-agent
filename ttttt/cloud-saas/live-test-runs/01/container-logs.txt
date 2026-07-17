@@ -1,0 +1,100 @@
+2026-07-16 12:29:38,999 - root - INFO - Form Data (Payload) sent: {'datefrom': '07/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-16 12:29:38,999 - INFO - Form Data (Payload) sent: {'datefrom': '07/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-16 12:29:40,284 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-16 12:29:40,284 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-16 12:29:41,785 - root - INFO - Checking slots for 08/09/2026...
+2026-07-16 12:29:41,785 - INFO - Checking slots for 08/09/2026...
+2026-07-16 12:29:41,786 - root - INFO - Searching for slots from 08/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-16 12:29:41,786 - INFO - Searching for slots from 08/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-16 12:29:41,786 - root - INFO - Form Data (Payload) sent: {'datefrom': '08/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-16 12:29:41,786 - INFO - Form Data (Payload) sent: {'datefrom': '08/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-16 12:29:44,322 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-16 12:29:44,322 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-16 12:29:45,823 - root - INFO - Checking slots for 09/09/2026...
+2026-07-16 12:29:45,823 - INFO - Checking slots for 09/09/2026...
+2026-07-16 12:29:45,824 - INFO - Searching for slots from 09/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-16 12:29:45,824 - root - INFO - Searching for slots from 09/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-16 12:29:45,824 - INFO - Form Data (Payload) sent: {'datefrom': '09/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-16 12:29:45,824 - root - INFO - Form Data (Payload) sent: {'datefrom': '09/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-16 12:29:53,141 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-16 12:29:53,141 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-16 12:29:54,642 - INFO - Checking slots for 10/09/2026...
+2026-07-16 12:29:54,642 - root - INFO - Checking slots for 10/09/2026...
+2026-07-16 12:29:54,643 - root - INFO - Searching for slots from 10/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-16 12:29:54,643 - INFO - Searching for slots from 10/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-16 12:29:54,643 - root - INFO - Form Data (Payload) sent: {'datefrom': '10/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-16 12:29:54,643 - INFO - Form Data (Payload) sent: {'datefrom': '10/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-16 12:29:55,649 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-16 12:29:55,649 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-16 12:29:57,150 - INFO - Checking slots for 11/09/2026...
+2026-07-16 12:29:57,150 - root - INFO - Checking slots for 11/09/2026...
+2026-07-16 12:29:57,151 - INFO - Searching for slots from 11/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-16 12:29:57,151 - root - INFO - Searching for slots from 11/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-16 12:29:57,151 - root - INFO - Form Data (Payload) sent: {'datefrom': '11/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-16 12:29:57,151 - INFO - Form Data (Payload) sent: {'datefrom': '11/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-16 12:29:57,785 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-16 12:29:57,785 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-16 12:29:59,285 - INFO - Checking slots for 12/09/2026...
+2026-07-16 12:29:59,285 - root - INFO - Checking slots for 12/09/2026...
+2026-07-16 12:29:59,286 - INFO - Searching for slots from 12/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-16 12:29:59,286 - root - INFO - Searching for slots from 12/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-16 12:29:59,287 - root - INFO - Form Data (Payload) sent: {'datefrom': '12/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-16 12:29:59,287 - INFO - Form Data (Payload) sent: {'datefrom': '12/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-16 12:30:02,039 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-16 12:30:02,039 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-16 12:30:03,539 - root - INFO - Checking slots for 13/09/2026...
+2026-07-16 12:30:03,540 - root - INFO - Searching for slots from 13/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-16 12:30:03,539 - INFO - Checking slots for 13/09/2026...
+2026-07-16 12:30:03,540 - INFO - Searching for slots from 13/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-16 12:30:03,540 - INFO - Form Data (Payload) sent: {'datefrom': '13/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-16 12:30:03,540 - root - INFO - Form Data (Payload) sent: {'datefrom': '13/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-16 12:30:16,091 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-16 12:30:16,091 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-16 12:30:17,593 - INFO - Checking slots for 14/09/2026...
+2026-07-16 12:30:17,593 - root - INFO - Checking slots for 14/09/2026...
+2026-07-16 12:30:17,593 - INFO - Searching for slots from 14/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-16 12:30:17,593 - root - INFO - Searching for slots from 14/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-16 12:30:17,594 - INFO - Form Data (Payload) sent: {'datefrom': '14/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-16 12:30:17,594 - root - INFO - Form Data (Payload) sent: {'datefrom': '14/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-16 12:30:35,070 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-16 12:30:35,070 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-16 12:30:36,570 - INFO - Checking slots for 15/09/2026...
+2026-07-16 12:30:36,570 - root - INFO - Checking slots for 15/09/2026...
+2026-07-16 12:30:36,571 - root - INFO - Searching for slots from 15/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-16 12:30:36,571 - INFO - Searching for slots from 15/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-16 12:30:36,572 - INFO - Form Data (Payload) sent: {'datefrom': '15/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-16 12:30:36,572 - root - INFO - Form Data (Payload) sent: {'datefrom': '15/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-16 12:30:37,458 - ERROR - Failed to search slots. Status Code: 429
+2026-07-16 12:30:37,458 - ERROR - Response: Rate Limit Exceeded
+2026-07-16 12:30:37,458 - root - ERROR - Failed to search slots. Status Code: 429
+2026-07-16 12:30:37,458 - root - ERROR - Response: Rate Limit Exceeded
+2026-07-16 12:30:38,959 - INFO - Checking slots for 16/09/2026...
+2026-07-16 12:30:38,959 - INFO - Searching for slots from 16/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-16 12:30:38,959 - INFO - Form Data (Payload) sent: {'datefrom': '16/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-16 12:30:38,959 - root - INFO - Checking slots for 16/09/2026...
+2026-07-16 12:30:38,959 - root - INFO - Searching for slots from 16/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-16 12:30:38,959 - root - INFO - Form Data (Payload) sent: {'datefrom': '16/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-16 12:30:39,841 - ERROR - Failed to search slots. Status Code: 429
+2026-07-16 12:30:39,841 - ERROR - Response: Rate Limit Exceeded
+2026-07-16 12:30:39,841 - root - ERROR - Failed to search slots. Status Code: 429
+2026-07-16 12:30:39,841 - root - ERROR - Response: Rate Limit Exceeded
+2026-07-16 12:30:41,342 - root - INFO - Checking slots for 17/09/2026...
+2026-07-16 12:30:41,343 - root - INFO - Searching for slots from 17/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-16 12:30:41,342 - INFO - Checking slots for 17/09/2026...
+2026-07-16 12:30:41,343 - INFO - Searching for slots from 17/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-16 12:30:41,343 - INFO - Form Data (Payload) sent: {'datefrom': '17/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-16 12:30:41,343 - root - INFO - Form Data (Payload) sent: {'datefrom': '17/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-16 12:30:42,637 - root - ERROR - Failed to search slots. Status Code: 429
+2026-07-16 12:30:42,638 - root - ERROR - Response: Rate Limit Exceeded
+2026-07-16 12:30:42,637 - ERROR - Failed to search slots. Status Code: 429
+2026-07-16 12:30:42,638 - ERROR - Response: Rate Limit Exceeded
+2026-07-16 12:30:44,139 - root - INFO - Checking slots for 18/09/2026...
+2026-07-16 12:30:44,139 - INFO - Checking slots for 18/09/2026...
+2026-07-16 12:30:44,140 - INFO - Searching for slots from 18/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-16 12:30:44,140 - root - INFO - Searching for slots from 18/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-16 12:30:44,140 - root - INFO - Form Data (Payload) sent: {'datefrom': '18/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-16 12:30:44,140 - INFO - Form Data (Payload) sent: {'datefrom': '18/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-16 12:30:45,132 - root - ERROR - Failed to search slots. Status Code: 429
+2026-07-16 12:30:45,132 - ERROR - Failed to search slots. Status Code: 429
+2026-07-16 12:30:45,132 - ERROR - Response: Rate Limit Exceeded
+2026-07-16 12:30:45,132 - root - ERROR - Response: Rate Limit Exceeded

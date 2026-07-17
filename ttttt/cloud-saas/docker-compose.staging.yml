@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  postgres_staging:
+    image: postgres:15
+    container_name: postgres_staging
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_staging_password
+      POSTGRES_DB: booking_saas_staging
+    volumes:
+      - postgres_staging_data:/var/lib/postgresql/data
+    networks:
+      - sam-agent-platform_staging
+
+  cloud-saas-staging:
+    image: cloud-saas:staging
+    build: .
+    container_name: cloud-saas-staging
+    restart: unless-stopped
+    ports:
+      - "9743:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres_staging_password@postgres_staging:5432/booking_saas_staging
+      - SECRET_KEY=staging_kamal_express_saas_secure_key_12345
+      # VAPID keys for Web Push Notifications
+      - VAPID_PRIVATE_KEY=private_key.pem
+      - VAPID_PUBLIC_KEY=BOJviVyqeMuXRl9-4a_iJrH67TKwCjV7N4YZs-tZ63ZBHOtqksgujIA_0yMiDaC_EAt-wUJ4YNJN4vZMoBMeuzs
+    volumes:
+      - ./private_key.pem:/app/private_key.pem
+    depends_on:
+      - postgres_staging
+    networks:
+      - sam-agent-platform_staging
+
+networks:
+  sam-agent-platform_staging:
+    driver: bridge
+
+volumes:
+  postgres_staging_data:

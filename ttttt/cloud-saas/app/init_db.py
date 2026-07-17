@@ -8,53 +8,6 @@ def init_db():
     print("Creating database tables...")
     Base.metadata.create_all(bind=engine)
     
-    # Ensure new columns exist on older tables
-    with engine.connect() as conn:
-        for stmt in [
-            "ALTER TABLE scraper_accounts ADD COLUMN status VARCHAR DEFAULT 'Idle'",
-            "ALTER TABLE scraper_accounts ADD COLUMN last_login TIMESTAMP",
-            "ALTER TABLE scraper_accounts ADD COLUMN preferred_worker_id VARCHAR",
-            "ALTER TABLE scraper_accounts ADD COLUMN proxy_string VARCHAR",
-            "ALTER TABLE assignments ADD COLUMN last_checked TIMESTAMP",
-            # Sprint 5 schema changes
-            "ALTER TABLE worker_nodes ADD COLUMN observed_ip VARCHAR",
-            "ALTER TABLE worker_nodes ADD COLUMN public_ip VARCHAR",
-            "ALTER TABLE worker_nodes ADD COLUMN local_ip VARCHAR",
-            "ALTER TABLE worker_nodes ADD COLUMN os VARCHAR",
-            "ALTER TABLE worker_nodes ADD COLUMN architecture VARCHAR",
-            "ALTER TABLE worker_nodes ADD COLUMN chrome_version VARCHAR",
-            "ALTER TABLE worker_nodes ADD COLUMN playwright_version VARCHAR",
-            "ALTER TABLE worker_nodes ADD COLUMN python_version VARCHAR",
-            "ALTER TABLE worker_nodes ADD COLUMN cpu_cores INTEGER",
-            "ALTER TABLE worker_nodes ADD COLUMN ram VARCHAR",
-            "ALTER TABLE worker_nodes ADD COLUMN max_concurrency INTEGER DEFAULT 1",
-            "ALTER TABLE worker_nodes ADD COLUMN current_concurrency INTEGER DEFAULT 0",
-            "ALTER TABLE worker_nodes ADD COLUMN scheduling_state VARCHAR DEFAULT 'Accepting Jobs'",
-            "ALTER TABLE scraper_accounts ADD COLUMN proxy_mode VARCHAR DEFAULT 'LEGACY'",
-            "ALTER TABLE assignments ADD COLUMN routing_policy_id INTEGER",
-            "ALTER TABLE leases ADD COLUMN last_heartbeat TIMESTAMP",
-            "ALTER TABLE leases ADD COLUMN status VARCHAR DEFAULT 'Pending'",
-            # Sprint 7 schema changes
-            "ALTER TABLE assignments ADD COLUMN required_labels JSONB DEFAULT '{}'::jsonb",
-            "ALTER TABLE assignments DROP COLUMN IF EXISTS routing_policy_id",
-            "ALTER TABLE users ADD COLUMN full_name VARCHAR",
-            # Device Metadata Sprint
-            "ALTER TABLE push_subscriptions ADD COLUMN ip_address VARCHAR",
-            "ALTER TABLE push_subscriptions ADD COLUMN location VARCHAR",
-            "ALTER TABLE push_subscriptions ADD COLUMN user_agent VARCHAR",
-            "ALTER TABLE push_subscriptions ADD COLUMN browser VARCHAR",
-            "ALTER TABLE push_subscriptions ADD COLUMN os_name VARCHAR",
-            "ALTER TABLE push_subscriptions ADD COLUMN device_name VARCHAR",
-            "ALTER TABLE slot_availability ADD COLUMN found_by VARCHAR"
-        ]:
-            try:
-                conn.execute(text(stmt))
-                conn.commit()
-            except Exception as e:
-                conn.rollback()
-                if "DuplicateColumn" not in str(e) and "already exists" not in str(e):
-                    print(f"Migration error for '{stmt}': {e}")
-
     # Pre-generate the SECRET_MASTER_KEY if missing
     from secrets_manager import secrets_manager
     

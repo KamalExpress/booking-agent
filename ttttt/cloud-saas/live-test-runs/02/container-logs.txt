@@ -1,0 +1,398 @@
+2026-07-17T08:40:34.272808060Z 2026-07-17 08:40:34,272 - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-17T08:40:34.272873910Z 2026-07-17 08:40:34,272 - root - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-17T08:40:34.957822412Z 2026-07-17 08:40:34,956 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-17T08:40:34.957853845Z 2026-07-17 08:40:34,956 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-17T08:40:34.958229438Z 2026-07-17 08:40:34,957 - root - INFO - Waiting 7.97s before next check...
+2026-07-17T08:40:34.958293380Z 2026-07-17 08:40:34,957 - INFO - Waiting 7.97s before next check...
+2026-07-17T08:40:42.925828102Z 2026-07-17 08:40:42,924 - root - INFO - Checking slots for 02/09/2026 at VAC 138 (Type 26)...
+2026-07-17T08:40:42.925969357Z 2026-07-17 08:40:42,924 - INFO - Checking slots for 02/09/2026 at VAC 138 (Type 26)...
+2026-07-17T08:40:42.926042898Z 2026-07-17 08:40:42,925 - root - INFO - Searching for slots from 02/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-17T08:40:42.926056674Z 2026-07-17 08:40:42,925 - INFO - Searching for slots from 02/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-17T08:40:42.926437759Z 2026-07-17 08:40:42,926 - INFO - Form Data (Payload) sent: {'datefrom': '02/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-17T08:40:42.926465382Z 2026-07-17 08:40:42,926 - root - INFO - Form Data (Payload) sent: {'datefrom': '02/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-17T08:40:44.327308241Z 2026-07-17 08:40:44,326 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-17T08:40:44.327431714Z 2026-07-17 08:40:44,326 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-17T08:40:44.327623446Z 2026-07-17 08:40:44,327 - INFO - Waiting 6.58s before next check...
+2026-07-17T08:40:44.327623457Z 2026-07-17 08:40:44,327 - root - INFO - Waiting 6.58s before next check...
+2026-07-17T08:40:50.907543904Z 2026-07-17 08:40:50,906 - root - INFO - Checking slots for 02/09/2026 at VAC 137 (Type 26)...
+2026-07-17T08:40:50.907587004Z 2026-07-17 08:40:50,906 - INFO - Checking slots for 02/09/2026 at VAC 137 (Type 26)...
+2026-07-17T08:40:50.907972206Z 2026-07-17 08:40:50,907 - root - INFO - Searching for slots from 02/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-17T08:40:50.907974770Z 2026-07-17 08:40:50,907 - INFO - Searching for slots from 02/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-17T08:40:50.908457273Z 2026-07-17 08:40:50,907 - root - INFO - Form Data (Payload) sent: {'datefrom': '02/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-17T08:40:50.908592851Z 2026-07-17 08:40:50,907 - INFO - Form Data (Payload) sent: {'datefrom': '02/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-17T08:40:51.599186820Z 2026-07-17 08:40:51,598 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-17T08:40:51.599235123Z 2026-07-17 08:40:51,598 - INFO - Waiting 6.70s before next check...
+2026-07-17T08:40:51.599244499Z 2026-07-17 08:40:51,598 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-17T08:40:51.599285290Z 2026-07-17 08:40:51,598 - root - INFO - Waiting 6.70s before next check...
+2026-07-17T08:40:58.298081060Z 2026-07-17 08:40:58,297 - INFO - Checking slots for 03/09/2026 at VAC 138 (Type 26)...
+2026-07-17T08:40:58.298252873Z 2026-07-17 08:40:58,297 - INFO - Searching for slots from 03/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-17T08:40:58.298075024Z 2026-07-17 08:40:58,297 - root - INFO - Checking slots for 03/09/2026 at VAC 138 (Type 26)...
+2026-07-17T08:40:58.298292453Z 2026-07-17 08:40:58,297 - root - INFO - Searching for slots from 03/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-17T08:40:58.298947137Z 2026-07-17 08:40:58,298 - INFO - Form Data (Payload) sent: {'datefrom': '03/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-17T08:40:58.299029534Z 2026-07-17 08:40:58,298 - root - INFO - Form Data (Payload) sent: {'datefrom': '03/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-17T08:40:58.994611792Z 2026-07-17 08:40:58,993 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-17T08:40:58.994622702Z 2026-07-17 08:40:58,993 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-17T08:40:58.995066452Z 2026-07-17 08:40:58,994 - INFO - Waiting 4.37s before next check...
+2026-07-17T08:40:58.995083602Z 2026-07-17 08:40:58,994 - root - INFO - Waiting 4.37s before next check...
+2026-07-17T08:41:03.364297381Z 2026-07-17 08:41:03,363 - INFO - Checking slots for 03/09/2026 at VAC 137 (Type 26)...
+2026-07-17T08:41:03.364313674Z 2026-07-17 08:41:03,363 - root - INFO - Checking slots for 03/09/2026 at VAC 137 (Type 26)...
+2026-07-17T08:41:03.364538200Z 2026-07-17 08:41:03,364 - INFO - Searching for slots from 03/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-17T08:41:03.364567881Z 2026-07-17 08:41:03,364 - root - INFO - Searching for slots from 03/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-17T08:41:03.364866168Z 2026-07-17 08:41:03,364 - root - INFO - Form Data (Payload) sent: {'datefrom': '03/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-17T08:41:03.364875157Z 2026-07-17 08:41:03,364 - INFO - Form Data (Payload) sent: {'datefrom': '03/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+
+17T08:41:03.988965915Z 2026-07-17 08:41:03,987 - root - ERROR - Worker Engine encountered error: Failed to perform, curl: (92) HTTP/2 stream 15 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-17T08:41:03.989041259Z Traceback (most recent call last):
+2026-07-17T08:41:03.989046235Z 2026-07-17 08:41:03,987 - ERROR - Worker Engine encountered error: Failed to perform, curl: (92) HTTP/2 stream 15 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-17T08:41:03.989069798Z Traceback (most recent call last):
+2026-07-17T08:41:03.989076283Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 732, in _request_once
+2026-07-17T08:41:03.989081948Z     c.perform()
+2026-07-17T08:41:03.989086698Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/curl.py", line 505, in perform
+2026-07-17T08:41:03.989091377Z     self._check_error(ret, "perform")
+2026-07-17T08:41:03.989051837Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 732, in _request_once
+2026-07-17T08:41:03.989117475Z     c.perform()
+2026-07-17T08:41:03.989131031Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/curl.py", line 505, in perform
+2026-07-17T08:41:03.989138319Z     self._check_error(ret, "perform")
+2026-07-17T08:41:03.989161995Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/curl.py", line 269, in _check_error
+2026-07-17T08:41:03.989168806Z     raise error
+2026-07-17T08:41:03.989181289Z curl_cffi.curl.CurlError: Failed to perform, curl: (92) HTTP/2 stream 15 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-17T08:41:03.989188543Z 
+2026-07-17T08:41:03.989194633Z The above exception was the direct cause of the following exception:
+2026-07-17T08:41:03.989200735Z 
+2026-07-17T08:41:03.989206522Z Traceback (most recent call last):
+2026-07-17T08:41:03.989212532Z   File "/app/slot_monitor.py", line 131, in run
+2026-07-17T08:41:03.989218945Z     slots_response = agent.search_slots(target_date, app_type, vac_id)
+2026-07-17T08:41:03.989096793Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/curl.py", line 269, in _check_error
+2026-07-17T08:41:03.989239263Z     raise error
+2026-07-17T08:41:03.989225383Z   File "/app/main_operator.py", line 239, in search_slots
+2026-07-17T08:41:03.989260009Z     response = self.session.put(url, json=payload)
+2026-07-17T08:41:03.989266341Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 848, in put
+2026-07-17T08:41:03.989271744Z     return self.request(method="PUT", url=url, **kwargs)
+2026-07-17T08:41:03.989276469Z   File "/app/main_operator.py", line 92, in intercepted_request
+2026-07-17T08:41:03.989282050Z     response = original_request(method, url, *args, **kwargs)
+2026-07-17T08:41:03.989286630Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 795, in request
+2026-07-17T08:41:03.989314161Z     return self._request_once(
+2026-07-17T08:41:03.989319489Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 739, in _request_once
+2026-07-17T08:41:03.989324774Z     raise error(str(e), e.code, rsp) from e
+2026-07-17T08:41:03.989335003Z curl_cffi.requests.exceptions.HTTPError: Failed to perform, curl: (92) HTTP/2 stream 15 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-17T08:41:03.989251751Z curl_cffi.curl.CurlError: Failed to perform, curl: (92) HTTP/2 stream 15 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-17T08:41:03.989394763Z 
+2026-07-17T08:41:03.989404465Z The above exception was the direct cause of the following exception:
+2026-07-17T08:41:03.989409385Z 
+2026-07-17T08:41:03.989413736Z Traceback (most recent call last):
+2026-07-17T08:41:03.989417889Z   File "/app/slot_monitor.py", line 131, in run
+2026-07-17T08:41:03.989422415Z     slots_response = agent.search_slots(target_date, app_type, vac_id)
+2026-07-17T08:41:03.989427378Z   File "/app/main_operator.py", line 239, in search_slots
+2026-07-17T08:41:03.989431732Z     response = self.session.put(url, json=payload)
+2026-07-17T08:41:03.989435963Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 848, in put
+2026-07-17T08:41:03.989440589Z     return self.request(method="PUT", url=url, **kwargs)
+2026-07-17T08:41:03.989444815Z   File "/app/main_operator.py", line 92, in intercepted_request
+2026-07-17T08:41:03.989449499Z     response = original_request(method, url, *args, **kwargs)
+2026-07-17T08:41:03.989453699Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 795, in request
+2026-07-17T08:41:03.989458096Z     return self._request_once(
+2026-07-17T08:41:03.989462551Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 739, in _request_once
+2026-07-17T08:41:03.989466896Z     raise error(str(e), e.code, rsp) from e
+2026-07-17T08:41:03.989471313Z curl_cffi.requests.exceptions.HTTPError: Failed to perform, curl: (92) HTTP/2 stream 15 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-17T08:41:04.033190602Z 2026-07-17 08:41:04,032 - root - INFO - Transmitted 8 network logs to SaaS.
+2026-07-17T08:41:04.033240346Z 2026-07-17 08:41:04,032 - INFO - Transmitted 8 network logs to SaaS.
+2026-07-17T08:41:05.074609922Z 2026-07-17 08:41:05,074 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-17T08:41:05.074683454Z 2026-07-17 08:41:05,074 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-17T08:41:35.107281306Z 2026-07-17 08:41:35,106 - INFO - Transmitted 8 network logs to SaaS.
+2026-07-17T08:41:35.107292698Z 2026-07-17 08:41:35,106 - root - INFO - Transmitted 8 network logs to SaaS.
+2026-07-17T08:41:36.150220529Z 2026-07-17 08:41:36,148 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-17T08:41:36.150325287Z 2026-07-17 08:41:36,148 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-17T08:42:06.177582172Z 2026-07-17 08:42:06,176 - INFO - Transmitted 8 network logs to SaaS.
+2026-07-17T08:42:06.177584802Z 2026-07-17 08:42:06,176 - root - INFO - Transmitted 8 network logs to SaaS.
+2026-07-17T08:42:07.211116519Z 2026-07-17 08:42:07,210 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-17T08:42:07.211116176Z 2026-07-17 08:42:07,210 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-17T08:42:37.238229464Z 2026-07-17 08:42:37,237 - root - INFO - Transmitted 8 network logs to SaaS.
+2026-07-17T08:42:37.238228844Z 2026-07-17 08:42:37,237 - INFO - Transmitted 8 network logs to SaaS.
+2026-07-17T08:42:38.272951683Z 2026-07-17 08:42:38,272 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-17T08:42:38.273027746Z 2026-07-17 08:42:38,272 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-17T08:43:08.314295237Z 2026-07-17 08:43:08,313 - root - INFO - Transmitted 8 network logs to SaaS.
+2026-07-17T08:43:08.314409355Z 2026-07-17 08:43:08,313 - INFO - Transmitted 8 network logs to SaaS.
+2026-07-17T08:43:09.387093643Z 2026-07-17 08:43:09,386 - INFO - Received Assignment #8 for center 138:26,137:26.
+2026-07-17T08:43:09.387101322Z 2026-07-17 08:43:09,386 - root - INFO - Received Assignment #8 for center 138:26,137:26.
+2026-07-17T08:43:09.387829388Z 2026-07-17 08:43:09,387 - root - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-17T08:43:09.387837657Z 2026-07-17 08:43:09,387 - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-17T08:43:09.389472261Z 2026-07-17 08:43:09,388 - INFO - Loaded previous session cookies from file.
+2026-07-17T08:43:09.389586558Z 2026-07-17 08:43:09,388 - root - INFO - Loaded previous session cookies from file.
+2026-07-17T08:43:09.389678608Z 2026-07-17 08:43:09,389 - root - INFO - Executing login flow for account mnoon2404@gmail.com...
+2026-07-17T08:43:09.389743898Z 2026-07-17 08:43:09,389 - INFO - Executing login flow for account mnoon2404@gmail.com...
+2026-07-17T08:43:09.389970243Z 2026-07-17 08:43:09,389 - root - INFO - Attempting login for mnoon2404@gmail.com...
+2026-07-17T08:43:09.389987766Z 2026-07-17 08:43:09,389 - INFO - Attempting login for mnoon2404@gmail.com...
+2026-07-17T08:43:09.390311555Z 2026-07-17 08:43:09,389 - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-07-17T08:43:09.390308984Z 2026-07-17 08:43:09,389 - root - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-07-17T08:43:12.531814687Z 2026-07-17 08:43:12,530 - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-17T08:43:12.531880715Z 2026-07-17 08:43:12,530 - root - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-17T08:43:12.771243787Z 2026-07-17 08:43:12,769 - INFO - CapSolver job submitted successfully. Task ID: 1e4534e3-f6c6-4459-b939-52254ef6d3d4
+2026-07-17T08:43:12.771256334Z 2026-07-17 08:43:12,769 - root - INFO - CapSolver job submitted successfully. Task ID: 1e4534e3-f6c6-4459-b939-52254ef6d3d4
+2026-07-17T08:43:12.771299296Z 2026-07-17 08:43:12,770 - root - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-17T08:43:12.771275155Z 2026-07-17 08:43:12,770 - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-17T08:43:33.039440223Z 2026-07-17 08:43:33,035 - root - INFO - CapSolver solved the CAPTCHA successfully!
+2026-07-17T08:43:33.039451704Z 2026-07-17 08:43:33,035 - INFO - CapSolver solved the CAPTCHA successfully!
+2026-07-17T08:43:35.274315339Z 2026-07-17 08:43:35,273 - root - INFO - Login successful!
+2026-07-17T08:43:35.274395221Z 2026-07-17 08:43:35,273 - INFO - Login successful!
+2026-07-17T08:43:35.275117591Z 2026-07-17 08:43:35,274 - INFO - Saved session cookies to file for future runs.
+2026-07-17T08:43:35.275147843Z 2026-07-17 08:43:35,274 - root - INFO - Saved session cookies to file for future runs.
+2026-07-17T08:43:35.307007913Z 2026-07-17 08:43:35,306 - root - INFO - Checking slots for 04/09/2026 at VAC 138 (Type 26)...
+2026-07-17T08:43:35.307046233Z 2026-07-17 08:43:35,306 - INFO - Checking slots for 04/09/2026 at VAC 138 (Type 26)...
+2026-07-17T08:43:35.307251852Z 2026-07-17 08:43:35,306 - INFO - Searching for slots from 04/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-17T08:43:35.307294051Z 2026-07-17 08:43:35,306 - root - INFO - Searching for slots from 04/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-17T08:43:35.307586514Z 2026-07-17 08:43:35,307 - INFO - Form Data (Payload) sent: {'datefrom': '04/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-17T08:43:35.307600845Z 2026-07-17 08:43:35,307 - root - INFO - Form Data (Payload) sent: {'datefrom': '04/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-17T08:43:35.983583119Z 2026-07-17 08:43:35,982 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-17T08:43:35.983653342Z 2026-07-17 08:43:35,983 - INFO - Waiting 5.62s before next check...
+2026-07-17T08:43:35.983669180Z 2026-07-17 08:43:35,982 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-17T08:43:35.983784737Z 2026-07-17 08:43:35,983 - root - INFO - Waiting 5.62s before next check...
+2026-07-17T08:43:41.609093863Z 2026-07-17 08:43:41,608 - INFO - Checking slots for 04/09/2026 at VAC 137 (Type 26)...
+2026-07-17T08:43:41.609209785Z 2026-07-17 08:43:41,608 - root - INFO - Checking slots for 04/09/2026 at VAC 137 (Type 26)...
+2026-07-17T08:43:41.609394279Z 2026-07-17 08:43:41,608 - INFO - Searching for slots from 04/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-17T08:43:41.609393167Z 2026-07-17 08:43:41,608 - root - INFO - Searching for slots from 04/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-17T08:43:41.609869783Z 2026-07-17 08:43:41,609 - INFO - Form Data (Payload) sent: {'datefrom': '04/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-17T08:43:41.609871984Z 2026-07-17 08:43:41,609 - root - INFO - Form Data (Payload) sent: {'datefrom': '04/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-17T08:43:42.610769664Z 2026-07-17 08:43:42,610 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-17T08:43:42.610786372Z 2026-07-17 08:43:42,610 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-17T08:43:42.611182052Z 2026-07-17 08:43:42,610 - root - INFO - Waiting 6.39s before next check...
+2026-07-17T08:43:42.611202321Z 2026-07-17 08:43:42,610 - INFO - Waiting 6.39s before next check...
+2026-07-17T08:43:49.003329932Z 2026-07-17 08:43:49,002 - INFO - Checking slots for 05/09/2026 at VAC 138 (Type 26)...
+2026-07-17T08:43:49.003477811Z 2026-07-17 08:43:49,002 - root - INFO - Checking slots for 05/09/2026 at VAC 138 (Type 26)...
+2026-07-17T08:43:49.003783600Z 2026-07-17 08:43:49,003 - INFO - Searching for slots from 05/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-17T08:43:49.003804937Z 2026-07-17 08:43:49,003 - root - INFO - Searching for slots from 05/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-17T08:43:49.004123204Z 2026-07-17 08:43:49,003 - root - INFO - Form Data (Payload) sent: {'datefrom': '05/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-17T08:43:49.004146845Z 2026-07-17 08:43:49,003 - INFO - Form Data (Payload) sent: {'datefrom': '05/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-17T08:43:49.573143644Z 2026-07-17 08:43:49,571 - ERROR - Worker Engine encountered error: Failed to perform, curl: (92) HTTP/2 stream 9 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-17T08:43:49.573195101Z Traceback (most recent call last):
+2026-07-17T08:43:49.573201596Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 732, in _request_once
+2026-07-17T08:43:49.573206595Z     c.perform()
+2026-07-17T08:43:49.573212068Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/curl.py", line 505, in perform
+2026-07-17T08:43:49.573216533Z     self._check_error(ret, "perform")
+2026-07-17T08:43:49.573220856Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/curl.py", line 269, in _check_error
+2026-07-17T08:43:49.573257316Z     raise error
+2026-07-17T08:43:49.573145734Z 2026-07-17 08:43:49,571 - root - ERROR - Worker Engine encountered error: Failed to perform, curl: (92) HTTP/2 stream 9 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-17T08:43:49.573285978Z Traceback (most recent call last):
+2026-07-17T08:43:49.573297519Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 732, in _request_once
+2026-07-17T08:43:49.573307275Z     c.perform()
+2026-07-17T08:43:49.573315751Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/curl.py", line 505, in perform
+2026-07-17T08:43:49.573324106Z     self._check_error(ret, "perform")
+2026-07-17T08:43:49.573262592Z curl_cffi.curl.CurlError: Failed to perform, curl: (92) HTTP/2 stream 9 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-17T08:43:49.573445604Z 
+2026-07-17T08:43:49.573478820Z The above exception was the direct cause of the following exception:
+2026-07-17T08:43:49.573332374Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/curl.py", line 269, in _check_error
+2026-07-17T08:43:49.573503978Z 
+2026-07-17T08:43:49.573536453Z Traceback (most recent call last):
+2026-07-17T08:43:49.573548406Z   File "/app/slot_monitor.py", line 131, in run
+2026-07-17T08:43:49.573515504Z     raise error
+2026-07-17T08:43:49.573571882Z curl_cffi.curl.CurlError: Failed to perform, curl: (92) HTTP/2 stream 9 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-17T08:43:49.573581585Z 
+2026-07-17T08:43:49.573588520Z The above exception was the direct cause of the following exception:
+2026-07-17T08:43:49.573626402Z 
+2026-07-17T08:43:49.573633617Z Traceback (most recent call last):
+2026-07-17T08:43:49.573640845Z   File "/app/slot_monitor.py", line 131, in run
+2026-07-17T08:43:49.573647859Z     slots_response = agent.search_slots(target_date, app_type, vac_id)
+2026-07-17T08:43:49.573654542Z   File "/app/main_operator.py", line 239, in search_slots
+2026-07-17T08:43:49.573660111Z     response = self.session.put(url, json=payload)
+2026-07-17T08:43:49.573667682Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 848, in put
+2026-07-17T08:43:49.573674302Z     return self.request(method="PUT", url=url, **kwargs)
+2026-07-17T08:43:49.573681523Z   File "/app/main_operator.py", line 92, in intercepted_request
+2026-07-17T08:43:49.573689226Z     response = original_request(method, url, *args, **kwargs)
+2026-07-17T08:43:49.573696969Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 795, in request
+2026-07-17T08:43:49.573710382Z     return self._request_once(
+2026-07-17T08:43:49.573560356Z     slots_response = agent.search_slots(target_date, app_type, vac_id)
+2026-07-17T08:43:49.573742543Z   File "/app/main_operator.py", line 239, in search_slots
+2026-07-17T08:43:49.573755592Z     response = self.session.put(url, json=payload)
+2026-07-17T08:43:49.573765148Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 848, in put
+2026-07-17T08:43:49.573775534Z     return self.request(method="PUT", url=url, **kwargs)
+2026-07-17T08:43:49.573785799Z   File "/app/main_operator.py", line 92, in intercepted_request
+2026-07-17T08:43:49.573799673Z     response = original_request(method, url, *args, **kwargs)
+2026-07-17T08:43:49.573819163Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 795, in request
+2026-07-17T08:43:49.573841836Z     return self._request_once(
+2026-07-17T08:43:49.573854721Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 739, in _request_once
+2026-07-17T08:43:49.573870942Z     raise error(str(e), e.code, rsp) from e
+2026-07-17T08:43:49.573887207Z curl_cffi.requests.exceptions.HTTPError: Failed to perform, curl: (92) HTTP/2 stream 9 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-17T08:43:49.573717414Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 739, in _request_once
+2026-07-17T08:43:49.573919532Z     raise error(str(e), e.code, rsp) from e
+2026-07-17T08:43:49.573935066Z curl_cffi.requests.exceptions.HTTPError: Failed to perform, curl: (92) HTTP/2 stream 9 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-17T08:43:49.626633605Z 2026-07-17 08:43:49,625 - root - INFO - Transmitted 5 network logs to SaaS.
+2026-07-17T08:43:49.626671782Z 2026-07-17 08:43:49,625 - INFO - Transmitted 5 network logs to SaaS.
+
+2026-07-17T08:48:34.451319065Z 2026-07-17 08:48:34,450 - root - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-17T08:48:34.452846383Z 2026-07-17 08:48:34,452 - root - INFO - Loaded previous session cookies from file.
+2026-07-17T08:48:34.452875396Z 2026-07-17 08:48:34,452 - root - INFO - Executing login flow for account ammarashrafsialkot@gmail.com...
+2026-07-17T08:48:34.452837883Z 2026-07-17 08:48:34,452 - INFO - Loaded previous session cookies from file.
+2026-07-17T08:48:34.452889849Z 2026-07-17 08:48:34,452 - INFO - Executing login flow for account ammarashrafsialkot@gmail.com...
+2026-07-17T08:48:34.452898526Z 2026-07-17 08:48:34,452 - INFO - Attempting login for ammarashrafsialkot@gmail.com...
+2026-07-17T08:48:34.452908497Z 2026-07-17 08:48:34,452 - root - INFO - Attempting login for ammarashrafsialkot@gmail.com...
+2026-07-17T08:48:34.453096433Z 2026-07-17 08:48:34,452 - root - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-07-17T08:48:34.453112148Z 2026-07-17 08:48:34,452 - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-07-17T08:48:38.611269345Z 2026-07-17 08:48:38,610 - root - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-17T08:48:38.611262692Z 2026-07-17 08:48:38,610 - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-17T08:48:38.888425640Z 2026-07-17 08:48:38,886 - INFO - CapSolver job submitted successfully. Task ID: acfa203b-3789-46bc-a82f-acfdd5f2acf4
+2026-07-17T08:48:38.888509446Z 2026-07-17 08:48:38,888 - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-17T08:48:38.888425623Z 2026-07-17 08:48:38,886 - root - INFO - CapSolver job submitted successfully. Task ID: acfa203b-3789-46bc-a82f-acfdd5f2acf4
+2026-07-17T08:48:38.888555453Z 2026-07-17 08:48:38,888 - root - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-17T08:48:42.115009992Z 2026-07-17 08:48:42,113 - INFO - CapSolver solved the CAPTCHA successfully!
+2026-07-17T08:48:42.115012535Z 2026-07-17 08:48:42,113 - root - INFO - CapSolver solved the CAPTCHA successfully!
+2026-07-17T08:48:45.496882737Z 2026-07-17 08:48:45,496 - INFO - Login successful!
+2026-07-17T08:48:45.496889006Z 2026-07-17 08:48:45,496 - root - INFO - Login successful!
+2026-07-17T08:48:45.497492676Z 2026-07-17 08:48:45,496 - INFO - Saved session cookies to file for future runs.
+2026-07-17T08:48:45.497494944Z 2026-07-17 08:48:45,496 - root - INFO - Saved session cookies to file for future runs.
+2026-07-17T08:48:45.530398546Z 2026-07-17 08:48:45,529 - INFO - Checking slots for 01/09/2026 at VAC 138 (Type 26)...
+2026-07-17T08:48:45.530393138Z 2026-07-17 08:48:45,529 - root - INFO - Checking slots for 01/09/2026 at VAC 138 (Type 26)...
+2026-07-17T08:48:45.530667287Z 2026-07-17 08:48:45,530 - root - INFO - Searching for slots from 01/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-17T08:48:45.530680164Z 2026-07-17 08:48:45,530 - INFO - Searching for slots from 01/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-17T08:48:45.531039789Z 2026-07-17 08:48:45,530 - root - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-17T08:48:45.531093332Z 2026-07-17 08:48:45,530 - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-17T08:48:46.213218723Z 2026-07-17 08:48:46,212 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-17T08:48:46.213316292Z 2026-07-17 08:48:46,212 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-17T08:48:46.213665758Z 2026-07-17 08:48:46,213 - root - INFO - Waiting 5.13s before next check...
+2026-07-17T08:48:46.213688992Z 2026-07-17 08:48:46,213 - INFO - Waiting 5.13s before next check...
+2026-07-17T08:48:51.347537712Z 2026-07-17 08:48:51,346 - root - INFO - Checking slots for 01/09/2026 at VAC 137 (Type 26)...
+2026-07-17T08:48:51.347620355Z 2026-07-17 08:48:51,346 - INFO - Checking slots for 01/09/2026 at VAC 137 (Type 26)...
+2026-07-17T08:48:51.347769451Z 2026-07-17 08:48:51,347 - root - INFO - Searching for slots from 01/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-17T08:48:51.347786628Z 2026-07-17 08:48:51,347 - INFO - Searching for slots from 01/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-17T08:48:51.348151566Z 2026-07-17 08:48:51,347 - root - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-17T08:48:51.348240227Z 2026-07-17 08:48:51,347 - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-17T08:48:52.103019111Z 2026-07-17 08:48:52,102 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-17T08:48:52.103016578Z 2026-07-17 08:48:52,102 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-17T08:48:52.103127751Z 2026-07-17 08:48:52,102 - INFO - Waiting 7.85s before next check...
+2026-07-17T08:48:52.103158803Z 2026-07-17 08:48:52,102 - root - INFO - Waiting 7.85s before next check...
+2026-07-17T08:48:59.955791066Z 2026-07-17 08:48:59,954 - INFO - Checking slots for 02/09/2026 at VAC 138 (Type 26)...
+2026-07-17T08:48:59.955794628Z 2026-07-17 08:48:59,954 - root - INFO - Checking slots for 02/09/2026 at VAC 138 (Type 26)...
+2026-07-17T08:48:59.955988584Z 2026-07-17 08:48:59,955 - root - INFO - Searching for slots from 02/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-17T08:48:59.956017846Z 2026-07-17 08:48:59,955 - INFO - Searching for slots from 02/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-17T08:48:59.956497818Z 2026-07-17 08:48:59,956 - root - INFO - Form Data (Payload) sent: {'datefrom': '02/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-17T08:48:59.956523919Z 2026-07-17 08:48:59,956 - INFO - Form Data (Payload) sent: {'datefrom': '02/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-17T08:49:02.229768751Z 2026-07-17 08:49:02,228 - root - ERROR - Worker Engine encountered error: Failed to perform, curl: (92) HTTP/2 stream 9 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-17T08:49:02.229838267Z Traceback (most recent call last):
+2026-07-17T08:49:02.229854968Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 732, in _request_once
+2026-07-17T08:49:02.229868786Z     c.perform()
+2026-07-17T08:49:02.229881402Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/curl.py", line 505, in perform
+2026-07-17T08:49:02.229894479Z     self._check_error(ret, "perform")
+2026-07-17T08:49:02.229907156Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/curl.py", line 269, in _check_error
+2026-07-17T08:49:02.229920011Z     raise error
+2026-07-17T08:49:02.229968244Z curl_cffi.curl.CurlError: Failed to perform, curl: (92) HTTP/2 stream 9 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-17T08:49:02.229979176Z 
+2026-07-17T08:49:02.229988341Z The above exception was the direct cause of the following exception:
+2026-07-17T08:49:02.229997778Z 
+2026-07-17T08:49:02.230006698Z Traceback (most recent call last):
+2026-07-17T08:49:02.230016733Z   File "/app/slot_monitor.py", line 131, in run
+2026-07-17T08:49:02.230027569Z     slots_response = agent.search_slots(target_date, app_type, vac_id)
+2026-07-17T08:49:02.230037357Z   File "/app/main_operator.py", line 239, in search_slots
+2026-07-17T08:49:02.230047269Z     response = self.session.put(url, json=payload)
+2026-07-17T08:49:02.230058825Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 848, in put
+2026-07-17T08:49:02.230073290Z     return self.request(method="PUT", url=url, **kwargs)
+2026-07-17T08:49:02.230085435Z   File "/app/main_operator.py", line 92, in intercepted_request
+2026-07-17T08:49:02.230096401Z     response = original_request(method, url, *args, **kwargs)
+2026-07-17T08:49:02.230109025Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 795, in request
+2026-07-17T08:49:02.230122920Z     return self._request_once(
+2026-07-17T08:49:02.230134850Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 739, in _request_once
+2026-07-17T08:49:02.230150555Z     raise error(str(e), e.code, rsp) from e
+2026-07-17T08:49:02.230174947Z curl_cffi.requests.exceptions.HTTPError: Failed to perform, curl: (92) HTTP/2 stream 9 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-17T08:49:02.229768755Z 2026-07-17 08:49:02,228 - ERROR - Worker Engine encountered error: Failed to perform, curl: (92) HTTP/2 stream 9 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-17T08:49:02.230216448Z Traceback (most recent call last):
+2026-07-17T08:49:02.230226890Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 732, in _request_once
+2026-07-17T08:49:02.230232375Z     c.perform()
+2026-07-17T08:49:02.230236811Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/curl.py", line 505, in perform
+2026-07-17T08:49:02.230241539Z     self._check_error(ret, "perform")
+2026-07-17T08:49:02.230246813Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/curl.py", line 269, in _check_error
+2026-07-17T08:49:02.230252458Z     raise error
+2026-07-17T08:49:02.230256974Z curl_cffi.curl.CurlError: Failed to perform, curl: (92) HTTP/2 stream 9 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-17T08:49:02.230261937Z 
+2026-07-17T08:49:02.230266059Z The above exception was the direct cause of the following exception:
+2026-07-17T08:49:02.230294041Z 
+2026-07-17T08:49:02.230298329Z Traceback (most recent call last):
+2026-07-17T08:49:02.230302473Z   File "/app/slot_monitor.py", line 131, in run
+2026-07-17T08:49:02.230306709Z     slots_response = agent.search_slots(target_date, app_type, vac_id)
+2026-07-17T08:49:02.230310994Z   File "/app/main_operator.py", line 239, in search_slots
+2026-07-17T08:49:02.230315498Z     response = self.session.put(url, json=payload)
+2026-07-17T08:49:02.230319908Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 848, in put
+2026-07-17T08:49:02.230324951Z     return self.request(method="PUT", url=url, **kwargs)
+2026-07-17T08:49:02.230329469Z   File "/app/main_operator.py", line 92, in intercepted_request
+2026-07-17T08:49:02.230333738Z     response = original_request(method, url, *args, **kwargs)
+2026-07-17T08:49:02.230377957Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 795, in request
+2026-07-17T08:49:02.230382740Z     return self._request_once(
+2026-07-17T08:49:02.230386948Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 739, in _request_once
+2026-07-17T08:49:02.230392129Z     raise error(str(e), e.code, rsp) from e
+2026-07-17T08:49:02.230396574Z curl_cffi.requests.exceptions.HTTPError: Failed to perform, curl: (92) HTTP/2 stream 9 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-17T08:49:02.271789117Z 2026-07-17 08:49:02,270 - INFO - Transmitted 5 network logs to SaaS.
+2026-07-17T08:49:02.271807955Z 2026-07-17 08:49:02,270 - root - INFO - Transmitted 5 network logs to SaaS.
+2026-07-17T08:49:03.319444276Z 2026-07-17 08:49:03,318 - INFO - No assignments available. Sleeping for 30 seconds.
+
+2026-07-17T08:55:49.784936618Z 2026-07-17 08:55:49,784 - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-17T08:55:50.655880796Z 2026-07-17 08:55:50,655 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-17T08:55:50.655918922Z 2026-07-17 08:55:50,655 - INFO - Waiting 5.76s before next check...
+2026-07-17T08:55:50.655955877Z 2026-07-17 08:55:50,655 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-17T08:55:50.655995094Z 2026-07-17 08:55:50,655 - root - INFO - Waiting 5.76s before next check...
+2026-07-17T08:55:56.419594995Z 2026-07-17 08:55:56,418 - root - INFO - Checking slots for 01/09/2026 at VAC 137 (Type 26)...
+2026-07-17T08:55:56.419605898Z 2026-07-17 08:55:56,418 - INFO - Checking slots for 01/09/2026 at VAC 137 (Type 26)...
+2026-07-17T08:55:56.419870391Z 2026-07-17 08:55:56,419 - INFO - Searching for slots from 01/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-17T08:55:56.419873932Z 2026-07-17 08:55:56,419 - root - INFO - Searching for slots from 01/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-17T08:55:56.420192695Z 2026-07-17 08:55:56,419 - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-17T08:55:56.420213306Z 2026-07-17 08:55:56,419 - root - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-17T08:55:57.242261323Z 2026-07-17 08:55:57,241 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-17T08:55:57.242261317Z 2026-07-17 08:55:57,241 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-17T08:55:57.242598453Z 2026-07-17 08:55:57,242 - INFO - Waiting 5.03s before next check...
+2026-07-17T08:55:57.242600333Z 2026-07-17 08:55:57,242 - root - INFO - Waiting 5.03s before next check...
+2026-07-17T08:56:02.278012619Z 2026-07-17 08:56:02,277 - root - INFO - Checking slots for 02/09/2026 at VAC 138 (Type 26)...
+2026-07-17T08:56:02.278063952Z 2026-07-17 08:56:02,277 - root - INFO - Searching for slots from 02/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-17T08:56:02.278079655Z 2026-07-17 08:56:02,277 - root - INFO - Form Data (Payload) sent: {'datefrom': '02/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-17T08:56:02.278012593Z 2026-07-17 08:56:02,277 - INFO - Checking slots for 02/09/2026 at VAC 138 (Type 26)...
+2026-07-17T08:56:02.278137627Z 2026-07-17 08:56:02,277 - INFO - Searching for slots from 02/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-17T08:56:02.278164635Z 2026-07-17 08:56:02,277 - INFO - Form Data (Payload) sent: {'datefrom': '02/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-17T08:56:02.820551460Z 2026-07-17 08:56:02,818 - ERROR - Worker Engine encountered error: Failed to perform, curl: (92) HTTP/2 stream 9 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-17T08:56:02.820612914Z Traceback (most recent call last):
+2026-07-17T08:56:02.820626819Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 732, in _request_once
+2026-07-17T08:56:02.820676902Z     c.perform()
+2026-07-17T08:56:02.820683279Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/curl.py", line 505, in perform
+2026-07-17T08:56:02.820687511Z     self._check_error(ret, "perform")
+2026-07-17T08:56:02.820691475Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/curl.py", line 269, in _check_error
+2026-07-17T08:56:02.820695600Z     raise error
+2026-07-17T08:56:02.820699695Z curl_cffi.curl.CurlError: Failed to perform, curl: (92) HTTP/2 stream 9 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-17T08:56:02.820704099Z 
+2026-07-17T08:56:02.820707733Z The above exception was the direct cause of the following exception:
+2026-07-17T08:56:02.820711612Z 
+2026-07-17T08:56:02.820715160Z Traceback (most recent call last):
+2026-07-17T08:56:02.820573313Z 2026-07-17 08:56:02,818 - root - ERROR - Worker Engine encountered error: Failed to perform, curl: (92) HTTP/2 stream 9 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-17T08:56:02.820760650Z Traceback (most recent call last):
+2026-07-17T08:56:02.820718967Z   File "/app/slot_monitor.py", line 131, in run
+2026-07-17T08:56:02.820797776Z     slots_response = agent.search_slots(target_date, app_type, vac_id)
+2026-07-17T08:56:02.820808271Z   File "/app/main_operator.py", line 239, in search_slots
+2026-07-17T08:56:02.820812746Z     response = self.session.put(url, json=payload)
+2026-07-17T08:56:02.820816401Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 848, in put
+2026-07-17T08:56:02.820820472Z     return self.request(method="PUT", url=url, **kwargs)
+2026-07-17T08:56:02.820824271Z   File "/app/main_operator.py", line 92, in intercepted_request
+2026-07-17T08:56:02.820827955Z     response = original_request(method, url, *args, **kwargs)
+2026-07-17T08:56:02.820831671Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 795, in request
+2026-07-17T08:56:02.820835343Z     return self._request_once(
+2026-07-17T08:56:02.820839231Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 739, in _request_once
+2026-07-17T08:56:02.820843582Z     raise error(str(e), e.code, rsp) from e
+2026-07-17T08:56:02.820847264Z curl_cffi.requests.exceptions.HTTPError: Failed to perform, curl: (92) HTTP/2 stream 9 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-17T08:56:02.820778822Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 732, in _request_once
+2026-07-17T08:56:02.820856272Z     c.perform()
+2026-07-17T08:56:02.820859928Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/curl.py", line 505, in perform
+2026-07-17T08:56:02.820881385Z     self._check_error(ret, "perform")
+2026-07-17T08:56:02.820885291Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/curl.py", line 269, in _check_error
+2026-07-17T08:56:02.820889116Z     raise error
+2026-07-17T08:56:02.820892969Z curl_cffi.curl.CurlError: Failed to perform, curl: (92) HTTP/2 stream 9 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-17T08:56:02.820896777Z 
+2026-07-17T08:56:02.820900154Z The above exception was the direct cause of the following exception:
+2026-07-17T08:56:02.820903605Z 
+2026-07-17T08:56:02.820907021Z Traceback (most recent call last):
+2026-07-17T08:56:02.820910500Z   File "/app/slot_monitor.py", line 131, in run
+2026-07-17T08:56:02.820914164Z     slots_response = agent.search_slots(target_date, app_type, vac_id)
+2026-07-17T08:56:02.820917654Z   File "/app/main_operator.py", line 239, in search_slots
+2026-07-17T08:56:02.820921359Z     response = self.session.put(url, json=payload)
+2026-07-17T08:56:02.820924832Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 848, in put
+2026-07-17T08:56:02.820928935Z     return self.request(method="PUT", url=url, **kwargs)
+2026-07-17T08:56:02.820932697Z   File "/app/main_operator.py", line 92, in intercepted_request
+2026-07-17T08:56:02.820936180Z     response = original_request(method, url, *args, **kwargs)
+2026-07-17T08:56:02.820939932Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 795, in request
+2026-07-17T08:56:02.820943634Z     return self._request_once(
+2026-07-17T08:56:02.820946974Z   File "/usr/local/lib/python3.10/dist-packages/curl_cffi/requests/session.py", line 739, in _request_once
+2026-07-17T08:56:02.820950534Z     raise error(str(e), e.code, rsp) from e
+2026-07-17T08:56:02.820954132Z curl_cffi.requests.exceptions.HTTPError: Failed to perform, curl: (92) HTTP/2 stream 9 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-17T08:56:02.873744205Z 2026-07-17 08:56:02,872 - root - INFO - Transmitted 5 network logs to SaaS.
+2026-07-17T08:56:02.873796080Z 2026-07-17 08:56:02,872 - INFO - Transmitted 5 network logs to SaaS.
+2026-07-17T08:56:03.937929502Z 2026-07-17 08:56:03,937 - root - INFO - Received Assignment #9 for center 138:26,137:26.
+2026-07-17T08:56:03.937928809Z 2026-07-17 08:56:03,937 - INFO - Received Assignment #9 for center 138:26,137:26.
