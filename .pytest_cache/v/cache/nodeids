@@ -1,0 +1,4 @@
+[
+  "portalmind/tests/test_pipeline.py::test_pipeline",
+  "portalmind/tests/test_pipeline.py::test_trace_pipeline"
+]

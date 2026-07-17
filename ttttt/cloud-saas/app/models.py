@@ -173,6 +173,17 @@ class Lease(Base):
     status = Column(String, default="Pending") # Pending, Leased, Running, Completed, Expired, Cancelled, Failed, Abandoned
     created_at = Column(DateTime, default=datetime.utcnow)
 
+class LeaseArchive(Base):
+    __tablename__ = "lease_archives"
+    id = Column(Integer, primary_key=True, index=True)
+    assignment_id = Column(Integer, ForeignKey("assignments.id"), nullable=False)
+    worker_id = Column(String, ForeignKey("worker_nodes.worker_id"), nullable=False)
+    expires_at = Column(DateTime, nullable=False)
+    last_heartbeat = Column(DateTime, nullable=True)
+    status = Column(String, nullable=False)
+    created_at = Column(DateTime, nullable=False)
+    archived_at = Column(DateTime, default=datetime.utcnow)
+
 class EventLog(Base):
     __tablename__ = "event_logs"
     id = Column(Integer, primary_key=True, index=True)
