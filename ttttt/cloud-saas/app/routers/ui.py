@@ -406,6 +406,34 @@ async def create_assignment(
         
     return RedirectResponse(url="/assignments", status_code=303)
 
+@router.post("/assignments/{assignment_id}/reset")
+async def reset_assignment(assignment_id: int, request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    try:
+        # Abort any active lease
+        active_lease = db.query(Lease).filter(
+            Lease.assignment_id == assignment_id, 
+            Lease.status == "Active"
+        ).first()
+        
+        if active_lease:
+            active_lease.status = "ABORTED"
+            
+        # Reset the assignment
+        assignment = db.query(Assignment).filter(Assignment.id == assignment_id).first()
+        if assignment:
+            assignment.status = "Active"
+            assignment.last_checked = None
+            db.commit()
+    except Exception as e:
+        print(f"Failed to reset assignment: {e}")
+        db.rollback()
+        
+    return RedirectResponse(url="/assignments", status_code=303)
+
 @router.post("/workers/{worker_id}/edit")
 async def edit_worker(worker_id: str, request: Request, labels: str = Form(""), max_concurrency: int = Form(1), db: Session = Depends(get_db)):
     user = get_ui_user(request, db)
