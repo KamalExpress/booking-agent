@@ -7,9 +7,12 @@ If you are an AI Agent entering a fresh conversation, you **must** read the foll
 
 1. `00-project-overview.md` (You are here: `README.md`)
 2. `permanent/architecture/01-system-architecture.md`
-3. `permanent/architecture/02-workflows.md`
-4. `permanent/standards/03-coding-standards.md`
-5. `transient/sprint/04-current-state.md`
+3. `permanent/architecture/02-database.md`
+4. `permanent/architecture/03-network-layer.md`
+5. `permanent/architecture/04-worker-management.md`
+6. `permanent/architecture/05-secrets-management.md`
+7. `permanent/standards/03-coding-standards.md`
+8. `transient/sprint/04-current-state.md`
 
 ---
 
