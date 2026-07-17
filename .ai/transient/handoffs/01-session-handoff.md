@@ -17,6 +17,7 @@ This session focused heavily on Epic 6 (System Resilience & Bug Fixes) specifica
 
 ## 2. Pending Work / Next Session Objectives
 - **Epic 5 (The Service Layer Refactoring):** The backend endpoints in `cloud-saas/app/routers/worker.py` and `assignment.py` are still monolithic. The architecture dictates moving logic into `WorkerService`, `LeaseService`, and `MaintenanceService`.
+- **Future Sprint (Robust Proxy Management):** Refactor how proxies are assigned. Move away from a single text field on `ScraperAccount` and introduce a centralized proxy pool in the database. Ensure that proxies are assigned uniquely to accounts so no single proxy is ever used by multiple accounts simultaneously.
 - **Knowledge System Validation:** Update high-level architecture docs if the new volume structure or MaintenanceService warrants it.
 - **Production Validation:** Ensure that the production stack can pull the latest `feature/staging` code and boot seamlessly.
 
