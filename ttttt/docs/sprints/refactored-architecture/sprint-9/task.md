@@ -1,0 +1,18 @@
+- `[x]` 1. **Database & Core Logging (`app/models.py` & `app/notifications.py`)**
+  - `[x]` Update `models.py` to add `detailed_push_logging` flag to `SystemSetting` initialization if needed.
+  - `[x]` Update `send_push_notification` to capture user scope, group by `tenant_id`, and log `PUSH_SENT` to `EventLog` with success counts.
+- `[x]` 2. **Push Notification Message Formatting (`app/routers/worker.py`)**
+  - `[x]` Update `report-slot` endpoint to intercept the slot JSON and format it gracefully (e.g. "1 Slot found on 21/07/2026 at 10:15 AM - Islamabad Visa Center for Type D Long Stay").
+- `[x]` 3. **Push Notification History Page**
+  - `[x]` Create `app/templates/notifications.html`.
+  - `[x]` Add `GET /notifications` route to `ui.py` (Super Admins see all, Tenant Admins see only their tenant).
+  - `[x]` Add sidebar links in `base.html`.
+- `[x]` 4. **Slot Details & History Pages**
+  - `[x]` Create `app/templates/slot_history.html` and `app/templates/slot_detail.html`.
+  - `[x]` Add `GET /slots` and `GET /slots/{id}` routes to `ui.py`.
+  - `[x]` Update Dashboard (`index.html`) to link to Details and Full History.
+  - `[x]` Add "Push Notifications Sent this Month" metric card to the Dashboard.
+- `[x]` 5. **Built-in DBMS via `sqladmin`**
+  - `[x]` Add `sqladmin` and `itsdangerous` to `requirements.txt`.
+  - `[x]` Create `app/admin.py` with `ModelView` classes and `AdminAuth`.
+  - `[x]` Mount `sqladmin.Admin` onto the FastAPI app in `main.py`.
