@@ -200,25 +200,34 @@ class OperatorAgent:
         }
         
         logging.debug(f"Login payload: {payload}")
-        try:
-            response = self.session.post(url, json=payload)
-            logging.debug(f"Login response status: {response.status_code}, text: {response.text}")
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Network error during login request: {e}")
-            return False
         
-        if response.status_code == 200:
-            logging.info("Login successful!")
-            self.save_session()
-            # Save auth token if returned in JSON (sometimes it's a cookie, sometimes an Authorization header)
-            # data = response.json()
-            # if 'token' in data:
-            #     self.session.headers.update({'Authorization': f"Bearer {data['token']}"})
-            return True
-        else:
-            logging.error(f"Login failed. Status Code: {response.status_code}")
-            logging.error(f"Response: {response.text}")
-            return False
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                response = self.session.post(url, json=payload, timeout=30)
+                logging.debug(f"Login response status: {response.status_code}, text: {response.text}")
+                
+                if response.status_code == 200:
+                    logging.info("Login successful!")
+                    self.save_session()
+                    return True
+                elif response.status_code in [502, 503, 504, 522]:
+                    logging.warning(f"Received {response.status_code} during login. Retrying... ({attempt+1}/{max_retries})")
+                    time.sleep(3)
+                    continue
+                else:
+                    logging.error(f"Login failed. Status Code: {response.status_code}")
+                    logging.error(f"Response: {response.text}")
+                    return False
+                    
+            except Exception as e:
+                logging.error(f"Network error during login request (Attempt {attempt+1}/{max_retries}): {e}")
+                if attempt < max_retries - 1:
+                    time.sleep(3)
+                    continue
+                return False
+                
+        return False
 
     def search_slots(self, date_from, app_type, vac_id):
         url = f"{self.base_url}/api/v1/periodslot/slots"
@@ -240,21 +249,33 @@ class OperatorAgent:
         logging.info(f"Form Data (Payload) sent: {payload}")
         
         logging.debug(f"Search slots payload: {payload}")
-        try:
-            response = self.session.put(url, json=payload)
-            logging.debug(f"Search slots response status: {response.status_code}, text: {response.text}")
-            
-            if response.status_code == 200:
-                slots = response.json()
-                logging.info(f"Slots retrieved successfully from {url}: {slots}")
-                return slots
-            else:
-                logging.error(f"Failed to search slots. Status Code: {response.status_code}")
-                logging.error(f"Response: {response.text}")
-                return {"error": True, "status_code": response.status_code, "text": response.text}
-        except Exception as e:
-            logging.error(f"Network or WAF Error during search_slots: {e}")
-            return {"error": True, "status_code": 0, "text": str(e)}
+        
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                response = self.session.put(url, json=payload, timeout=30)
+                logging.debug(f"Search slots response status: {response.status_code}, text: {response.text}")
+                
+                if response.status_code == 200:
+                    slots = response.json()
+                    logging.info(f"Slots retrieved successfully from {url}: {slots}")
+                    return slots
+                elif response.status_code in [502, 503, 504, 522]:
+                    logging.warning(f"Received {response.status_code} during search_slots. Retrying... ({attempt+1}/{max_retries})")
+                    time.sleep(3)
+                    continue
+                else:
+                    logging.error(f"Failed to search slots. Status Code: {response.status_code}")
+                    logging.error(f"Response: {response.text}")
+                    return {"error": True, "status_code": response.status_code, "text": response.text}
+            except Exception as e:
+                logging.error(f"Network or WAF Error during search_slots (Attempt {attempt+1}/{max_retries}): {e}")
+                if attempt < max_retries - 1:
+                    time.sleep(3)
+                    continue
+                return {"error": True, "status_code": 0, "text": str(e)}
+                
+        return {"error": True, "status_code": 0, "text": "Max retries exceeded"}
 
     def request_otp(self, phone_number):
         """
@@ -302,17 +323,33 @@ class OperatorAgent:
         logging.debug(f"Book appointment payload: {payload}")
         
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-        response = self.session.post(url, data=payload, headers=headers)
         
-        logging.debug(f"Book appointment response status: {response.status_code}, text: {response.text}")
-        
-        if response.status_code == 200:
-            logging.info("Booking confirmed!")
-            return True
-        else:
-            logging.error(f"Booking failed. Status Code: {response.status_code}")
-            logging.error(f"Response: {response.text}")
-            return False
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                response = self.session.post(url, data=payload, headers=headers, timeout=30)
+                logging.debug(f"Book appointment response status: {response.status_code}, text: {response.text}")
+                
+                if response.status_code == 200:
+                    logging.info("Booking confirmed!")
+                    return True
+                elif response.status_code in [502, 503, 504, 522]:
+                    logging.warning(f"Received {response.status_code} during booking. Retrying... ({attempt+1}/{max_retries})")
+                    time.sleep(3)
+                    continue
+                else:
+                    logging.error(f"Booking failed. Status Code: {response.status_code}")
+                    logging.error(f"Response: {response.text}")
+                    return False
+                    
+            except Exception as e:
+                logging.error(f"Network error during booking request (Attempt {attempt+1}/{max_retries}): {e}")
+                if attempt < max_retries - 1:
+                    time.sleep(3)
+                    continue
+                return False
+                
+        return False
 
 def main():
     strategy = os.getenv('CAPTCHA_STRATEGY', 'AUTO').upper()
