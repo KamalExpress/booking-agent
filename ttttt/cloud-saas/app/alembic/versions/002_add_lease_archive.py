@@ -19,8 +19,7 @@ depends_on = None
 
 def upgrade() -> None:
     conn = op.get_bind()
-    from sqlalchemy.engine.reflection import Inspector
-    inspector = Inspector.from_engine(conn)
+    inspector = sa.inspect(conn)
     
     if not inspector.has_table('lease_archives'):
         op.create_table(
@@ -42,8 +41,7 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     conn = op.get_bind()
-    from sqlalchemy.engine.reflection import Inspector
-    inspector = Inspector.from_engine(conn)
+    inspector = sa.inspect(conn)
     
     if inspector.has_table('lease_archives'):
         op.drop_index(op.f('ix_lease_archives_id'), table_name='lease_archives')
