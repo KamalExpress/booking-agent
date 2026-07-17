@@ -66,7 +66,12 @@ If you are an AI Agent entering a fresh conversation, you **must** read the foll
   * `dependency-map.md`: Mermaid graph of system components.
 * **`lessons/`**: Operational knowledge, debugging outcomes, and failed experiments.
 "@
-Set-Content -Path ".ai/README.md" -Value $readmeContent -Encoding UTF8
+if (-not (Test-Path ".ai/README.md")) {
+    Set-Content -Path ".ai/README.md" -Value $readmeContent -Encoding UTF8
+    Write-Host "Created .ai/README.md" -ForegroundColor Gray
+} else {
+    Write-Host ".ai/README.md already exists, skipping." -ForegroundColor Yellow
+}
 
 # 3. Create the Agent Rules (.agents/AGENTS.md)
 $agentsContent = @"
@@ -89,7 +94,13 @@ Instead, you must strictly follow this read order:
 - If you (the Developer agent) modify the architecture, database models, workflows, or APIs, you must either update the docs yourself, or delegate to the Knowledge Manager.
 - Never summarize source code in documentation. Document *intent, invariants, tradeoffs, and failure modes*.
 "@
-Set-Content -Path ".agents/AGENTS.md" -Value $agentsContent -Encoding UTF8
+
+if (-not (Test-Path ".agents/AGENTS.md")) {
+    Set-Content -Path ".agents/AGENTS.md" -Value $agentsContent -Encoding UTF8
+    Write-Host "Created .agents/AGENTS.md" -ForegroundColor Gray
+} else {
+    Write-Host ".agents/AGENTS.md already exists, skipping." -ForegroundColor Yellow
+}
 
 # 4. Create base templates
 $templates = @(
