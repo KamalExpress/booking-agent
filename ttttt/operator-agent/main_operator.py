@@ -236,17 +236,21 @@ class OperatorAgent:
         logging.info(f"Form Data (Payload) sent: {payload}")
         
         logging.debug(f"Search slots payload: {payload}")
-        response = self.session.put(url, json=payload)
-        logging.debug(f"Search slots response status: {response.status_code}, text: {response.text}")
-        
-        if response.status_code == 200:
-            slots = response.json()
-            logging.info(f"Slots retrieved successfully from {url}: {slots}")
-            return slots
-        else:
-            logging.error(f"Failed to search slots. Status Code: {response.status_code}")
-            logging.error(f"Response: {response.text}")
-            return {"error": True, "status_code": response.status_code, "text": response.text}
+        try:
+            response = self.session.put(url, json=payload)
+            logging.debug(f"Search slots response status: {response.status_code}, text: {response.text}")
+            
+            if response.status_code == 200:
+                slots = response.json()
+                logging.info(f"Slots retrieved successfully from {url}: {slots}")
+                return slots
+            else:
+                logging.error(f"Failed to search slots. Status Code: {response.status_code}")
+                logging.error(f"Response: {response.text}")
+                return {"error": True, "status_code": response.status_code, "text": response.text}
+        except Exception as e:
+            logging.error(f"Network or WAF Error during search_slots: {e}")
+            return {"error": True, "status_code": 0, "text": str(e)}
 
     def request_otp(self, phone_number):
         """
