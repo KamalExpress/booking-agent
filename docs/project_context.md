@@ -37,7 +37,10 @@ Kamal Express is a **distributed browser automation platform**, currently tailor
 
 - **Adding New Features to SaaS:** The frontend is built using server-side rendered HTML (`app/templates/`) and TailwindCSS (via generic classes in `.css` or utility classes). 
 - **Git Ignore Gotcha:** The directory `ttttt` was previously accidentally ignored by `*.env` typo in the root `.gitignore`. This has been fixed to `*.env`. Always ensure new files (like new `.html` templates) are tracked by git so Portainer pulls them.
-- **Docker Compose:** The production compose file is located at `vps-setup/docker-compose.prod.yml`. It uses a `build` context of `..` (the `cloud-saas` folder) to build the `cloud-saas:prod` image locally on the VPS.
+- **Docker Compose Topology:** The standard `docker-compose.yml` in the root is a barebones definition containing only the SaaS Control Plane. 
+  - **Production:** The true production stack is `vps-setup/docker-compose.prod.yml`. It spins up all three containers (`cloud-saas`, `db`, and `operator-worker`) on a single network for local execution.
+  - **Staging:** The staging stack is `docker-compose-staging.yml`. Like production, it spins up all three containers (`postgres_staging`, `cloud-saas-staging`, `operator-agent-staging`).
+  - **Worker Config:** The headless worker expects `SAAS_BASE_URL` to connect to the Control Plane. Do NOT use `BASE_URL` in the compose files for the worker, as `headless.py` specifically reads `SAAS_BASE_URL`.
 
 ## Next Development Priorities (Sprint Guidance)
 1. **Device Fingerprinting & Real IP extraction:** Update `ProxyHeadersMiddleware` in FastAPI to bypass Portainer/Docker reverse proxy IPs and log real user location via GeoIP.
