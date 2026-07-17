@@ -11,8 +11,9 @@ If you are an AI Agent entering a fresh conversation, you **must** read the foll
 4. `permanent/architecture/03-network-layer.md`
 5. `permanent/architecture/04-worker-management.md`
 6. `permanent/architecture/05-secrets-management.md`
-7. `permanent/standards/01-coding-standards.md`
-8. `transient/sprint/04-current-state.md`
+7. `permanent/workflows/` (Empty currently, roadmap placeholder)
+8. `permanent/standards/01-coding-standards.md`
+9. `transient/sprint/04-current-state.md`
 
 ---
 

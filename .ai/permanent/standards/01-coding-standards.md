@@ -7,7 +7,7 @@
 - **Database:** Use SQLAlchemy for ORM and Alembic for schema migrations. No raw SQL strings.
 
 ## 2. Headless Workers (Execution Plane)
-- **WAF Evasion:** **NEVER** use the standard `requests` or `httpx` libraries for external requests to Visa portals. Always use the `SessionManager` which wraps `curl_cffi` to spoof TLS fingerprints.
+- **WAF Evasion:** The default HTTP client for WAF-protected targets is `curl_cffi` (wrapped via `SessionManager`). Alternative clients (like `requests` or `httpx`) may be used only when their security, TLS fingerprint, and operational characteristics have been evaluated and documented in an ADR or Lesson.
 - **Statelessness:** Workers must never persist `capabilities` or `secrets` (like CapSolver keys) to disk. They must be loaded dynamically into memory via the `/runtime-config` endpoint.
 
 ## 3. UI / Frontend
