@@ -21,6 +21,8 @@ services:
     restart: unless-stopped
     ports:
       - "9743:8000"
+    env_file:
+      - .env
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - SECRET_KEY=${SECRET_KEY}
@@ -42,6 +44,8 @@ services:
       dockerfile: Dockerfile
     container_name: operator-agent-staging
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
       - SAAS_BASE_URL=http://cloud-saas-staging:8000
     depends_on:
