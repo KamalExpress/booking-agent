@@ -673,6 +673,7 @@ async def update_global_settings(
     notify_login_success: str = Form(None),
     notify_slots_found: str = Form(None),
     notify_no_slots_found: str = Form(None),
+    detailed_push_logging: str = Form(None),
     db: Session = Depends(get_db)
 ):
     user = get_ui_user(request, db)
@@ -691,6 +692,7 @@ async def update_global_settings(
         "notify.login_success": "true" if notify_login_success else "false",
         "notify.slots_found": "true" if notify_slots_found else "false",
         "notify.no_slots_found": "true" if notify_no_slots_found else "false",
+        "global.detailed_push_logging": "true" if detailed_push_logging else "false",
     }
     
     for key, value in settings_to_update.items():

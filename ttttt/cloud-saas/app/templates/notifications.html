@@ -67,7 +67,7 @@
                             <div class="flex items-center gap-2">
                                 <span class="text-green-500 font-medium">{{ log.payload.get('success_count', 0) }}</span>
                                 <span class="text-muted-foreground">/</span>
-                                <span class="text-destructive font-medium">{{ log.payload.get('failure_count', 0) }}</span>
+                                <span class="text-foreground font-medium">{{ log.payload.get('success_count', 0) + log.payload.get('failure_count', 0) }}</span>
                             </div>
                         {% else %}
                             {% if log.payload.get('status') == 'success' %}
