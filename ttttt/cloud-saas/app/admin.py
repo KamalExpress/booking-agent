@@ -17,14 +17,12 @@ class AdminAuth(AuthenticationBackend):
 
     async def authenticate(self, request: Request) -> bool:
         # Check standard JWT token logic from our app
-        token = request.cookies.get("session_token")
+        token = request.cookies.get("token")
         if not token:
             return False
             
-        import os
         from models import RoleEnum
-        SECRET_KEY = os.getenv("JWT_SECRET", "super-secret-key-change-in-prod")
-        ALGORITHM = "HS256"
+        from auth import SECRET_KEY, ALGORITHM
         
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
