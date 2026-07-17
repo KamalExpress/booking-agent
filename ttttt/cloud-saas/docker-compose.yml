@@ -17,9 +17,13 @@ services:
       - VAPID_PUBLIC_KEY=BOJviVyqeMuXRl9-4a_iJrH67TKwCjV7N4YZs-tZ63ZBHOtqksgujIA_0yMiDaC_EAt-wUJ4YNJN4vZMoBMeuzs
     volumes:
       - ./private_key.pem:/app/private_key.pem
+      - cloud_saas_data:/app/data
     networks:
       - sam-agent-platform_default
 
 networks:
   sam-agent-platform_default:
     external: true
+
+volumes:
+  cloud_saas_data:
