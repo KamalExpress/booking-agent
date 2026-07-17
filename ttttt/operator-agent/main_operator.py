@@ -183,10 +183,14 @@ class OperatorAgent:
         
         # Intelligent fallback to Manual mode if Auto mode fails
         if not captcha_token and self.captcha_service.__class__.__name__ in ['NopeChaService', 'CapSolverService']:
-            logging.warning(f"{self.captcha_service.__class__.__name__} failed! Falling back to Manual Browser Captcha...")
-            from captcha_service import ManualCaptchaService
-            manual_svc = ManualCaptchaService()
-            captcha_token = manual_svc.solve(self.sitekey, f"{self.base_url}/login", session=self.session)
+            import os
+            if os.getenv("HEADLESS_WORKER", "false").lower() == "true":
+                logging.error("Headless worker cannot fallback to Manual Browser Captcha. Aborting login.")
+            else:
+                logging.warning(f"{self.captcha_service.__class__.__name__} failed! Falling back to Manual Browser Captcha...")
+                from captcha_service import ManualCaptchaService
+                manual_svc = ManualCaptchaService()
+                captcha_token = manual_svc.solve(self.sitekey, f"{self.base_url}/login", session=self.session)
         
         url = f"{self.base_url}/api/v1/auth/login"
         payload = {

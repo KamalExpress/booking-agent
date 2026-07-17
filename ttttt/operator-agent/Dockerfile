@@ -20,6 +20,7 @@ COPY . .
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
+ENV HEADLESS_WORKER=true
 
 # Command to run the headless worker
 CMD ["python", "headless.py"]
