@@ -207,7 +207,7 @@
             <tbody class="divide-y divide-[#27272a] font-mono text-xs">
                 {% for log in logs %}
                 <tr class="hover:bg-[#18181b]/50 transition-colors">
-                    <td class="px-6 py-4 text-[#a1a1aa] whitespace-nowrap">{{ log.created_at.strftime('%H:%M:%S') }}</td>
+                    <td class="px-6 py-4 text-[#a1a1aa] whitespace-nowrap">{{ log.created_at.strftime('%Y-%m-%d %H:%M:%S UTC') }}</td>
                     <td class="px-6 py-4">
                         {% if log.severity == 'error' %}
                             <span class="text-red-500">ERROR</span>
