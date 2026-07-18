@@ -24,6 +24,10 @@ else:
 def send_push_notification(db: Session, title: str, body: str, user_ids: list = None):
     from pywebpush import webpush
     from models import SystemSetting, EventLog, User
+    from core.branding import get_env_branding
+    
+    env_branding = get_env_branding()
+    prefixed_title = f"{env_branding.notification_prefix}{title}"
     
     detailed_setting = db.query(SystemSetting).filter(SystemSetting.key == "global.detailed_push_logging").first()
     detailed_logging = detailed_setting.value.lower() == 'true' if (detailed_setting and detailed_setting.value) else False
@@ -54,7 +58,7 @@ def send_push_notification(db: Session, title: str, body: str, user_ids: list = 
                     "endpoint": sub.endpoint,
                     "keys": {"p256dh": sub.p256dh, "auth": sub.auth}
                 },
-                data=f'{{"title":"{title}","body":"{body}","url":"/"}}',
+                data=f'{{"title":"{prefixed_title}","body":"{body}","url":"/"}}',
                 vapid_private_key=VAPID_PRIVATE_KEY,
                 vapid_claims={"sub": "mailto:admin@samwebdevs.dpdns.org"}
             )

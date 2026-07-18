@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{{ branding.brand_name | default('Alamia Automation') }}{% endblock %}</title>
+    <title>{% block title %}{{ env_branding.title_prefix }}{{ branding.brand_name | default('Alamia Automation') }}{% endblock %}</title>
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#09090b">
+    <meta name="theme-color" content="{{ env_branding.theme_color }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@floating-ui/core@1.6.0"></script>
@@ -72,7 +72,7 @@
     </style>
     {% block head %}{% endblock %}
 </head>
-<body class="flex h-[100dvh] overflow-hidden antialiased bg-[#09090b] text-[#fafafa]">
+<body class="flex h-[100dvh] overflow-hidden antialiased bg-[#09090b] text-[#fafafa] {{ env_branding.border_class }}">
     
     <!-- Sidebar Overlay (mobile) -->
     <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
@@ -81,8 +81,13 @@
     <aside id="sidebar" class="fixed md:static inset-y-0 left-0 w-64 border-r border-[#27272a] bg-[#09090b] flex flex-col z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out">
         <div class="p-6 flex items-center justify-between">
             <div>
-                <h1 class="text-xl font-bold tracking-tight">{{ branding.brand_name | default('Alamia Automation') }}</h1>
-                <p class="text-sm text-[#a1a1aa] mt-1">{{ branding.brand_subtitle | default('Automating Business Solutions') }}</p>
+                <h1 class="text-xl font-bold tracking-tight">{{ env_branding.app_name }}</h1>
+                <p class="text-sm text-[#a1a1aa] mt-1">
+                    {{ branding.brand_subtitle | default('Automating Business Solutions') }}
+                    {% if env_branding.badge_text %}
+                    <span class="ml-2 inline-flex items-center rounded-md bg-amber-400/10 px-2 py-1 text-xs font-medium text-amber-500 ring-1 ring-inset ring-amber-400/20">{{ env_branding.badge_text }}</span>
+                    {% endif %}
+                </p>
             </div>
             <button id="closeSidebarBtn" class="md:hidden p-1 text-zinc-400 hover:text-white rounded-md">
                 <i data-lucide="x" class="w-5 h-5"></i>

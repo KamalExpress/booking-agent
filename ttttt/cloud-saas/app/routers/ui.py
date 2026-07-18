@@ -26,6 +26,8 @@ def get_db():
 
 router = APIRouter(tags=["UI"])
 
+from core.branding import get_env_branding
+
 # Build absolute path to templates directory to avoid Docker WORKDIR issues
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
@@ -43,6 +45,7 @@ def render_template(name: str, context: dict, db: Session):
     }
     
     context["branding"] = branding
+    context["env_branding"] = get_env_branding()
     from services.guidance import GUIDANCE_DICT
     context["guidance_dict"] = GUIDANCE_DICT
     return templates.TemplateResponse(request=context["request"], name=name, context=context)
@@ -834,15 +837,21 @@ async def diagnostics_page(request: Request, db: Session = Depends(get_db)):
 @router.get("/manifest.json")
 async def get_manifest(db: Session = Depends(get_db)):
     brand_name_setting = db.query(SystemSetting).filter(SystemSetting.key == "global.brand_name").first()
-    brand_name = brand_name_setting.value if brand_name_setting and brand_name_setting.value else "Alamia Automation"
+    db_brand_name = brand_name_setting.value if brand_name_setting and brand_name_setting.value else "Alamia Automation"
     
+    env_branding = get_env_branding()
+    # Override app name for manifest based on environment
+    app_name = env_branding.app_name if env_branding.is_staging else db_brand_name
+    short_name = env_branding.short_name if env_branding.is_staging else db_brand_name
+
     return {
-      "name": brand_name,
-      "short_name": brand_name,
+      "id": env_branding.manifest_id,
+      "name": app_name,
+      "short_name": short_name,
       "start_url": "/",
       "display": "standalone",
       "background_color": "#111827",
-      "theme_color": "#3B82F6",
+      "theme_color": env_branding.theme_color,
       "icons": [
         {
           "src": "/icon-192.png",
