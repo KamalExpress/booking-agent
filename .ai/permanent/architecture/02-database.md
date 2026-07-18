@@ -5,10 +5,12 @@ The central storage layer for the Cloud SaaS (Control Plane). It maintains the s
 
 ## Responsibilities
 - Track Tenant quotas and billing status.
+- Manage user granular preferences via JSONB (e.g. `muted_visa_centers`).
 - Store Assignments configured by users.
 - Track Worker Node heartbeats and IP addresses.
 - Issue Leases to workers (locking an Assignment to a specific worker for a set time).
 - Persist `EventLog` telemetry (Slot findings, Push notifications, Errors).
+- Store dynamically configurable SaaS properties via `SystemSetting` (e.g., PWA toggles).
 
 ## Public Interfaces
 - Interacted with strictly via SQLAlchemy ORM in the FastAPI app (`app/models.py`).
