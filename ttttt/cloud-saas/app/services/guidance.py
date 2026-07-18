@@ -182,6 +182,16 @@ GUIDANCE_DICT = {
         "auto_recovery": "No. Requires manual intervention.",
         "severity": "Error"
     },
+    "DISABLED": {
+        "title": "Disabled",
+        "summary": "This entity has been manually disabled.",
+        "why": "An administrator toggled it off to prevent the scheduler from using it.",
+        "how_to_fix": [
+            "Re-enable it from the dashboard if you want it to be leased again."
+        ],
+        "auto_recovery": "No.",
+        "severity": "Warning"
+    },
     "COOLDOWN": {
         "title": "Cooling Down",
         "summary": "This entity is temporarily resting.",
@@ -207,6 +217,33 @@ GUIDANCE_DICT = {
         "how_to_fix": [],
         "auto_recovery": "It will return to READY or COOLDOWN when the task finishes.",
         "severity": "Info"
+    },
+    "IDLE": {
+        "title": "Idle",
+        "summary": "This entity is idle and waiting for work.",
+        "why": "It is connected and healthy, but the scheduler hasn't assigned it a task yet.",
+        "how_to_fix": [],
+        "auto_recovery": "N/A",
+        "severity": "Success"
+    },
+    "WORKING": {
+        "title": "Working",
+        "summary": "This entity is currently executing a task.",
+        "why": "It received a lease from the scheduler and is actively processing it.",
+        "how_to_fix": [],
+        "auto_recovery": "It will return to IDLE when the task completes.",
+        "severity": "Info"
+    },
+    "OFFLINE": {
+        "title": "Offline",
+        "summary": "This entity is disconnected.",
+        "why": "It missed its heartbeat check (likely crashed or lost internet connection).",
+        "how_to_fix": [
+            "Check the node's process logs.",
+            "Restart the node."
+        ],
+        "auto_recovery": "It will automatically recover when it reconnects.",
+        "severity": "Error"
     }
 }
 

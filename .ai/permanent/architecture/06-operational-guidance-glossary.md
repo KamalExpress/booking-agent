@@ -45,6 +45,10 @@ This document serves as the master dictionary for all operational events, errors
 | Code | What Happened | Why did it happen? | How to fix it | Auto-Recovery |
 | --- | --- | --- | --- | --- |
 | `BLOCKED` | This entity is blocked and cannot be used. | It encountered a fatal error (like a permanent ban or invalid credentials) or was manually disabled. | Review the logs, update credentials, or manually unblock it. | No. Requires manual intervention. |
+| `DISABLED` | This entity has been manually disabled. | An administrator toggled it off to prevent the scheduler from using it. | Re-enable it from the dashboard if you want it to be leased again. | No. |
 | `COOLDOWN` | This entity is temporarily resting. | It was recently used or encountered a soft error (like a timeout or rate limit). | Wait for the cooldown period to expire. | Yes. It will become READY automatically. |
 | `READY` | This entity is ready to be used. | It is healthy and currently available for the scheduler. | N/A | N/A |
 | `LEASED` | This entity is currently in use. | The scheduler has assigned it to a worker node for a task. | N/A | It will return to READY or COOLDOWN when the task finishes. |
+| `IDLE` | This entity is idle and waiting for work. | It is connected and healthy, but the scheduler hasn't assigned it a task yet. | N/A | N/A |
+| `WORKING` | This entity is currently executing a task. | It received a lease from the scheduler and is actively processing it. | N/A | It will return to IDLE when the task completes. |
+| `OFFLINE` | This entity is disconnected. | It missed its heartbeat check (likely crashed or lost internet connection). | Check the node's process logs, restart the node. | It will automatically recover when it reconnects. |
