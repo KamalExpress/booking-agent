@@ -249,13 +249,14 @@ def submit_logs(
                 account.last_login = datetime.utcnow()
                 notify_login = db.query(SystemSetting).filter(SystemSetting.key == "notify.login_success").first()
                 if not notify_login or notify_login.value == "true":
-                    send_push_notification(db, "Login Successful", f"Worker successfully logged into {account.username} (Center {assignment.visa_center})")
+                    send_push_notification(db, "Login Successful", f"Worker successfully logged into {account.username} (Center {assignment.visa_center})", visa_center_id=assignment.visa_center)
                 
     elif req.event_type == "NO_SLOTS_FOUND":
         notify_no_slots = db.query(SystemSetting).filter(SystemSetting.key == "notify.no_slots_found").first()
+        vac_id = req.payload.get("visa_center") if req.payload else None
         if not notify_no_slots or notify_no_slots.value == "true":
             friendly_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
-            send_push_notification(db, "Slot Monitor", f"No Slots available; last checked: {friendly_time}")
+            send_push_notification(db, "Slot Monitor", f"No Slots available; last checked: {friendly_time}", visa_center_id=vac_id)
         
     elif req.event_type == "SLOT_FOUND":
         # Extract slot information
@@ -336,7 +337,7 @@ def submit_logs(
         
         notify_slots = db.query(SystemSetting).filter(SystemSetting.key == "notify.slots_found").first()
         if not notify_slots or notify_slots.value == "true":
-            send_push_notification(db, "Slots Found!", push_message)
+            send_push_notification(db, "Slots Found!", push_message, visa_center_id=vac_id)
         
         # Pause ALL active assignments to stop wasting captcha tokens
         active_assignments = db.query(Assignment).filter(Assignment.status.in_(["Active", "Leased"])).all()

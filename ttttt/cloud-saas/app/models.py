@@ -38,6 +38,7 @@ class User(Base):
     role = Column(Enum(RoleEnum), default=RoleEnum.STAFF, nullable=False)
     is_active = Column(Boolean, default=True)
     can_solve_captcha = Column(Boolean, default=False)
+    preferences = Column(JSONB, default=dict)
     created_at = Column(DateTime, default=datetime.utcnow)
     
     tenant = relationship("Tenant", back_populates="users")

@@ -119,6 +119,29 @@
                     </label>
                     <p class="text-xs text-zinc-500 mt-1 pl-6">Logs individual device delivery statuses instead of just the broadcast event.</p>
                 </div>
+
+                <div class="border-t border-zinc-800 pt-4 mt-4 space-y-3">
+                    <label class="block text-sm font-medium text-zinc-300 mb-2">Configure PWA (Tenant Dashboard)</label>
+                    <label class="flex items-center justify-between cursor-pointer">
+                        <span class="text-sm text-zinc-300">Show Health Indicator</span>
+                        <input type="checkbox" name="pwa_show_health_indicator" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if not settings.get('pwa.show_health_indicator') or settings.get('pwa.show_health_indicator').value == 'true' %}checked{% endif %}>
+                    </label>
+                    <div class="mb-2">
+                        <label class="block text-xs font-medium text-zinc-400 mb-1">Health Indicator Mode</label>
+                        <select name="pwa_health_indicator_mode" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
+                            <option value="percentage" {% if not settings.get('pwa.health_indicator_mode') or settings.get('pwa.health_indicator_mode').value == 'percentage' %}selected{% endif %}>Dynamic Percentage (e.g. 98%)</option>
+                            <option value="boolean" {% if settings.get('pwa.health_indicator_mode') and settings.get('pwa.health_indicator_mode').value == 'boolean' %}selected{% endif %}>Simple Boolean (e.g. System Healthy)</option>
+                        </select>
+                    </div>
+                    <label class="flex items-center justify-between cursor-pointer">
+                        <span class="text-sm text-zinc-300">Show Live Timeline</span>
+                        <input type="checkbox" name="pwa_show_live_timeline" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if not settings.get('pwa.show_live_timeline') or settings.get('pwa.show_live_timeline').value == 'true' %}checked{% endif %}>
+                    </label>
+                    <label class="flex items-center justify-between cursor-pointer">
+                        <span class="text-sm text-zinc-300">Show Notification Status Card</span>
+                        <input type="checkbox" name="pwa_show_notification_status" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if not settings.get('pwa.show_notification_status') or settings.get('pwa.show_notification_status').value == 'true' %}checked{% endif %}>
+                    </label>
+                </div>
                 
                 <div class="pt-4 mt-auto">
                     <button type="submit" class="w-full inline-flex justify-center items-center rounded-md text-sm font-medium h-9 px-4 py-2 bg-white text-black hover:bg-zinc-200 transition-colors shadow-sm">

@@ -21,7 +21,7 @@ else:
     VAPID_PRIVATE_KEY = os.path.join(os.path.dirname(os.path.dirname(__file__)), "private_key.pem")
 
 
-def send_push_notification(db: Session, title: str, body: str, user_ids: list = None):
+def send_push_notification(db: Session, title: str, body: str, user_ids: list = None, visa_center_id: str = None):
     from pywebpush import webpush
     from models import SystemSetting, EventLog, User
     from core.branding import get_env_branding
@@ -47,6 +47,11 @@ def send_push_notification(db: Session, title: str, body: str, user_ids: list = 
     failure_by_tenant = {}
     
     for sub, user in subs:
+        if visa_center_id and user.preferences:
+            muted_centers = user.preferences.get("muted_visa_centers", [])
+            if str(visa_center_id) in muted_centers:
+                continue
+                
         t_id = user.tenant_id
         if t_id not in success_by_tenant:
             success_by_tenant[t_id] = 0

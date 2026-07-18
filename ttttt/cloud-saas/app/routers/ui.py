@@ -133,15 +133,57 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
                 SlotAvailability.created_at >= yesterday
             ).order_by(SlotAvailability.created_at.desc()).limit(10).all()
             
+            user_prefs = user.preferences or {}
+            muted_centers = user_prefs.get("muted_visa_centers", [])
+            
             center_statuses.append({
                 "id": c_id,
                 "name": c_name,
                 "is_open": len(recent_slots) > 0,
                 "recent_slots": recent_slots,
-                "last_checked_time": global_last_checked_time
+                "last_checked_time": global_last_checked_time,
+                "is_muted": c_id in muted_centers
             })
     
-    recent_logs = db.query(EventLog).order_by(EventLog.created_at.desc()).limit(10).all()
+    recent_logs = db.query(EventLog).order_by(EventLog.created_at.desc()).limit(15).all()
+    
+    # Calculate System Health
+    health_score = 0
+    if active_workers > 0:
+        health_score += 60
+        if active_workers >= 3:
+            health_score += 15
+            
+    if global_last_checked_time:
+        delta_seconds = (now - global_last_checked_time).total_seconds()
+        if delta_seconds < 120:
+            health_score += 25
+        elif delta_seconds < 300:
+            health_score += 10
+            
+    # Cap at 100
+    health_score = min(100, health_score)
+    is_healthy = health_score > 70
+    
+    # Fetch PWA Config
+    pwa_settings = {
+        "show_health_indicator": True,
+        "health_indicator_mode": "percentage",
+        "show_live_timeline": True,
+        "show_notification_status": True
+    }
+    
+    # Override with db settings
+    pwa_db_settings = db.query(SystemSetting).filter(SystemSetting.key.like("pwa.%")).all()
+    for s in pwa_db_settings:
+        if s.key == "pwa.show_health_indicator":
+            pwa_settings["show_health_indicator"] = s.value == "true"
+        elif s.key == "pwa.health_indicator_mode":
+            pwa_settings["health_indicator_mode"] = s.value
+        elif s.key == "pwa.show_live_timeline":
+            pwa_settings["show_live_timeline"] = s.value == "true"
+        elif s.key == "pwa.show_notification_status":
+            pwa_settings["show_notification_status"] = s.value == "true"
     
     # Calculate monthly push count
     from sqlalchemy import extract
@@ -169,7 +211,11 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
         "slots_found": slots_found,
         "center_statuses": center_statuses,
         "recent_logs": recent_logs,
-        "monthly_push_count": monthly_push_count
+        "monthly_push_count": monthly_push_count,
+        "global_last_checked_time": global_last_checked_time,
+        "health_score": health_score,
+        "is_healthy": is_healthy,
+        "pwa_settings": pwa_settings
     }, db)
 
 @router.get("/workers", response_class=HTMLResponse)
@@ -828,6 +874,10 @@ async def update_global_settings(
     notify_no_slots_found: str = Form(None),
     detailed_push_logging: str = Form(None),
     ui_timezone: str = Form("Server Time"),
+    pwa_show_health_indicator: str = Form(None),
+    pwa_health_indicator_mode: str = Form("percentage"),
+    pwa_show_live_timeline: str = Form(None),
+    pwa_show_notification_status: str = Form(None),
     db: Session = Depends(get_db)
 ):
     user = get_ui_user(request, db)
@@ -848,6 +898,10 @@ async def update_global_settings(
         "notify.slots_found": "true" if notify_slots_found else "false",
         "notify.no_slots_found": "true" if notify_no_slots_found else "false",
         "global.detailed_push_logging": "true" if detailed_push_logging else "false",
+        "pwa.show_health_indicator": "true" if pwa_show_health_indicator else "false",
+        "pwa.health_indicator_mode": pwa_health_indicator_mode,
+        "pwa.show_live_timeline": "true" if pwa_show_live_timeline else "false",
+        "pwa.show_notification_status": "true" if pwa_show_notification_status else "false",
     }
     
     for key, value in settings_to_update.items():
@@ -1245,3 +1299,35 @@ async def delete_device(device_id: int, request: Request, db: Session = Depends(
         db.commit()
         
     return RedirectResponse(url="/directory", status_code=303)
+
+from pydantic import BaseModel
+
+class ToggleMuteRequest(BaseModel):
+    visa_center_id: str
+
+@router.post("/ui/preferences/toggle_mute")
+async def toggle_mute(req: ToggleMuteRequest, request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=401, detail="Unauthorized")
+        
+    preferences = user.preferences or {}
+    muted_centers = preferences.get("muted_visa_centers", [])
+    
+    if req.visa_center_id in muted_centers:
+        muted_centers.remove(req.visa_center_id)
+        is_muted = False
+    else:
+        muted_centers.append(req.visa_center_id)
+        is_muted = True
+        
+    preferences["muted_visa_centers"] = muted_centers
+    
+    from sqlalchemy.orm.attributes import flag_modified
+    user.preferences = preferences
+    flag_modified(user, "preferences")
+    
+    db.commit()
+    
+    return {"status": "success", "is_muted": is_muted}
