@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  cloud-saas:
+    image: cloud-saas:staging
+    build: 
+      context: ..
+      dockerfile: Dockerfile
+    container_name: cloud-saas-staging
+    restart: always
+    ports:
+      # Expose port 8744 for the Cloudflare Tunnel daemon to route to for Staging
+      - "127.0.0.1:8744:8000"
+    environment:
+      - DATABASE_URL
+      - SECRET_KEY
+      - VAPID_PUBLIC_KEY
+      - VAPID_PRIVATE_KEY
+      - SUPER_ADMIN_EMAIL
+      - SUPER_ADMIN_PASSWORD
+      - ENVIRONMENT=staging
+    depends_on:
+      - db
+    networks:
+      - saas-network-staging
+    volumes:
+      - saas_data_staging:/app/data
+
+  operator-worker:
+    image: operator-worker:staging
+    build: 
+      context: ../../operator-agent
+      dockerfile: Dockerfile
+    container_name: operator-worker-staging
+    restart: always
+    environment:
+      - SAAS_BASE_URL=http://cloud-saas-staging:8000
+    depends_on:
+      - cloud-saas
+    networks:
+      - saas-network-staging
+    volumes:
+      - operator_data_staging:/app/data
+
+  db:
+    image: postgres:15-alpine
+    container_name: cloud-saas-db-staging
+    restart: always
+    environment:
+      POSTGRES_USER: booking
+      POSTGRES_PASSWORD: vps_secure_db_pass_123
+      POSTGRES_DB: booking_saas_staging
+    volumes:
+      - postgres_data_staging:/var/lib/postgresql/data
+    networks:
+      - saas-network-staging
+
+volumes:
+  postgres_data_staging:
+  operator_data_staging:
+  saas_data_staging:
+
+networks:
+  saas-network-staging:
+    driver: bridge
