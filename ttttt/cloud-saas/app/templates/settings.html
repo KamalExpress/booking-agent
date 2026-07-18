@@ -77,6 +77,29 @@
                 </div>
 
                 <div class="border-t border-zinc-800 pt-4 mt-4 space-y-2">
+                    <label class="block text-sm font-medium text-zinc-300 mb-2">Display Preferences</label>
+                    <div class="mb-4">
+                        <label class="block text-xs font-medium text-zinc-400 mb-1">Timezone</label>
+                        <select name="ui_timezone" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
+                            <option value="Server Time" {% if not settings.get('ui.timezone') or settings.get('ui.timezone').value == 'Server Time' %}selected{% endif %}>Default (Server Time)</option>
+                            <option value="UTC" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'UTC' %}selected{% endif %}>UTC</option>
+                            <option value="Europe/London" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'Europe/London' %}selected{% endif %}>Europe/London (GMT/BST)</option>
+                            <option value="Europe/Berlin" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'Europe/Berlin' %}selected{% endif %}>Europe/Berlin (CET/CEST)</option>
+                            <option value="America/New_York" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'America/New_York' %}selected{% endif %}>America/New_York (EST/EDT)</option>
+                            <option value="America/Chicago" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'America/Chicago' %}selected{% endif %}>America/Chicago (CST/CDT)</option>
+                            <option value="America/Los_Angeles" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'America/Los_Angeles' %}selected{% endif %}>America/Los_Angeles (PST/PDT)</option>
+                            <option value="Asia/Dubai" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'Asia/Dubai' %}selected{% endif %}>Asia/Dubai (GST)</option>
+                            <option value="Asia/Karachi" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'Asia/Karachi' %}selected{% endif %}>Asia/Karachi (PKT)</option>
+                            <option value="Asia/Kolkata" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'Asia/Kolkata' %}selected{% endif %}>Asia/Kolkata (IST)</option>
+                            <option value="Asia/Singapore" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'Asia/Singapore' %}selected{% endif %}>Asia/Singapore (SGT)</option>
+                            <option value="Asia/Tokyo" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'Asia/Tokyo' %}selected{% endif %}>Asia/Tokyo (JST)</option>
+                            <option value="Australia/Sydney" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'Australia/Sydney' %}selected{% endif %}>Australia/Sydney (AEST/AEDT)</option>
+                        </select>
+                        <p class="text-xs text-zinc-500 mt-1">Converts all historical data and event timestamps to the chosen timezone.</p>
+                    </div>
+                </div>
+
+                <div class="border-t border-zinc-800 pt-4 mt-4 space-y-2">
                     <label class="block text-sm font-medium text-zinc-300 mb-2">Notification Preferences</label>
                     <label class="flex items-center gap-2 cursor-pointer">
                         <input type="checkbox" name="notify_login_success" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if not settings.get('notify.login_success') or settings.get('notify.login_success').value == 'true' %}checked{% endif %}>

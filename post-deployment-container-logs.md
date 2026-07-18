@@ -1,3 +1,22 @@
+INFO:     172.28.0.4:45986 - "POST /api/v1/worker/stream-logs HTTP/1.1" 200 OK
+INFO:     172.28.0.4:52072 - "POST /api/v1/worker/heartbeat HTTP/1.1" 200 OK
+INFO:     172.28.0.4:59914 - "GET /api/v1/worker/assignments/next HTTP/1.1" 204 No Content
+INFO:     172.28.0.4:59914 - "POST /api/v1/worker/stream-logs HTTP/1.1" 200 OK
+INFO:     172.28.0.4:52996 - "POST /api/v1/worker/heartbeat HTTP/1.1" 200 OK
+INFO:     172.28.0.4:50358 - "GET /api/v1/worker/assignments/next HTTP/1.1" 204 No Content
+INFO:     172.28.0.4:50358 - "POST /api/v1/worker/stream-logs HTTP/1.1" 200 OK
+INFO:     172.28.0.1:48124 - "GET /playbook HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/protocols/http/httptools_impl.py", line 422, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/fastapi/applications.py", line 1163, in __call__
+    await super().__call__(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/applications.py", line 90, in __call__
     await self.middleware_stack(scope, receive, send)
   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/errors.py", line 186, in __call__
     raise exc
@@ -50,51 +69,32 @@
   File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 345, in run_endpoint_function
     return await dependant.call(**values)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/app/routers/ui.py", line 337, in assignments_page
-    lease = db.query(Lease).filter(Lease.assignment_id == asm.id).order_by(Lease.id.desc()).first()
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/query.py", line 2766, in first
-    return self.limit(1)._iter().first()  # type: ignore
-           ^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/query.py", line 2864, in _iter
-    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
-                                                  ^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
-    return self._execute_internal(
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2271, in _execute_internal
-    result: Result[Any] = compile_state_cls.orm_execute_statement(
-                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
-    result = conn.execute(
-             ^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
-    return meth(
-           ^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
-    return connection._execute_clauseelement(
+  File "/app/app/routers/ui.py", line 64, in playbook_page
+    return render_template("playbook.html", {"request": request, "user": user, "active_page": "playbook"}, db)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/routers/ui.py", line 53, in render_template
+    return templates.TemplateResponse(request=context["request"], name=name, context=context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/starlette/templating.py", line 148, in TemplateResponse
+    template = self.get_template(name)
+               ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/starlette/templating.py", line 115, in get_template
+    return self.env.get_template(name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
-    ret = self._execute_context(
-          ^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
-    return self._exec_single_context(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
-    self._handle_dbapi_exception(
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
-    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
-    self.dialect.do_execute(
-  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
-    cursor.execute(statement, parameters)
-sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedColumn) column leases.issued_at does not exist
-LINE 1: ...id, leases.lease_version AS leases_lease_version, leases.iss...
-                                                             ^
-[SQL: SELECT leases.id AS leases_id, leases.worker_id AS leases_worker_id, leases.assignment_id AS leases_assignment_id, leases.booking_task_id AS leases_booking_task_id, leases.portal_account_id AS leases_portal_account_id, leases.proxy_id AS leases_proxy_id, leases.lease_version AS leases_lease_version, leases.issued_at AS leases_issued_at, leases.expires_at AS leases_expires_at, leases.last_heartbeat AS leases_last_heartbeat, leases.status AS leases_status, leases.created_at AS leases_created_at 
-
-FROM leases 
-WHERE leases.assignment_id = %(assignment_id_1)s ORDER BY leases.id DESC 
- LIMIT %(param_1)s]
-[parameters: {'assignment_id_1': 3, 'param_1': 1}]
-(Background on this error at: https://sqlalche.me/e/20/f405)
+  File "/usr/local/lib/python3.11/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/jinja2/loaders.py", line 138, in load
+    code = environment.compile(source, name, filename)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/jinja2/environment.py", line 771, in compile
+    self.handle_exception(source=source_hint)
+  File "/usr/local/lib/python3.11/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/app/app/templates/playbook.html", line 3, in template
+    {% block title %}Playbook - {{ branding.brand_name }}{% end %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.TemplateSyntaxError: Encountered unknown tag 'end'. Jinja was looking for the following tags: 'endblock'. The innermost block that needs to be closed is 'block'.

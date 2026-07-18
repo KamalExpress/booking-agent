@@ -23,7 +23,7 @@
         <tbody>
             {% for log in logs %}
             <tr class="border-b border-border hover:bg-muted/50 transition-colors">
-                <td class="p-4 text-muted-foreground whitespace-nowrap">{{ log.created_at.strftime('%H:%M:%S') }}</td>
+                <td class="p-4 text-muted-foreground whitespace-nowrap">{{ log.created_at | format_time(ui_timezone, '%H:%M:%S') }}</td>
                 <td class="p-4 font-mono text-xs text-muted-foreground">{{ log.worker_id[:8] if log.worker_id else '-' }}</td>
                 <td class="p-4 text-muted-foreground">#{{ log.assignment_id }}</td>
                 <td class="p-4">

@@ -3,6 +3,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
+import zoneinfo
 
 import os
 from models import WorkerNode, Assignment, Lease, EventLog, PortalAccount, Proxy, BookingTask, SchedulerDecision, SystemSetting, User, Tenant, PushSubscription, AuditLog, WorkerLog
@@ -32,6 +33,26 @@ from core.branding import get_env_branding
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
+def format_time_filter(dt, tz_name="Server Time", fmt='%Y-%m-%d %H:%M:%S'):
+    if not dt or not isinstance(dt, datetime):
+        return dt or "N/A"
+    
+    if not tz_name or tz_name == 'Server Time':
+        return dt.strftime(fmt)
+        
+    try:
+        # DB datetime is naive UTC based on utcnow defaults
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+            
+        target_tz = zoneinfo.ZoneInfo(tz_name)
+        local_dt = dt.astimezone(target_tz)
+        return local_dt.strftime(fmt)
+    except Exception:
+        return dt.strftime(fmt)
+
+templates.env.filters["format_time"] = format_time_filter
+
 def render_template(name: str, context: dict, db: Session):
     # Fetch branding settings
     brand_name = db.query(SystemSetting).filter(SystemSetting.key == "global.brand_name").first()
@@ -46,6 +67,10 @@ def render_template(name: str, context: dict, db: Session):
     
     context["branding"] = branding
     context["env_branding"] = get_env_branding()
+    
+    ui_tz = db.query(SystemSetting).filter(SystemSetting.key == "ui.timezone").first()
+    context["ui_timezone"] = ui_tz.value if ui_tz and ui_tz.value else "Server Time"
+    
     from services.guidance import GUIDANCE_DICT
     from services.ui_guidance import NAV_GUIDANCE_DICT
     context["guidance_dict"] = GUIDANCE_DICT
@@ -802,6 +827,7 @@ async def update_global_settings(
     notify_slots_found: str = Form(None),
     notify_no_slots_found: str = Form(None),
     detailed_push_logging: str = Form(None),
+    ui_timezone: str = Form("Server Time"),
     db: Session = Depends(get_db)
 ):
     user = get_ui_user(request, db)
@@ -813,6 +839,7 @@ async def update_global_settings(
         "global.default_date_to": default_date_to,
         "global.min_slot_delay": min_slot_delay,
         "global.max_slot_delay": max_slot_delay,
+        "ui.timezone": ui_timezone,
         "global.brand_name": brand_name,
         "global.brand_subtitle": brand_subtitle,
         "global.admin_notice": admin_notice,

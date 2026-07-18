@@ -26,8 +26,8 @@
                 {% for log in logs %}
                 <tr class="hover:bg-muted/30 transition-colors">
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="font-medium">{{ log.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
-                        <div class="text-xs text-muted-foreground">{{ log.created_at.strftime('%S') }}s</div>
+                        <div class="font-medium">{{ log.created_at | format_time(ui_timezone, '%Y-%m-%d %H:%M') }}</div>
+                        <div class="text-xs text-muted-foreground">{{ log.created_at | format_time(ui_timezone, '%S') }}s</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         {% if log.event_type == 'PUSH_SENT' %}

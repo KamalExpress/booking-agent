@@ -101,7 +101,7 @@
                     <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Last Checked</label>
                     <div class="text-sm font-medium text-zinc-100">
                         {% if assignment.last_checked %}
-                            {{ assignment.last_checked.strftime('%Y-%m-%d %H:%M:%S UTC') }}
+                            {{ assignment.last_checked | format_time(ui_timezone, '%Y-%m-%d %H:%M:%S') }}
                         {% else %}
                             Never
                         {% endif %}
@@ -109,7 +109,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Created At</label>
-                    <div class="text-sm font-medium text-zinc-100">{{ assignment.created_at.strftime('%Y-%m-%d %H:%M:%S UTC') }}</div>
+                    <div class="text-sm font-medium text-zinc-100">{{ assignment.created_at | format_time(ui_timezone, '%Y-%m-%d %H:%M:%S') }}</div>
                 </div>
             </form>
         </div>
@@ -137,7 +137,7 @@
                     <tbody class="divide-y divide-zinc-800">
                         {% for event in logs %}
                         <tr class="hover:bg-zinc-800/30 transition-colors group cursor-pointer" onclick="togglePayload('payload-{{ event.id }}')">
-                            <td class="px-5 py-3 text-zinc-400 whitespace-nowrap">{{ event.created_at.strftime('%m/%d %H:%M:%S') }}</td>
+                            <td class="px-5 py-3 text-zinc-400 whitespace-nowrap">{{ event.created_at | format_time(ui_timezone, '%m/%d %H:%M:%S') }}</td>
                             <td class="px-5 py-3">
                                 {% if event.severity == 'info' %}
                                     <span class="inline-flex items-center rounded-md bg-blue-500/10 px-2 py-1 text-xs font-medium text-blue-400 ring-1 ring-inset ring-blue-500/20">INFO</span>

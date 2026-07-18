@@ -51,7 +51,7 @@
                     {% endif %}
                 </td>
                 <td class="p-4 text-muted-foreground">
-                    {{ task.expires_at.strftime('%Y-%m-%d %H:%M:%S') if task.expires_at else '-' }}
+                    {{ task.expires_at | format_time(ui_timezone, '%Y-%m-%d %H:%M:%S') if task.expires_at else '-' }}
                 </td>
             </tr>
             {% else %}

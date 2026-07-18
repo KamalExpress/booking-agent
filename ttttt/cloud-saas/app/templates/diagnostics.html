@@ -139,7 +139,7 @@
                 {% for log in scheduler_decisions %}
                 <tr class="border-b border-border hover:bg-muted/50 transition-colors">
                     <td class="p-4 text-muted-foreground font-mono whitespace-nowrap">
-                        {{ log.created_at.strftime('%m-%d %H:%M:%S') if log.created_at else '-' }}
+                        {{ log.created_at | format_time(ui_timezone, '%m-%d %H:%M:%S') if log.created_at else '-' }}
                     </td>
                     <td class="p-4 text-foreground font-medium font-mono">
                         <a href="/workers/{{ log.worker_id }}" class="text-blue-500 hover:underline">{{ log.worker_id[:8] }}...</a>

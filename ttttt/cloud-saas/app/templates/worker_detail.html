@@ -123,7 +123,7 @@
                 <p class="text-xs text-[#a1a1aa] mb-1">Last Heartbeat</p>
                 <p class="font-medium text-sm">
                     {% if worker.last_heartbeat %}
-                        {{ worker.last_heartbeat.strftime('%Y-%m-%d %H:%M:%S UTC') }} 
+                        {{ worker.last_heartbeat | format_time(ui_timezone, '%Y-%m-%d %H:%M:%S') }} 
                         <span class="text-[#a1a1aa] ml-1">({{ worker.heartbeat_age | round | int }}s ago)</span>
                     {% else %}
                         Never
@@ -175,8 +175,8 @@
                     <td class="px-6 py-4">
                         <span class="px-2 py-1 text-xs bg-[#27272a] text-[#a1a1aa] rounded">{{ lease.status }}</span>
                     </td>
-                    <td class="px-6 py-4 font-mono text-xs">{{ lease.expires_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                    <td class="px-6 py-4 font-mono text-xs">{{ lease.last_heartbeat.strftime('%H:%M:%S') if lease.last_heartbeat else 'N/A' }}</td>
+                    <td class="px-6 py-4 font-mono text-xs">{{ lease.expires_at | format_time(ui_timezone, '%Y-%m-%d %H:%M:%S') }}</td>
+                    <td class="px-6 py-4 font-mono text-xs">{{ lease.last_heartbeat | format_time(ui_timezone, '%H:%M:%S') if lease.last_heartbeat else 'N/A' }}</td>
                 </tr>
                 {% else %}
                 <tr>
@@ -207,7 +207,7 @@
             <tbody class="divide-y divide-[#27272a] font-mono text-xs">
                 {% for log in logs %}
                 <tr class="hover:bg-[#18181b]/50 transition-colors">
-                    <td class="px-6 py-4 text-[#a1a1aa] whitespace-nowrap">{{ log.created_at.strftime('%Y-%m-%d %H:%M:%S UTC') }}</td>
+                    <td class="px-6 py-4 text-[#a1a1aa] whitespace-nowrap">{{ log.created_at | format_time(ui_timezone, '%Y-%m-%d %H:%M:%S') }}</td>
                     <td class="px-6 py-4">
                         {% if log.severity == 'error' %}
                             <span class="text-red-500">ERROR</span>
@@ -261,7 +261,7 @@
             <tbody class="divide-y divide-[#27272a] font-mono text-xs">
                 {% for log in network_logs %}
                 <tr class="hover:bg-[#18181b]/50 transition-colors">
-                    <td class="px-6 py-4 text-[#a1a1aa] whitespace-nowrap">{{ log.created_at.strftime('%Y-%m-%d %H:%M:%S UTC') }}</td>
+                    <td class="px-6 py-4 text-[#a1a1aa] whitespace-nowrap">{{ log.created_at | format_time(ui_timezone, '%Y-%m-%d %H:%M:%S') }}</td>
                     <td class="px-6 py-4 text-[#a1a1aa]">
                         {% if log.assignment_id %}<a href="/assignments/{{ log.assignment_id }}" class="hover:underline text-blue-400">#{{ log.assignment_id }}</a>{% else %}None{% endif %}
                     </td>

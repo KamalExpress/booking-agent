@@ -25,7 +25,7 @@
                 {% for slot in slots %}
                 <tr class="hover:bg-muted/30 transition-colors">
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="font-medium">{{ slot.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                        <div class="font-medium">{{ slot.created_at | format_time(ui_timezone, '%Y-%m-%d %H:%M') }}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <span class="font-medium text-primary">{{ slot.date }}</span>

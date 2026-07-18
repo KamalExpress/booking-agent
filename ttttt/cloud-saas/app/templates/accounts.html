@@ -83,7 +83,7 @@
                 <td class="p-4">
                     <operational-guidance code="{{ acc.status }}"></operational-guidance>
                 </td>
-                <td class="p-4 text-muted-foreground">{{ acc.created_at.strftime('%Y-%m-%d') if acc.created_at else '-' }}</td>
+                <td class="p-4 text-muted-foreground">{{ acc.created_at | format_time(ui_timezone, '%Y-%m-%d') if acc.created_at else '-' }}</td>
             </tr>
             {% else %}
             <tr>
