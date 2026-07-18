@@ -1,6 +1,6 @@
 import os
 from sqlalchemy.orm import Session
-from models import Base, engine, Tenant, User, RoleEnum, MonitorConfig, ScraperAccount, SystemSetting
+from models import Base, engine, Tenant, User, RoleEnum, MonitorConfig, PortalAccount, SystemSetting
 from auth import get_password_hash
 from sqlalchemy import text
 
@@ -84,15 +84,15 @@ def init_db():
 
         print("Database initialization complete.")
 
-        # 5. Create Default Scraper Accounts if not exists
-        if db.query(ScraperAccount).count() == 0:
+        # 5. Create Default Portal Accounts if not exists
+        if db.query(PortalAccount).count() == 0:
             accounts = [
-                ScraperAccount(username="mnoon2404@gmail.com", password="Shani@1122"),
-                ScraperAccount(username="ammarashrafsialkot@gmail.com", password="Shani@1122")
+                PortalAccount(username="mnoon2404@gmail.com", password="Shani@1122", supports_scraping=True, supports_booking=True, status="READY"),
+                PortalAccount(username="ammarashrafsialkot@gmail.com", password="Shani@1122", supports_scraping=True, supports_booking=True, status="READY")
             ]
             db.add_all(accounts)
             db.commit()
-            print("Created default Scraper Accounts.")
+            print("Created default Portal Accounts.")
 
 if __name__ == "__main__":
     init_db()
