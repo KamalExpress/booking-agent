@@ -12,7 +12,7 @@ import uuid
 import json
 from notifications import send_push_notification
 
-from models import WorkerNode, Assignment, Lease, EventLog, ScraperAccount, SystemSetting, WorkerVersion, WorkerLog
+from models import WorkerNode, Assignment, Lease, EventLog, PortalAccount, SystemSetting, WorkerVersion, WorkerLog
 from secrets_manager import secrets_manager
 from models import SessionLocal
 
@@ -244,7 +244,7 @@ def submit_logs(
     if req.event_type == "LOGIN_SUCCESS" and req.assignment_id:
         assignment = db.query(Assignment).filter(Assignment.id == req.assignment_id).first()
         if assignment:
-            account = db.query(ScraperAccount).filter(ScraperAccount.id == assignment.scraper_account_id).first()
+            account = db.query(PortalAccount).filter(PortalAccount.id == assignment.scraper_account_id).first()
             if account:
                 account.last_login = datetime.utcnow()
                 notify_login = db.query(SystemSetting).filter(SystemSetting.key == "notify.login_success").first()

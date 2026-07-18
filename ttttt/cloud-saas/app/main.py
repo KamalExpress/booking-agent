@@ -11,7 +11,7 @@ import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from models import SessionLocal, engine, Base, User, Tenant, RoleEnum, AuditLog, MonitorConfig, PushSubscription, ScraperAccount
+from models import SessionLocal, engine, Base, User, Tenant, RoleEnum, AuditLog, MonitorConfig, PushSubscription, PortalAccount
 from auth import get_current_user, require_super_admin, require_tenant_admin, create_access_token, verify_password, get_password_hash
 # VAPID setup moved to notifications.py
 
@@ -135,17 +135,17 @@ class UserResponse(BaseModel):
     tenant_id: int
     can_solve_captcha: bool
 
-class ScraperAccountCreate(BaseModel):
+class PortalAccountCreate(BaseModel):
     username: str
     password: str
     is_active: bool = True
 
-class ScraperAccountUpdate(BaseModel):
+class PortalAccountUpdate(BaseModel):
     username: Optional[str] = None
     password: Optional[str] = None
     is_active: Optional[bool] = None
 
-class ScraperAccountResponse(BaseModel):
+class PortalAccountResponse(BaseModel):
     id: int
     username: str
     is_active: bool
@@ -368,39 +368,37 @@ def update_config(req: ConfigUpdate, current_user: User = Depends(require_super_
     log_audit(db, current_user, f"Updated monitor config")
     return {"status": "success"}
 
-# --- Scraper Accounts (Super Admin) ---
-@app.get("/api/scraper-accounts", response_model=List[ScraperAccountResponse])
+# --- Portal Accounts (Super Admin) ---
+@app.get("/api/scraper-accounts", response_model=List[PortalAccountResponse])
 def get_scraper_accounts(current_user: User = Depends(require_super_admin), db: Session = Depends(get_db)):
-    accounts = db.query(ScraperAccount).all()
-    return [{"id": a.id, "username": a.username, "is_active": a.is_active} for a in accounts]
+    accounts = db.query(PortalAccount).all()
+    return [{"id": a.id, "username": a.username, "is_active": True} for a in accounts]
 
 @app.post("/api/scraper-accounts")
-def create_scraper_account(req: ScraperAccountCreate, current_user: User = Depends(require_super_admin), db: Session = Depends(get_db)):
-    existing = db.query(ScraperAccount).filter(ScraperAccount.username == req.username).first()
+def create_scraper_account(req: PortalAccountCreate, current_user: User = Depends(require_super_admin), db: Session = Depends(get_db)):
+    existing = db.query(PortalAccount).filter(PortalAccount.username == req.username).first()
     if existing:
         raise HTTPException(status_code=400, detail="Account username already exists")
-    new_account = ScraperAccount(username=req.username, password=req.password, is_active=req.is_active)
+    new_account = PortalAccount(username=req.username, password=req.password, status="READY")
     db.add(new_account)
     db.commit()
     return {"status": "success"}
 
 @app.put("/api/scraper-accounts/{account_id}")
-def update_scraper_account(account_id: int, req: ScraperAccountUpdate, current_user: User = Depends(require_super_admin), db: Session = Depends(get_db)):
-    account = db.query(ScraperAccount).filter(ScraperAccount.id == account_id).first()
+def update_scraper_account(account_id: int, req: PortalAccountUpdate, current_user: User = Depends(require_super_admin), db: Session = Depends(get_db)):
+    account = db.query(PortalAccount).filter(PortalAccount.id == account_id).first()
     if not account:
         raise HTTPException(status_code=404, detail="Account not found")
     if req.username is not None:
         account.username = req.username
     if req.password is not None:
         account.password = req.password
-    if req.is_active is not None:
-        account.is_active = req.is_active
     db.commit()
     return {"status": "success"}
 
 @app.delete("/api/scraper-accounts/{account_id}")
 def delete_scraper_account(account_id: int, current_user: User = Depends(require_super_admin), db: Session = Depends(get_db)):
-    account = db.query(ScraperAccount).filter(ScraperAccount.id == account_id).first()
+    account = db.query(PortalAccount).filter(PortalAccount.id == account_id).first()
     if not account:
         raise HTTPException(status_code=404, detail="Account not found")
     db.delete(account)

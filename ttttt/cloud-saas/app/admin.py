@@ -3,7 +3,7 @@ from sqladmin.authentication import AuthenticationBackend
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
 import jwt
-from models import User, Tenant, Assignment, WorkerNode, EventLog, Lease, ScraperAccount, SlotAvailability, WorkerLog, SystemSetting, WorkerVersion, PushSubscription, AuditLog, SessionLocal
+from models import User, Tenant, Assignment, WorkerNode, EventLog, Lease, PortalAccount, SlotAvailability, WorkerLog, SystemSetting, WorkerVersion, PushSubscription, AuditLog, SessionLocal
 
 # Custom Auth Backend for sqladmin
 class AdminAuth(AuthenticationBackend):
@@ -57,9 +57,9 @@ class TenantAdmin(ModelView, model=Tenant):
     column_list = [Tenant.id, Tenant.name, Tenant.is_active, Tenant.created_at]
     column_searchable_list = [Tenant.name]
 
-class ScraperAccountAdmin(ModelView, model=ScraperAccount):
-    column_list = [ScraperAccount.id, ScraperAccount.username, ScraperAccount.status, ScraperAccount.proxy_mode, ScraperAccount.preferred_worker_id]
-    column_searchable_list = [ScraperAccount.username]
+class PortalAccountAdmin(ModelView, model=PortalAccount):
+    column_list = [PortalAccount.id, PortalAccount.username, PortalAccount.status, PortalAccount.supports_scraping, PortalAccount.supports_booking]
+    column_searchable_list = [PortalAccount.username]
 
 class WorkerNodeAdmin(ModelView, model=WorkerNode):
     column_list = [WorkerNode.worker_id, WorkerNode.status, WorkerNode.scheduling_state, WorkerNode.public_ip, WorkerNode.last_heartbeat]
@@ -93,7 +93,7 @@ class PushSubscriptionAdmin(ModelView, model=PushSubscription):
 views = [
     TenantAdmin,
     UserAdmin,
-    ScraperAccountAdmin,
+    PortalAccountAdmin,
     WorkerNodeAdmin,
     AssignmentAdmin,
     LeaseAdmin,
