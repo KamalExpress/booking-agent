@@ -70,7 +70,12 @@
             <div class="flex justify-between items-start">
                 <div>
                     <h3 class="text-sm font-medium text-indigo-400 mb-1">Monitoring Confidence</h3>
-                    {% if pwa_settings.health_indicator_mode == 'percentage' %}
+                    {% if pwa_settings.health_indicator_mode == 'fixed_100' %}
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-5xl font-bold text-emerald-500">100%</span>
+                        <span class="text-sm text-emerald-400">Excellent</span>
+                    </div>
+                    {% elif pwa_settings.health_indicator_mode == 'percentage' %}
                     <div class="flex items-baseline gap-2">
                         <span class="text-5xl font-bold {% if is_healthy %}text-emerald-500{% else %}text-amber-500{% endif %}">{{ health_score }}%</span>
                         <span class="text-sm {% if is_healthy %}text-emerald-400{% else %}text-amber-400{% endif %}">{% if is_healthy %}Excellent{% else %}Degraded{% endif %}</span>

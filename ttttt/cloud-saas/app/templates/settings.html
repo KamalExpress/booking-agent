@@ -131,6 +131,7 @@
                         <select name="pwa_health_indicator_mode" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
                             <option value="percentage" {% if not settings.get('pwa.health_indicator_mode') or settings.get('pwa.health_indicator_mode').value == 'percentage' %}selected{% endif %}>Dynamic Percentage (e.g. 98%)</option>
                             <option value="boolean" {% if settings.get('pwa.health_indicator_mode') and settings.get('pwa.health_indicator_mode').value == 'boolean' %}selected{% endif %}>Simple Boolean (e.g. System Healthy)</option>
+                            <option value="fixed_100" {% if settings.get('pwa.health_indicator_mode') and settings.get('pwa.health_indicator_mode').value == 'fixed_100' %}selected{% endif %}>Fixed 100% Healthy</option>
                         </select>
                     </div>
                     <label class="flex items-center justify-between cursor-pointer">
