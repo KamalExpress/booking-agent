@@ -47,12 +47,21 @@ def render_template(name: str, context: dict, db: Session):
     context["branding"] = branding
     context["env_branding"] = get_env_branding()
     from services.guidance import GUIDANCE_DICT
+    from services.ui_guidance import NAV_GUIDANCE_DICT
     context["guidance_dict"] = GUIDANCE_DICT
+    context["nav_guidance_dict"] = NAV_GUIDANCE_DICT
     return templates.TemplateResponse(request=context["request"], name=name, context=context)
 
 @router.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request, db: Session = Depends(get_db)):
     return render_template("login.html", {"request": request}, db)
+
+@router.get("/playbook", response_class=HTMLResponse)
+async def playbook_page(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+    return render_template("playbook.html", {"request": request, "user": user, "active_page": "playbook"}, db)
 
 @router.get("/", response_class=HTMLResponse)
 async def overview_page(request: Request, db: Session = Depends(get_db)):

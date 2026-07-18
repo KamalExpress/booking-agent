@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Playbook - {{ branding.brand_name }}{% end %}
+
+{% block content %}
+<div class="px-6 py-6 max-w-4xl mx-auto">
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-white tracking-tight mb-2">Slot Monitor Playbook</h1>
+        <p class="text-zinc-400">End-to-end guide on setting up your distributed worker fleet to monitor the portal.</p>
+    </div>
+
+    <div class="space-y-6">
+        <!-- Step 1 -->
+        <div class="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-6">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-8 h-8 rounded-full bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center font-bold">1</div>
+                <h2 class="text-lg font-semibold text-white">Add Proxies</h2>
+            </div>
+            <p class="text-zinc-400 text-sm leading-relaxed mb-4">
+                Workers need rotating or sticky proxies to bypass Web Application Firewalls (WAFs) and avoid IP bans.
+            </p>
+            <div class="bg-black/50 rounded-lg p-4 border border-zinc-800/50">
+                <ul class="space-y-2 text-sm text-zinc-300">
+                    <li class="flex items-start gap-2"><i data-lucide="arrow-right" class="w-4 h-4 text-zinc-500 mt-0.5 shrink-0"></i> Navigate to <strong>Execution Fleet > Proxies</strong>.</li>
+                    <li class="flex items-start gap-2"><i data-lucide="arrow-right" class="w-4 h-4 text-zinc-500 mt-0.5 shrink-0"></i> Add your proxy string (e.g. <code>http://user:pass@host:port</code>).</li>
+                    <li class="flex items-start gap-2"><i data-lucide="arrow-right" class="w-4 h-4 text-zinc-500 mt-0.5 shrink-0"></i> The system will test the proxy. If successful, it becomes <span class="text-emerald-500 font-semibold">READY</span>.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-6">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-8 h-8 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-400 flex items-center justify-center font-bold">2</div>
+                <h2 class="text-lg font-semibold text-white">Add Portal Accounts</h2>
+            </div>
+            <p class="text-zinc-400 text-sm leading-relaxed mb-4">
+                You must provide credentials that the workers can use to authenticate with the target portal.
+            </p>
+            <div class="bg-black/50 rounded-lg p-4 border border-zinc-800/50">
+                <ul class="space-y-2 text-sm text-zinc-300">
+                    <li class="flex items-start gap-2"><i data-lucide="arrow-right" class="w-4 h-4 text-zinc-500 mt-0.5 shrink-0"></i> Navigate to <strong>Execution Fleet > Portal Accounts</strong>.</li>
+                    <li class="flex items-start gap-2"><i data-lucide="arrow-right" class="w-4 h-4 text-zinc-500 mt-0.5 shrink-0"></i> Input the Username and Password for the portal.</li>
+                    <li class="flex items-start gap-2"><i data-lucide="arrow-right" class="w-4 h-4 text-zinc-500 mt-0.5 shrink-0"></i> Accounts are automatically rotated by the scheduler to prevent lockouts.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-6">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold">3</div>
+                <h2 class="text-lg font-semibold text-white">Deploy Workers</h2>
+            </div>
+            <p class="text-zinc-400 text-sm leading-relaxed mb-4">
+                Workers are headless browser instances that execute tasks. You must run them on your own infrastructure.
+            </p>
+            <div class="bg-black/50 rounded-lg p-4 border border-zinc-800/50">
+                <ul class="space-y-2 text-sm text-zinc-300">
+                    <li class="flex items-start gap-2"><i data-lucide="arrow-right" class="w-4 h-4 text-zinc-500 mt-0.5 shrink-0"></i> Start the Python headless worker script on a VPS or local machine.</li>
+                    <li class="flex items-start gap-2"><i data-lucide="arrow-right" class="w-4 h-4 text-zinc-500 mt-0.5 shrink-0"></i> Navigate to <strong>Execution Fleet > Workers</strong> to verify they are connected.</li>
+                    <li class="flex items-start gap-2"><i data-lucide="arrow-right" class="w-4 h-4 text-zinc-500 mt-0.5 shrink-0"></i> They should appear with an <span class="text-emerald-500 font-semibold">IDLE</span> status, waiting for tasks.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-6">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center font-bold">4</div>
+                <h2 class="text-lg font-semibold text-white">Create Assignments (Scrapers)</h2>
+            </div>
+            <p class="text-zinc-400 text-sm leading-relaxed mb-4">
+                Assignments instruct the scheduler on what to monitor.
+            </p>
+            <div class="bg-black/50 rounded-lg p-4 border border-zinc-800/50">
+                <ul class="space-y-2 text-sm text-zinc-300">
+                    <li class="flex items-start gap-2"><i data-lucide="arrow-right" class="w-4 h-4 text-zinc-500 mt-0.5 shrink-0"></i> Navigate to <strong>Workloads > Scrapers (Tasks)</strong> and create a new Assignment.</li>
+                    <li class="flex items-start gap-2"><i data-lucide="arrow-right" class="w-4 h-4 text-zinc-500 mt-0.5 shrink-0"></i> Specify the Target URL, location, and polling interval.</li>
+                    <li class="flex items-start gap-2"><i data-lucide="arrow-right" class="w-4 h-4 text-zinc-500 mt-0.5 shrink-0"></i> The scheduler will immediately match a Worker + Proxy + Account and dispatch the job!</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Next Steps -->
+        <div class="mt-8 pt-8 border-t border-zinc-800/50">
+            <h3 class="text-lg font-semibold text-white mb-4">What happens next?</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-black/40 p-4 rounded-lg border border-zinc-800/50">
+                    <div class="flex items-center gap-2 text-emerald-400 font-semibold mb-2">
+                        <i data-lucide="calendar-check" class="w-4 h-4"></i> Auto-Booking
+                    </div>
+                    <p class="text-xs text-zinc-400 leading-relaxed">When a Scraper finds a slot, it automatically generates a high-priority <strong>Booking Task</strong>. An available Worker immediately executes this task to secure the slot.</p>
+                </div>
+                <div class="bg-black/40 p-4 rounded-lg border border-zinc-800/50">
+                    <div class="flex items-center gap-2 text-blue-400 font-semibold mb-2">
+                        <i data-lucide="scroll-text" class="w-4 h-4"></i> Monitoring
+                    </div>
+                    <p class="text-xs text-zinc-400 leading-relaxed">Use the <strong>Event Logs</strong> to watch system activity in real-time. If an account or proxy gets rate-limited, it will automatically enter COOLDOWN and recover later.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
