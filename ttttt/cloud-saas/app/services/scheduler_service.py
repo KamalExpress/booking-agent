@@ -231,5 +231,6 @@ class SchedulerService:
                 proxy.failure_count = 0
         
         self.db.commit()
-d e f   g e t _ s c h e d u l e r _ s e r v i c e ( d b :   S e s s i o n   =   D e p e n d s ( g e t _ d b ) )   - >   S c h e d u l e r S e r v i c e : \ n         r e t u r n   S c h e d u l e r S e r v i c e ( d b )  
- 
+
+def get_scheduler_service(db: Session = Depends(get_db)) -> SchedulerService:
+    return SchedulerService(db)
