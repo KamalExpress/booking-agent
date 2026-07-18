@@ -1,10 +1,11 @@
 from datetime import datetime, timezone, timedelta
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
+from fastapi import Depends
 
 from app.models import (
     WorkerNode, PortalAccount, Proxy, Assignment, BookingTask, 
-    Lease, SchedulerDecision, EventLog
+    Lease, SchedulerDecision, EventLog, get_db
 )
 from app.services.scoring_policy import ScoringPolicy
 
