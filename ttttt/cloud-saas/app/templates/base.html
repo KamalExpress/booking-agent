@@ -351,7 +351,7 @@
         class OperationalGuidance extends HTMLElement {
             constructor() {
                 super();
-                this.code = this.getAttribute('code') || 'UNKNOWN';
+                this.code = (this.getAttribute('code') || 'UNKNOWN').toUpperCase();
                 this.data = window.GUIDANCE_METADATA[this.code] || window.GUIDANCE_METADATA['UNKNOWN'];
                 if (!this.data) {
                     this.data = {
