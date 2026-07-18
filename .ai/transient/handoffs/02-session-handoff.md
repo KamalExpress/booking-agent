@@ -22,6 +22,7 @@ This session focused entirely on frontend user experience, PWA mobile compliance
   - Fixed Jinja2 syntax nesting (`{% endif %}`) bugs and optimized padding (`pb-32`) to prevent the mobile nav bar from obscuring the lowest list items.
 
 ## 2. Pending Work / Next Session Objectives
+- **BUG FIX PRIORITY:** On the PWA mobile view, the bottom navigation bar is mysteriously disappearing (or being obscured) when navigating specifically to the `/staff` tab. Investigate if the modal z-indexes or horizontal overflow of the staff table is breaking the fixed viewport.
 - **Stale Notification Cleanup:** Implement a background task (or admin trigger) to remove expired or dead Web Push subscriptions from the database to prevent noisy broadcast errors.
 - **Robust Appointment Type Support:** Expand the Assignment creation UI to support dynamic visa appointment types (e.g., Types 0, 2, 6, 26).
 - **Worker Management UI:** Refine the `/workers` dashboard to visualize worker health (Heartbeats, Scheduling State, Assignments) with greater detail.
