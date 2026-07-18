@@ -13,7 +13,25 @@
         <!-- Step 1 -->
         <div class="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-6">
             <div class="flex items-center gap-4 mb-4">
-                <div class="w-8 h-8 rounded-full bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center font-bold">1</div>
+                <div class="w-8 h-8 rounded-full bg-rose-500/20 border border-rose-500/30 text-rose-400 flex items-center justify-center font-bold">1</div>
+                <h2 class="text-lg font-semibold text-white">Configure Captcha Provider</h2>
+            </div>
+            <p class="text-zinc-400 text-sm leading-relaxed mb-4">
+                Without a valid Captcha solver, workers will instantly fail WAF challenges and be unable to login.
+            </p>
+            <div class="bg-black/50 rounded-lg p-4 border border-zinc-800/50">
+                <ul class="space-y-2 text-sm text-zinc-300">
+                    <li class="flex items-start gap-2"><i data-lucide="arrow-right" class="w-4 h-4 text-zinc-500 mt-0.5 shrink-0"></i> Navigate to <strong>Execution Fleet > Captcha Provider</strong>.</li>
+                    <li class="flex items-start gap-2"><i data-lucide="arrow-right" class="w-4 h-4 text-zinc-500 mt-0.5 shrink-0"></i> Select your preferred provider (e.g. CapSolver) and enter your API Key.</li>
+                    <li class="flex items-start gap-2"><i data-lucide="arrow-right" class="w-4 h-4 text-zinc-500 mt-0.5 shrink-0"></i> Save the configuration. This key will be securely distributed to all workers automatically.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-6">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-8 h-8 rounded-full bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center font-bold">2</div>
                 <h2 class="text-lg font-semibold text-white">Add Proxies</h2>
             </div>
             <p class="text-zinc-400 text-sm leading-relaxed mb-4">
@@ -28,10 +46,10 @@
             </div>
         </div>
 
-        <!-- Step 2 -->
+        <!-- Step 3 -->
         <div class="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-6">
             <div class="flex items-center gap-4 mb-4">
-                <div class="w-8 h-8 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-400 flex items-center justify-center font-bold">2</div>
+                <div class="w-8 h-8 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-400 flex items-center justify-center font-bold">3</div>
                 <h2 class="text-lg font-semibold text-white">Add Portal Accounts</h2>
             </div>
             <p class="text-zinc-400 text-sm leading-relaxed mb-4">
@@ -46,10 +64,10 @@
             </div>
         </div>
 
-        <!-- Step 3 -->
+        <!-- Step 4 -->
         <div class="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-6">
             <div class="flex items-center gap-4 mb-4">
-                <div class="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold">3</div>
+                <div class="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold">4</div>
                 <h2 class="text-lg font-semibold text-white">Deploy Workers</h2>
             </div>
             <p class="text-zinc-400 text-sm leading-relaxed mb-4">
@@ -64,10 +82,10 @@
             </div>
         </div>
 
-        <!-- Step 4 -->
+        <!-- Step 5 -->
         <div class="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-6">
             <div class="flex items-center gap-4 mb-4">
-                <div class="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center font-bold">4</div>
+                <div class="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center font-bold">5</div>
                 <h2 class="text-lg font-semibold text-white">Create Assignments (Scrapers)</h2>
             </div>
             <p class="text-zinc-400 text-sm leading-relaxed mb-4">

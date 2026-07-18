@@ -1,24 +1,30 @@
 NAV_GUIDANCE_DICT = {
+    "NAV_CAPTCHA": {
+        "title": "Step 1: Captcha Provider",
+        "summary": "Configure your Captcha API key (e.g. CapSolver) so workers can bypass WAFs and login hurdles.",
+        "why": "Without a valid Captcha solver, workers will instantly fail WAF challenges and be unable to login.",
+        "severity": "Info"
+    },
     "NAV_PROXIES": {
-        "title": "Step 1: Proxies",
-        "summary": "To set up a slot monitor, you must first add residential or datacenter proxies.",
-        "why": "Workers need proxies to bypass WAFs and avoid rate limits.",
+        "title": "Step 2: Proxies",
+        "summary": "To set up a slot monitor, you must add residential or datacenter proxies.",
+        "why": "Workers need proxies to rotate IPs and avoid rate limits.",
         "severity": "Info"
     },
     "NAV_ACCOUNTS": {
-        "title": "Step 2: Portal Accounts",
+        "title": "Step 3: Portal Accounts",
         "summary": "Next, add the target portal accounts (username/password) that the workers will use to log in.",
         "why": "Without accounts, the workers cannot access the secure portal to check for slots.",
         "severity": "Info"
     },
     "NAV_WORKERS": {
-        "title": "Step 3: Workers",
+        "title": "Step 4: Workers",
         "summary": "Deploy headless worker nodes to your infrastructure. They will appear here once they connect.",
         "why": "Workers are the actual compute engines that execute the scraping and booking tasks.",
         "severity": "Info"
     },
     "NAV_ASSIGNMENTS": {
-        "title": "Step 4: Scrapers (Tasks)",
+        "title": "Step 5: Scrapers (Tasks)",
         "summary": "Finally, create a Scraper Assignment. The scheduler will match a Worker, Proxy, and Account to execute it.",
         "why": "Assignments define WHAT you want to scrape (e.g. Visa Type, Location, Polling Interval).",
         "severity": "Info"

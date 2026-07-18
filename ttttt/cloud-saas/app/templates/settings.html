@@ -105,49 +105,6 @@
             </form>
         </div>
     </div>
-
-    <!-- CAPTCHA CONFIG -->
-    <div class="bg-[#09090b] border border-zinc-800 rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
-        <div class="px-5 py-4 border-b border-zinc-800 bg-zinc-900/50 flex justify-between items-center">
-            <h3 class="font-medium text-zinc-100 flex items-center gap-2">
-                <i data-lucide="shield" class="w-4 h-4 text-zinc-400"></i> Captcha Provider
-            </h3>
-            {% if captcha_configured %}
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
-                <i data-lucide="check" class="w-3.5 h-3.5"></i> Configured
-            </span>
-            {% else %}
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-500 border border-amber-500/20">
-                Not Configured
-            </span>
-            {% endif %}
-        </div>
-        
-        <div class="p-5 flex-1 flex flex-col">
-            <form action="/settings/captcha" method="post" class="space-y-4 flex-1 flex flex-col">
-                <div>
-                    <label class="block text-sm font-medium text-zinc-300 mb-1">Provider</label>
-                    <select name="provider" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
-                        <option value="capsolver" {% if settings.get('captcha.provider') and settings.get('captcha.provider').value == 'capsolver' %}selected{% endif %}>CapSolver</option>
-                        <option value="nopecha" {% if settings.get('captcha.provider') and settings.get('captcha.provider').value == 'nopecha' %}selected{% endif %}>NopeCha</option>
-                    </select>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-zinc-300 mb-1">API Key</label>
-                    <input type="password" name="api_key" placeholder="{% if captcha_configured %}•••••••••••••••••••• (Leave blank to keep current){% else %}Enter API Key{% endif %}" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
-                    <p class="text-xs text-zinc-500 mt-2">API Keys are encrypted at rest using AES (Fernet) and never exposed back to the UI.</p>
-                </div>
-                
-                <div class="pt-4 mt-auto">
-                    <button type="submit" class="w-full inline-flex justify-center items-center rounded-md text-sm font-medium h-9 px-4 py-2 bg-white text-black hover:bg-zinc-200 transition-colors shadow-sm">
-                        Save Captcha Settings
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- PUSH NOTIFICATIONS SETUP -->
     <div class="bg-[#09090b] border border-zinc-800 rounded-xl shadow-sm overflow-hidden flex flex-col h-full lg:col-span-2">
         <div class="px-5 py-4 border-b border-zinc-800 bg-zinc-900/50 flex justify-between items-center">

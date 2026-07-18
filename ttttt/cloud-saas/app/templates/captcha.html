@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Captcha Provider - {{ branding.brand_name }}{% endblock %}
+
+{% block content %}
+<div class="px-6 py-6 max-w-4xl mx-auto space-y-6">
+    <div class="mb-8 flex justify-between items-start">
+        <div>
+            <h1 class="text-2xl font-bold text-white tracking-tight mb-2">Captcha Configuration</h1>
+            <p class="text-zinc-400 text-sm">Configure your Captcha solving service. Without a valid API key, workers will be unable to log in to the portal or secure slots.</p>
+        </div>
+    </div>
+
+    <!-- CAPTCHA CONFIG -->
+    <div class="bg-[#09090b] border border-zinc-800 rounded-xl shadow-sm overflow-hidden flex flex-col">
+        <div class="px-5 py-4 border-b border-zinc-800 bg-zinc-900/50 flex justify-between items-center">
+            <h3 class="font-medium text-zinc-100 flex items-center gap-2">
+                <i data-lucide="shield" class="w-4 h-4 text-zinc-400"></i> Captcha Provider API Key
+            </h3>
+            {% if captcha_configured %}
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                <i data-lucide="check" class="w-3.5 h-3.5"></i> Configured
+            </span>
+            {% else %}
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                Not Configured
+            </span>
+            {% endif %}
+        </div>
+        
+        <div class="p-5 flex-1 flex flex-col">
+            <form action="/captcha" method="post" class="space-y-6 flex-1 flex flex-col">
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Provider Service</label>
+                    <select name="provider" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500 py-2">
+                        <option value="capsolver" {% if settings.get('captcha.provider') and settings.get('captcha.provider').value == 'capsolver' %}selected{% endif %}>CapSolver</option>
+                        <option value="nopecha" {% if settings.get('captcha.provider') and settings.get('captcha.provider').value == 'nopecha' %}selected{% endif %}>NopeCha</option>
+                    </select>
+                    <p class="text-xs text-zinc-500 mt-2">CapSolver is highly recommended for ReCaptchaV2.</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">API Key</label>
+                    <input type="password" name="api_key" placeholder="{% if captcha_configured %}•••••••••••••••••••• (Leave blank to keep current){% else %}Enter API Key{% endif %}" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500 py-2">
+                    <p class="text-xs text-zinc-500 mt-2">API Keys are encrypted at rest using AES (Fernet) and never exposed back to the UI.</p>
+                </div>
+                
+                <div class="pt-4 border-t border-zinc-800/50">
+                    <button type="submit" class="inline-flex justify-center items-center rounded-md text-sm font-medium h-9 px-6 bg-white text-black hover:bg-zinc-200 transition-colors shadow-sm">
+                        Save Captcha Settings
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

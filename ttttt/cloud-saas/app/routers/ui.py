@@ -730,7 +730,27 @@ async def settings_page(request: Request, db: Session = Depends(get_db)):
         "captcha_configured": captcha_configured
     }, db)
 
-@router.post("/settings/captcha")
+@router.get("/captcha", response_class=HTMLResponse)
+async def captcha_page(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    settings_db = db.query(SystemSetting).all()
+    settings_dict = {s.key: s for s in settings_db}
+    
+    # Check if captcha API key is configured
+    captcha_configured = "captcha.api_key" in settings_dict and settings_dict["captcha.api_key"].encrypted_value
+    
+    return render_template("captcha.html", {
+        "request": request,
+        "user": user,
+        "active_page": "captcha",
+        "settings": settings_dict,
+        "captcha_configured": captcha_configured
+    }, db)
+
+@router.post("/captcha")
 async def update_captcha_settings(
     request: Request,
     provider: str = Form(...),
@@ -764,7 +784,7 @@ async def update_captcha_settings(
         version_setting.value = str(int(version_setting.value) + 1)
         
     db.commit()
-    return RedirectResponse(url="/settings", status_code=303)
+    return RedirectResponse(url="/captcha", status_code=303)
 
 @router.post("/settings/global")
 async def update_global_settings(
