@@ -56,7 +56,7 @@ def render_template(name: str, context: dict, db: Session):
 async def login_page(request: Request, db: Session = Depends(get_db)):
     return render_template("login.html", {"request": request}, db)
 
-@router.get("/playbook", response_class=HTMLResponse)
+@router.get("/help", response_class=HTMLResponse)
 async def playbook_page(request: Request, db: Session = Depends(get_db)):
     user = get_ui_user(request, db)
     if not user:
