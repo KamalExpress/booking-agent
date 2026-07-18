@@ -53,9 +53,10 @@
                         {% endif %}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        {% if log.payload.get('tenant_id') %}
+                        {% if 'tenant_id' in log.payload %}
                             <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-500/10 text-purple-500">
-                                Tenant #{{ log.payload.get('tenant_id') }}
+                                {% set t_id = log.payload.get('tenant_id') | int %}
+                                {{ tenants_map.get(t_id, 'Unknown') }} (T{{ t_id }})
                             </span>
                         {% else %}
                             <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary/10 text-primary">

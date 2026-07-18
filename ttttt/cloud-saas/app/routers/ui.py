@@ -251,12 +251,16 @@ async def notifications_page(request: Request, db: Session = Depends(get_db)):
         return RedirectResponse(url="/", status_code=303)
         
     logs = query.order_by(EventLog.created_at.desc()).limit(200).all()
+    
+    tenants = db.query(Tenant).all()
+    tenants_map = {t.id: t.name for t in tenants}
             
     return render_template("notifications.html", {
         "request": request,
         "user": user,
         "active_page": "notifications",
-        "logs": logs
+        "logs": logs,
+        "tenants_map": tenants_map
     }, db)
 
 @router.get("/slots", response_class=HTMLResponse)
@@ -754,10 +758,16 @@ async def delete_proxy(proxy_id: int, request: Request, db: Session = Depends(ge
 @router.get("/booking-tasks", response_class=HTMLResponse)
 async def booking_tasks_page(request: Request, db: Session = Depends(get_db)):
     user = get_ui_user(request, db)
-    if not user or user.role != RoleEnum.SUPER_ADMIN:
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+        
+    query = db.query(BookingTask)
+    if user.role == RoleEnum.TENANT_ADMIN:
+        query = query.filter(BookingTask.tenant_id == user.tenant_id)
+    elif user.role != RoleEnum.SUPER_ADMIN:
         return RedirectResponse(url="/", status_code=303)
         
-    tasks = db.query(BookingTask).order_by(BookingTask.id.desc()).all()
+    tasks = query.order_by(BookingTask.id.desc()).all()
     
     return render_template("booking_tasks.html", {
         "request": request,

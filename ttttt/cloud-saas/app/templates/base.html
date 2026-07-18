@@ -99,6 +99,9 @@
             </a>
 
             {% if user and user.role.value == 'TENANT_ADMIN' %}
+            <a href="/booking-tasks" class="nav-link {% if active_page == 'booking_tasks' %}active{% endif %}">
+                <i data-lucide="calendar-check" class="w-4 h-4"></i> Bookings
+            </a>
             <a href="/staff" class="nav-link {% if active_page == 'staff' %}active{% endif %}">
                 <i data-lucide="users" class="w-4 h-4"></i> Staff Management
             </a>
@@ -263,7 +266,7 @@
             {% endif %}
         </div>
 
-        <div class="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-8">
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 pb-32 md:pb-8">
             <div class="max-w-7xl mx-auto w-full h-full">
                 {% block content %}{% endblock %}
             </div>
