@@ -39,3 +39,12 @@ This document serves as the master dictionary for all operational events, errors
 | `LEASE_CANCELLED` | A lease was explicitly cancelled. | An admin manually cancelled the lease via the UI, or the system paused it. | N/A | N/A |
 | `LEASE_EXPIRED` | A lease expired before completion. | The worker took too long to complete the task or died without sending a heartbeat. | Ensure worker instances have sufficient resources to complete tasks within TTL. | The task will be instantly re-queued for another worker. |
 | `PUSH_SENT` | A Web Push payload was dispatched. | A booking task triggered an admin notification. | N/A | N/A |
+
+## Entity Statuses (Portal Accounts, Proxies, Workers)
+
+| Code | What Happened | Why did it happen? | How to fix it | Auto-Recovery |
+| --- | --- | --- | --- | --- |
+| `BLOCKED` | This entity is blocked and cannot be used. | It encountered a fatal error (like a permanent ban or invalid credentials) or was manually disabled. | Review the logs, update credentials, or manually unblock it. | No. Requires manual intervention. |
+| `COOLDOWN` | This entity is temporarily resting. | It was recently used or encountered a soft error (like a timeout or rate limit). | Wait for the cooldown period to expire. | Yes. It will become READY automatically. |
+| `READY` | This entity is ready to be used. | It is healthy and currently available for the scheduler. | N/A | N/A |
+| `LEASED` | This entity is currently in use. | The scheduler has assigned it to a worker node for a task. | N/A | It will return to READY or COOLDOWN when the task finishes. |

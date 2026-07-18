@@ -167,6 +167,46 @@ GUIDANCE_DICT = {
         ],
         "auto_recovery": "Both Account and Proxy enter cooldown.",
         "severity": "Error"
+    },
+    
+    # Entity Statuses
+    "BLOCKED": {
+        "title": "Blocked",
+        "summary": "This entity is blocked and cannot be used.",
+        "why": "It encountered a fatal error (like a permanent ban or invalid credentials) or was manually disabled.",
+        "how_to_fix": [
+            "Review the logs to see the specific error.",
+            "Update credentials if they are invalid.",
+            "Manually unblock it from the database if you believe it is safe."
+        ],
+        "auto_recovery": "No. Requires manual intervention.",
+        "severity": "Error"
+    },
+    "COOLDOWN": {
+        "title": "Cooling Down",
+        "summary": "This entity is temporarily resting.",
+        "why": "It was recently used or encountered a soft error (like a timeout or rate limit).",
+        "how_to_fix": [
+            "Wait for the cooldown period to expire."
+        ],
+        "auto_recovery": "Yes. It will become READY automatically when the cooldown expires.",
+        "severity": "Warning"
+    },
+    "READY": {
+        "title": "Ready",
+        "summary": "This entity is ready to be used.",
+        "why": "It is healthy and currently available for the scheduler.",
+        "how_to_fix": [],
+        "auto_recovery": "N/A",
+        "severity": "Success"
+    },
+    "LEASED": {
+        "title": "Leased",
+        "summary": "This entity is currently in use.",
+        "why": "The scheduler has assigned it to a worker node for a task.",
+        "how_to_fix": [],
+        "auto_recovery": "It will return to READY or COOLDOWN when the task finishes.",
+        "severity": "Info"
     }
 }
 

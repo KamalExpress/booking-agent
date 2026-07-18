@@ -80,15 +80,7 @@
                     </div>
                 </td>
                 <td class="p-4">
-                    {% if proxy.status == 'READY' %}
-                        <span class="inline-flex items-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-500">Ready</span>
-                    {% elif proxy.status == 'LEASED' %}
-                        <span class="inline-flex items-center rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-500">Leased</span>
-                    {% elif proxy.status == 'COOLDOWN' %}
-                        <span class="inline-flex items-center rounded-full border border-amber-500/20 bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-500 cursor-help" title="Cooling down until {{ proxy.cooldown_until }}">Cooldown</span>
-                    {% else %}
-                        <span class="inline-flex items-center rounded-full border border-destructive/20 bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive">Blocked</span>
-                    {% endif %}
+                    <operational-guidance code="{{ proxy.status }}"></operational-guidance>
                 </td>
                 <td class="p-4">
                     <form action="/proxies/{{ proxy.id }}/delete" method="POST" class="inline">
