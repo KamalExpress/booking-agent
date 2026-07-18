@@ -34,5 +34,11 @@ This project is a multi-tenant SaaS application that coordinates distributed hea
 3. **Playwright** (for automation generation and testing only, not for research)
 4. **Headless Playwright** (only when no WAF exists)
 
+## 6. Handoff & Sprint Planning Rules
+When taking over a session via a handoff document (e.g., in `.ai/transient/handoffs/`), you MUST strictly adopt the 'Pending Work / Next Session Objectives' listed in that document as the definitive scope for your sprint.
+- DO NOT invent or assume new features.
+- Address the exact architectural gaps specified (e.g., if the handoff specifies "Dual Pools", you must design Dual Pools).
+- If the handoff is unclear, explicitly ask the user for clarification before drifting out of scope.
+
 ---
 *Always mirror sprint planning artifacts to `.ai/transient/handoffs/` when closing out a sprint.*
