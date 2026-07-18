@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
 
 import os
-from models import WorkerNode, Assignment, Lease, EventLog, ScraperAccount, SystemSetting, User, Tenant, PushSubscription, AuditLog, WorkerLog
+from models import WorkerNode, Assignment, Lease, EventLog, PortalAccount, Proxy, BookingTask, SchedulerDecision, SystemSetting, User, Tenant, PushSubscription, AuditLog, WorkerLog
 from models import SessionLocal
 from secrets_manager import secrets_manager
 from auth import get_current_user, require_tenant_admin, get_current_user_from_cookie, RoleEnum, get_password_hash
@@ -43,6 +43,8 @@ def render_template(name: str, context: dict, db: Session):
     }
     
     context["branding"] = branding
+    from services.guidance import GUIDANCE_DICT
+    context["guidance_dict"] = GUIDANCE_DICT
     return templates.TemplateResponse(request=context["request"], name=name, context=context)
 
 @router.get("/login", response_class=HTMLResponse)
@@ -329,14 +331,11 @@ async def assignments_page(request: Request, db: Session = Depends(get_db)):
     assignments = db.query(Assignment).order_by(Assignment.id.desc()).all()
     # attach lease status
     for asm in assignments:
-        acc = db.query(ScraperAccount).filter(ScraperAccount.id == asm.scraper_account_id).first()
-        asm.account_username = acc.username if acc else "Unknown"
-        
         lease = db.query(Lease).filter(Lease.assignment_id == asm.id).order_by(Lease.id.desc()).first()
         asm.lease_status = lease.status if lease else "No Lease"
         asm.leased_to_worker = lease.worker_id if lease else None
         
-    accounts = db.query(ScraperAccount).all()
+    accounts = db.query(PortalAccount).filter(PortalAccount.supports_scraping == True).all()
     
     # Parse available centers from settings
     vc_setting = db.query(SystemSetting).filter(SystemSetting.key == "global.visa_centers_config").first()
@@ -364,7 +363,6 @@ async def assignments_page(request: Request, db: Session = Depends(get_db)):
 @router.post("/assignments/create")
 async def create_assignment(
     request: Request,
-    scraper_account_id: int = Form(...),
     target_start_date: str = Form(...),
     target_end_date: str = Form(...),
     visa_center: list[str] = Form(...),
@@ -391,7 +389,6 @@ async def create_assignment(
         vc_string = ",".join(visa_center)
         
         new_assignment = Assignment(
-            scraper_account_id=scraper_account_id,
             date_from=start_date.strftime('%d/%m/%Y'),
             date_to=end_date.strftime('%d/%m/%Y'),
             visa_center=vc_string,
@@ -465,7 +462,6 @@ async def assignment_detail_page(assignment_id: int, request: Request, db: Sessi
     if not assignment:
         return RedirectResponse(url="/assignments")
         
-    account = db.query(ScraperAccount).filter(ScraperAccount.id == assignment.scraper_account_id).first()
     logs = db.query(EventLog).filter(EventLog.assignment_id == assignment_id).order_by(EventLog.created_at.desc()).limit(50).all()
     
     # Parse available centers from settings
@@ -489,7 +485,6 @@ async def assignment_detail_page(assignment_id: int, request: Request, db: Sessi
         "user": user,
         "active_page": "assignments",
         "assignment": assignment,
-        "account": account,
         "logs": logs,
         "available_centers": available_centers,
         "selected_centers": selected_centers
@@ -546,7 +541,7 @@ async def accounts_page(request: Request, db: Session = Depends(get_db)):
     if not user or user.role != RoleEnum.SUPER_ADMIN:
         return RedirectResponse(url="/", status_code=303)
         
-    accounts = db.query(ScraperAccount).order_by(ScraperAccount.id.desc()).all()
+    accounts = db.query(PortalAccount).order_by(PortalAccount.id.desc()).all()
     
     return render_template("accounts.html", {
         "request": request,
@@ -560,17 +555,19 @@ async def create_account(
     request: Request,
     username: str = Form(...),
     password: str = Form(...),
-    proxy_string: str = Form(None),
+    supports_scraping: bool = Form(False),
+    supports_booking: bool = Form(False),
     db: Session = Depends(get_db)
 ):
     user = get_ui_user(request, db)
     if not user or user.role != RoleEnum.SUPER_ADMIN:
         return RedirectResponse(url="/", status_code=303)
-    new_account = ScraperAccount(
+    new_account = PortalAccount(
         username=username,
         password=password,
-        proxy_string=proxy_string,
-        status='Idle'
+        supports_scraping=supports_scraping,
+        supports_booking=supports_booking,
+        status='READY'
     )
     db.add(new_account)
     db.commit()
@@ -582,18 +579,18 @@ async def account_detail_page(account_id: int, request: Request, db: Session = D
     if not user or user.role != RoleEnum.SUPER_ADMIN:
         return RedirectResponse(url="/", status_code=303)
         
-    account = db.query(ScraperAccount).filter(ScraperAccount.id == account_id).first()
+    account = db.query(PortalAccount).filter(PortalAccount.id == account_id).first()
     if not account:
         return RedirectResponse(url="/accounts")
         
-    assignments = db.query(Assignment).filter(Assignment.scraper_account_id == account_id).all()
+    leases = db.query(Lease).filter(Lease.portal_account_id == account_id).all()
     
     return render_template("account_detail.html", {
         "request": request,
         "user": user,
         "active_page": "accounts",
         "account": account,
-        "assignments": assignments
+        "leases": leases
     }, db)
 
 @router.post("/accounts/{account_id}/edit")
@@ -601,19 +598,90 @@ async def edit_account(
     account_id: int,
     username: str = Form(...),
     password: str = Form(...),
-    proxy_string: str = Form(None),
     status: str = Form(...),
+    supports_scraping: bool = Form(False),
+    supports_booking: bool = Form(False),
     db: Session = Depends(get_db)
 ):
-    account = db.query(ScraperAccount).filter(ScraperAccount.id == account_id).first()
+    account = db.query(PortalAccount).filter(PortalAccount.id == account_id).first()
     if account:
         account.username = username
         account.password = password
-        account.proxy_string = proxy_string
+        account.supports_scraping = supports_scraping
+        account.supports_booking = supports_booking
         account.status = status
         db.commit()
             
     return RedirectResponse(url=f"/accounts/{account_id}", status_code=303)
+
+@router.get("/proxies", response_class=HTMLResponse)
+async def proxies_page(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    proxies = db.query(Proxy).order_by(Proxy.id.desc()).all()
+    
+    return render_template("proxies.html", {
+        "request": request,
+        "user": user,
+        "active_page": "proxies",
+        "proxies": proxies
+    }, db)
+
+@router.post("/proxies/create")
+async def create_proxies(
+    request: Request,
+    proxies_text: str = Form(...),
+    supports_scraping: bool = Form(False),
+    supports_booking: bool = Form(False),
+    db: Session = Depends(get_db)
+):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    lines = proxies_text.strip().split("\\n")
+    for line in lines:
+        line = line.strip()
+        if not line: continue
+        parts = line.split(":")
+        if len(parts) >= 2:
+            p = Proxy(
+                host=parts[0],
+                port=parts[1],
+                username=parts[2] if len(parts) > 2 else None,
+                password=parts[3] if len(parts) > 3 else None,
+                supports_scraping=supports_scraping,
+                supports_booking=supports_booking
+            )
+            db.add(p)
+    db.commit()
+    return RedirectResponse(url="/proxies", status_code=303)
+
+@router.post("/proxies/{proxy_id}/delete")
+async def delete_proxy(proxy_id: int, request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+    db.query(Proxy).filter(Proxy.id == proxy_id).delete()
+    db.commit()
+    return RedirectResponse(url="/proxies", status_code=303)
+
+@router.get("/booking-tasks", response_class=HTMLResponse)
+async def booking_tasks_page(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    tasks = db.query(BookingTask).order_by(BookingTask.id.desc()).all()
+    
+    return render_template("booking_tasks.html", {
+        "request": request,
+        "user": user,
+        "active_page": "booking_tasks",
+        "tasks": tasks
+    }, db)
 
 @router.get("/logs", response_class=HTMLResponse)
 async def logs_page(request: Request, db: Session = Depends(get_db)):
@@ -733,6 +801,8 @@ async def update_global_settings(
     db.commit()
     return RedirectResponse(url="/settings", status_code=303)
 
+from services.guidance import get_guidance
+
 @router.get("/diagnostics", response_class=HTMLResponse)
 async def diagnostics_page(request: Request, db: Session = Depends(get_db)):
     user = get_ui_user(request, db)
@@ -741,11 +811,24 @@ async def diagnostics_page(request: Request, db: Session = Depends(get_db)):
         
     from models import PushSubscription
     subs = db.query(PushSubscription).all()
+    
+    scheduler_decisions = db.query(SchedulerDecision).order_by(SchedulerDecision.created_at.desc()).limit(100).all()
+    
+    # Attach guidance to decisions
+    for d in scheduler_decisions:
+        d.guidance = get_guidance(d.decision_type)
+        
+    event_logs = db.query(EventLog).order_by(EventLog.created_at.desc()).limit(100).all()
+    for e in event_logs:
+        e.guidance = get_guidance(e.event_type)
+        
     return render_template("diagnostics.html", {
         "request": request,
         "user": user,
         "active_tab": "diagnostics",
-        "subs": subs
+        "subs": subs,
+        "scheduler_decisions": scheduler_decisions,
+        "event_logs": event_logs
     }, db)
 
 @router.get("/manifest.json")

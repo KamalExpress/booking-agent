@@ -1,0 +1,187 @@
+# app/services/guidance.py
+# Implements the Explain, Diagnose & Recover (EDR) standard
+
+GUIDANCE_DICT = {
+    # Scheduler Decisions
+    "SUCCESS": {
+        "title": "Lease Successful",
+        "summary": "A worker was successfully leased.",
+        "why": "The scheduler found a matching task, account, and proxy.",
+        "how_to_fix": [],
+        "auto_recovery": "N/A",
+        "severity": "Success"
+    },
+    "NO_READY_ACCOUNT": {
+        "title": "No Account Available",
+        "summary": "No portal account is currently available for this task.",
+        "why": "All capable accounts are either cooling down, disabled, or leased.",
+        "how_to_fix": [
+            "Add new portal accounts.",
+            "Enable disabled accounts.",
+            "Wait for account cooldowns to expire."
+        ],
+        "auto_recovery": "Scheduler will retry automatically once an account leaves cooldown.",
+        "severity": "Warning"
+    },
+    "NO_READY_PROXY": {
+        "title": "No Proxy Available",
+        "summary": "No proxy is currently available to pair with an account.",
+        "why": "All capable proxies are either cooling down, disabled, or leased.",
+        "how_to_fix": [
+            "Add additional proxies.",
+            "Wait for proxy cooldowns to expire.",
+            "Re-enable a disabled proxy."
+        ],
+        "auto_recovery": "Scheduler will retry automatically once a proxy leaves cooldown.",
+        "severity": "Warning"
+    },
+    "NO_READY_WORKER": {
+        "title": "No Worker Available",
+        "summary": "No worker was available to accept the task.",
+        "why": "No worker with the necessary capabilities (Scrape/Book) polled the server.",
+        "how_to_fix": [
+            "Ensure worker instances are running.",
+            "Verify workers are configured with the correct capabilities."
+        ],
+        "auto_recovery": "Yes, as soon as a capable worker connects.",
+        "severity": "Warning"
+    },
+    "NO_ASSIGNMENT": {
+        "title": "No Scraping Tasks",
+        "summary": "No scraping tasks need to be run right now.",
+        "why": "All assignments are currently leased, paused, or not yet due for polling.",
+        "how_to_fix": [
+            "Create a new assignment.",
+            "Decrease the polling interval if faster checks are needed."
+        ],
+        "auto_recovery": "Yes, automatically when an assignment's polling interval is due.",
+        "severity": "Info"
+    },
+    "NO_BOOKING_TASK": {
+        "title": "No Booking Tasks",
+        "summary": "No slots are available to book.",
+        "why": "No slots have been found recently by the scrapers.",
+        "how_to_fix": [
+            "Wait for scrapers to find slots."
+        ],
+        "auto_recovery": "Yes, automatically triggered on a SLOT_FOUND event.",
+        "severity": "Info"
+    },
+    "LEASE_CONFLICT": {
+        "title": "Lease Conflict",
+        "summary": "A stale lease update was rejected.",
+        "why": "A worker attempted to update a lease that had already expired or been reassigned.",
+        "how_to_fix": [
+            "Check worker internet connection.",
+            "Ensure worker has sufficient resources to return results before lease TTL expires."
+        ],
+        "auto_recovery": "The worker will automatically request a fresh lease.",
+        "severity": "Warning"
+    },
+
+    # Portal Events
+    "SLOT_FOUND": {
+        "title": "Slot Found",
+        "summary": "An available appointment slot was detected.",
+        "why": "A scraper successfully checked the portal and found availability.",
+        "how_to_fix": [],
+        "auto_recovery": "Triggers a BookingTask.",
+        "severity": "Success"
+    },
+    "NO_SLOTS_FOUND": {
+        "title": "No Slots Found",
+        "summary": "No slots were available.",
+        "why": "A scraper successfully checked the portal and found no availability.",
+        "how_to_fix": [],
+        "auto_recovery": "N/A",
+        "severity": "Info"
+    },
+    "LOGIN_SUCCESS": {
+        "title": "Login Success",
+        "summary": "Worker logged into the visa portal successfully.",
+        "why": "Credentials and proxy were accepted.",
+        "how_to_fix": [],
+        "auto_recovery": "N/A",
+        "severity": "Success"
+    },
+    "LOGIN_FAILED": {
+        "title": "Login Failed",
+        "summary": "The portal rejected the login.",
+        "why": "Incorrect credentials, or the account is temporarily blocked by the portal.",
+        "how_to_fix": [
+            "Verify the account username and password.",
+            "Log in manually to check if the account requires a password reset."
+        ],
+        "auto_recovery": "Account enters cooldown; will retry later.",
+        "severity": "Error"
+    },
+    "CAPTCHA_FAILED": {
+        "title": "Captcha Failed",
+        "summary": "Captcha could not be bypassed.",
+        "why": "CapSolver/NopeCha failed to return a valid token in time.",
+        "how_to_fix": [
+            "Check your captcha provider balance.",
+            "Verify captcha API key configuration."
+        ],
+        "auto_recovery": "System will retry on the next lease.",
+        "severity": "Error"
+    },
+    "PROXY_TIMEOUT": {
+        "title": "Proxy Timeout",
+        "summary": "The worker could not reach the visa portal.",
+        "why": "The assigned proxy is dead, too slow, or blocked by the portal's WAF.",
+        "how_to_fix": [
+            "Replace the proxy if it consistently times out.",
+            "Check proxy provider dashboard."
+        ],
+        "auto_recovery": "Proxy enters cooldown; worker gets a different proxy next time.",
+        "severity": "Error"
+    },
+    "PORTAL_ERROR": {
+        "title": "Portal Server Error",
+        "summary": "The visa portal returned a server error (5xx).",
+        "why": "The visa portal is undergoing maintenance or is overloaded.",
+        "how_to_fix": [
+            "Wait for the portal to recover."
+        ],
+        "auto_recovery": "System will keep trying at the configured polling interval.",
+        "severity": "Warning"
+    },
+    "BOOKING_FAILED": {
+        "title": "Booking Failed",
+        "summary": "A booking attempt failed.",
+        "why": "The slot was taken by someone else before completion, or a portal error occurred.",
+        "how_to_fix": [
+            "None (the slot is lost)."
+        ],
+        "auto_recovery": "Bookers will wait for the next SLOT_FOUND event.",
+        "severity": "Error"
+    },
+    "RATE_LIMITED": {
+        "title": "Rate Limited",
+        "summary": "The portal rate-limited the worker (429).",
+        "why": "The proxy or account made too many requests in a short time.",
+        "how_to_fix": [
+            "Increase your polling interval.",
+            "Add more proxies/accounts to distribute load."
+        ],
+        "auto_recovery": "Both Account and Proxy enter cooldown.",
+        "severity": "Error"
+    }
+}
+
+def get_guidance(code: str) -> dict:
+    """Returns the EDR metadata for a given code. Defaults to a generic response if unknown."""
+    if not code:
+        code = "UNKNOWN"
+    
+    metadata = GUIDANCE_DICT.get(code, {
+        "title": code,
+        "summary": f"An event occurred with code: {code}",
+        "why": "Unknown event.",
+        "how_to_fix": ["Check system logs for more details."],
+        "auto_recovery": "Unknown",
+        "severity": "Info"
+    })
+    metadata["technical_code"] = code
+    return metadata

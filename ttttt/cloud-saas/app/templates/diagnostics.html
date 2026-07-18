@@ -121,6 +121,53 @@
 
 </div>
 
+<div class="mt-8">
+    <h2 class="text-xl font-bold tracking-tight mb-4">Scheduler Audit Log</h2>
+    <div class="card overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                <tr class="border-b border-border bg-muted/50">
+                    <th class="p-4 font-medium text-muted-foreground">Timestamp</th>
+                    <th class="p-4 font-medium text-muted-foreground">Worker</th>
+                    <th class="p-4 font-medium text-muted-foreground">Decision</th>
+                    <th class="p-4 font-medium text-muted-foreground">Reasoning</th>
+                    <th class="p-4 font-medium text-muted-foreground">Selected Assets</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in scheduler_decisions %}
+                <tr class="border-b border-border hover:bg-muted/50 transition-colors">
+                    <td class="p-4 text-muted-foreground font-mono whitespace-nowrap">
+                        {{ log.created_at.strftime('%m-%d %H:%M:%S') if log.created_at else '-' }}
+                    </td>
+                    <td class="p-4 text-foreground font-medium font-mono">
+                        <a href="/workers/{{ log.worker_id }}" class="text-blue-500 hover:underline">{{ log.worker_id[:8] }}...</a>
+                    </td>
+                    <td class="p-4">
+                        <operational-guidance code="{{ log.decision_type }}"></operational-guidance>
+                    </td>
+                    <td class="p-4 text-muted-foreground">
+                        {{ log.decision_reason }}
+                    </td>
+                    <td class="p-4 text-xs font-mono text-muted-foreground">
+                        {% if log.selected_assignment_id %}ASM: {{ log.selected_assignment_id }}<br>{% endif %}
+                        {% if log.selected_booking_task_id %}BT: {{ log.selected_booking_task_id }}<br>{% endif %}
+                        {% if log.selected_account_id %}ACC: {{ log.selected_account_id }}<br>{% endif %}
+                        {% if log.selected_proxy_id %}PRX: {{ log.selected_proxy_id }}{% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="p-8 text-center text-muted-foreground">No scheduler logs found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 <script>
     document.getElementById("captcha-form").addEventListener("submit", async (e) => {
         e.preventDefault();

@@ -5,8 +5,8 @@
 {% block content %}
 <header class="mb-8 flex justify-between items-center">
     <div>
-        <h2 class="text-3xl font-bold tracking-tight">Assignments</h2>
-        <p class="text-muted-foreground mt-1">Management of automation tasks and leases</p>
+        <h2 class="text-3xl font-bold tracking-tight">Portal Tasks (Scrapers)</h2>
+        <p class="text-muted-foreground mt-1">Manage long-running scraping tasks for worker nodes</p>
     </div>
     <button class="btn btn-primary" onclick="document.getElementById('createAssignmentModal').classList.remove('hidden')">
         <i data-lucide="plus" class="w-4 h-4 mr-2"></i> New Assignment
@@ -16,7 +16,7 @@
 <!-- Create Assignment Modal -->
 <div id="createAssignmentModal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
     <div class="card w-full max-w-md bg-background p-6">
-        <h3 class="text-xl font-bold mb-4 tracking-tight">Create Assignment</h3>
+        <h3 class="text-xl font-bold mb-4 tracking-tight">Create Portal Task</h3>
         <form action="/assignments/create" method="POST" class="space-y-4">
             <div>
                 <label class="block text-sm font-medium mb-1">Scraper Account</label>
@@ -79,11 +79,10 @@
             <thead>
             <tr class="border-b border-border bg-muted/50">
                 <th class="p-4 font-medium text-muted-foreground">ID</th>
-                <th class="p-4 font-medium text-muted-foreground">Target (Account)</th>
+                <th class="p-4 font-medium text-muted-foreground">Target Date Range</th>
                 <th class="p-4 font-medium text-muted-foreground">Visa Center</th>
-                <th class="p-4 font-medium text-muted-foreground">Requirements</th>
-                <th class="p-4 font-medium text-muted-foreground">Target Dates</th>
                 <th class="p-4 font-medium text-muted-foreground">Status</th>
+                <th class="p-4 font-medium text-muted-foreground">Lease Status</th>
                 <th class="p-4 font-medium text-muted-foreground">Leased To</th>
                 <th class="p-4 font-medium text-muted-foreground">Actions</th>
             </tr>
@@ -94,8 +93,19 @@
                 <td class="p-4 text-muted-foreground font-mono">
                     <a href="/assignments/{{ asm.id }}" class="text-blue-500 hover:underline">#{{ asm.id }}</a>
                 </td>
-                <td class="p-4 text-foreground font-medium">{{ asm.account_username }}</td>
+                <td class="p-4 text-foreground font-medium">
+                    {{ asm.date_from }} to {{ asm.date_to }}
+                </td>
                 <td class="p-4 text-muted-foreground">{{ asm.visa_center }}</td>
+                <td class="p-4">
+                    {% if asm.status == 'Leased' %}
+                        <span class="inline-flex items-center rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-500">Leased</span>
+                    {% elif asm.status == 'Active' %}
+                        <span class="inline-flex items-center rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">Idle</span>
+                    {% else %}
+                        <span class="inline-flex items-center rounded-full border border-destructive/20 bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive">{{ asm.status }}</span>
+                    {% endif %}
+                </td>
                 <td class="p-4 text-muted-foreground">
                     {% if asm.required_labels %}
                         <div class="flex flex-wrap gap-1">

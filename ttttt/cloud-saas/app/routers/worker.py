@@ -19,6 +19,7 @@ from models import SessionLocal
 from services.worker_service import WorkerService, get_worker_service
 from services.lease_service import LeaseService, get_lease_service
 from services.maintenance_service import MaintenanceService, get_maintenance_service
+from services.scheduler_service import SchedulerService
 
 def get_db():
     db = SessionLocal()
@@ -159,7 +160,8 @@ def get_next_assignment(
     response: Response,
     worker: WorkerNode = Depends(verify_worker_hmac),
     lease_service: LeaseService = Depends(get_lease_service),
-    maintenance_service: MaintenanceService = Depends(get_maintenance_service)
+    maintenance_service: MaintenanceService = Depends(get_maintenance_service),
+    db: Session = Depends(get_db)
 ):
     # 0. Run defensive cleanup cycle
     maintenance_service.run_cleanup_cycle()
@@ -178,7 +180,8 @@ def get_next_assignment(
         return existing_lease
         
     # 2 & 3 & 4. Find next assignment and create lease
-    next_lease = lease_service.get_next_lease(worker)
+    scheduler = SchedulerService(db)
+    next_lease = scheduler.get_next_lease(worker.worker_id)
     if not next_lease:
         response.status_code = status.HTTP_204_NO_CONTENT
         response.headers["Retry-After"] = "30"
@@ -218,6 +221,16 @@ def submit_logs(
     db: Session = Depends(get_db),
     lease_service: LeaseService = Depends(get_lease_service)
 ):
+    scheduler = SchedulerService(db)
+    
+    if req.assignment_id:
+        lease = db.query(Lease).filter(
+            Lease.worker_id == worker.worker_id, 
+            Lease.assignment_id == req.assignment_id
+        ).first()
+        if lease:
+            scheduler.handle_event(req.event_type, lease, req.payload)
+
     log = EventLog(
         source="worker",
         worker_id=worker.worker_id,
@@ -270,7 +283,7 @@ def submit_logs(
             assignment = db.query(Assignment).filter(Assignment.id == req.assignment_id).first()
             if assignment:
                 # Save to SlotAvailability database using the vac_id from the worker payload
-                from models import SlotAvailability
+                from models import SlotAvailability, BookingTask
                 availability = SlotAvailability(
                     assignment_id=assignment.id,
                     visa_center=vac_id,
@@ -279,6 +292,28 @@ def submit_logs(
                     found_by=worker.worker_id
                 )
                 db.add(availability)
+                
+                # Event-driven Deduplication & Booking Pipeline
+                if slot_count > 0 and "slots" in req.payload:
+                    for slot in req.payload["slots"]:
+                        slot_time = slot.get("starttime", "00:00")
+                        try:
+                            bt = BookingTask(
+                                assignment_id=assignment.id,
+                                provider=assignment.provider,
+                                visa_center=vac_id,
+                                target_date=target_date,
+                                target_time=slot_time,
+                                slot_payload=slot,
+                                priority=10,
+                                expires_at=datetime.utcnow() + timedelta(hours=2)
+                            )
+                            db.add(bt)
+                            db.commit() # This will fail if duplicate due to UniqueConstraint
+                        except Exception as e:
+                            # IntegrityError: Duplicate booking task ignored
+                            db.rollback()
+                            continue
                 
         # Resolve center name and type string from global config
         center_name = f"Center {vac_id}"

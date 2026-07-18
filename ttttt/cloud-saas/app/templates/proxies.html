@@ -1,30 +1,27 @@
 {% extends "base.html" %}
 
-{% block title %}Scraper Accounts - Kamal Express{% endblock %}
+{% block title %}Proxies - Kamal Express{% endblock %}
 
 {% block content %}
 <header class="mb-8 flex justify-between items-center">
     <div>
-        <h2 class="text-3xl font-bold tracking-tight">Portal Accounts</h2>
-        <p class="text-muted-foreground mt-1">Manage target credentials used by workers for scraping and booking</p>
+        <h2 class="text-3xl font-bold tracking-tight">Proxies</h2>
+        <p class="text-muted-foreground mt-1">Manage network proxies and view their health and capabilities</p>
     </div>
-    <button class="btn btn-primary" onclick="document.getElementById('createAccountModal').classList.remove('hidden')">
-        <i data-lucide="plus" class="w-4 h-4 mr-2"></i> Add Account
+    <button class="btn btn-primary" onclick="document.getElementById('createProxyModal').classList.remove('hidden')">
+        <i data-lucide="plus" class="w-4 h-4 mr-2"></i> Add Proxies
     </button>
 </header>
 
-<!-- Create Account Modal -->
-<div id="createAccountModal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-    <div class="card w-full max-w-md bg-background p-6">
-        <h3 class="text-xl font-bold mb-4 tracking-tight">Add Portal Account</h3>
-        <form action="/accounts/create" method="POST" class="space-y-4">
+<!-- Create Proxy Modal -->
+<div id="createProxyModal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+    <div class="card w-full max-w-lg bg-background p-6">
+        <h3 class="text-xl font-bold mb-2 tracking-tight">Bulk Add Proxies</h3>
+        <p class="text-sm text-zinc-400 mb-4 cursor-help" title="Tip: Use high cost premium proxies for Bookers, low-cost residential for scrapers.">Format: <code class="bg-zinc-900 px-1 py-0.5 rounded text-indigo-300">host:port:user:pass</code> (one per line)</p>
+        
+        <form action="/proxies/create" method="POST" class="space-y-4">
             <div>
-                <label class="block text-sm font-medium mb-1">Username (Email)</label>
-                <input type="email" name="username" class="input" required>
-            </div>
-            <div>
-                <label class="block text-sm font-medium mb-1">Password</label>
-                <input type="password" name="password" class="input" required>
+                <textarea name="proxies_text" class="input min-h-[150px] font-mono text-sm p-3 resize-y" required placeholder="192.168.1.1:8080:admin:pass\n10.0.0.1:3128"></textarea>
             </div>
             <div class="flex items-center gap-4 py-2 border-y border-border">
                 <label class="flex items-center gap-2 text-sm font-medium cursor-pointer">
@@ -37,8 +34,8 @@
                 </label>
             </div>
             <div class="flex justify-end gap-2 mt-6">
-                <button type="button" class="btn btn-secondary border border-border" onclick="document.getElementById('createAccountModal').classList.add('hidden')">Cancel</button>
-                <button type="submit" class="btn btn-primary">Save Account</button>
+                <button type="button" class="btn btn-secondary border border-border" onclick="document.getElementById('createProxyModal').classList.add('hidden')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Proxies</button>
             </div>
         </form>
     </div>
@@ -50,52 +47,60 @@
             <thead>
             <tr class="border-b border-border bg-muted/50">
                 <th class="p-4 font-medium text-muted-foreground">ID</th>
-                <th class="p-4 font-medium text-muted-foreground">Username</th>
+                <th class="p-4 font-medium text-muted-foreground">Endpoint</th>
                 <th class="p-4 font-medium text-muted-foreground">Capabilities</th>
                 <th class="p-4 font-medium text-muted-foreground">Health</th>
                 <th class="p-4 font-medium text-muted-foreground">Status</th>
-                <th class="p-4 font-medium text-muted-foreground">Created</th>
+                <th class="p-4 font-medium text-muted-foreground">Actions</th>
             </tr>
         </thead>
         <tbody>
-            {% for acc in accounts %}
+            {% for proxy in proxies %}
             <tr class="border-b border-border hover:bg-muted/50 transition-colors">
                 <td class="p-4 text-muted-foreground font-mono">
-                    <a href="/accounts/{{ acc.id }}" class="text-blue-500 hover:underline">#{{ acc.id }}</a>
+                    #{{ proxy.id }}
                 </td>
-                <td class="p-4 text-foreground font-medium">{{ acc.username }}</td>
+                <td class="p-4 text-foreground font-medium font-mono text-sm">
+                    {{ proxy.host }}:{{ proxy.port }}
+                </td>
                 <td class="p-4 text-muted-foreground flex gap-1">
-                    {% if acc.supports_scraping %}
+                    {% if proxy.supports_scraping %}
                         <span class="inline-flex items-center rounded-md border border-zinc-700 bg-zinc-800 px-2 py-0.5 text-xs text-zinc-300" title="Eligible for Scraping Tasks">Scraper</span>
                     {% endif %}
-                    {% if acc.supports_booking %}
+                    {% if proxy.supports_booking %}
                         <span class="inline-flex items-center rounded-md border border-indigo-700 bg-indigo-800/20 px-2 py-0.5 text-xs text-indigo-300" title="Eligible for Booking Tasks">Booker</span>
                     {% endif %}
                 </td>
                 <td class="p-4">
                     <div class="flex items-center gap-2">
                         <div class="w-16 h-2 bg-zinc-800 rounded-full overflow-hidden">
-                            <div class="h-full {% if acc.health_score > 70 %}bg-emerald-500{% elif acc.health_score > 40 %}bg-amber-500{% else %}bg-destructive{% endif %}" style="width: {{ acc.health_score }}%"></div>
+                            <div class="h-full {% if proxy.health_score > 70 %}bg-emerald-500{% elif proxy.health_score > 40 %}bg-amber-500{% else %}bg-destructive{% endif %}" style="width: {{ proxy.health_score }}%"></div>
                         </div>
-                        <span class="text-xs font-mono text-muted-foreground">{{ acc.health_score }}</span>
+                        <span class="text-xs font-mono text-muted-foreground">{{ proxy.health_score }}</span>
                     </div>
                 </td>
                 <td class="p-4">
-                    {% if acc.status == 'READY' %}
+                    {% if proxy.status == 'READY' %}
                         <span class="inline-flex items-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-500">Ready</span>
-                    {% elif acc.status == 'LEASED' %}
+                    {% elif proxy.status == 'LEASED' %}
                         <span class="inline-flex items-center rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-500">Leased</span>
-                    {% elif acc.status == 'COOLDOWN' %}
-                        <span class="inline-flex items-center rounded-full border border-amber-500/20 bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-500 cursor-help" title="Cooling down until {{ acc.cooldown_until }}">Cooldown</span>
+                    {% elif proxy.status == 'COOLDOWN' %}
+                        <span class="inline-flex items-center rounded-full border border-amber-500/20 bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-500 cursor-help" title="Cooling down until {{ proxy.cooldown_until }}">Cooldown</span>
                     {% else %}
                         <span class="inline-flex items-center rounded-full border border-destructive/20 bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive">Blocked</span>
                     {% endif %}
                 </td>
-                <td class="p-4 text-muted-foreground">{{ acc.created_at.strftime('%Y-%m-%d') if acc.created_at else '-' }}</td>
+                <td class="p-4">
+                    <form action="/proxies/{{ proxy.id }}/delete" method="POST" class="inline">
+                        <button type="submit" class="text-destructive hover:text-red-400 p-1 rounded hover:bg-destructive/10" title="Delete Proxy">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </form>
+                </td>
             </tr>
             {% else %}
             <tr>
-                <td colspan="6" class="p-8 text-center text-muted-foreground">No portal accounts found.</td>
+                <td colspan="6" class="p-8 text-center text-muted-foreground">No proxies found.</td>
             </tr>
             {% endfor %}
         </tbody>

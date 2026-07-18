@@ -1,7 +1,7 @@
 import os
 import enum
 from datetime import datetime, timedelta, timezone
-from sqlalchemy import create_engine, Column, Integer, String, Boolean, DateTime, ForeignKey, Enum
+from sqlalchemy import create_engine, Column, Integer, String, Boolean, DateTime, ForeignKey, Enum, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 
@@ -112,6 +112,8 @@ class WorkerNode(Base):
     ram = Column(String, nullable=True)
     max_concurrency = Column(Integer, default=1)
     current_concurrency = Column(Integer, default=0)
+    can_scrape = Column(Boolean, default=True)
+    can_book = Column(Boolean, default=False)
     
     # State
     last_heartbeat = Column(DateTime, nullable=True)
@@ -137,22 +139,48 @@ class WorkerNode(Base):
             return False
         return age < self.WORKER_TIMEOUT_SECONDS
 
-class ScraperAccount(Base):
-    __tablename__ = "scraper_accounts"
+class PortalAccount(Base):
+    __tablename__ = "portal_accounts"
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
-    proxy_string = Column(String, nullable=True)
-    proxy_mode = Column(String, default="LEGACY") # LEGACY, POOL
-    preferred_worker_id = Column(String, ForeignKey("worker_nodes.worker_id"), nullable=True)
-    status = Column(String, default="Idle") # Idle, Leased, Banned
+    provider = Column(String, default="VFS")
+    supports_scraping = Column(Boolean, default=True)
+    supports_booking = Column(Boolean, default=False)
+    
+    status = Column(String, default="READY") # READY, LEASED, COOLDOWN, DISABLED
+    health_score = Column(Integer, default=100)
+    failure_count = Column(Integer, default=0)
+    cooldown_until = Column(DateTime, nullable=True)
     last_login = Column(DateTime, nullable=True)
+    last_success = Column(DateTime, nullable=True)
+    last_failure = Column(DateTime, nullable=True)
+    
+    bookings_in_window = Column(Integer, default=0)
+    booking_window_start = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+class Proxy(Base):
+    __tablename__ = "proxies"
+    id = Column(Integer, primary_key=True, index=True)
+    host = Column(String, nullable=False)
+    port = Column(String, nullable=False)
+    username = Column(String, nullable=True)
+    password = Column(String, nullable=True)
+    supports_scraping = Column(Boolean, default=True)
+    supports_booking = Column(Boolean, default=False)
+    
+    status = Column(String, default="READY") # READY, LEASED, COOLDOWN, DISABLED
+    health_score = Column(Integer, default=100)
+    cooldown_until = Column(DateTime, nullable=True)
+    failure_count = Column(Integer, default=0)
+    last_used = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 class Assignment(Base):
     __tablename__ = "assignments"
     id = Column(Integer, primary_key=True, index=True)
-    scraper_account_id = Column(Integer, ForeignKey("scraper_accounts.id"), nullable=False)
+    provider = Column(String, default="VFS")
     visa_center = Column(String, default="138")
     date_from = Column(String, nullable=False)
     date_to = Column(String, nullable=False)
@@ -163,11 +191,56 @@ class Assignment(Base):
     last_checked = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
+class BookingTask(Base):
+    __tablename__ = "booking_tasks"
+    id = Column(Integer, primary_key=True, index=True)
+    tenant_id = Column(Integer, ForeignKey("tenants.id"), nullable=True)
+    assignment_id = Column(Integer, ForeignKey("assignments.id"), nullable=True)
+    provider = Column(String, default="VFS")
+    visa_center = Column(String, nullable=False)
+    target_date = Column(String, nullable=False)
+    target_time = Column(String, nullable=False)
+    slot_payload = Column(JSONB, nullable=True)
+    
+    priority = Column(Integer, default=0)
+    expires_at = Column(DateTime, nullable=False)
+    attempts = Column(Integer, default=0)
+    max_attempts = Column(Integer, default=3)
+    
+    status = Column(String, default="PENDING") # PENDING, CLAIMED, SUCCESS, FAILED, EXPIRED
+    active_status = Column(Boolean, default=True) # Used for unique constraint
+    failure_reason = Column(String, nullable=True)
+    failure_details = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (
+        UniqueConstraint('tenant_id', 'visa_center', 'target_date', 'target_time', 'active_status', name='uq_booking_task'),
+    )
+
+class SchedulerDecision(Base):
+    __tablename__ = "scheduler_decisions"
+    id = Column(Integer, primary_key=True, index=True)
+    worker_id = Column(String, ForeignKey("worker_nodes.worker_id"), nullable=True)
+    selected_assignment_id = Column(Integer, ForeignKey("assignments.id"), nullable=True)
+    selected_booking_task_id = Column(Integer, ForeignKey("booking_tasks.id"), nullable=True)
+    selected_account_id = Column(Integer, ForeignKey("portal_accounts.id"), nullable=True)
+    selected_proxy_id = Column(Integer, ForeignKey("proxies.id"), nullable=True)
+    
+    decision_type = Column(String, nullable=False) # SUCCESS, NO_READY_ACCOUNT, etc.
+    decision_reason = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
 class Lease(Base):
     __tablename__ = "leases"
     id = Column(Integer, primary_key=True, index=True)
-    assignment_id = Column(Integer, ForeignKey("assignments.id"), nullable=False)
     worker_id = Column(String, ForeignKey("worker_nodes.worker_id"), nullable=False)
+    assignment_id = Column(Integer, ForeignKey("assignments.id"), nullable=True)
+    booking_task_id = Column(Integer, ForeignKey("booking_tasks.id"), nullable=True)
+    portal_account_id = Column(Integer, ForeignKey("portal_accounts.id"), nullable=True)
+    proxy_id = Column(Integer, ForeignKey("proxies.id"), nullable=True)
+    
+    lease_version = Column(Integer, default=1)
+    issued_at = Column(DateTime, default=datetime.utcnow)
     expires_at = Column(DateTime, nullable=False)
     last_heartbeat = Column(DateTime, nullable=True)
     status = Column(String, default="Pending") # Pending, Leased, Running, Completed, Expired, Cancelled, Failed, Abandoned
@@ -176,8 +249,12 @@ class Lease(Base):
 class LeaseArchive(Base):
     __tablename__ = "lease_archives"
     id = Column(Integer, primary_key=True, index=True)
-    assignment_id = Column(Integer, ForeignKey("assignments.id"), nullable=False)
     worker_id = Column(String, ForeignKey("worker_nodes.worker_id"), nullable=False)
+    assignment_id = Column(Integer, ForeignKey("assignments.id"), nullable=True)
+    booking_task_id = Column(Integer, ForeignKey("booking_tasks.id"), nullable=True)
+    portal_account_id = Column(Integer, ForeignKey("portal_accounts.id"), nullable=True)
+    proxy_id = Column(Integer, ForeignKey("proxies.id"), nullable=True)
+    
     expires_at = Column(DateTime, nullable=False)
     last_heartbeat = Column(DateTime, nullable=True)
     status = Column(String, nullable=False)

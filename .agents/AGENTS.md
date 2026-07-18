@@ -40,5 +40,13 @@ When taking over a session via a handoff document (e.g., in `.ai/transient/hando
 - Address the exact architectural gaps specified (e.g., if the handoff specifies "Dual Pools", you must design Dual Pools).
 - If the handoff is unclear, explicitly ask the user for clarification before drifting out of scope.
 
+## 7. Operational Guidance & Terminology
+Whenever a new operational event, technical term, scheduling decision, or error code is introduced to the system, you **MUST** update the `.ai/permanent/architecture/06-operational-guidance-glossary.md` file. All new events must conform to the **Explain, Diagnose & Recover (EDR)** standard.
+
 ---
 *Always mirror sprint planning artifacts to `.ai/transient/handoffs/` when closing out a sprint.*
+
+## 8. Deployment & Migrations Constraints
+- **Local Environment:** The user develops on a low-end laptop without Docker installed.
+- **Agent Constraint:** Agents **MUST NOT** attempt to run `alembic` migrations or `docker-compose` commands locally (unless specifically authorized). 
+- **Production Pipeline:** Database migrations and docker builds are automatically handled via Portainer on the VPS (staging/production) utilizing the configurations in the `vps-setup` directory.

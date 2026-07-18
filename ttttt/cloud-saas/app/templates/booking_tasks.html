@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Booking Tasks - Kamal Express{% endblock %}
+
+{% block content %}
+<header class="mb-8 flex justify-between items-center">
+    <div>
+        <h2 class="text-3xl font-bold tracking-tight">Booking Tasks</h2>
+        <p class="text-muted-foreground mt-1">Event-driven tasks for acquiring available slots</p>
+    </div>
+</header>
+
+<div class="card overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-sm">
+            <thead>
+            <tr class="border-b border-border bg-muted/50">
+                <th class="p-4 font-medium text-muted-foreground">ID</th>
+                <th class="p-4 font-medium text-muted-foreground">Provider</th>
+                <th class="p-4 font-medium text-muted-foreground">Target</th>
+                <th class="p-4 font-medium text-muted-foreground">Attempts</th>
+                <th class="p-4 font-medium text-muted-foreground">Status</th>
+                <th class="p-4 font-medium text-muted-foreground">Expires At</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+            <tr class="border-b border-border hover:bg-muted/50 transition-colors">
+                <td class="p-4 text-muted-foreground font-mono">
+                    #{{ task.id }}
+                </td>
+                <td class="p-4 text-foreground font-medium">
+                    {{ task.provider }}
+                </td>
+                <td class="p-4 text-muted-foreground">
+                    <span class="text-foreground font-medium">{{ task.target_date }} at {{ task.target_time }}</span><br>
+                    <span class="text-xs">Center {{ task.visa_center }}</span>
+                </td>
+                <td class="p-4 text-muted-foreground">
+                    {{ task.attempts }}
+                </td>
+                <td class="p-4">
+                    {% if task.status == 'PENDING' %}
+                        <span class="inline-flex items-center rounded-full border border-amber-500/20 bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-500">Pending</span>
+                    {% elif task.status == 'CLAIMED' %}
+                        <span class="inline-flex items-center rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-500">Claimed</span>
+                    {% elif task.status == 'SUCCESS' %}
+                        <span class="inline-flex items-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-500">Success</span>
+                    {% else %}
+                        <span class="inline-flex items-center rounded-full border border-destructive/20 bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive">{{ task.status }}</span>
+                    {% endif %}
+                </td>
+                <td class="p-4 text-muted-foreground">
+                    {{ task.expires_at.strftime('%Y-%m-%d %H:%M:%S') if task.expires_at else '-' }}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" class="p-8 text-center text-muted-foreground">No booking tasks found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
