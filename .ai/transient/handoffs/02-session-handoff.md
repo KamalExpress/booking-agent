@@ -28,6 +28,8 @@ This session focused entirely on frontend user experience, PWA mobile compliance
 - **Worker Management UI:** Refine the `/workers` dashboard to visualize worker health (Heartbeats, Scheduling State, Assignments) with greater detail.
 - **Future Sprint (Epic 5 - The Service Layer):** The backend endpoints in `cloud-saas/app/routers/worker.py` and `assignment.py` are still monolithic. Architecture dictates moving logic into `WorkerService`, `LeaseService`, and `MaintenanceService`.
 - **Future Sprint (Dual Pools):** Architect two distinct pools of workers: the **Scrapers Pool** and the **Slot Booking Pool**.
+- **Future Sprint (Robust Proxy Management):** Refactor how proxies are assigned. Move away from a single text field on `ScraperAccount` and introduce a centralized proxy pool in the database. Ensure that proxies are assigned uniquely to accounts so no single proxy is ever used by multiple accounts simultaneously.
+- **Production Validation:** Ensure that the production stack can pull the latest `feature/staging` code and boot seamlessly.
 
 ## 3. Important Context for the Next Agent
 - Local setup is not available. The user tests all changes by redeploying the Portainer stack on their VPS after pushing to `feature/staging`.
