@@ -5,8 +5,7 @@ from auth import get_password_hash
 from sqlalchemy import text
 
 def init_db():
-    print("Creating database tables...")
-    Base.metadata.create_all(bind=engine)
+    print("Database tables should already be created via entrypoint.")
     
     # Pre-generate the SECRET_MASTER_KEY if missing
     from secrets_manager import secrets_manager
