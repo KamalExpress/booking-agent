@@ -9,8 +9,8 @@ services:
     container_name: cloud-saas-staging
     restart: always
     ports:
-      # Expose port 8744 for the Cloudflare Tunnel daemon to route to for Staging
-      - "127.0.0.1:8744:8000"
+      # Expose port 9743 for the Cloudflare Tunnel daemon to route to for Staging
+      - "127.0.0.1:9743:8000"
     environment:
       - DATABASE_URL
       - SECRET_KEY
