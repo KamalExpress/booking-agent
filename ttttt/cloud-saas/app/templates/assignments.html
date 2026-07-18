@@ -18,16 +18,7 @@
     <div class="card w-full max-w-md bg-background p-6">
         <h3 class="text-xl font-bold mb-4 tracking-tight">Create Portal Task</h3>
         <form action="/assignments/create" method="POST" class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium mb-1">Scraper Account</label>
-                <select name="scraper_account_id" class="input w-full" required>
-                    {% for acc in accounts %}
-                    <option value="{{ acc.id }}">{{ acc.username }} ({{ acc.status }})</option>
-                    {% else %}
-                    <option value="" disabled>No accounts available</option>
-                    {% endfor %}
-                </select>
-            </div>
+
             <div>
                 <label class="block text-sm font-medium mb-1">Target Start Date</label>
                 <input type="text" name="target_start_date" class="input" placeholder="DD/MM/YYYY" pattern="\d{2}/\d{2}/\d{4}" title="Format: DD/MM/YYYY" required>

@@ -43,7 +43,7 @@ class LeaseService:
         if existing_lease:
             best_assignment = self.db.query(Assignment).filter(Assignment.id == existing_lease.assignment_id).first()
             if best_assignment:
-                acc = self.db.query(PortalAccount).filter(PortalAccount.id == best_assignment.scraper_account_id).first()
+                acc = self.db.query(PortalAccount).filter(PortalAccount.id == existing_lease.portal_account_id).first()
                 return self._build_lease_response(existing_lease, best_assignment, acc)
         return None
 
@@ -78,11 +78,7 @@ class LeaseService:
                     
             score = asm.priority * 10
             
-            # Check PortalAccount preferred worker
-            acc = self.db.query(PortalAccount).filter(PortalAccount.id == asm.scraper_account_id).first()
-            if acc and acc.preferred_worker_id == worker.worker_id:
-                score += 100
-                
+            # Preferred worker logic removed (handled by SchedulerService)
             if score > best_score:
                 best_score = score
                 best_assignment = asm
@@ -115,7 +111,7 @@ class LeaseService:
         self.db.refresh(lease)
         
         # 4. Return Lease object
-        acc = self.db.query(PortalAccount).filter(PortalAccount.id == best_assignment.scraper_account_id).first()
+        acc = self.db.query(PortalAccount).filter(PortalAccount.id == lease.portal_account_id).first()
         return self._build_lease_response(lease, best_assignment, acc)
 
     def _build_lease_response(self, lease: Lease, assignment: Assignment, acc: Optional[PortalAccount]) -> Dict[str, Any]:

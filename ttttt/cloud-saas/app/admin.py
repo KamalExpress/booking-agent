@@ -66,7 +66,7 @@ class WorkerNodeAdmin(ModelView, model=WorkerNode):
     column_searchable_list = [WorkerNode.worker_id, WorkerNode.public_ip]
 
 class AssignmentAdmin(ModelView, model=Assignment):
-    column_list = [Assignment.id, Assignment.scraper_account_id, Assignment.visa_center, Assignment.date_from, Assignment.date_to, Assignment.status]
+    column_list = [Assignment.id, Assignment.visa_center, Assignment.date_from, Assignment.date_to, Assignment.status]
     column_searchable_list = [Assignment.visa_center]
 
 class LeaseAdmin(ModelView, model=Lease):
