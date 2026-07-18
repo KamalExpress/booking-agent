@@ -217,7 +217,7 @@
                             <span class="text-blue-400">INFO</span>
                         {% endif %}
                     </td>
-                    <td class="px-6 py-4 font-semibold text-[#fafafa]">{{ log.event_type }}</td>
+                    <td class="px-6 py-4 font-semibold"><operational-guidance code="{{ log.event_type }}"></operational-guidance></td>
                     <td class="px-6 py-4 text-[#a1a1aa]">
                         {% if log.assignment_id %}<a href="/assignments/{{ log.assignment_id }}" class="hover:underline text-blue-400">#{{ log.assignment_id }}</a>{% else %}-{% endif %}
                     </td>

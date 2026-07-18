@@ -27,19 +27,7 @@
                 <td class="p-4 font-mono text-xs text-muted-foreground">{{ log.worker_id[:8] if log.worker_id else '-' }}</td>
                 <td class="p-4 text-muted-foreground">#{{ log.assignment_id }}</td>
                 <td class="p-4">
-                    {% if log.event_type == 'SLOT_FOUND' %}
-                        <span class="inline-flex items-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-500">
-                            {{ log.event_type }}
-                        </span>
-                    {% elif log.event_type == 'ERROR' %}
-                        <span class="inline-flex items-center rounded-full border border-destructive/20 bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive">
-                            {{ log.event_type }}
-                        </span>
-                    {% else %}
-                        <span class="inline-flex items-center rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs font-semibold text-foreground">
-                            {{ log.event_type }}
-                        </span>
-                    {% endif %}
+                    <operational-guidance code="{{ log.event_type }}"></operational-guidance>
                 </td>
                 <td class="p-4 text-foreground">{{ log.message }}</td>
             </tr>

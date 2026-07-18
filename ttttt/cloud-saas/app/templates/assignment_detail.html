@@ -149,7 +149,7 @@
                                     <span class="inline-flex items-center rounded-md bg-zinc-500/10 px-2 py-1 text-xs font-medium text-zinc-400 ring-1 ring-inset ring-zinc-500/20">{{ event.severity|upper }}</span>
                                 {% endif %}
                             </td>
-                            <td class="px-5 py-3 font-medium text-zinc-200">{{ event.event_type }}</td>
+                            <td class="px-5 py-3 font-medium"><operational-guidance code="{{ event.event_type }}"></operational-guidance></td>
                             <td class="px-5 py-3 text-zinc-400 font-mono text-xs">{{ event.worker_id[:8] if event.worker_id else '-' }}</td>
                         </tr>
                         <tr id="payload-{{ event.id }}" class="hidden bg-zinc-900/50">
