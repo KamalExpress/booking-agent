@@ -26,9 +26,17 @@ python -c "
 from sqlalchemy import create_engine, inspect
 import os, sys, subprocess
 engine = create_engine(os.environ['DATABASE_URL'])
-if not inspect(engine).has_table('alembic_version'):
-    print('Fresh database detected. Stamping Alembic head.')
-    subprocess.run([sys.executable, '-m', 'alembic', 'stamp', 'head'])
+inspector = inspect(engine)
+if not inspector.has_table('alembic_version'):
+    print('No alembic_version found. Stamping database at 001_baseline so subsequent migrations can run.')
+    subprocess.run([sys.executable, '-m', 'alembic', 'stamp', '001_baseline'])
+else:
+    # Self-healing: if alembic is stamped but migrations were skipped, force rollback stamp
+    if inspector.has_table('leases'):
+        cols = [c['name'] for c in inspector.get_columns('leases')]
+        if 'lease_version' not in cols:
+            print('Database is missing Sprint 10 columns. Forcing stamp to 001_baseline to re-run migrations.')
+            subprocess.run([sys.executable, '-m', 'alembic', 'stamp', '001_baseline'])
 "
 
 python -m alembic upgrade head
