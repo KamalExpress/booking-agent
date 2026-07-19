@@ -203,6 +203,16 @@ class OperatorAgent:
                 context = browser.new_context(**context_kwargs)
                 page = context.new_page()
                 
+                try:
+                    from playwright_stealth import Stealth
+                    Stealth().apply_stealth_sync(page)
+                except ImportError:
+                    try:
+                        from playwright_stealth import stealth_sync
+                        stealth_sync(page)
+                    except ImportError:
+                        logging.warning("playwright_stealth not found, WAF might still detect headless.")
+                
                 # Navigate and wait for Imperva JS to execute (network idle usually signifies completion)
                 logging.info(f"Navigating to {self.base_url}/?lang=en_US to clear WAF...")
                 page.goto(f"{self.base_url}/?lang=en_US", wait_until="networkidle", timeout=30000)
