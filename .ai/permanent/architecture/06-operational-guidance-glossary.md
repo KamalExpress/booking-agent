@@ -27,6 +27,8 @@ This document serves as the master dictionary for all operational events, errors
 | `PORTAL_ERROR` | The visa portal returned a server error (5xx). | The visa portal is undergoing maintenance or is overloaded. | Wait for the portal to recover. | System will keep trying at the configured polling interval. |
 | `BOOKING_FAILED` | A booking attempt failed. | The slot was taken by someone else before the booker could finish, or a portal error occurred during submission. | None (slot is lost). | Bookers will wait for the next `SLOT_FOUND` event. |
 | `RATE_LIMITED` | The portal rate-limited the worker (429). | The proxy or account made too many requests in a short time. | Increase your polling interval or add more proxies. | Both Account and Proxy enter cooldown. |
+| `WAF_TARPIT` | Worker network request hangs and times out after exactly 30s. | Imperva WAF dropped the POST packet because JS cookies expired, rather than sending a TCP reset. | Spawn a headless Playwright instance to evaluate the JS challenge and refresh cookies. | Yes, the worker detects the `curl: (28)` error and automatically triggers a cookie refresh. |
+| `WAF_FINGERPRINT_MISMATCH` | Worker receives `403 Forbidden` despite valid cookies. | The browser fingerprint (User-Agent/sec-ch-ua) used to solve the JS challenge differs from the API scraper client. | Align Playwright context attributes perfectly with the `curl_cffi` impersonation profile. | No, requires developer intervention to fix the fingerprint alignment. |
 
 ## System / Lifecycle Events
 
