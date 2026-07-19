@@ -28,6 +28,7 @@ logging.basicConfig(
 
 class OperatorAgent:
     def __init__(self, captcha_service: CaptchaService, username: str = None, password: str = None, proxy_string: str = None):
+        self.proxy_string = proxy_string
         try:
             from curl_cffi import requests as c_requests
             self.session = c_requests.Session(impersonate="chrome120")
@@ -161,6 +162,59 @@ class OperatorAgent:
             except Exception:
                 pass
 
+    def refresh_waf_cookies(self):
+        """
+        Headless Playwright flow to quickly execute Imperva JS challenge and extract fresh cookies.
+        """
+        logging.warning("Refreshing WAF cookies via Headless Playwright...")
+        try:
+            from playwright.sync_api import sync_playwright
+        except ImportError:
+            logging.error("Playwright is not installed. Cannot refresh WAF cookies.")
+            return False
+
+        try:
+            with sync_playwright() as p:
+                browser = p.chromium.launch(
+                    headless=True,
+                    args=["--disable-blink-features=AutomationControlled"]
+                )
+                
+                context_kwargs = {
+                    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+                    "viewport": {'width': 1280, 'height': 720}
+                }
+                
+                if hasattr(self, 'proxy_string') and self.proxy_string:
+                    from urllib.parse import urlparse
+                    parsed = urlparse(self.proxy_string)
+                    if parsed.hostname:
+                        proxy_conf = {"server": f"http://{parsed.hostname}:{parsed.port}"}
+                        if parsed.username:
+                            proxy_conf["username"] = parsed.username
+                            proxy_conf["password"] = parsed.password
+                        context_kwargs["proxy"] = proxy_conf
+
+                context = browser.new_context(**context_kwargs)
+                page = context.new_page()
+                
+                # Navigate and wait for Imperva JS to execute (network idle usually signifies completion)
+                logging.info(f"Navigating to {self.base_url}/?lang=en_US to clear WAF...")
+                page.goto(f"{self.base_url}/?lang=en_US", wait_until="networkidle", timeout=30000)
+                page.wait_for_timeout(3000) # extra wait for cookie setting
+                
+                # Extract and inject cookies
+                cookies = context.cookies()
+                for cookie in cookies:
+                    self.session.cookies.set(cookie['name'], cookie['value'], domain=cookie.get('domain', 'pk-gr-services.gvcworld.eu'))
+                    
+                logging.info(f"Successfully refreshed {len(cookies)} WAF cookies.")
+                self.save_session()
+                return True
+        except Exception as e:
+            logging.error(f"Failed to refresh WAF cookies via Playwright: {e}")
+            return False
+
     def login(self):
         logging.info(f"Attempting login for {self.username}...")
         
@@ -196,25 +250,47 @@ class OperatorAgent:
         }
         
         logging.debug(f"Login payload: {payload}")
-        try:
-            response = self.session.post(url, json=payload)
-            logging.debug(f"Login response status: {response.status_code}, text: {response.text}")
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Network error during login request: {e}")
-            return False
         
-        if response.status_code == 200:
-            logging.info("Login successful!")
-            self.save_session()
-            # Save auth token if returned in JSON (sometimes it's a cookie, sometimes an Authorization header)
-            # data = response.json()
-            # if 'token' in data:
-            #     self.session.headers.update({'Authorization': f"Bearer {data['token']}"})
-            return True
-        else:
-            logging.error(f"Login failed. Status Code: {response.status_code}")
-            logging.error(f"Response: {response.text}")
-            return False
+        # Consume any dead keep-alive connection resulting from the Captcha wait
+        try:
+            self.session.get(f"{self.base_url}/favicon.ico", timeout=3)
+        except Exception:
+            pass
+            
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                response = self.session.post(url, json=payload, timeout=30)
+                logging.debug(f"Login response status: {response.status_code}, text: {response.text}")
+                
+                if response.status_code == 200:
+                    logging.info("Login successful!")
+                    self.save_session()
+                    return True
+                elif response.status_code in [403, 502, 503, 504, 522]:
+                    logging.warning(f"Received {response.status_code} during login. Retrying... ({attempt+1}/{max_retries})")
+                    if response.status_code == 403:
+                        self.refresh_waf_cookies()
+                    time.sleep(3)
+                    continue
+                else:
+                    logging.error(f"Login failed. Status Code: {response.status_code}")
+                    logging.error(f"Response: {response.text}")
+                    return False
+                    
+            except Exception as e:
+                logging.error(f"Network error during login request (Attempt {attempt+1}/{max_retries}): {e}")
+                
+                # If it's a timeout (28), it usually means WAF tarpitting due to expired cookies
+                if "28" in str(e) or "timeout" in str(e).lower():
+                    self.refresh_waf_cookies()
+                    
+                if attempt < max_retries - 1:
+                    time.sleep(3)
+                    continue
+                return False
+                
+        return False
 
     def search_slots(self, date_from, app_type, vac_id):
         url = f"{self.base_url}/api/v1/periodslot/slots"
@@ -236,21 +312,39 @@ class OperatorAgent:
         logging.info(f"Form Data (Payload) sent: {payload}")
         
         logging.debug(f"Search slots payload: {payload}")
-        try:
-            response = self.session.put(url, json=payload)
-            logging.debug(f"Search slots response status: {response.status_code}, text: {response.text}")
-            
-            if response.status_code == 200:
-                slots = response.json()
-                logging.info(f"Slots retrieved successfully from {url}: {slots}")
-                return slots
-            else:
-                logging.error(f"Failed to search slots. Status Code: {response.status_code}")
-                logging.error(f"Response: {response.text}")
-                return {"error": True, "status_code": response.status_code, "text": response.text}
-        except Exception as e:
-            logging.error(f"Network or WAF Error during search_slots: {e}")
-            return {"error": True, "status_code": 0, "text": str(e)}
+        
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                response = self.session.put(url, json=payload, timeout=30)
+                logging.debug(f"Search slots response status: {response.status_code}, text: {response.text}")
+                
+                if response.status_code == 200:
+                    slots = response.json()
+                    logging.info(f"Slots retrieved successfully from {url}: {slots}")
+                    return slots
+                elif response.status_code in [403, 502, 503, 504, 522]:
+                    logging.warning(f"Received {response.status_code} during search_slots. Retrying... ({attempt+1}/{max_retries})")
+                    if response.status_code == 403:
+                        self.refresh_waf_cookies()
+                    time.sleep(3)
+                    continue
+                else:
+                    logging.error(f"Failed to search slots. Status Code: {response.status_code}")
+                    logging.error(f"Response: {response.text}")
+                    return {"error": True, "status_code": response.status_code, "text": response.text}
+            except Exception as e:
+                logging.error(f"Network or WAF Error during search_slots (Attempt {attempt+1}/{max_retries}): {e}")
+                
+                if "28" in str(e) or "timeout" in str(e).lower():
+                    self.refresh_waf_cookies()
+                    
+                if attempt < max_retries - 1:
+                    time.sleep(3)
+                    continue
+                return {"error": True, "status_code": 0, "text": str(e)}
+                
+        return {"error": True, "status_code": 0, "text": "Max retries exceeded"}
 
     def request_otp(self, phone_number):
         """
@@ -298,17 +392,45 @@ class OperatorAgent:
         logging.debug(f"Book appointment payload: {payload}")
         
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-        response = self.session.post(url, data=payload, headers=headers)
         
-        logging.debug(f"Book appointment response status: {response.status_code}, text: {response.text}")
-        
-        if response.status_code == 200:
-            logging.info("Booking confirmed!")
-            return True
-        else:
-            logging.error(f"Booking failed. Status Code: {response.status_code}")
-            logging.error(f"Response: {response.text}")
-            return False
+        # Consume any dead keep-alive connection resulting from the booking Captcha wait
+        try:
+            self.session.get(f"{self.base_url}/favicon.ico", timeout=3)
+        except Exception:
+            pass
+            
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                response = self.session.post(url, data=payload, headers=headers, timeout=30)
+                logging.debug(f"Book appointment response status: {response.status_code}, text: {response.text}")
+                
+                if response.status_code == 200:
+                    logging.info("Booking confirmed!")
+                    return True
+                elif response.status_code in [403, 502, 503, 504, 522]:
+                    logging.warning(f"Received {response.status_code} during booking. Retrying... ({attempt+1}/{max_retries})")
+                    if response.status_code == 403:
+                        self.refresh_waf_cookies()
+                    time.sleep(3)
+                    continue
+                else:
+                    logging.error(f"Booking failed. Status Code: {response.status_code}")
+                    logging.error(f"Response: {response.text}")
+                    return False
+                    
+            except Exception as e:
+                logging.error(f"Network error during booking request (Attempt {attempt+1}/{max_retries}): {e}")
+                
+                if "28" in str(e) or "timeout" in str(e).lower():
+                    self.refresh_waf_cookies()
+                    
+                if attempt < max_retries - 1:
+                    time.sleep(3)
+                    continue
+                return False
+                
+        return False
 
 def main():
     strategy = os.getenv('CAPTCHA_STRATEGY', 'AUTO').upper()
