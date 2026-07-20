@@ -1,0 +1,4 @@
+- [x] Update `main_operator.py`: Add `is_authenticated()` method to `OperatorAgent`
+- [x] Update `main_operator.py`: Modify `login()` to bypass CAPTCHA if `is_authenticated()` is true
+- [x] Update `worker.py` (routers): Implement account cooldown when `LOGIN_FAILED` is logged
+- [ ] Update `walkthrough.md`

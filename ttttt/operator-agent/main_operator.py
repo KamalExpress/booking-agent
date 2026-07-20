@@ -28,6 +28,7 @@ logging.basicConfig(
 
 class OperatorAgent:
     def __init__(self, captcha_service: CaptchaService, username: str = None, password: str = None, proxy_string: str = None):
+        self.proxy_string = proxy_string
         try:
             from curl_cffi import requests as c_requests
             self.session = c_requests.Session(impersonate="chrome120")
@@ -161,7 +162,138 @@ class OperatorAgent:
             except Exception:
                 pass
 
+    def refresh_waf_cookies(self):
+        """
+        Headless Playwright flow to quickly execute Imperva JS challenge and extract fresh cookies.
+        """
+        logging.warning("Refreshing WAF cookies via Headless Playwright...")
+        try:
+            from playwright.sync_api import sync_playwright
+        except ImportError:
+            logging.error("Playwright is not installed. Cannot refresh WAF cookies.")
+            return False
+
+        try:
+            with sync_playwright() as p:
+                browser = p.chromium.launch(
+                    headless=True,
+                    args=["--disable-blink-features=AutomationControlled"]
+                )
+                
+                context_kwargs = {
+                    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    "viewport": {'width': 1280, 'height': 720},
+                    "extra_http_headers": {
+                        "sec-ch-ua": '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+                        "sec-ch-ua-mobile": "?0",
+                        "sec-ch-ua-platform": '"macOS"'
+                    }
+                }
+                
+                if hasattr(self, 'proxy_string') and self.proxy_string:
+                    from urllib.parse import urlparse
+                    parsed = urlparse(self.proxy_string)
+                    if parsed.hostname:
+                        proxy_conf = {"server": f"http://{parsed.hostname}:{parsed.port}"}
+                        if parsed.username:
+                            proxy_conf["username"] = parsed.username
+                            proxy_conf["password"] = parsed.password
+                        context_kwargs["proxy"] = proxy_conf
+
+                context = browser.new_context(**context_kwargs)
+                page = context.new_page()
+                
+                try:
+                    from playwright_stealth import Stealth
+                    Stealth().apply_stealth_sync(page)
+                except ImportError:
+                    try:
+                        from playwright_stealth import stealth_sync
+                        stealth_sync(page)
+                    except ImportError:
+                        logging.warning("playwright_stealth not found, WAF might still detect headless.")
+                
+                # Navigate to the login page (without networkidle, as tracking scripts can prevent it)
+                logging.info(f"Navigating to {self.base_url}/login to clear WAF...")
+                # Use wait_until="commit" so Playwright doesn't wait for the extremely slow WAF assets to fully 'load'
+                page.goto(f"{self.base_url}/login", wait_until="commit", timeout=60000)
+                
+                # Wait for the username input box to appear. This guarantees Imperva has fully cleared us.
+                logging.info("Waiting for Imperva JS challenge to clear and login form to render...")
+                username_selector = 'input[name="username"], input[type="email"], input[id*="user"]'
+                # Allow up to 90 seconds for the WAF challenge to compute on the slow VPS proxy
+                page.wait_for_selector(username_selector, timeout=90000)
+                logging.info("Login form detected! WAF challenge successfully bypassed.")
+                
+                # Extract and inject cookies
+                cookies = context.cookies()
+                self.session.cookies.clear() # Completely wipe the old tainted cookie jar
+                for cookie in cookies:
+                    self.session.cookies.set(cookie['name'], cookie['value'], domain=cookie.get('domain', 'pk-gr-services.gvcworld.eu'))
+                    
+                logging.info(f"Successfully refreshed {len(cookies)} WAF cookies.")
+                self.save_session()
+                return True
+        except Exception as e:
+            logging.error(f"Failed to refresh WAF cookies via Playwright: {e}")
+            return False
+
+    def is_authenticated(self):
+        """
+        Lightweight check to see if the loaded session cookies are still valid.
+        This prevents burning CapSolver credits if we already have a valid session.
+        """
+        logging.info("Validating existing session...")
+        url = f"{self.base_url}/api/v1/periodslot/slots"
+        # Dummy payload just to check authentication state
+        payload = {
+            "datefrom": "01/01/2026", "type": 26, "bookingfor": 0, "members": 1, "method": 1,
+            "travelpurposes": -1, "howmanyapplicantsareunder12": 0, "appointmentId": "undefined",
+            "id": 0, "vac": {"id": 138}
+        }
+        
+        for attempt in range(2):
+            try:
+                response = self.session.put(url, json=payload, timeout=15)
+                if response.status_code == 200:
+                    logging.info("Session is fully valid. Bypassing login.")
+                    return True
+                elif response.status_code == 401:
+                    logging.info("Session has expired (401). Must login again.")
+                    return False
+                elif response.status_code in [403, 502, 503, 504, 522]:
+                    logging.warning(f"Session check hit WAF block ({response.status_code}). Refreshing WAF cookies...")
+                    self.refresh_waf_cookies()
+                    continue
+                else:
+                    return False
+            except Exception as e:
+                logging.warning(f"Session validation error on attempt {attempt+1}: {e}")
+                # If it's a stale keep-alive drop (curl 28 or 52/56), retrying should fix it without a WAF refresh.
+                if attempt == 0:
+                    # Quick dummy request to consume any remaining dead sockets in the pool
+                    try:
+                        self.session.get(f"{self.base_url}/favicon.ico", timeout=3)
+                    except Exception:
+                        pass
+                    continue
+                
+                # If it fails twice on timeout, it's a real WAF tarpit
+                if "28" in str(e) or "timeout" in str(e).lower():
+                    self.refresh_waf_cookies()
+                    try:
+                        response = self.session.put(url, json=payload, timeout=15)
+                        if response.status_code == 200:
+                            return True
+                    except:
+                        pass
+                return False
+        return False
+
     def login(self):
+        if self.is_authenticated():
+            return True
+            
         logging.info(f"Attempting login for {self.username}...")
         
         # 1. PRE-FLIGHT NAVIGATION: Establish Incapsula TLS Fingerprint & Session Cookies
@@ -183,14 +315,10 @@ class OperatorAgent:
         
         # Intelligent fallback to Manual mode if Auto mode fails
         if not captcha_token and self.captcha_service.__class__.__name__ in ['NopeChaService', 'CapSolverService']:
-            import os
-            if os.getenv("HEADLESS_WORKER", "false").lower() == "true":
-                logging.error("Headless worker cannot fallback to Manual Browser Captcha. Aborting login.")
-            else:
-                logging.warning(f"{self.captcha_service.__class__.__name__} failed! Falling back to Manual Browser Captcha...")
-                from captcha_service import ManualCaptchaService
-                manual_svc = ManualCaptchaService()
-                captcha_token = manual_svc.solve(self.sitekey, f"{self.base_url}/login", session=self.session)
+            logging.warning(f"{self.captcha_service.__class__.__name__} failed! Falling back to Manual Browser Captcha...")
+            from captcha_service import ManualCaptchaService
+            manual_svc = ManualCaptchaService()
+            captcha_token = manual_svc.solve(self.sitekey, f"{self.base_url}/login", session=self.session)
         
         url = f"{self.base_url}/api/v1/auth/login"
         payload = {
@@ -201,6 +329,12 @@ class OperatorAgent:
         
         logging.debug(f"Login payload: {payload}")
         
+        # Consume any dead keep-alive connection resulting from the Captcha wait
+        try:
+            self.session.get(f"{self.base_url}/favicon.ico", timeout=3)
+        except Exception:
+            pass
+            
         max_retries = 3
         for attempt in range(max_retries):
             try:
@@ -211,8 +345,14 @@ class OperatorAgent:
                     logging.info("Login successful!")
                     self.save_session()
                     return True
-                elif response.status_code in [502, 503, 504, 522]:
+                elif response.status_code in [403, 502, 503, 504, 522]:
                     logging.warning(f"Received {response.status_code} during login. Retrying... ({attempt+1}/{max_retries})")
+                    if response.status_code == 403:
+                        self.refresh_waf_cookies()
+                        try:
+                            self.session.get(f"{self.base_url}/favicon.ico", timeout=3)
+                        except Exception:
+                            pass
                     time.sleep(3)
                     continue
                 else:
@@ -222,6 +362,15 @@ class OperatorAgent:
                     
             except Exception as e:
                 logging.error(f"Network error during login request (Attempt {attempt+1}/{max_retries}): {e}")
+                
+                # If it's a timeout (28), it usually means WAF tarpitting due to expired cookies
+                if "28" in str(e) or "timeout" in str(e).lower():
+                    self.refresh_waf_cookies()
+                    try:
+                        self.session.get(f"{self.base_url}/favicon.ico", timeout=3)
+                    except Exception:
+                        pass
+                    
                 if attempt < max_retries - 1:
                     time.sleep(3)
                     continue
@@ -260,8 +409,10 @@ class OperatorAgent:
                     slots = response.json()
                     logging.info(f"Slots retrieved successfully from {url}: {slots}")
                     return slots
-                elif response.status_code in [502, 503, 504, 522]:
+                elif response.status_code in [403, 502, 503, 504, 522]:
                     logging.warning(f"Received {response.status_code} during search_slots. Retrying... ({attempt+1}/{max_retries})")
+                    if response.status_code == 403:
+                        self.refresh_waf_cookies()
                     time.sleep(3)
                     continue
                 else:
@@ -270,6 +421,10 @@ class OperatorAgent:
                     return {"error": True, "status_code": response.status_code, "text": response.text}
             except Exception as e:
                 logging.error(f"Network or WAF Error during search_slots (Attempt {attempt+1}/{max_retries}): {e}")
+                
+                if "28" in str(e) or "timeout" in str(e).lower():
+                    self.refresh_waf_cookies()
+                    
                 if attempt < max_retries - 1:
                     time.sleep(3)
                     continue
@@ -324,6 +479,12 @@ class OperatorAgent:
         
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         
+        # Consume any dead keep-alive connection resulting from the booking Captcha wait
+        try:
+            self.session.get(f"{self.base_url}/favicon.ico", timeout=3)
+        except Exception:
+            pass
+            
         max_retries = 3
         for attempt in range(max_retries):
             try:
@@ -333,8 +494,10 @@ class OperatorAgent:
                 if response.status_code == 200:
                     logging.info("Booking confirmed!")
                     return True
-                elif response.status_code in [502, 503, 504, 522]:
+                elif response.status_code in [403, 502, 503, 504, 522]:
                     logging.warning(f"Received {response.status_code} during booking. Retrying... ({attempt+1}/{max_retries})")
+                    if response.status_code == 403:
+                        self.refresh_waf_cookies()
                     time.sleep(3)
                     continue
                 else:
@@ -344,6 +507,10 @@ class OperatorAgent:
                     
             except Exception as e:
                 logging.error(f"Network error during booking request (Attempt {attempt+1}/{max_retries}): {e}")
+                
+                if "28" in str(e) or "timeout" in str(e).lower():
+                    self.refresh_waf_cookies()
+                    
                 if attempt < max_retries - 1:
                     time.sleep(3)
                     continue
