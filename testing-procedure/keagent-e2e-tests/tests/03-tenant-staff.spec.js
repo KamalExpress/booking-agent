@@ -6,8 +6,8 @@ test.describe('Tenant Staff (Travel Agent) Testing Workflow', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/login');
     // Assuming staff@kausar.com is a standard STAFF account created during Tenant Admin testing
-    await page.fill('input[name="email"]', process.env.TENANT_STAFF_EMAIL);
-    await page.fill('input[name="password"]', process.env.TENANT_STAFF_PASSWORD);
+    await page.fill('input[id="email"]', process.env.TENANT_STAFF_EMAIL);
+    await page.fill('input[id="password"]', process.env.TENANT_STAFF_PASSWORD);
     await page.click('button[type="submit"]');
     await page.waitForURL('**/', { timeout: 10000 });
   });
@@ -16,7 +16,7 @@ test.describe('Tenant Staff (Travel Agent) Testing Workflow', () => {
     test('1.1 Action: Navigate to Clients page and create Applicant', async ({ page }) => {
       // NOTE: This route may not exist yet in ui.py! (TDD approach)
       await page.goto('/clients');
-      await expect(page.locator('text="Client Directory"')).toBeVisible();
+      await expect(page.locator('h2:has-text("Client Directory")')).toBeVisible();
 
       await page.click('button:has-text("Add Applicant")');
       await expect(page.locator('#createApplicantModal')).toBeVisible();
@@ -47,7 +47,7 @@ test.describe('Tenant Staff (Travel Agent) Testing Workflow', () => {
     test('2.1 Action: Assign Applicant to WaitlistQueue', async ({ page }) => {
       // NOTE: This route may not exist yet in ui.py! (TDD approach)
       await page.goto('/queue');
-      await expect(page.locator('text="Queue Management"')).toBeVisible();
+      await expect(page.locator('h2:has-text("Queue Management")')).toBeVisible();
 
       await page.click('button:has-text("Add to Queue")');
       await expect(page.locator('#addToQueueModal')).toBeVisible();
@@ -60,7 +60,7 @@ test.describe('Tenant Staff (Travel Agent) Testing Workflow', () => {
 
       // Verify row exists in waitlist table with PENDING status
       await page.waitForURL('**/queue');
-      const pendingRow = page.locator('table tbody tr:has-text("Ali Raza")');
+      const pendingRow = page.locator('table tbody tr:has-text("AB1234567")').first();
       await expect(pendingRow).toBeVisible();
       await expect(pendingRow.locator('text="PENDING"')).toBeVisible();
     });

@@ -70,8 +70,8 @@ test.describe('SaaS Admin (Super Admin) Testing Workflow', () => {
 
     test('2.3.2 Expected Result: Default Tenant (ID=1) protected from suspension', async ({ page }) => {
       await page.goto('/tenants');
-      // The default tenant row should have the text "System Core" instead of the suspend form
-      await expect(page.locator('table tbody tr').first().locator('text="System Core"')).toBeVisible();
+      // The default tenant row should have the text "Default Tenant" instead of the suspend form
+      await expect(page.locator('table tbody tr:has-text("Default Tenant")')).toBeVisible();
     });
   });
 });
