@@ -1166,6 +1166,13 @@ async def tenant_detail_page(tenant_id: int, request: Request, db: Session = Dep
         
     audit_events_count = db.query(AuditLog).filter(AuditLog.tenant_id == tenant_id).count()
     
+    from models import PortalAccount, Proxy
+    total_accounts = db.query(PortalAccount).filter(PortalAccount.tenant_id == tenant_id).count()
+    good_accounts = db.query(PortalAccount).filter(PortalAccount.tenant_id == tenant_id, PortalAccount.status != 'DISABLED').count()
+    
+    total_proxies = db.query(Proxy).filter(Proxy.tenant_id == tenant_id).count()
+    good_proxies = db.query(Proxy).filter(Proxy.tenant_id == tenant_id, Proxy.status != 'DISABLED').count()
+    
     return render_template("tenant_detail.html", {
         "request": request,
         "user": user,
@@ -1175,7 +1182,11 @@ async def tenant_detail_page(tenant_id: int, request: Request, db: Session = Dep
         "metrics": {
             "total_staff": len(staff),
             "active_devices": push_subs_count,
-            "audit_events": audit_events_count
+            "audit_events": audit_events_count,
+            "total_accounts": total_accounts,
+            "good_accounts": good_accounts,
+            "total_proxies": total_proxies,
+            "good_proxies": good_proxies
         }
     }, db)
 
