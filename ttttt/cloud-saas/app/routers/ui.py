@@ -213,8 +213,21 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
     push_logs = push_query.all()
     monthly_push_count = sum(log.payload.get('success_count', 0) if log.payload else 0 for log in push_logs)
     
-    # Fetch system settings
-    system_settings = db.query(SystemSetting).all()
+    # Fetch system settings and group them
+    raw_settings = db.query(SystemSetting).all()
+    grouped_settings = {}
+    for s in raw_settings:
+        parts = s.key.split(".", 1)
+        group = parts[0].replace("_", " ").title() if len(parts) > 1 else "General"
+        label = parts[1].replace("_", " ").title() if len(parts) > 1 else s.key.replace("_", " ").title()
+        
+        if group not in grouped_settings:
+            grouped_settings[group] = []
+        grouped_settings[group].append({
+            "key": s.key,
+            "label": label,
+            "value": s.value
+        })
     
     # Fetch global assignments
     global_assignments = db.query(Assignment).filter(Assignment.status == 'Leased').all()
@@ -238,7 +251,7 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
         "health_score": health_score,
         "is_healthy": is_healthy,
         "pwa_settings": pwa_settings,
-        "system_settings": system_settings,
+        "grouped_settings": grouped_settings,
         "global_assignments": global_assignments
     }, db)
 

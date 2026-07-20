@@ -290,15 +290,24 @@
                 <i data-lucide="settings" class="w-4 h-4 text-zinc-400"></i> Centralized Settings
             </h3>
         </div>
-        <form action="/settings/update" method="POST" class="p-5 space-y-4">
-            {% for setting in system_settings %}
-            <div>
-                <label class="block text-sm font-medium mb-1 text-zinc-300">{{ setting.key }}</label>
-                <input type="text" name="setting_{{ setting.key }}" value="{{ setting.value }}" class="input bg-zinc-950 border-zinc-800 text-white w-full">
-            </div>
+        <form action="/settings/update" method="POST" class="p-5 space-y-6">
+            {% if grouped_settings %}
+                {% for group, settings in grouped_settings.items() %}
+                <div>
+                    <h4 class="text-xs font-bold text-indigo-400 uppercase tracking-wider mb-3 pb-1 border-b border-zinc-800">{{ group }}</h4>
+                    <div class="space-y-4">
+                        {% for setting in settings %}
+                        <div>
+                            <label class="block text-sm font-medium mb-1 text-zinc-300">{{ setting.label }}</label>
+                            <input type="text" name="setting_{{ setting.key }}" value="{{ setting.value }}" class="input bg-zinc-950 border-zinc-800 text-white w-full">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
             {% else %}
             <div class="text-sm text-zinc-500 py-4">No system settings found.</div>
-            {% endfor %}
+            {% endif %}
             <div class="pt-2">
                 <button type="submit" class="btn bg-indigo-600 hover:bg-indigo-700 text-white w-full">Save Settings</button>
             </div>
