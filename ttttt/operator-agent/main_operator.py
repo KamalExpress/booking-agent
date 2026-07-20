@@ -221,6 +221,10 @@ class OperatorAgent:
                 # Extract and inject cookies
                 cookies = context.cookies()
                 for cookie in cookies:
+                    try:
+                        self.session.cookies.delete(cookie['name'])
+                    except Exception:
+                        pass
                     self.session.cookies.set(cookie['name'], cookie['value'], domain=cookie.get('domain', 'pk-gr-services.gvcworld.eu'))
                     
                 logging.info(f"Successfully refreshed {len(cookies)} WAF cookies.")
@@ -286,6 +290,10 @@ class OperatorAgent:
                     logging.warning(f"Received {response.status_code} during login. Retrying... ({attempt+1}/{max_retries})")
                     if response.status_code == 403:
                         self.refresh_waf_cookies()
+                        try:
+                            self.session.get(f"{self.base_url}/favicon.ico", timeout=3)
+                        except Exception:
+                            pass
                     time.sleep(3)
                     continue
                 else:
@@ -299,6 +307,10 @@ class OperatorAgent:
                 # If it's a timeout (28), it usually means WAF tarpitting due to expired cookies
                 if "28" in str(e) or "timeout" in str(e).lower():
                     self.refresh_waf_cookies()
+                    try:
+                        self.session.get(f"{self.base_url}/favicon.ico", timeout=3)
+                    except Exception:
+                        pass
                     
                 if attempt < max_retries - 1:
                     time.sleep(3)
