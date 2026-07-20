@@ -238,7 +238,53 @@ class OperatorAgent:
             logging.error(f"Failed to refresh WAF cookies via Playwright: {e}")
             return False
 
+    def is_authenticated(self):
+        """
+        Lightweight check to see if the loaded session cookies are still valid.
+        This prevents burning CapSolver credits if we already have a valid session.
+        """
+        try:
+            logging.info("Validating existing session...")
+            url = f"{self.base_url}/api/v1/periodslot/slots"
+            # Dummy payload just to check authentication state
+            payload = {
+                "datefrom": "01/01/2026", "type": 26, "bookingfor": 0, "members": 1, "method": 1,
+                "travelpurposes": -1, "howmanyapplicantsareunder12": 0, "appointmentId": "undefined",
+                "id": 0, "vac": {"id": 138}
+            }
+            
+            for attempt in range(2):
+                response = self.session.put(url, json=payload, timeout=15)
+                if response.status_code == 200:
+                    logging.info("Session is fully valid. Bypassing login.")
+                    return True
+                elif response.status_code == 401:
+                    logging.info("Session has expired (401). Must login again.")
+                    return False
+                elif response.status_code in [403, 502, 503, 504, 522]:
+                    logging.warning(f"Session check hit WAF block ({response.status_code}). Refreshing WAF cookies...")
+                    self.refresh_waf_cookies()
+                    continue
+                else:
+                    return False
+            return False
+        except Exception as e:
+            logging.warning(f"Session validation error: {e}")
+            # If timeout/WAF drop, try to refresh WAF once
+            if "28" in str(e) or "timeout" in str(e).lower():
+                self.refresh_waf_cookies()
+                try:
+                    response = self.session.put(url, json=payload, timeout=15)
+                    if response.status_code == 200:
+                        return True
+                except:
+                    pass
+            return False
+
     def login(self):
+        if self.is_authenticated():
+            return True
+            
         logging.info(f"Attempting login for {self.username}...")
         
         # 1. PRE-FLIGHT NAVIGATION: Establish Incapsula TLS Fingerprint & Session Cookies

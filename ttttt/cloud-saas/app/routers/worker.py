@@ -267,6 +267,11 @@ def get_next_assignment(
     
     valid_assignments = []
     for asm in assignments:
+        # Check if the associated account is healthy
+        acc = db.query(ScraperAccount).filter(ScraperAccount.id == asm.scraper_account_id).first()
+        if acc and acc.status in ["Error", "Banned", "Cooldown"]:
+            continue
+            
         if not asm.last_checked or (now - asm.last_checked).total_seconds() >= asm.polling_interval:
             valid_assignments.append(asm)
             
@@ -406,6 +411,15 @@ def submit_logs(
                 if not notify_login or notify_login.value == "true":
                     send_push_notification(db, "Login Successful", f"Worker successfully logged into {account.username} (Center {assignment.visa_center})")
                 
+    elif req.event_type == "LOGIN_FAILED":
+        if req.assignment_id:
+            assignment = db.query(Assignment).filter(Assignment.id == req.assignment_id).first()
+            if assignment:
+                account = db.query(ScraperAccount).filter(ScraperAccount.id == assignment.scraper_account_id).first()
+                if account:
+                    account.status = "Error"
+                    # We also save the log so UI knows why it failed
+                    
     elif req.event_type == "NO_SLOTS_FOUND":
         notify_no_slots = db.query(SystemSetting).filter(SystemSetting.key == "notify.no_slots_found").first()
         if not notify_no_slots or notify_no_slots.value == "true":
