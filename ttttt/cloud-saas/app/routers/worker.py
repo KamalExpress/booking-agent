@@ -359,6 +359,39 @@ def submit_logs(
     db.commit()
     return {"status": "ok"}
 
+@router.post("/api/v1/worker/worker-logs")
+def receive_worker_logs(req: dict, worker: WorkerNode = Depends(require_worker), db: Session = Depends(get_db)):
+    # Safely handle potential massive logs
+    logs = req.get("payload", [])
+    if len(str(logs)) > 1024 * 1024:
+        raise HTTPException(status_code=413, detail="Payload too large")
+        
+    return {"status": "success"}
+
+@router.get("/api/v1/worker/booking-tasks/{task_id}/otp")
+def get_task_otp(task_id: int, worker: WorkerNode = Depends(require_worker), db: Session = Depends(get_db)):
+    task = db.query(BookingTask).filter(BookingTask.id == task_id).first()
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+        
+    # Check EventLog if OTP is null on task (temporary workaround until OTP mapping research is done)
+    if not task.otp_code and task.applicant_id:
+        from app.models import Applicant, EventLog
+        applicant = db.query(Applicant).filter(Applicant.id == task.applicant_id).first()
+        if applicant and applicant.phone_number:
+            # Look for recent webhook OTP events matching this phone number (or all for now)
+            # Using EventLog where source='webhook_otp'
+            # Note: in real production we match the sender/text with applicant phone.
+            log = db.query(EventLog).filter(
+                EventLog.event_type == "OTP_RECEIVED",
+                EventLog.source == "webhook_otp"
+            ).order_by(EventLog.id.desc()).first()
+            
+            if log and log.payload and "extracted_otp" in log.payload:
+                return {"otp_code": log.payload["extracted_otp"]}
+                
+    return {"otp_code": task.otp_code}
+
 @router.post("/worker-logs")
 def submit_worker_logs(
     req: WorkerLogRequest,

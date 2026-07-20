@@ -35,7 +35,7 @@ class SaaSClient:
         with open(cred_path, "w") as f:
             f.write(f"{self.worker_id}:{self.secret}")
 
-    def register(self, hostname="worker", location="unknown", labels=None):
+    def register(self, hostname="worker", location="unknown", labels=None, can_scrape=True, can_book=False):
         if self.worker_id and self.secret:
             return True
             
@@ -69,7 +69,9 @@ class SaaSClient:
             "playwright_version": playwright_version,
             "python_version": platform.python_version(),
             "max_concurrency": 1,
-            "labels": labels
+            "labels": labels,
+            "can_scrape": can_scrape,
+            "can_book": can_book
         }
         try:
             res = self.session.post(f"{self.base_url}/api/v1/worker/register", json=payload)
@@ -202,3 +204,9 @@ class SaaSClient:
             "assignment_id": assignment_id,
             "payload": logs
         })
+
+    def get_booking_task_otp(self, booking_task_id: int):
+        res = self._request("GET", f"/api/v1/worker/booking-tasks/{booking_task_id}/otp")
+        if res and res.status_code == 200:
+            return res.json().get("otp_code")
+        return None
