@@ -73,3 +73,4 @@ playwright-report/
 # DevOps Agent
 devops-agent/.env
 devops-agent/node_modules/
+devops-agent/chrome-devops-profile/
