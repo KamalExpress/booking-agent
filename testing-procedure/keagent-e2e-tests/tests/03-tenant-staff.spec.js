@@ -24,8 +24,14 @@ test.describe('Tenant Staff (Travel Agent) Testing Workflow', () => {
       // Fill standardized GVC form
       await page.fill('input[name="first_name"]', 'Ali');
       await page.fill('input[name="last_name"]', 'Raza');
+      await page.fill('input[name="dateofbirth"]', '01/01/1990');
+      await page.selectOption('select[name="gender"]', 'M');
+      await page.fill('input[name="nationality"]', 'PAK');
       await page.fill('input[name="passport_number"]', 'AB1234567');
-      await page.fill('input[name="phone_number"]', '+923001234567');
+      await page.fill('input[name="passport_expiry"]', '01/01/2030');
+      await page.fill('input[name="email"]', 'ali@example.com');
+      await page.fill('input[name="phone_prefix"]', '+92');
+      await page.fill('input[name="phone_number"]', '3001234567');
       
       await page.click('button[type="submit"]:has-text("Save Applicant")');
       
@@ -49,6 +55,7 @@ test.describe('Tenant Staff (Travel Agent) Testing Workflow', () => {
       // Select applicant and visa center
       await page.selectOption('select[name="applicant_id"]', { label: 'Ali Raza - AB1234567' });
       await page.selectOption('select[name="visa_center_id"]', '138'); // Lahore
+      await page.selectOption('select[name="appointment_type"]', '26'); // 26 - Short Term
       await page.click('button[type="submit"]:has-text("Enqueue")');
 
       // Verify row exists in waitlist table with PENDING status

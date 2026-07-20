@@ -822,7 +822,13 @@ async def create_client(
     request: Request,
     first_name: str = Form(...),
     last_name: str = Form(...),
+    dateofbirth: str = Form(...),
+    gender: str = Form(...),
+    nationality: str = Form(...),
     passport_number: str = Form(...),
+    passport_expiry: str = Form(...),
+    email: str = Form(...),
+    phone_prefix: str = Form(...),
     phone_number: str = Form(...),
     db: Session = Depends(get_db)
 ):
@@ -830,19 +836,18 @@ async def create_client(
     if not user or user.role not in [RoleEnum.TENANT_ADMIN, RoleEnum.STAFF, RoleEnum.SUPER_ADMIN]:
         return RedirectResponse(url="/", status_code=303)
         
-    # Provide dummy defaults for required fields not filled by the simple form
     new_client = Applicant(
         tenant_id=user.tenant_id,
         firstname=first_name,
         surname=last_name,
+        dateofbirth=dateofbirth,
+        gender=gender,
+        nationality=nationality,
         passportnumber=passport_number,
-        phone_number=phone_number,
-        dateofbirth="01/01/1990",
-        gender="M",
-        nationality="PAK",
-        passport_expiry="01/01/2030",
-        email=f"dummy_{passport_number}@example.com",
-        phone_prefix="+92"
+        passport_expiry=passport_expiry,
+        email=email,
+        phone_prefix=phone_prefix,
+        phone_number=phone_number
     )
     db.add(new_client)
     db.commit()
@@ -894,6 +899,7 @@ async def add_to_queue(
     request: Request,
     applicant_id: int = Form(...),
     visa_center_id: str = Form(...),
+    appointment_type: str = Form("0"),
     db: Session = Depends(get_db)
 ):
     user = get_ui_user(request, db)
@@ -907,6 +913,7 @@ async def add_to_queue(
             tenant_id=user.tenant_id,
             applicant_id=applicant.id,
             visa_center=visa_center_id,
+            appointment_type=appointment_type,
             status="PENDING",
             priority=0
         )

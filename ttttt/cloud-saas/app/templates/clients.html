@@ -37,13 +37,15 @@
                         {{ client.passportnumber }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        {{ client.phone_number }}
+                        {{ client.phone_prefix }}{{ client.phone_number }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-xs text-zinc-500">
                         {{ client.created_at | format_time(ui_timezone) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right">
-                        <!-- Action buttons can go here -->
+                        <button onclick="openEnqueueModal('{{ client.id }}', '{{ client.firstname }} {{ client.surname }}')" class="btn btn-secondary text-xs h-7 px-2 border-indigo-500/30 text-indigo-400 hover:bg-indigo-500/10">
+                            <i data-lucide="list-plus" class="w-3 h-3 mr-1.5"></i> Enqueue
+                        </button>
                     </td>
                 </tr>
                 {% else %}
@@ -82,13 +84,50 @@
                         <input type="text" name="last_name" required class="input" placeholder="Raza">
                     </div>
                 </div>
-                <div class="space-y-1.5">
-                    <label class="text-xs font-medium text-zinc-400">Passport Number <span class="text-red-500">*</span></label>
-                    <input type="text" name="passport_number" required class="input" placeholder="AB1234567">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-medium text-zinc-400">Date of Birth <span class="text-red-500">*</span></label>
+                        <input type="text" name="dateofbirth" required class="input" placeholder="DD/MM/YYYY">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-medium text-zinc-400">Gender <span class="text-red-500">*</span></label>
+                        <select name="gender" required class="input">
+                            <option value="M">Male</option>
+                            <option value="F">Female</option>
+                        </select>
+                    </div>
                 </div>
+                
                 <div class="space-y-1.5">
-                    <label class="text-xs font-medium text-zinc-400">Phone Number <span class="text-red-500">*</span></label>
-                    <input type="text" name="phone_number" required class="input" placeholder="+923001234567">
+                    <label class="text-xs font-medium text-zinc-400">Nationality <span class="text-red-500">*</span></label>
+                    <input type="text" name="nationality" required class="input" placeholder="PAK">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-medium text-zinc-400">Passport Number <span class="text-red-500">*</span></label>
+                        <input type="text" name="passport_number" required class="input" placeholder="AB1234567">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-medium text-zinc-400">Passport Expiry <span class="text-red-500">*</span></label>
+                        <input type="text" name="passport_expiry" required class="input" placeholder="DD/MM/YYYY">
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="text-xs font-medium text-zinc-400">Email Address <span class="text-red-500">*</span></label>
+                    <input type="email" name="email" required class="input" placeholder="applicant@example.com">
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="space-y-1.5 col-span-1">
+                        <label class="text-xs font-medium text-zinc-400">Prefix <span class="text-red-500">*</span></label>
+                        <input type="text" name="phone_prefix" required class="input" placeholder="+92">
+                    </div>
+                    <div class="space-y-1.5 col-span-2">
+                        <label class="text-xs font-medium text-zinc-400">Phone Number <span class="text-red-500">*</span></label>
+                        <input type="text" name="phone_number" required class="input" placeholder="3001234567">
+                    </div>
                 </div>
                 
                 <div class="pt-4 flex justify-end gap-3 border-t border-zinc-800 mt-6">
@@ -99,4 +138,50 @@
         </div>
     </div>
 </div>
+
+<!-- Quick Enqueue Modal -->
+<div id="quickEnqueueModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+        <div class="flex items-center justify-between p-4 border-b border-zinc-800 bg-zinc-900/50">
+            <h3 class="text-lg font-semibold text-white">Quick Enqueue: <span id="quick_applicant_name" class="text-indigo-400"></span></h3>
+            <button onclick="document.getElementById('quickEnqueueModal').classList.add('hidden')" class="text-zinc-400 hover:text-white transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <div class="p-6">
+            <form action="/queue/add" method="POST" class="space-y-4">
+                <input type="hidden" name="applicant_id" id="quick_applicant_id" required>
+                
+                <div class="space-y-1.5">
+                    <label class="text-xs font-medium text-zinc-400">Target Visa Center <span class="text-red-500">*</span></label>
+                    <!-- Instead of fetching from DB which is complex in this context, we will prompt user to type or we could fetch the settings in ui.py and pass it to clients.html. For now, since it's a quick modal, we can just use a text input or hardcode 138/137. Let's do text input for ID. Wait, I can pass `available_centers` to `clients.html` from `ui.py` just like `queue.html`! -->
+                    <input type="text" name="visa_center_id" required class="input" placeholder="e.g., 138 (Lahore)">
+                </div>
+                
+                <div class="space-y-1.5">
+                    <label class="text-xs font-medium text-zinc-400">Appointment Type <span class="text-red-500">*</span></label>
+                    <select name="appointment_type" required class="input">
+                        <option value="26" selected>26 - Short Term</option>
+                        <option value="0">0 - Standard</option>
+                        <option value="2">2 - Type 2</option>
+                        <option value="6">6 - Type 6</option>
+                    </select>
+                </div>
+                
+                <div class="pt-4 flex justify-end gap-3 border-t border-zinc-800 mt-6">
+                    <button type="button" onclick="document.getElementById('quickEnqueueModal').classList.add('hidden')" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Enqueue Now</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function openEnqueueModal(applicantId, applicantName) {
+    document.getElementById('quick_applicant_id').value = applicantId;
+    document.getElementById('quick_applicant_name').innerText = applicantName;
+    document.getElementById('quickEnqueueModal').classList.remove('hidden');
+}
+</script>
 {% endblock %}

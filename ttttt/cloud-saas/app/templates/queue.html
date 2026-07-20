@@ -107,6 +107,16 @@
                     </select>
                 </div>
                 
+                <div class="space-y-1.5 mt-4">
+                    <label class="text-xs font-medium text-zinc-400">Appointment Type <span class="text-red-500">*</span></label>
+                    <select name="appointment_type" required class="input">
+                        <option value="26" selected>26 - Short Term</option>
+                        <option value="0">0 - Standard</option>
+                        <option value="2">2 - Type 2</option>
+                        <option value="6">6 - Type 6</option>
+                    </select>
+                </div>
+                
                 <div class="pt-4 flex justify-end gap-3 border-t border-zinc-800 mt-6">
                     <button type="button" onclick="document.getElementById('addToQueueModal').classList.add('hidden')" class="btn btn-secondary">Cancel</button>
                     <button type="submit" class="btn btn-primary">Enqueue</button>
