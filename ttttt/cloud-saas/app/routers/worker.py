@@ -316,6 +316,13 @@ def submit_logs(
                             db.rollback()
                             continue
                 
+                # Dispatch Waitlist Queue (Level 2)
+                if slot_count > 0:
+                    dispatched = scheduler.auto_dispatch_queue(vac_id, slot_count)
+                    if dispatched > 0:
+                        import logging
+                        logging.getLogger(__name__).info(f"Auto-dispatched {dispatched} applicants from WaitlistQueue for center {vac_id}")
+                
         # Resolve center name and type string from global config
         center_name = f"Center {vac_id}"
         type_str = ""

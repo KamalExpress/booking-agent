@@ -45,9 +45,11 @@ logger = logging.getLogger(__name__)
 
 from routers.worker import router as worker_router
 from routers.ui import router as ui_router
+from routers.webhooks import router as webhooks_router
 
 app.include_router(worker_router)
 app.include_router(ui_router)
+app.include_router(webhooks_router)
 
 # Mount sqladmin for built-in DBMS
 from sqladmin import Admin

@@ -77,6 +77,53 @@ class PushSubscription(Base):
     
     user = relationship("User", back_populates="push_subscriptions")
 
+class InboxMessage(Base):
+    __tablename__ = "inbox_messages"
+    id = Column(Integer, primary_key=True, index=True)
+    tenant_id = Column(Integer, ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False)
+    severity = Column(String, default="info") # info, warning, error, success
+    title = Column(String, nullable=False)
+    body = Column(String, nullable=False)
+    is_read = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    tenant = relationship("Tenant")
+
+class Applicant(Base):
+    __tablename__ = "applicants"
+    id = Column(Integer, primary_key=True, index=True)
+    tenant_id = Column(Integer, ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False)
+    surname = Column(String, nullable=False)
+    firstname = Column(String, nullable=False)
+    dateofbirth = Column(String, nullable=False)
+    gender = Column(String, nullable=False)
+    nationality = Column(String, nullable=False)
+    passportnumber = Column(String, nullable=False)
+    passport_expiry = Column(String, nullable=False)
+    email = Column(String, nullable=False)
+    phone_prefix = Column(String, nullable=False)
+    phone_number = Column(String, nullable=False)
+    provider_metadata = Column(JSONB, default=dict) # e.g., GWF number
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    tenant = relationship("Tenant")
+    waitlist_entries = relationship("WaitlistQueue", back_populates="applicant", cascade="all, delete-orphan")
+
+class WaitlistQueue(Base):
+    __tablename__ = "waitlist_queue"
+    id = Column(Integer, primary_key=True, index=True)
+    tenant_id = Column(Integer, ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False)
+    applicant_id = Column(Integer, ForeignKey("applicants.id", ondelete="CASCADE"), nullable=False)
+    provider = Column(String, default="GVC")
+    visa_center = Column(String, nullable=False)
+    appointment_type = Column(String, default="0")
+    status = Column(String, default="PENDING") # PENDING, BOOKED, CANCELLED
+    priority = Column(Integer, default=0)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    tenant = relationship("Tenant")
+    applicant = relationship("Applicant", back_populates="waitlist_entries")
+
 class MonitorConfig(Base):
     """Global configuration managed only by Super Admins."""
     __tablename__ = "monitor_configs"
@@ -143,6 +190,7 @@ class WorkerNode(Base):
 class PortalAccount(Base):
     __tablename__ = "portal_accounts"
     id = Column(Integer, primary_key=True, index=True)
+    tenant_id = Column(Integer, ForeignKey("tenants.id", ondelete="SET NULL"), nullable=True)
     username = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
     provider = Column(String, default="VFS")
@@ -164,6 +212,7 @@ class PortalAccount(Base):
 class Proxy(Base):
     __tablename__ = "proxies"
     id = Column(Integer, primary_key=True, index=True)
+    tenant_id = Column(Integer, ForeignKey("tenants.id", ondelete="SET NULL"), nullable=True)
     host = Column(String, nullable=False)
     port = Column(String, nullable=False)
     username = Column(String, nullable=True)
@@ -196,12 +245,14 @@ class BookingTask(Base):
     __tablename__ = "booking_tasks"
     id = Column(Integer, primary_key=True, index=True)
     tenant_id = Column(Integer, ForeignKey("tenants.id"), nullable=True)
+    applicant_id = Column(Integer, ForeignKey("applicants.id", ondelete="SET NULL"), nullable=True)
     assignment_id = Column(Integer, ForeignKey("assignments.id"), nullable=True)
     provider = Column(String, default="VFS")
     visa_center = Column(String, nullable=False)
     target_date = Column(String, nullable=False)
     target_time = Column(String, nullable=False)
     slot_payload = Column(JSONB, nullable=True)
+    otp_code = Column(String, nullable=True)
     
     priority = Column(Integer, default=0)
     expires_at = Column(DateTime, nullable=False)

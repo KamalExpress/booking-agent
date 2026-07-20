@@ -69,7 +69,10 @@ class SchedulerService:
             return None
 
         # Find best account
-        accounts = self.db.query(PortalAccount).filter(PortalAccount.supports_booking == True).all()
+        accounts = self.db.query(PortalAccount).filter(
+            PortalAccount.supports_booking == True,
+            or_(PortalAccount.tenant_id == task.tenant_id, PortalAccount.tenant_id == None)
+        ).all()
         best_account = None
         best_account_score = -1
         
@@ -84,7 +87,10 @@ class SchedulerService:
             return None
 
         # Find best proxy
-        proxies = self.db.query(Proxy).filter(Proxy.supports_booking == True).all()
+        proxies = self.db.query(Proxy).filter(
+            Proxy.supports_booking == True,
+            or_(Proxy.tenant_id == task.tenant_id, Proxy.tenant_id == None)
+        ).all()
         best_proxy = None
         best_proxy_score = -1
         
@@ -142,7 +148,10 @@ class SchedulerService:
             return None
             
         # Find best account
-        accounts = self.db.query(PortalAccount).filter(PortalAccount.supports_scraping == True).all()
+        accounts = self.db.query(PortalAccount).filter(
+            PortalAccount.supports_scraping == True,
+            PortalAccount.tenant_id == None
+        ).all()
         best_account = None
         best_account_score = -1
         
@@ -157,7 +166,10 @@ class SchedulerService:
             return None
 
         # Find best proxy
-        proxies = self.db.query(Proxy).filter(Proxy.supports_scraping == True).all()
+        proxies = self.db.query(Proxy).filter(
+            Proxy.supports_scraping == True,
+            Proxy.tenant_id == None
+        ).all()
         best_proxy = None
         best_proxy_score = -1
         
@@ -195,6 +207,54 @@ class SchedulerService:
         )
         self.db.commit()
         return lease
+
+    def auto_dispatch_queue(self, visa_center: str, slot_count: int):
+        from app.models import WaitlistQueue, Applicant
+        now = ScoringPolicy.get_utcnow()
+        
+        # 1. Get PENDING waitlist entries for this visa center, ordered by priority
+        entries = self.db.query(WaitlistQueue).join(Applicant).filter(
+            WaitlistQueue.status == "PENDING",
+            WaitlistQueue.visa_center == visa_center
+        ).order_by(WaitlistQueue.priority.desc(), WaitlistQueue.created_at.asc()).with_for_update(skip_locked=True).all()
+        
+        dispatched_count = 0
+        for entry in entries:
+            if dispatched_count >= slot_count:
+                break
+                
+            # 2. Prevent OTP race condition: check if applicant's phone number is actively locked
+            applicant_phone = entry.applicant.phone_number
+            active_locks = self.db.query(BookingTask).join(Applicant, BookingTask.applicant_id == Applicant.id).filter(
+                BookingTask.status.in_(["PENDING", "CLAIMED"]),
+                Applicant.phone_number == applicant_phone
+            ).first()
+            
+            if active_locks:
+                # Skip this applicant to avoid OTP race condition
+                continue
+                
+            # 3. Generate BookingTask
+            task = BookingTask(
+                tenant_id=entry.tenant_id,
+                applicant_id=entry.applicant_id,
+                provider=entry.provider,
+                visa_center=entry.visa_center,
+                target_date="TBD", 
+                target_time=f"TBD-{entry.id}",
+                priority=entry.priority,
+                expires_at=now + timedelta(hours=2)
+            )
+            self.db.add(task)
+            
+            entry.status = "BOOKED"
+            self.db.flush() # Flush so subsequent queries in this loop see the new lock
+            dispatched_count += 1
+            
+        if dispatched_count > 0:
+            self.db.commit()
+            
+        return dispatched_count
 
     def handle_event(self, event_type: str, lease: Lease, details: dict = None):
         """Translates technical events into account/proxy cooldowns."""
