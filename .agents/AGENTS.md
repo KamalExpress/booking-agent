@@ -52,7 +52,7 @@ Whenever a new operational event, technical term, scheduling decision, or error 
 - **Production Pipeline:** Database migrations and docker builds are automatically handled via Portainer on the VPS (staging/production) utilizing the configurations in the `vps-setup` directory.
 
 ## 9. Testing & Deployment Tooling
-- **E2E Testing:** Playwright tests are located in `testing-procedure/keagent-e2e-tests/`. Run them via `npx playwright test` to verify workflows.
+- **E2E Testing:** Playwright tests are located in `testing-procedure/keagent-e2e-tests/`. When adding new E2E tests, write them as `.spec.js` files inside the `testing-procedure/keagent-e2e-tests/tests/` directory. Run them via `npx playwright test` to verify workflows.
 - **Portainer CDP Automation:** The staging deployment is automated to bypass Cloudflare and WAFs. 
   - To deploy changes to the staging environment, switch to the `devops-agent` directory and run `npm run deploy:staging`. 
   - This script connects via CDP (Chrome DevTools Protocol) to an already running instance of Google Chrome opened by the user with the flag `--remote-debugging-port=9222`. It requires the user to have Chrome open and authenticated to Portainer.
