@@ -50,3 +50,17 @@ Whenever a new operational event, technical term, scheduling decision, or error 
 - **Local Environment:** The user develops on a low-end laptop without Docker installed.
 - **Agent Constraint:** Agents **MUST NOT** attempt to run `alembic` migrations or `docker-compose` commands locally (unless specifically authorized). 
 - **Production Pipeline:** Database migrations and docker builds are automatically handled via Portainer on the VPS (staging/production) utilizing the configurations in the `vps-setup` directory.
+
+## 9. Testing & Deployment Tooling
+- **E2E Testing:** Playwright tests are located in `testing-procedure/keagent-e2e-tests/`. Run them via `npx playwright test` to verify workflows.
+- **Portainer CDP Automation:** The staging deployment is automated to bypass Cloudflare and WAFs. 
+  - To deploy changes to the staging environment, switch to the `devops-agent` directory and run `npm run deploy:staging`. 
+  - This script connects via CDP (Chrome DevTools Protocol) to an already running instance of Google Chrome opened by the user with the flag `--remote-debugging-port=9222`. It requires the user to have Chrome open and authenticated to Portainer.
+
+## 10. GVC Appointment Types
+When building UI or filling Queue Management data, strictly use the following GVC appointment type codes:
+- `0`: Submission Schengen Visa (Short term – Type C)
+- `2`: National visa (Long term - type D)
+- `5`: Premium Lounge (optional service at an additional charge)
+- `6`: Prime Time (optional service at an additional charge)
+- `26`: Long-Term Type D (Seasonal/Dependent Employment) - *(Default)*
