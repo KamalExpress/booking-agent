@@ -1,0 +1,341 @@
+[
+  {
+    "error": "Failed to perform, curl: (56) Connection closed abruptly. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.",
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+      "method": "GET",
+      "headers": {
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "same-origin",
+        "X-Requested-With": null
+      }
+    },
+    "startedDateTime": "2026-07-20T08:37:38.082477Z"
+  },
+  {
+    "error": "Failed to perform, curl: (28) Connection closed abruptly. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.",
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/favicon.ico",
+      "method": "GET",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "startedDateTime": "2026-07-20T08:38:10.423422Z"
+  },
+  {
+    "time": 13221.154,
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/api/v1/auth/login",
+      "body": "{\"username\": \"ammarashrafsialkot@gmail.com\", \"password\": \"Shani@1122\", \"g-recaptcha-response\": \"0cAFcWeA7fa0sI4q_etEa3aPt95qrH3P_GQh6Vg5TVN0YwEi3iw6Zo31pbD4Wi74FXVRsAr0u8TAFKysJdPIiypMIkK0BI-wjKMBuEDgwsfIhuk3Ma-SbSJDqTBdUR1dfs__uqhBqbArA8mHhN19--Mm76yvQAYk3UqCCzzR4UgfveyWtCWaH2on6cjXveKSKO8EO_U1SWzUpZ5Rs9fKyWRj0Iwfctcg--IVmGOQROMkYmNS1iMDZY9gZ5QQO_jwr3iztOLtOsEY0GBwBWfJUxlzKfpEilpYVCnU3Jd1IwzU7ccbrt32VyaM8084Bw_P3TLjpto-pBBf5ZzOeU0VVY7YjSiX1PYiZVgQZRIQhzM-REB4XHDTWG4SGWdVrTYFNHQkLCEg2vTous7NMMc1J5_Op43NSG5jwPcmHxlkPLm0kXBiEDjv0L2_DLjw_oU1_4u5rGW94yTpRxzEP8Oq2lwveKkFnYGMGBg5pY0p7t3_kJ7tCdilWN1MzOxebh1dmQXr93BbW-rJZHW4I2phLVxuP0PnXmjPTKJWTrb0qPkRA5XB7n1_Teuvug586p8Gk-ehxf_vvrBYoc_cJuPyCJl634wRfT2-PnoTazsEzwAvFQggCSXOyplNh8lmhyxTzM3zonj5kbDEhm3rKQdxP9rMNABH3WsMPJnH-ckZr9gH4Odw9vXHbua0ObM9NGp4bamHFIzcgZWCRqwAU-ZJr80pZL6K251bf5Rjwm5ZisO4IFiyiNLnKHcgI6qDPr6QMLBAVVBlrn50d_WqiqdtTHjgCYZm3OYaH45FzqRJoqmonTKvB7zyLYkH51aF1TLmCufLzma6xFyyfxJBPX3DaPEAoM-QrUiws4nXJoIXqYVzW_NJ8bA6jmGipPeR0drjndhTzdPGgEKmu2kH8QJvTUaBY07H_ZB8xchJOs7RKZPhX_AL9YjJjib7gLyEZbCTQ9T_E6x6fbLKm6qmJMNZTc54mstG4ye4acYOK0gL_ENbmTbw1wdKcamBAs128hixBEJ_h-4BqQaVGzBUPM0V3nnE3MxYafvs1-N1_Pmpqh-iidALw5Bx7q1hAeQewoinj7rZ8yPTwgRbgdMOX4NlRyLGpjGEzi1_G2Xcjatgs3vLkhnBRcF7ZpK9gBimIcL4poUgppkbpQDEfY-rA_0IUOUG2-gS5iPb4Lb-_2BAqZsMbwDw5gxXApURPp0C3w0zkUd4YX3sbDxGxKG8wgMe5FahvkWZiAaFaB_SsZTFsizL9M6MOWS5uxDcsXTkLk5xbv_W_f7vHv31Kh6EHY-CGguCn7ym3txH5p0xKz_V5tsBgqvP7QvuFAiwS9LHDycwfr0FqJcG5TnJQQmwgJywMmfMyszMziE6zDDsZcSUNrjRWI7QhTGFq7mnGPSBCZVy7AHhjixfxO9bVauCJYHokq6GDOLwHLjQNgevsH6TdGmpV5UZDltGGNHDBbILMbs50Y4lwq_tCjR8Y340MA9JHlabbHkLTZIWj8767tdhWM4g0WOdc8mY4eKY7tjetds_dFR8fnGTV_mpe8780YR4rwLky4C-zcPtfSoE90XdzCnH9eexORapHSr9uswQCfjPEg5bRm4BnhwjBss75BiQLEedtKVS2zNFGKY0BIQTZ2CIyOm1WT5OnPA-ZFDVcXZTJeNXrWAL9rEUlz3lqdHVCJcKBlGUQ8Xit94bIvlGE4_bwojM-7QT4Q-lQ3e6lT_1BI5qKPiZFeQe1-8exWC-TTM96Cx1RgopsKmVlJWa9guw-JEgCDJJ6nFmPxWO8YWJ42yBepX2vRYnkAecNybmwBt-8IEibDoBvF8VHNAN6pN-NKIHAVkWMyUvUjU_2B-TTNw6F3coAzUmoyGwsXyS9tuXfEwTgpiALAL8gZHOzslbIduE8-Ij_AlqyqDikw2MqIhLdDEE3wpjLsImRpALr7d7lm6rIjk4otiAJe0DIdyA3UQPTPLbkWe9WvT9S1fSqNbSZUQi-xufryFTt9v9arj2PZrN42ofP7WjL0xt2BEIBPx-Jl4LfoJe9aIULb8uUWL3ktl4PXJmbYF2niSb4l_7mb_W6F-ufJBOiux3VE8_HrMqy7Z_WPS-zkJ2ebLx9DbhcEcJJ0DSQdTvtDK3QyAghIK7Tn4tXfEL7jNuqlTMs-u_wYL9gz528HOs181By9GvcT3-96raThmfbotozY6OA9ZnPvtZj4iwOD2dBnnMh5utkBzP0-ifffbPZ3RJ6bNRgZxEroC015fu6NnoZ8WzQYOYJoIdXqrJw1jcJdbK2ZYsntc_yjZ8fPs8wK2NNUOCVYe-kwJXAGKu_0G5U4j5q_iSn1veUCBgKzqW3-PYCsHI2H10AiII06u4Pi550XYgTBgMzB6qIP7e7bUsIHeHepoRFdeHRQ_ZKUiIK2BEka82qLq8MamcjtPEOGzBddBgJPcCqu7XyNZ2KmrgbjdNttAa6C-QT5lQ\"}",
+      "method": "POST",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "response": {
+      "body": "",
+      "status": 200,
+      "headers": {
+        "date": "Mon, 20 Jul 2026 08:38:26 GMT",
+        "x-cdn": "Imperva",
+        "pragma": "no-cache",
+        "server": "Apache",
+        "expires": "0",
+        "x-iinfo": "53-177487342-177480837 PNNy RT(1784536690890 2817) q(0 0 0 -1) r(128 128) U6",
+        "set-cookie": "auth_token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBTU1BUkFTSFJBRiIsInJvbGUiOiJST0xFX0FQUExJQ0FOVCIsImlzcyI6Imd2Y3ctYXBwIiwiZXhwIjoxNzg2MzM2NzA2LCJpYXQiOjE3ODQ1MzY3MDYsImp0aSI6IjkyNDA0NzhkLTk4OWYtNGM3OC1hMDYyLTdjNzlkNzk1YWFmZiJ9.xmRXLXQVfkxGtgq511r6nF4Shb0gSpY5PdNs-BPjqPQ; Max-Age=864000000; Expires=Fri, 05-Dec-2053 08:38:26 GMT; Path=/;HttpOnly;Secure",
+        "authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBTU1BUkFTSFJBRiIsInJvbGUiOiJST0xFX0FQUExJQ0FOVCIsImlzcyI6Imd2Y3ctYXBwIiwiZXhwIjoxNzg2MzM2NzA2LCJpYXQiOjE3ODQ1MzY3MDYsImp0aSI6IjU5OTI4NDk3LTQxNzctNGQ2My1iOTA5LTc2NWY5MzVkOWYwNiJ9.g8A2dJ53hPA200eqGda6kYcfwtM6eR5TW5bw6QX6Wk0",
+        "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+        "content-length": "0",
+        "x-frame-options": "DENY",
+        "x-xss-protection": "1; mode=block",
+        "x-content-type-options": "nosniff",
+        "strict-transport-security": "max-age=31536000 ; includeSubDomains"
+      }
+    },
+    "startedDateTime": "2026-07-20T08:38:13.428055Z"
+  },
+  {
+    "error": "Failed to perform, curl: (92) HTTP/2 stream 5 was not closed cleanly: CANCEL (err 8). See https://curl.se/libcurl/c/libcurl-errors.html first for more details.",
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots",
+      "method": "PUT",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "startedDateTime": "2026-07-20T08:38:26.678327Z"
+  },
+  {
+    "time": 11782.774,
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots",
+      "body": "{\"datefrom\": \"01/09/2026\", \"type\": 26, \"bookingfor\": 0, \"members\": 1, \"method\": 1, \"travelpurposes\": -1, \"howmanyapplicantsareunder12\": 0, \"appointmentId\": \"undefined\", \"id\": 0, \"vac\": {\"id\": 138}}",
+      "method": "PUT",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "response": {
+      "body": "{\"message\":\"\",\"returnobject\":{\"slots\":[],\"paidAmount\":0.0,\"serviceFee\":null,\"vasFee\":null,\"currency\":null,\"paymenthours\":null,\"payment\":false,\"visapaidAmount\":null,\"visafee\":null,\"visacurrency\":null,\"visapaymenthours\":null,\"visapayment\":false,\"visafeeAmount\":null,\"commission\":null},\"code\":\"SUCCESS\"}",
+      "status": 200,
+      "headers": {
+        "date": "Mon, 20 Jul 2026 08:38:40 GMT",
+        "vary": "accept-encoding",
+        "x-cdn": "Imperva",
+        "pragma": "no-cache",
+        "server": "Apache",
+        "expires": "0",
+        "x-iinfo": "53-177487342-177463507 PNNy RT(1784536690890 19393) q(0 0 0 -1) r(115 115) U6",
+        "content-type": "application/json;charset=UTF-8",
+        "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+        "content-length": "201",
+        "x-frame-options": "DENY",
+        "content-encoding": "gzip",
+        "x-xss-protection": "1; mode=block",
+        "x-content-type-options": "nosniff",
+        "strict-transport-security": "max-age=31536000 ; includeSubDomains"
+      }
+    },
+    "startedDateTime": "2026-07-20T08:38:30.130024Z"
+  },
+  {
+    "time": 8470.333,
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots",
+      "body": "{\"datefrom\": \"01/09/2026\", \"type\": 26, \"bookingfor\": 0, \"members\": 1, \"method\": 1, \"travelpurposes\": -1, \"howmanyapplicantsareunder12\": 0, \"appointmentId\": \"undefined\", \"id\": 0, \"vac\": {\"id\": 137}}",
+      "method": "PUT",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "response": {
+      "body": "{\"message\":\"\",\"returnobject\":{\"slots\":[],\"paidAmount\":0.0,\"serviceFee\":null,\"vasFee\":null,\"currency\":null,\"paymenthours\":null,\"payment\":false,\"visapaidAmount\":null,\"visafee\":null,\"visacurrency\":null,\"visapaymenthours\":null,\"visapayment\":false,\"visafeeAmount\":null,\"commission\":null},\"code\":\"SUCCESS\"}",
+      "status": 200,
+      "headers": {
+        "date": "Mon, 20 Jul 2026 08:38:54 GMT",
+        "vary": "accept-encoding",
+        "x-cdn": "Imperva",
+        "pragma": "no-cache",
+        "server": "Apache",
+        "expires": "0",
+        "x-iinfo": "53-177487342-177499379 NNNY CT(159 164 0) RT(1784536690890 36464) q(0 0 0 -1) r(82 82) U6",
+        "content-type": "application/json;charset=UTF-8",
+        "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+        "content-length": "201",
+        "x-frame-options": "DENY",
+        "content-encoding": "gzip",
+        "x-xss-protection": "1; mode=block",
+        "x-content-type-options": "nosniff",
+        "strict-transport-security": "max-age=31536000 ; includeSubDomains"
+      }
+    },
+    "startedDateTime": "2026-07-20T08:38:47.198761Z"
+  },
+  {
+    "time": 14559.710000000001,
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots",
+      "body": "{\"datefrom\": \"02/09/2026\", \"type\": 26, \"bookingfor\": 0, \"members\": 1, \"method\": 1, \"travelpurposes\": -1, \"howmanyapplicantsareunder12\": 0, \"appointmentId\": \"undefined\", \"id\": 0, \"vac\": {\"id\": 138}}",
+      "method": "PUT",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "response": {
+      "body": "{\"message\":\"\",\"returnobject\":{\"slots\":[],\"paidAmount\":0.0,\"serviceFee\":null,\"vasFee\":null,\"currency\":null,\"paymenthours\":null,\"payment\":false,\"visapaidAmount\":null,\"visafee\":null,\"visacurrency\":null,\"visapaymenthours\":null,\"visapayment\":false,\"visafeeAmount\":null,\"commission\":null},\"code\":\"SUCCESS\"}",
+      "status": 200,
+      "headers": {
+        "date": "Mon, 20 Jul 2026 08:39:16 GMT",
+        "vary": "accept-encoding",
+        "x-cdn": "Imperva",
+        "pragma": "no-cache",
+        "server": "Apache",
+        "expires": "0",
+        "x-iinfo": "53-177487342-177499379 PNNy RT(1784536690890 52325) q(0 0 0 -1) r(142 142) U6",
+        "content-type": "application/json;charset=UTF-8",
+        "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+        "content-length": "201",
+        "x-frame-options": "DENY",
+        "content-encoding": "gzip",
+        "x-xss-protection": "1; mode=block",
+        "x-content-type-options": "nosniff",
+        "strict-transport-security": "max-age=31536000 ; includeSubDomains"
+      }
+    },
+    "startedDateTime": "2026-07-20T08:39:03.057239Z"
+  },
+  {
+    "time": 6219.485,
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots",
+      "body": "{\"datefrom\": \"02/09/2026\", \"type\": 26, \"bookingfor\": 0, \"members\": 1, \"method\": 1, \"travelpurposes\": -1, \"howmanyapplicantsareunder12\": 0, \"appointmentId\": \"undefined\", \"id\": 0, \"vac\": {\"id\": 137}}",
+      "method": "PUT",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "response": {
+      "body": "{\"message\":\"\",\"returnobject\":{\"slots\":[],\"paidAmount\":0.0,\"serviceFee\":null,\"vasFee\":null,\"currency\":null,\"paymenthours\":null,\"payment\":false,\"visapaidAmount\":null,\"visafee\":null,\"visacurrency\":null,\"visapaymenthours\":null,\"visapayment\":false,\"visafeeAmount\":null,\"commission\":null},\"code\":\"SUCCESS\"}",
+      "status": 200,
+      "headers": {
+        "date": "Mon, 20 Jul 2026 08:39:27 GMT",
+        "vary": "accept-encoding",
+        "x-cdn": "Imperva",
+        "pragma": "no-cache",
+        "server": "Apache",
+        "expires": "0",
+        "x-iinfo": "53-291729116-291729440 NNNY CT(111 123 0) RT(1784536762355 848) q(0 0 0 0) r(49 49) U6",
+        "set-cookie": "incap_ses_526_3343172=F9R3WoOImE5EpsMnj7pMB7/eXWoAAAAAUWeu8xtJOuX/fSdubjtByQ==; path=/; Domain=.gvcworld.eu",
+        "content-type": "application/json;charset=UTF-8",
+        "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+        "content-length": "201",
+        "x-frame-options": "DENY",
+        "content-encoding": "gzip",
+        "x-xss-protection": "1; mode=block",
+        "x-content-type-options": "nosniff",
+        "strict-transport-security": "max-age=31536000 ; includeSubDomains"
+      }
+    },
+    "startedDateTime": "2026-07-20T08:39:22.039936Z"
+  },
+  {
+    "time": 7959.865,
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots",
+      "body": "{\"datefrom\": \"03/09/2026\", \"type\": 26, \"bookingfor\": 0, \"members\": 1, \"method\": 1, \"travelpurposes\": -1, \"howmanyapplicantsareunder12\": 0, \"appointmentId\": \"undefined\", \"id\": 0, \"vac\": {\"id\": 138}}",
+      "method": "PUT",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "response": {
+      "body": "{\"message\":\"\",\"returnobject\":{\"slots\":[],\"paidAmount\":0.0,\"serviceFee\":null,\"vasFee\":null,\"currency\":null,\"paymenthours\":null,\"payment\":false,\"visapaidAmount\":null,\"visafee\":null,\"visacurrency\":null,\"visapaymenthours\":null,\"visapayment\":false,\"visafeeAmount\":null,\"commission\":null},\"code\":\"SUCCESS\"}",
+      "status": 200,
+      "headers": {
+        "date": "Mon, 20 Jul 2026 08:39:40 GMT",
+        "vary": "accept-encoding",
+        "x-cdn": "Imperva",
+        "pragma": "no-cache",
+        "server": "Apache",
+        "expires": "0",
+        "x-iinfo": "53-291729116-291732603 NNNY CT(116 119 0) RT(1784536762355 11108) q(0 0 0 -1) r(77 77) U6",
+        "content-type": "application/json;charset=UTF-8",
+        "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+        "content-length": "201",
+        "x-frame-options": "DENY",
+        "content-encoding": "gzip",
+        "x-xss-protection": "1; mode=block",
+        "x-content-type-options": "nosniff",
+        "strict-transport-security": "max-age=31536000 ; includeSubDomains"
+      }
+    },
+    "startedDateTime": "2026-07-20T08:39:33.292033Z"
+  },
+  {
+    "time": 4758.879,
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots",
+      "body": "{\"datefrom\": \"03/09/2026\", \"type\": 26, \"bookingfor\": 0, \"members\": 1, \"method\": 1, \"travelpurposes\": -1, \"howmanyapplicantsareunder12\": 0, \"appointmentId\": \"undefined\", \"id\": 0, \"vac\": {\"id\": 137}}",
+      "method": "PUT",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "response": {
+      "body": "{\"message\":\"\",\"returnobject\":{\"slots\":[],\"paidAmount\":0.0,\"serviceFee\":null,\"vasFee\":null,\"currency\":null,\"paymenthours\":null,\"payment\":false,\"visapaidAmount\":null,\"visafee\":null,\"visacurrency\":null,\"visapaymenthours\":null,\"visapayment\":false,\"visafeeAmount\":null,\"commission\":null},\"code\":\"SUCCESS\"}",
+      "status": 200,
+      "headers": {
+        "date": "Mon, 20 Jul 2026 08:39:50 GMT",
+        "vary": "accept-encoding",
+        "x-cdn": "Imperva",
+        "pragma": "no-cache",
+        "server": "Apache",
+        "expires": "0",
+        "x-iinfo": "35-3830193-3830195 NNNY CT(100 99 0) RT(1784536786741 700) q(0 0 0 -1) r(37 37) U6",
+        "content-type": "application/json;charset=UTF-8",
+        "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+        "content-length": "201",
+        "x-frame-options": "DENY",
+        "content-encoding": "gzip",
+        "x-xss-protection": "1; mode=block",
+        "x-content-type-options": "nosniff",
+        "strict-transport-security": "max-age=31536000 ; includeSubDomains"
+      }
+    },
+    "startedDateTime": "2026-07-20T08:39:46.511438Z"
+  }
+]

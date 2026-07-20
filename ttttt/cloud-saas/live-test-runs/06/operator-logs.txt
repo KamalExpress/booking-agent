@@ -1,0 +1,288 @@
+Starting Headless Worker Node connecting to http://cloud-saas-prod:8000...
+2026-07-20 00:53:28,946 - INFO - Loaded existing worker credentials: worker_5cc74783
+2026-07-20 00:53:28,947 - INFO - Starting Worker Node Scheduler Engine...
+2026-07-20 00:53:28,947 - root - INFO - Starting Worker Node Scheduler Engine...
+2026-07-20 00:53:28,960 - root - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/assignments/next (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-07-20 00:53:28,960 - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/assignments/next (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-07-20 00:53:28,961 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 00:53:28,961 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 00:53:28,961 - root - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/heartbeat (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-07-20 00:53:28,961 - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/heartbeat (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-07-20 00:53:28,962 - WARNING - Heartbeat failed
+2026-07-20 00:53:28,962 - root - WARNING - Heartbeat failed
+2026-07-20 00:53:59,035 - INFO - SaaS requested runtime config refresh
+2026-07-20 00:53:59,035 - root - INFO - SaaS requested runtime config refresh
+2026-07-20 00:54:00,011 - root - INFO - Received Assignment #9 for center 138:26,137:26.
+2026-07-20 00:54:00,011 - INFO - Received Assignment #9 for center 138:26,137:26.
+2026-07-20 00:54:00,095 - root - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 00:54:00,096 - root - INFO - Executing login flow for account mnoon2404@gmail.com...
+2026-07-20 00:54:00,096 - root - INFO - Attempting login for mnoon2404@gmail.com...
+2026-07-20 00:54:00,095 - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 00:54:00,096 - INFO - Executing login flow for account mnoon2404@gmail.com...
+2026-07-20 00:54:00,096 - INFO - Attempting login for mnoon2404@gmail.com...
+2026-07-20 00:54:00,096 - root - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-07-20 00:54:00,096 - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-07-20 00:54:15,102 - root - WARNING - Pre-flight navigation failed (WAF might still block us): Failed to perform, curl: (28) Operation timed out after 15002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 00:54:15,102 - WARNING - Pre-flight navigation failed (WAF might still block us): Failed to perform, curl: (28) Operation timed out after 15002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 00:54:15,103 - root - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-20 00:54:15,103 - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-20 00:54:15,570 - root - INFO - CapSolver job submitted successfully. Task ID: 2ada29e8-c681-4253-9c25-eca9074a9af9
+2026-07-20 00:54:15,571 - root - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-20 00:54:15,570 - INFO - CapSolver job submitted successfully. Task ID: 2ada29e8-c681-4253-9c25-eca9074a9af9
+2026-07-20 00:54:15,571 - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-20 00:54:36,844 - root - INFO - CapSolver solved the CAPTCHA successfully!
+2026-07-20 00:54:36,844 - INFO - CapSolver solved the CAPTCHA successfully!
+2026-07-20 00:55:09,857 - ERROR - Network error during login request (Attempt 1/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 00:55:09,858 - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 00:55:09,857 - root - ERROR - Network error during login request (Attempt 1/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 00:55:09,858 - root - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 00:55:10,740 - INFO - Navigating to https://pk-gr-services.gvcworld.eu/?lang=en_US to clear WAF...
+2026-07-20 00:55:10,740 - root - INFO - Navigating to https://pk-gr-services.gvcworld.eu/?lang=en_US to clear WAF...
+2026-07-20 00:55:37,277 - INFO - Waiting for Imperva JS challenge to compute and set ___utmvc cookie...
+2026-07-20 00:55:37,277 - root - INFO - Waiting for Imperva JS challenge to compute and set ___utmvc cookie...
+2026-07-20 00:55:52,488 - WARNING - ___utmvc cookie not found after 15 seconds. Proceeding anyway, but WAF might still block.
+2026-07-20 00:55:52,488 - root - WARNING - ___utmvc cookie not found after 15 seconds. Proceeding anyway, but WAF might still block.
+2026-07-20 00:55:52,495 - INFO - Successfully refreshed 4 WAF cookies.
+2026-07-20 00:55:52,495 - root - INFO - Successfully refreshed 4 WAF cookies.
+2026-07-20 00:55:52,496 - INFO - Saved session cookies to file for future runs.
+2026-07-20 00:55:52,496 - root - INFO - Saved session cookies to file for future runs.
+2026-07-20 00:56:28,596 - root - ERROR - Network error during login request (Attempt 2/3): Failed to perform, curl: (28) Operation timed out after 30001 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 00:56:28,596 - root - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 00:56:28,596 - ERROR - Network error during login request (Attempt 2/3): Failed to perform, curl: (28) Operation timed out after 30001 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 00:56:28,596 - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 00:56:29,338 - INFO - Navigating to https://pk-gr-services.gvcworld.eu/?lang=en_US to clear WAF...
+2026-07-20 00:56:29,338 - root - INFO - Navigating to https://pk-gr-services.gvcworld.eu/?lang=en_US to clear WAF...
+2026-07-20 00:56:59,431 - root - ERROR - Failed to refresh WAF cookies via Playwright: Page.goto: Timeout 30000ms exceeded.
+
+:
+navigating to "https://pk-gr-services.gvcworld.eu/?lang=en_US", waiting until "networkidle"
+2026-07-20 00:56:59,431 - ERROR - Failed to refresh WAF cookies via Playwright: Page.goto: Timeout 30000ms exceeded.
+
+:
+navigating to "https://pk-gr-services.gvcworld.eu/?lang=en_US", waiting until "networkidle"
+2026-07-20 00:57:06,655 - root - ERROR - Login failed. Status Code: 401
+2026-07-20 00:57:06,656 - root - ERROR - Response: 
+2026-07-20 00:57:06,655 - ERROR - Login failed. Status Code: 401
+2026-07-20 00:57:06,656 - ERROR - Response: 
+2026-07-20 00:57:06,682 - ERROR - Login failed. Discarding assignment lease.
+2026-07-20 00:57:06,682 - root - ERROR - Login failed. Discarding assignment lease.
+2026-07-20 00:57:11,716 - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 00:57:11,716 - root - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 00:57:12,813 - root - INFO - Received Assignment #11 for center 138:26.
+2026-07-20 00:57:12,813 - INFO - Received Assignment #11 for center 138:26.
+2026-07-20 00:57:12,814 - root - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 00:57:12,814 - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 00:57:12,815 - root - INFO - Loaded previous session cookies from file.
+2026-07-20 00:57:12,815 - INFO - Loaded previous session cookies from file.
+2026-07-20 00:57:12,816 - root - INFO - Executing login flow for account mnoon2404@gmail.com...
+2026-07-20 00:57:12,816 - INFO - Executing login flow for account mnoon2404@gmail.com...
+2026-07-20 00:57:12,816 - root - INFO - Attempting login for mnoon2404@gmail.com...
+2026-07-20 00:57:12,816 - INFO - Attempting login for mnoon2404@gmail.com...
+2026-07-20 00:57:12,816 - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-07-20 00:57:12,816 - root - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-07-20 00:57:14,841 - root - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-20 00:57:14,841 - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-20 00:57:15,042 - root - INFO - CapSolver job submitted successfully. Task ID: c6c3c1b9-e323-46c9-b81c-c75ceb80d319
+2026-07-20 00:57:15,043 - root - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-20 00:57:15,042 - INFO - CapSolver job submitted successfully. Task ID: c6c3c1b9-e323-46c9-b81c-c75ceb80d319
+2026-07-20 00:57:15,043 - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-20 00:57:36,788 - INFO - CapSolver solved the CAPTCHA successfully!
+2026-07-20 00:57:36,788 - root - INFO - CapSolver solved the CAPTCHA successfully!
+2026-07-20 00:58:09,803 - root - ERROR - Network error during login request (Attempt 1/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 00:58:09,803 - ERROR - Network error during login request (Attempt 1/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 00:58:09,804 - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 00:58:09,804 - root - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 00:58:10,459 - root - INFO - Navigating to https://pk-gr-services.gvcworld.eu/?lang=en_US to clear WAF...
+2026-07-20 00:58:10,459 - INFO - Navigating to https://pk-gr-services.gvcworld.eu/?lang=en_US to clear WAF...
+2026-07-20 00:58:40,543 - ERROR - Failed to refresh WAF cookies via Playwright: Page.goto: Timeout 30000ms exceeded.
+
+:
+navigating to "https://pk-gr-services.gvcworld.eu/?lang=en_US", waiting until "networkidle"
+2026-07-20 00:58:40,543 - root - ERROR - Failed to refresh WAF cookies via Playwright: Page.goto: Timeout 30000ms exceeded.
+
+:
+navigating to "https://pk-gr-services.gvcworld.eu/?lang=en_US", waiting until "networkidle"
+2026-07-20 00:59:14,420 - ERROR - Network error during login request (Attempt 2/3): Failed to perform, curl: (28) Operation timed out after 30001 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 00:59:14,420 - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 00:59:14,420 - root - ERROR - Network error during login request (Attempt 2/3): Failed to perform, curl: (28) Operation timed out after 30001 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 00:59:14,420 - root - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 00:59:15,073 - root - INFO - Navigating to https://pk-gr-services.gvcworld.eu/?lang=en_US to clear WAF...
+2026-07-20 00:59:15,073 - INFO - Navigating to https://pk-gr-services.gvcworld.eu/?lang=en_US to clear WAF...
+2026-07-20 00:59:45,161 - ERROR - Failed to refresh WAF cookies via Playwright: Page.goto: Timeout 30000ms exceeded.
+
+:
+navigating to "https://pk-gr-services.gvcworld.eu/?lang=en_US", waiting until "networkidle"
+2026-07-20 00:59:45,161 - root - ERROR - Failed to refresh WAF cookies via Playwright: Page.goto: Timeout 30000ms exceeded.
+
+:
+navigating to "https://pk-gr-services.gvcworld.eu/?lang=en_US", waiting until "networkidle"
+2026-07-20 00:59:59,529 - ERROR - Login failed. Status Code: 401
+2026-07-20 00:59:59,529 - root - ERROR - Login failed. Status Code: 401
+2026-07-20 00:59:59,529 - root - ERROR - Response: 
+2026-07-20 00:59:59,529 - ERROR - Response: 
+2026-07-20 00:59:59,553 - root - ERROR - Login failed. Discarding assignment lease.
+2026-07-20 00:59:59,553 - ERROR - Login failed. Discarding assignment lease.
+2026-07-20 01:00:04,615 - root - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 01:00:04,615 - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 01:00:05,691 - root - INFO - Received Assignment #7 for center 138:26,137:26.
+2026-07-20 01:00:05,691 - INFO - Received Assignment #7 for center 138:26,137:26.
+2026-07-20 01:00:05,692 - root - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 01:00:05,692 - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 01:00:05,693 - root - INFO - Executing login flow for account ammarashrafsialkot@gmail.com...
+2026-07-20 01:00:05,693 - INFO - Executing login flow for account ammarashrafsialkot@gmail.com...
+2026-07-20 01:00:05,694 - root - INFO - Attempting login for ammarashrafsialkot@gmail.com...
+2026-07-20 01:00:05,694 - INFO - Attempting login for ammarashrafsialkot@gmail.com...
+2026-07-20 01:00:05,694 - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-07-20 01:00:05,694 - root - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-07-20 01:00:20,699 - WARNING - Pre-flight navigation failed (WAF might still block us): Failed to perform, curl: (28) Operation timed out after 15001 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 01:00:20,700 - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-20 01:00:20,699 - root - WARNING - Pre-flight navigation failed (WAF might still block us): Failed to perform, curl: (28) Operation timed out after 15001 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 01:00:20,700 - root - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-20 01:00:20,937 - INFO - CapSolver job submitted successfully. Task ID: 5a286704-dc03-4210-a411-93f7a7e29be0
+2026-07-20 01:00:20,938 - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-20 01:00:20,937 - root - INFO - CapSolver job submitted successfully. Task ID: 5a286704-dc03-4210-a411-93f7a7e29be0
+2026-07-20 01:00:20,938 - root - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-20 01:00:32,363 - INFO - CapSolver solved the CAPTCHA successfully!
+2026-07-20 01:00:32,363 - root - INFO - CapSolver solved the CAPTCHA successfully!
+2026-07-20 01:01:03,435 - ERROR - Network error during login request (Attempt 1/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 01:01:03,436 - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 01:01:03,435 - root - ERROR - Network error during login request (Attempt 1/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 01:01:03,436 - root - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 01:01:04,177 - INFO - Navigating to https://pk-gr-services.gvcworld.eu/?lang=en_US to clear WAF...
+2026-07-20 01:01:04,177 - root - INFO - Navigating to https://pk-gr-services.gvcworld.eu/?lang=en_US to clear WAF...
+2026-07-20 01:01:34,271 - root - ERROR - Failed to refresh WAF cookies via Playwright: Page.goto: Timeout 30000ms exceeded.
+
+:
+navigating to "https://pk-gr-services.gvcworld.eu/?lang=en_US", waiting until "networkidle"
+2026-07-20 01:01:34,271 - ERROR - Failed to refresh WAF cookies via Playwright: Page.goto: Timeout 30000ms exceeded.
+
+:
+navigating to "https://pk-gr-services.gvcworld.eu/?lang=en_US", waiting until "networkidle"
+2026-07-20 01:02:10,287 - ERROR - Network error during login request (Attempt 2/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 01:02:10,287 - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 01:02:10,287 - root - ERROR - Network error during login request (Attempt 2/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 01:02:10,287 - root - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 01:02:10,918 - root - INFO - Navigating to https://pk-gr-services.gvcworld.eu/?lang=en_US to clear WAF...
+2026-07-20 01:02:10,918 - INFO - Navigating to https://pk-gr-services.gvcworld.eu/?lang=en_US to clear WAF...
+2026-07-20 01:02:41,008 - root - ERROR - Failed to refresh WAF cookies via Playwright: Page.goto: Timeout 30000ms exceeded.
+
+:
+navigating to "https://pk-gr-services.gvcworld.eu/?lang=en_US", waiting until "networkidle"
+2026-07-20 01:02:41,008 - ERROR - Failed to refresh WAF cookies via Playwright: Page.goto: Timeout 30000ms exceeded.
+
+:
+navigating to "https://pk-gr-services.gvcworld.eu/?lang=en_US", waiting until "networkidle"
+2026-07-20 01:02:56,858 - ERROR - Login failed. Status Code: 401
+2026-07-20 01:02:56,858 - root - ERROR - Login failed. Status Code: 401
+2026-07-20 01:02:56,860 - ERROR - Response: 
+2026-07-20 01:02:56,860 - root - ERROR - Response: 
+2026-07-20 01:02:56,881 - ERROR - Login failed. Discarding assignment lease.
+2026-07-20 01:02:56,881 - root - ERROR - Login failed. Discarding assignment lease.
+2026-07-20 01:03:01,923 - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 01:03:01,923 - root - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 01:03:02,983 - root - INFO - Received Assignment #9 for center 138:26,137:26.
+2026-07-20 01:03:02,983 - INFO - Received Assignment #9 for center 138:26,137:26.
+2026-07-20 01:03:02,984 - root - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 01:03:02,984 - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 01:03:02,985 - root - INFO - Loaded previous session cookies from file.
+2026-07-20 01:03:02,985 - root - INFO - Executing login flow for account mnoon2404@gmail.com...
+2026-07-20 01:03:02,985 - INFO - Loaded previous session cookies from file.
+2026-07-20 01:03:02,985 - INFO - Executing login flow for account mnoon2404@gmail.com...
+2026-07-20 01:03:02,986 - INFO - Attempting login for mnoon2404@gmail.com...
+2026-07-20 01:03:02,986 - root - INFO - Attempting login for mnoon2404@gmail.com...
+2026-07-20 01:03:02,986 - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-07-20 01:03:02,986 - root - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-07-20 01:03:11,030 - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-20 01:03:11,030 - root - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-20 01:03:11,248 - root - INFO - CapSolver job submitted successfully. Task ID: 79d58f74-3afb-4023-a234-40c3845ccad0
+2026-07-20 01:03:11,248 - INFO - CapSolver job submitted successfully. Task ID: 79d58f74-3afb-4023-a234-40c3845ccad0
+2026-07-20 01:03:11,249 - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-20 01:03:11,249 - root - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-20 01:03:14,464 - INFO - CapSolver solved the CAPTCHA successfully!
+2026-07-20 01:03:14,464 - root - INFO - CapSolver solved the CAPTCHA successfully!
+2026-07-20 01:03:47,480 - ERROR - Network error during login request (Attempt 1/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 01:03:47,480 - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 01:03:47,480 - root - ERROR - Network error during login request (Attempt 1/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 01:03:47,480 - root - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 01:03:48,200 - INFO - Navigating to https://pk-gr-services.gvcworld.eu/?lang=en_US to clear WAF...
+2026-07-20 01:03:48,200 - root - INFO - Navigating to https://pk-gr-services.gvcworld.eu/?lang=en_US to clear WAF...
+2026-07-20 01:04:18,300 - root - ERROR - Failed to refresh WAF cookies via Playwright: Page.goto: Timeout 30000ms exceeded.
+
+:
+navigating to "https://pk-gr-services.gvcworld.eu/?lang=en_US", waiting until "networkidle"
+2026-07-20 01:04:18,300 - ERROR - Failed to refresh WAF cookies via Playwright: Page.goto: Timeout 30000ms exceeded.
+
+:
+navigating to "https://pk-gr-services.gvcworld.eu/?lang=en_US", waiting until "networkidle"
+2026-07-20 01:04:54,319 - ERROR - Network error during login request (Attempt 2/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 01:04:54,319 - root - ERROR - Network error during login request (Attempt 2/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 01:04:54,320 - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 01:04:54,320 - root - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 01:04:55,020 - INFO - Navigating to https://pk-gr-services.gvcworld.eu/?lang=en_US to clear WAF...
+2026-07-20 01:04:55,020 - root - INFO - Navigating to https://pk-gr-services.gvcworld.eu/?lang=en_US to clear WAF...
+2026-07-20 01:05:25,113 - ERROR - Failed to refresh WAF cookies via Playwright: Page.goto: Timeout 30000ms exceeded.
+
+:
+navigating to "https://pk-gr-services.gvcworld.eu/?lang=en_US", waiting until "networkidle"
+2026-07-20 01:05:25,113 - root - ERROR - Failed to refresh WAF cookies via Playwright: Page.goto: Timeout 30000ms exceeded.
+
+:
+navigating to "https://pk-gr-services.gvcworld.eu/?lang=en_US", waiting until "networkidle"
+2026-07-20 01:05:45,527 - root - ERROR - Login failed. Status Code: 401
+2026-07-20 01:05:45,527 - root - ERROR - Response: 
+2026-07-20 01:05:45,527 - ERROR - Login failed. Status Code: 401
+2026-07-20 01:05:45,527 - ERROR - Response: 
+2026-07-20 01:05:45,548 - root - ERROR - Login failed. Discarding assignment lease.
+2026-07-20 01:05:45,548 - ERROR - Login failed. Discarding assignment lease.
+2026-07-20 01:05:50,580 - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 01:05:50,580 - root - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 01:05:51,655 - INFO - Received Assignment #11 for center 138:26.
+2026-07-20 01:05:51,655 - root - INFO - Received Assignment #11 for center 138:26.
+2026-07-20 01:05:51,656 - root - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 01:05:51,656 - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 01:05:51,658 - root - INFO - Loaded previous session cookies from file.
+2026-07-20 01:05:51,658 - INFO - Loaded previous session cookies from file.
+2026-07-20 01:05:51,658 - INFO - Executing login flow for account mnoon2404@gmail.com...
+2026-07-20 01:05:51,658 - root - INFO - Executing login flow for account mnoon2404@gmail.com...
+2026-07-20 01:05:51,659 - INFO - Attempting login for mnoon2404@gmail.com...
+2026-07-20 01:05:51,659 - root - INFO - Attempting login for mnoon2404@gmail.com...
+2026-07-20 01:05:51,659 - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-07-20 01:05:51,659 - root - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-07-20 01:06:06,665 - WARNING - Pre-flight navigation failed (WAF might still block us): Failed to perform, curl: (28) Operation timed out after 15001 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 01:06:06,665 - root - WARNING - Pre-flight navigation failed (WAF might still block us): Failed to perform, curl: (28) Operation timed out after 15001 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 01:06:06,666 - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-20 01:06:06,666 - root - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-20 01:06:07,098 - INFO - CapSolver job submitted successfully. Task ID: 91a0366d-4ea6-4153-ad19-a4072c7900ee
+2026-07-20 01:06:07,098 - root - INFO - CapSolver job submitted successfully. Task ID: 91a0366d-4ea6-4153-ad19-a4072c7900ee
+2026-07-20 01:06:07,099 - root - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-20 01:06:07,099 - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-20 01:06:19,112 - root - INFO - CapSolver solved the CAPTCHA successfully!
+2026-07-20 01:06:19,112 - INFO - CapSolver solved the CAPTCHA successfully!
+2026-07-20 01:06:52,125 - root - ERROR - Network error during login request (Attempt 1/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 01:06:52,126 - root - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 01:06:52,125 - ERROR - Network error during login request (Attempt 1/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 01:06:52,126 - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 01:06:52,771 - INFO - Navigating to https://pk-gr-services.gvcworld.eu/?lang=en_US to clear WAF...
+2026-07-20 01:06:52,771 - root - INFO - Navigating to https://pk-gr-services.gvcworld.eu/?lang=en_US to clear WAF...
+2026-07-20 01:07:22,838 - ERROR - Failed to refresh WAF cookies via Playwright: Page.goto: Timeout 30000ms exceeded.
+
+:
+navigating to "https://pk-gr-services.gvcworld.eu/?lang=en_US", waiting until "networkidle"
+2026-07-20 01:07:22,838 - root - ERROR - Failed to refresh WAF cookies via Playwright: Page.goto: Timeout 30000ms exceeded.
+
+:
+navigating to "https://pk-gr-services.gvcworld.eu/?lang=en_US", waiting until "networkidle"
+2026-07-20 01:07:58,858 - root - ERROR - Network error during login request (Attempt 2/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 01:07:58,858 - ERROR - Network error during login request (Attempt 2/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 01:07:58,859 - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 01:07:58,859 - root - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 01:07:59,517 - root - INFO - Navigating to https://pk-gr-services.gvcworld.eu/?lang=en_US to clear WAF...
+2026-07-20 01:07:59,517 - INFO - Navigating to https://pk-gr-services.gvcworld.eu/?lang=en_US to clear WAF...
+2026-07-20 01:08:29,613 - ERROR - Failed to refresh WAF cookies via Playwright: Page.goto: Timeout 30000ms exceeded.
+
+:
+navigating to "https://pk-gr-services.gvcworld.eu/?lang=en_US", waiting until "networkidle"
+2026-07-20 01:08:29,613 - root - ERROR - Failed to refresh WAF cookies via Playwright: Page.goto: Timeout 30000ms exceeded.
+
+:
+navigating to "https://pk-gr-services.gvcworld.eu/?lang=en_US", waiting until "networkidle"

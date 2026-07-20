@@ -1,0 +1,225 @@
+[
+  {
+    "error": "Failed to perform, curl: (28) Operation timed out after 15001 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.",
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots",
+      "method": "PUT",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "startedDateTime": "2026-07-20T09:32:39.648188Z"
+  },
+  {
+    "error": "Failed to perform, curl: (28) Operation timed out after 3000 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.",
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/favicon.ico",
+      "method": "GET",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "startedDateTime": "2026-07-20T09:32:54.654223Z"
+  },
+  {
+    "error": "Failed to perform, curl: (28) Operation timed out after 15002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.",
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots",
+      "method": "PUT",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "startedDateTime": "2026-07-20T09:32:57.658813Z"
+  },
+  {
+    "error": "Failed to perform, curl: (28) Operation timed out after 15003 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.",
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots",
+      "method": "PUT",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "startedDateTime": "2026-07-20T09:33:54.187685Z"
+  },
+  {
+    "error": "Failed to perform, curl: (28) Operation timed out after 15002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.",
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+      "method": "GET",
+      "headers": {
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "same-origin",
+        "X-Requested-With": null
+      }
+    },
+    "startedDateTime": "2026-07-20T09:34:09.196650Z"
+  },
+  {
+    "error": "Failed to perform, curl: (28) Operation timed out after 3002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.",
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/favicon.ico",
+      "method": "GET",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "startedDateTime": "2026-07-20T09:34:44.703691Z"
+  },
+  {
+    "error": "Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.",
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/api/v1/auth/login",
+      "method": "POST",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "startedDateTime": "2026-07-20T09:34:47.711172Z"
+  },
+  {
+    "error": "Failed to perform, curl: (28) Operation timed out after 3003 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.",
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/favicon.ico",
+      "method": "GET",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "startedDateTime": "2026-07-20T09:36:50.341386Z"
+  },
+  {
+    "error": "Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.",
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/api/v1/auth/login",
+      "method": "POST",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "startedDateTime": "2026-07-20T09:36:56.351775Z"
+  },
+  {
+    "error": "Failed to perform, curl: (28) Operation timed out after 3002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.",
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/favicon.ico",
+      "method": "GET",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "startedDateTime": "2026-07-20T09:38:41.374448Z"
+  },
+  {
+    "error": "Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.",
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/api/v1/auth/login",
+      "method": "POST",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "startedDateTime": "2026-07-20T09:38:47.382921Z"
+  },
+  {
+    "error": "Failed to perform, curl: (28) Operation timed out after 3002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.",
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/favicon.ico",
+      "method": "GET",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "startedDateTime": "2026-07-20T09:40:26.076053Z"
+  }
+]

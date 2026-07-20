@@ -1,0 +1,120 @@
+[
+  {
+    "time": 10596.357,
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+      "body": "",
+      "method": "GET",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "document",
+        "sec-fetch-mode": "navigate",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": null
+      }
+    },
+    "response": {
+      "body": "<!DOCTYPE html>\n<html dir=\"ltr\">\n<head>\n    <title>GVCW</title>\n\n    <meta charset=\"utf-8\"/>\n\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0\"/>\n\n    <!--<link rel=\"shortcut icon\" type=\"image/png\" href=\"/dist/images/favicon.png\"/>-->\n\n    <link href=\"//fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i\" async=\"async\" rel=\"stylesheet\"/>\n\n    <link rel=\"stylesheet\" type=\"text/css\" href=\"/dist/css/vendor.css\" media=\"all\"/>\n    <link rel=\"stylesheet\" type=\"text/css\" href=\"/dist/css/app.css\" media=\"all\"/>\n</head>\n\n<body>\n\n\n\n<div id=\"layout-container\"></div>\n\n<script type=\"text/javascript\" src=\"/dist/js/vendor.js\"></script>\n<script type=\"text/javascript\" src=\"/dist/js/app.js\"></script>\n\n<script type=\"text/javascript\" src=\"/_Incapsula_Resource?SWJIYLWA=719d34d31c8e3a6e6fffd425f7e032f3&ns=1&cb=912758022\" async></script></body>\n</html>\n",
+      "status": 200,
+      "headers": {
+        "date": "Mon, 20 Jul 2026 00:21:14 GMT",
+        "vary": "accept-encoding",
+        "x-cdn": "Imperva",
+        "pragma": "no-cache",
+        "server": "Apache",
+        "expires": "0",
+        "x-iinfo": "51-247166708-247166841 NNNY CT(172 349 0) RT(1784506865978 811) q(0 0 0 0) r(92 92) U12",
+        "set-cookie": "org.springframework.web.servlet.i18n.CookieLocaleResolver.LOCALE=en-US; Path=/;HttpOnly;Secure, incap_ses_734_3343172=bqMVXT65qCmt9H/cLLEvCvtpXWoAAAAASvgckzrjJO92lPRpBacRuQ==; path=/; Domain=.gvcworld.eu",
+        "content-type": "text/html;charset=UTF-8",
+        "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+        "x-frame-options": "DENY",
+        "content-encoding": "gzip",
+        "content-language": "en-US",
+        "x-xss-protection": "1; mode=block",
+        "x-content-type-options": "nosniff",
+        "strict-transport-security": "max-age=31536000 ; includeSubDomains"
+      }
+    },
+    "startedDateTime": "2026-07-20T00:21:05.589917Z"
+  },
+  {
+    "error": "Failed to perform, curl: (28) Operation timed out after 3002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.",
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/favicon.ico",
+      "method": "GET",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "startedDateTime": "2026-07-20T00:21:28.211144Z"
+  },
+  {
+    "error": "Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.",
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/api/v1/auth/login",
+      "method": "POST",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "startedDateTime": "2026-07-20T00:21:31.217439Z"
+  },
+  {
+    "error": "Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.",
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/api/v1/auth/login",
+      "method": "POST",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "startedDateTime": "2026-07-20T00:22:34.948933Z"
+  },
+  {
+    "error": "Failed to perform, curl: (28) Operation timed out after 30001 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.",
+    "request": {
+      "url": "https://pk-gr-services.gvcworld.eu/api/v1/auth/login",
+      "method": "POST",
+      "headers": {
+        "accept": "application/json, text/plain, */*",
+        "origin": "https://pk-gr-services.gvcworld.eu",
+        "referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+        "connection": "keep-alive",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "accept-language": "en-US,en;q=0.9",
+        "x-requested-with": "XMLHttpRequest"
+      }
+    },
+    "startedDateTime": "2026-07-20T00:23:40.742182Z"
+  }
+]

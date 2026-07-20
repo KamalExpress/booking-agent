@@ -35,6 +35,8 @@ class WorkerService:
             playwright_version=req.playwright_version,
             python_version=req.python_version,
             max_concurrency=req.max_concurrency,
+            can_scrape=req.can_scrape,
+            can_book=req.can_book,
             status="Online",
             scheduling_state="Accepting Jobs",
             last_heartbeat=datetime.utcnow()

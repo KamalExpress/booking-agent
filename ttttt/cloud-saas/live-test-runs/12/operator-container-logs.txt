@@ -1,0 +1,1322 @@
+Starting Headless Worker Node connecting to http://cloud-saas-prod:8000...
+2026-07-20 09:16:19,723 - INFO - Loaded existing worker credentials: worker_5cc74783
+2026-07-20 09:16:19,724 - INFO - Starting Worker Node Scheduler Engine...
+2026-07-20 09:16:19,724 - root - INFO - Starting Worker Node Scheduler Engine...
+2026-07-20 09:16:19,735 - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/assignments/next (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-07-20 09:16:19,735 - root - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/assignments/next (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-07-20 09:16:19,736 - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/heartbeat (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-07-20 09:16:19,736 - root - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/heartbeat (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-07-20 09:16:19,736 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:16:19,736 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:16:19,737 - root - WARNING - Heartbeat failed
+2026-07-20 09:16:19,737 - WARNING - Heartbeat failed
+2026-07-20 09:16:49,779 - root - INFO - SaaS requested runtime config refresh
+2026-07-20 09:16:49,779 - INFO - SaaS requested runtime config refresh
+2026-07-20 09:16:50,795 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:16:50,795 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:17:21,825 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:17:21,825 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:17:52,859 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:17:52,859 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:18:23,883 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:18:23,883 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:18:54,918 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:18:54,918 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:19:25,974 - root - INFO - Received Assignment #7 for center 138:26,137:26.
+2026-07-20 09:19:25,974 - INFO - Received Assignment #7 for center 138:26,137:26.
+2026-07-20 09:19:26,072 - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 09:19:26,072 - root - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 09:19:26,072 - INFO - Executing login flow for account ammarashrafsialkot@gmail.com...
+2026-07-20 09:19:26,072 - root - INFO - Executing login flow for account ammarashrafsialkot@gmail.com...
+2026-07-20 09:19:26,072 - root - INFO - Validating existing session...
+2026-07-20 09:19:26,072 - INFO - Validating existing session...
+2026-07-20 09:19:29,824 - root - INFO - Session has expired (401). Must login again.
+2026-07-20 09:19:29,825 - root - INFO - Attempting login for ammarashrafsialkot@gmail.com...
+2026-07-20 09:19:29,824 - INFO - Session has expired (401). Must login again.
+2026-07-20 09:19:29,825 - INFO - Attempting login for ammarashrafsialkot@gmail.com...
+2026-07-20 09:19:29,825 - root - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-07-20 09:19:29,825 - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-07-20 09:19:44,571 - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-20 09:19:44,571 - root - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-20 09:19:44,789 - root - INFO - CapSolver job submitted successfully. Task ID: 53046a78-ea4f-45d9-b936-e522e1b54d6e
+2026-07-20 09:19:44,789 - INFO - CapSolver job submitted successfully. Task ID: 53046a78-ea4f-45d9-b936-e522e1b54d6e
+2026-07-20 09:19:44,791 - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-20 09:19:44,791 - root - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-20 09:20:10,299 - root - ERROR - CapSolver task failed: Failed to solve the captcha: 1001
+2026-07-20 09:20:10,300 - root - WARNING - CapSolver attempt 1 timed out or failed.
+2026-07-20 09:20:10,299 - ERROR - CapSolver task failed: Failed to solve the captcha: 1001
+2026-07-20 09:20:10,300 - WARNING - CapSolver attempt 1 timed out or failed.
+2026-07-20 09:20:10,300 - INFO - [Attempt 2/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-20 09:20:10,300 - root - INFO - [Attempt 2/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-20 09:20:10,540 - INFO - CapSolver job submitted successfully. Task ID: 34622792-8aed-48d8-b2d5-01bcee6cb377
+2026-07-20 09:20:10,541 - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-20 09:20:10,540 - root - INFO - CapSolver job submitted successfully. Task ID: 34622792-8aed-48d8-b2d5-01bcee6cb377
+2026-07-20 09:20:10,541 - root - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-20 09:20:17,986 - root - INFO - CapSolver solved the CAPTCHA successfully!
+2026-07-20 09:20:17,986 - INFO - CapSolver solved the CAPTCHA successfully!
+2026-07-20 09:20:34,152 - root - INFO - Login successful!
+2026-07-20 09:20:34,152 - INFO - Login successful!
+2026-07-20 09:20:34,153 - INFO - Saved session cookies to file for future runs.
+2026-07-20 09:20:34,153 - root - INFO - Saved session cookies to file for future runs.
+2026-07-20 09:20:34,212 - INFO - Checking slots for 01/09/2026 at VAC 138 (Type 26)...
+2026-07-20 09:20:34,213 - INFO - Searching for slots from 01/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:20:34,213 - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:20:34,212 - root - INFO - Checking slots for 01/09/2026 at VAC 138 (Type 26)...
+2026-07-20 09:20:34,213 - root - INFO - Searching for slots from 01/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:20:34,213 - root - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:20:34,908 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:20:34,908 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:20:34,908 - INFO - Waiting 7.25s before next check...
+2026-07-20 09:20:34,908 - root - INFO - Waiting 7.25s before next check...
+2026-07-20 09:20:42,154 - INFO - Checking slots for 01/09/2026 at VAC 137 (Type 26)...
+2026-07-20 09:20:42,154 - root - INFO - Checking slots for 01/09/2026 at VAC 137 (Type 26)...
+2026-07-20 09:20:42,155 - INFO - Searching for slots from 01/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:20:42,155 - root - INFO - Searching for slots from 01/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:20:42,156 - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-20 09:20:42,156 - root - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-20 09:20:51,954 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:20:51,955 - INFO - Waiting 5.76s before next check...
+2026-07-20 09:20:51,954 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:20:51,955 - root - INFO - Waiting 5.76s before next check...
+2026-07-20 09:20:57,719 - root - INFO - Checking slots for 02/09/2026 at VAC 138 (Type 26)...
+2026-07-20 09:20:57,719 - INFO - Checking slots for 02/09/2026 at VAC 138 (Type 26)...
+2026-07-20 09:20:57,720 - INFO - Searching for slots from 02/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:20:57,720 - root - INFO - Searching for slots from 02/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:20:57,720 - root - INFO - Form Data (Payload) sent: {'datefrom': '02/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:20:57,720 - INFO - Form Data (Payload) sent: {'datefrom': '02/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:21:05,778 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:21:05,779 - INFO - Waiting 5.71s before next check...
+2026-07-20 09:21:05,778 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:21:05,779 - root - INFO - Waiting 5.71s before next check...
+2026-07-20 09:21:11,490 - INFO - Checking slots for 02/09/2026 at VAC 137 (Type 26)...
+2026-07-20 09:21:11,490 - root - INFO - Checking slots for 02/09/2026 at VAC 137 (Type 26)...
+2026-07-20 09:21:11,491 - root - INFO - Searching for slots from 02/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:21:11,491 - INFO - Searching for slots from 02/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:21:11,491 - INFO - Form Data (Payload) sent: {'datefrom': '02/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-20 09:21:11,491 - root - INFO - Form Data (Payload) sent: {'datefrom': '02/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-20 09:21:39,409 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:21:39,409 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:21:39,409 - root - INFO - Waiting 6.80s before next check...
+2026-07-20 09:21:39,409 - INFO - Waiting 6.80s before next check...
+2026-07-20 09:21:46,213 - root - INFO - Checking slots for 03/09/2026 at VAC 138 (Type 26)...
+2026-07-20 09:21:46,214 - root - INFO - Searching for slots from 03/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:21:46,213 - INFO - Checking slots for 03/09/2026 at VAC 138 (Type 26)...
+2026-07-20 09:21:46,214 - INFO - Searching for slots from 03/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:21:46,214 - root - INFO - Form Data (Payload) sent: {'datefrom': '03/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:21:46,214 - INFO - Form Data (Payload) sent: {'datefrom': '03/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:21:49,090 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:21:49,090 - INFO - Waiting 6.71s before next check...
+2026-07-20 09:21:49,090 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:21:49,090 - root - INFO - Waiting 6.71s before next check...
+2026-07-20 09:21:55,804 - INFO - Checking slots for 03/09/2026 at VAC 137 (Type 26)...
+2026-07-20 09:21:55,805 - INFO - Searching for slots from 03/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:21:55,805 - INFO - Form Data (Payload) sent: {'datefrom': '03/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-20 09:21:55,804 - root - INFO - Checking slots for 03/09/2026 at VAC 137 (Type 26)...
+2026-07-20 09:21:55,805 - root - INFO - Searching for slots from 03/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:21:55,805 - root - INFO - Form Data (Payload) sent: {'datefrom': '03/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-20 09:21:56,611 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:21:56,611 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:21:56,612 - INFO - Waiting 5.20s before next check...
+2026-07-20 09:21:56,612 - root - INFO - Waiting 5.20s before next check...
+2026-07-20 09:22:01,815 - INFO - Finished checking assignment date range. No slots found.
+2026-07-20 09:22:01,815 - root - INFO - Finished checking assignment date range. No slots found.
+2026-07-20 09:22:01,868 - INFO - Transmitted 10 network logs to SaaS.
+2026-07-20 09:22:01,868 - root - INFO - Transmitted 10 network logs to SaaS.
+2026-07-20 09:22:02,945 - INFO - Received Assignment #10 for center 138:26.
+2026-07-20 09:22:02,945 - root - INFO - Received Assignment #10 for center 138:26.
+2026-07-20 09:22:02,945 - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 09:22:02,945 - root - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 09:22:02,946 - INFO - Loaded previous session cookies from file.
+2026-07-20 09:22:02,946 - INFO - Executing login flow for account ammarashrafsialkot@gmail.com...
+2026-07-20 09:22:02,946 - root - INFO - Loaded previous session cookies from file.
+2026-07-20 09:22:02,946 - root - INFO - Executing login flow for account ammarashrafsialkot@gmail.com...
+2026-07-20 09:22:02,946 - root - INFO - Validating existing session...
+2026-07-20 09:22:02,946 - INFO - Validating existing session...
+2026-07-20 09:22:17,953 - WARNING - Session validation error on attempt 1: Failed to perform, curl: (28) Operation timed out after 15002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:22:17,953 - root - WARNING - Session validation error on attempt 1: Failed to perform, curl: (28) Operation timed out after 15002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:22:22,358 - root - INFO - Session is fully valid. Bypassing login.
+2026-07-20 09:22:22,358 - INFO - Session is fully valid. Bypassing login.
+2026-07-20 09:22:22,387 - INFO - Checking slots for 19/08/2026 at VAC 138 (Type 26)...
+2026-07-20 09:22:22,387 - INFO - Searching for slots from 19/08/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:22:22,387 - root - INFO - Checking slots for 19/08/2026 at VAC 138 (Type 26)...
+2026-07-20 09:22:22,387 - root - INFO - Searching for slots from 19/08/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:22:22,388 - INFO - Form Data (Payload) sent: {'datefrom': '19/08/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:22:22,388 - root - INFO - Form Data (Payload) sent: {'datefrom': '19/08/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:22:34,862 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [{'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '09:00', 'endtime': '09:15', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '09:15', 'endtime': '09:30', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '09:30', 'endtime': '09:45', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '09:45', 'endtime': '10:00', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '10:00', 'endtime': '10:15', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '10:15', 'endtime': '10:30', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '10:30', 'endtime': '10:45', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '10:45', 'endtime': '11:00', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '11:00', 'endtime': '11:15', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '11:15', 'endtime': '11:30', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '11:30', 'endtime': '11:45', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '11:45', 'endtime': '12:00', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '12:00', 'endtime': '12:15', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '12:15', 'endtime': '12:30', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '12:30', 'endtime': '12:45', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '12:45', 'endtime': '13:00', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '13:00', 'endtime': '13:15', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '13:15', 'endtime': '13:30', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '13:30', 'endtime': '13:45', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '13:45', 'endtime': '14:00', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '14:00', 'endtime': '14:15', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '14:15', 'endtime': '14:30', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:22:34,862 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [{'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '09:00', 'endtime': '09:15', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '09:15', 'endtime': '09:30', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '09:30', 'endtime': '09:45', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '09:45', 'endtime': '10:00', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '10:00', 'endtime': '10:15', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '10:15', 'endtime': '10:30', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '10:30', 'endtime': '10:45', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '10:45', 'endtime': '11:00', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '11:00', 'endtime': '11:15', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '11:15', 'endtime': '11:30', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '11:30', 'endtime': '11:45', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '11:45', 'endtime': '12:00', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '12:00', 'endtime': '12:15', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '12:15', 'endtime': '12:30', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '12:30', 'endtime': '12:45', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '12:45', 'endtime': '13:00', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '13:00', 'endtime': '13:15', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '13:15', 'endtime': '13:30', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '13:30', 'endtime': '13:45', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '13:45', 'endtime': '14:00', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '14:00', 'endtime': '14:15', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '14:15', 'endtime': '14:30', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:22:34,863 - INFO - Waiting 4.80s before next check...
+2026-07-20 09:22:34,863 - root - INFO - Waiting 4.80s before next check...
+2026-07-20 09:22:39,661 - root - INFO - Finished checking assignment date range. No slots found.
+2026-07-20 09:22:39,661 - INFO - Finished checking assignment date range. No slots found.
+2026-07-20 09:22:39,738 - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:22:39,738 - root - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:22:40,793 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:22:40,793 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:23:10,834 - root - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:23:10,834 - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:23:11,893 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:23:11,893 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:23:41,934 - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:23:41,934 - root - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:23:42,986 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:23:42,986 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:24:13,020 - root - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:24:13,020 - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:24:14,064 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:24:14,064 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:24:44,111 - root - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:24:44,111 - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:24:45,156 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:24:45,156 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:25:15,190 - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:25:15,190 - root - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:25:16,230 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:25:16,230 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:25:46,271 - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:25:46,271 - root - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:25:47,329 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:25:47,329 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:26:17,371 - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:26:17,371 - root - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:26:18,419 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:26:18,419 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:26:48,458 - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:26:48,458 - root - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:26:49,514 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:26:49,514 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:27:19,546 - root - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:27:19,546 - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:27:20,627 - INFO - Received Assignment #7 for center 138:26,137:26.
+2026-07-20 09:27:20,627 - root - INFO - Received Assignment #7 for center 138:26,137:26.
+2026-07-20 09:27:20,628 - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 09:27:20,628 - root - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 09:27:20,629 - root - INFO - Loaded previous session cookies from file.
+2026-07-20 09:27:20,630 - root - INFO - Executing login flow for account ammarashrafsialkot@gmail.com...
+2026-07-20 09:27:20,629 - INFO - Loaded previous session cookies from file.
+2026-07-20 09:27:20,630 - INFO - Executing login flow for account ammarashrafsialkot@gmail.com...
+2026-07-20 09:27:20,630 - INFO - Validating existing session...
+2026-07-20 09:27:20,630 - root - INFO - Validating existing session...
+2026-07-20 09:27:24,910 - root - INFO - Session is fully valid. Bypassing login.
+2026-07-20 09:27:24,910 - INFO - Session is fully valid. Bypassing login.
+2026-07-20 09:27:24,932 - INFO - Checking slots for 01/09/2026 at VAC 138 (Type 26)...
+2026-07-20 09:27:24,932 - root - INFO - Checking slots for 01/09/2026 at VAC 138 (Type 26)...
+2026-07-20 09:27:24,932 - INFO - Searching for slots from 01/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:27:24,932 - root - INFO - Searching for slots from 01/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:27:24,932 - root - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:27:24,932 - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:27:39,094 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:27:39,094 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:27:39,095 - root - INFO - Waiting 5.24s before next check...
+2026-07-20 09:27:39,095 - INFO - Waiting 5.24s before next check...
+2026-07-20 09:27:44,332 - root - INFO - Checking slots for 01/09/2026 at VAC 137 (Type 26)...
+2026-07-20 09:27:44,333 - root - INFO - Searching for slots from 01/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:27:44,332 - INFO - Checking slots for 01/09/2026 at VAC 137 (Type 26)...
+2026-07-20 09:27:44,333 - INFO - Searching for slots from 01/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:27:44,333 - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-20 09:27:44,333 - root - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-20 09:27:53,310 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:27:53,310 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:27:53,311 - root - INFO - Waiting 7.52s before next check...
+2026-07-20 09:27:53,311 - INFO - Waiting 7.52s before next check...
+2026-07-20 09:28:00,831 - INFO - Checking slots for 02/09/2026 at VAC 138 (Type 26)...
+2026-07-20 09:28:00,832 - INFO - Searching for slots from 02/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:28:00,831 - root - INFO - Checking slots for 02/09/2026 at VAC 138 (Type 26)...
+2026-07-20 09:28:00,832 - root - INFO - Searching for slots from 02/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:28:00,832 - INFO - Form Data (Payload) sent: {'datefrom': '02/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:28:00,832 - root - INFO - Form Data (Payload) sent: {'datefrom': '02/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:28:15,439 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:28:15,439 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:28:15,439 - INFO - Waiting 7.06s before next check...
+2026-07-20 09:28:15,439 - root - INFO - Waiting 7.06s before next check...
+2026-07-20 09:28:22,499 - root - INFO - Checking slots for 02/09/2026 at VAC 137 (Type 26)...
+2026-07-20 09:28:22,499 - root - INFO - Searching for slots from 02/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:28:22,499 - INFO - Checking slots for 02/09/2026 at VAC 137 (Type 26)...
+2026-07-20 09:28:22,499 - INFO - Searching for slots from 02/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:28:22,500 - INFO - Form Data (Payload) sent: {'datefrom': '02/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-20 09:28:22,500 - root - INFO - Form Data (Payload) sent: {'datefrom': '02/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-20 09:28:37,233 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:28:37,233 - root - INFO - Waiting 5.48s before next check...
+2026-07-20 09:28:37,233 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:28:37,233 - INFO - Waiting 5.48s before next check...
+2026-07-20 09:28:42,714 - root - INFO - Checking slots for 03/09/2026 at VAC 138 (Type 26)...
+2026-07-20 09:28:42,714 - INFO - Checking slots for 03/09/2026 at VAC 138 (Type 26)...
+2026-07-20 09:28:42,715 - INFO - Searching for slots from 03/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:28:42,715 - root - INFO - Searching for slots from 03/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:28:42,715 - INFO - Form Data (Payload) sent: {'datefrom': '03/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:28:42,715 - root - INFO - Form Data (Payload) sent: {'datefrom': '03/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:28:47,442 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:28:47,442 - INFO - Waiting 5.94s before next check...
+2026-07-20 09:28:47,442 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:28:47,442 - root - INFO - Waiting 5.94s before next check...
+2026-07-20 09:28:53,384 - root - INFO - Checking slots for 03/09/2026 at VAC 137 (Type 26)...
+2026-07-20 09:28:53,384 - INFO - Checking slots for 03/09/2026 at VAC 137 (Type 26)...
+2026-07-20 09:28:53,384 - root - INFO - Searching for slots from 03/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:28:53,384 - INFO - Searching for slots from 03/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:28:53,384 - INFO - Form Data (Payload) sent: {'datefrom': '03/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-20 09:28:53,384 - root - INFO - Form Data (Payload) sent: {'datefrom': '03/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-20 09:28:55,449 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:28:55,449 - INFO - Waiting 5.53s before next check...
+2026-07-20 09:28:55,449 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:28:55,449 - root - INFO - Waiting 5.53s before next check...
+2026-07-20 09:29:00,984 - INFO - Finished checking assignment date range. No slots found.
+2026-07-20 09:29:00,984 - root - INFO - Finished checking assignment date range. No slots found.
+2026-07-20 09:29:01,031 - root - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:29:01,031 - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:29:02,084 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:29:02,084 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:29:32,116 - root - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:29:32,116 - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:29:33,174 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:29:33,174 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:30:03,194 - root - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:30:03,194 - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:30:04,247 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:30:04,247 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:30:34,288 - root - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:30:34,288 - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:30:35,339 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:30:35,339 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:31:05,361 - root - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:31:05,361 - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:31:06,402 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:31:06,402 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:31:36,431 - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:31:36,431 - root - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:31:37,478 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:31:37,478 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:32:07,499 - root - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:32:07,499 - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:32:08,551 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:32:08,551 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:32:38,583 - root - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:32:38,583 - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:32:39,644 - INFO - Received Assignment #10 for center 138:26.
+2026-07-20 09:32:39,644 - root - INFO - Received Assignment #10 for center 138:26.
+2026-07-20 09:32:39,645 - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 09:32:39,645 - root - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 09:32:39,647 - root - INFO - Loaded previous session cookies from file.
+2026-07-20 09:32:39,648 - root - INFO - Executing login flow for account ammarashrafsialkot@gmail.com...
+2026-07-20 09:32:39,648 - root - INFO - Validating existing session...
+2026-07-20 09:32:39,647 - INFO - Loaded previous session cookies from file.
+2026-07-20 09:32:39,648 - INFO - Executing login flow for account ammarashrafsialkot@gmail.com...
+2026-07-20 09:32:39,648 - INFO - Validating existing session...
+2026-07-20 09:32:54,653 - WARNING - Session validation error on attempt 1: Failed to perform, curl: (28) Operation timed out after 15001 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:32:54,653 - root - WARNING - Session validation error on attempt 1: Failed to perform, curl: (28) Operation timed out after 15001 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:33:12,664 - WARNING - Session validation error on attempt 2: Failed to perform, curl: (28) Operation timed out after 15002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:33:12,665 - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 09:33:12,664 - root - WARNING - Session validation error on attempt 2: Failed to perform, curl: (28) Operation timed out after 15002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:33:12,665 - root - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 09:33:13,649 - INFO - Navigating to https://pk-gr-services.gvcworld.eu/login to clear WAF...
+2026-07-20 09:33:13,649 - root - INFO - Navigating to https://pk-gr-services.gvcworld.eu/login to clear WAF...
+2026-07-20 09:33:15,296 - INFO - Waiting for Imperva JS challenge to clear and login form to render...
+2026-07-20 09:33:15,296 - root - INFO - Waiting for Imperva JS challenge to clear and login form to render...
+2026-07-20 09:33:54,103 - INFO - Login form detected! WAF challenge successfully bypassed.
+2026-07-20 09:33:54,103 - root - INFO - Login form detected! WAF challenge successfully bypassed.
+2026-07-20 09:33:54,115 - root - INFO - Successfully refreshed 4 WAF cookies.
+2026-07-20 09:33:54,115 - INFO - Successfully refreshed 4 WAF cookies.
+2026-07-20 09:33:54,116 - root - INFO - Saved session cookies to file for future runs.
+2026-07-20 09:33:54,116 - INFO - Saved session cookies to file for future runs.
+2026-07-20 09:34:09,195 - root - INFO - Attempting login for ammarashrafsialkot@gmail.com...
+2026-07-20 09:34:09,195 - INFO - Attempting login for ammarashrafsialkot@gmail.com...
+2026-07-20 09:34:09,196 - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-07-20 09:34:09,196 - root - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-07-20 09:34:24,203 - WARNING - Pre-flight navigation failed (WAF might still block us): Failed to perform, curl: (28) Operation timed out after 15002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:34:24,203 - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-20 09:34:24,203 - root - WARNING - Pre-flight navigation failed (WAF might still block us): Failed to perform, curl: (28) Operation timed out after 15002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:34:24,203 - root - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-20 09:34:24,426 - INFO - CapSolver job submitted successfully. Task ID: 1e934697-d11e-4607-92c4-452554cc3299
+2026-07-20 09:34:24,426 - root - INFO - CapSolver job submitted successfully. Task ID: 1e934697-d11e-4607-92c4-452554cc3299
+2026-07-20 09:34:24,428 - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-20 09:34:24,428 - root - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-20 09:34:44,702 - root - INFO - CapSolver solved the CAPTCHA successfully!
+2026-07-20 09:34:44,702 - INFO - CapSolver solved the CAPTCHA successfully!
+2026-07-20 09:35:17,720 - root - ERROR - Network error during login request (Attempt 1/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:35:17,720 - root - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 09:35:17,720 - ERROR - Network error during login request (Attempt 1/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:35:17,720 - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 09:35:18,482 - INFO - Navigating to https://pk-gr-services.gvcworld.eu/login to clear WAF...
+2026-07-20 09:35:18,482 - root - INFO - Navigating to https://pk-gr-services.gvcworld.eu/login to clear WAF...
+2026-07-20 09:35:20,251 - root - INFO - Waiting for Imperva JS challenge to clear and login form to render...
+2026-07-20 09:35:20,251 - INFO - Waiting for Imperva JS challenge to clear and login form to render...
+2026-07-20 09:36:50,340 - root - ERROR - Failed to refresh WAF cookies via Playwright: Page.wait_for_selector: Timeout 90000ms exceeded.
+
+:
+waiting for locator("input[name=\"username\"], input[type=\"email\"], input[id*=\"user\"]") to be visible
+2026-07-20 09:36:50,340 - ERROR - Failed to refresh WAF cookies via Playwright: Page.wait_for_selector: Timeout 90000ms exceeded.
+
+:
+waiting for locator("input[name=\"username\"], input[type=\"email\"], input[id*=\"user\"]") to be visible
+2026-07-20 09:37:26,359 - root - ERROR - Network error during login request (Attempt 2/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:37:26,360 - root - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 09:37:26,359 - ERROR - Network error during login request (Attempt 2/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:37:26,360 - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 09:37:27,101 - root - INFO - Navigating to https://pk-gr-services.gvcworld.eu/login to clear WAF...
+2026-07-20 09:37:27,101 - INFO - Navigating to https://pk-gr-services.gvcworld.eu/login to clear WAF...
+2026-07-20 09:37:29,946 - INFO - Waiting for Imperva JS challenge to clear and login form to render...
+2026-07-20 09:37:29,946 - root - INFO - Waiting for Imperva JS challenge to clear and login form to render...
+2026-07-20 09:38:41,278 - root - INFO - Login form detected! WAF challenge successfully bypassed.
+2026-07-20 09:38:41,278 - INFO - Login form detected! WAF challenge successfully bypassed.
+2026-07-20 09:38:41,292 - INFO - Successfully refreshed 4 WAF cookies.
+2026-07-20 09:38:41,292 - root - INFO - Successfully refreshed 4 WAF cookies.
+2026-07-20 09:38:41,293 - INFO - Saved session cookies to file for future runs.
+2026-07-20 09:38:41,293 - root - INFO - Saved session cookies to file for future runs.
+2026-07-20 09:39:17,390 - root - ERROR - Network error during login request (Attempt 3/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:39:17,390 - root - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 09:39:17,390 - ERROR - Network error during login request (Attempt 3/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:39:17,390 - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 09:39:18,151 - root - INFO - Navigating to https://pk-gr-services.gvcworld.eu/login to clear WAF...
+2026-07-20 09:39:18,151 - INFO - Navigating to https://pk-gr-services.gvcworld.eu/login to clear WAF...
+2026-07-20 09:39:20,330 - INFO - Waiting for Imperva JS challenge to clear and login form to render...
+2026-07-20 09:39:20,330 - root - INFO - Waiting for Imperva JS challenge to clear and login form to render...
+2026-07-20 09:40:25,965 - INFO - Login form detected! WAF challenge successfully bypassed.
+2026-07-20 09:40:25,965 - root - INFO - Login form detected! WAF challenge successfully bypassed.
+2026-07-20 09:40:25,983 - root - INFO - Successfully refreshed 4 WAF cookies.
+2026-07-20 09:40:25,983 - INFO - Successfully refreshed 4 WAF cookies.
+2026-07-20 09:40:25,984 - INFO - Saved session cookies to file for future runs.
+2026-07-20 09:40:25,984 - root - INFO - Saved session cookies to file for future runs.
+2026-07-20 09:40:29,119 - root - ERROR - Login failed. Discarding assignment lease.
+2026-07-20 09:40:29,119 - ERROR - Login failed. Discarding assignment lease.
+2026-07-20 09:40:34,148 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:40:34,148 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:40:35,198 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:40:35,198 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:41:05,228 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:41:05,228 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:41:06,284 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:41:06,284 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:41:36,313 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:41:36,313 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:41:37,371 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:41:37,371 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:42:07,401 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:42:07,401 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:42:08,463 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:42:08,463 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:42:38,489 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:42:38,489 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:42:39,544 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:42:39,544 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:43:09,570 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:43:09,570 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:43:10,623 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:43:10,623 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:43:40,652 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:43:40,652 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:43:41,711 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:43:41,711 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:44:11,744 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:44:11,744 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:44:12,800 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:44:12,800 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:44:42,829 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:44:42,829 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:44:43,888 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:44:43,888 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:45:13,916 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:45:13,916 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:45:14,979 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:45:14,979 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:45:44,995 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:45:44,995 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:45:46,030 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:45:46,030 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:46:16,057 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:46:16,057 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:46:17,104 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:46:17,104 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:46:47,134 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:46:47,134 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:46:48,191 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:46:48,191 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:47:18,217 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:47:18,217 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:47:19,255 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:47:19,255 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:47:49,278 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:47:49,278 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:47:50,373 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:47:50,373 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:48:20,410 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:48:20,410 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:48:21,467 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:48:21,467 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:48:51,505 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:48:51,505 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:48:52,555 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:48:52,555 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:49:22,581 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:49:22,581 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:49:23,631 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:49:23,631 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:49:53,659 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:49:53,659 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:49:54,719 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:49:54,719 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:50:24,741 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:50:24,741 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:50:25,785 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:50:25,785 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:50:55,814 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:50:55,814 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:50:56,871 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:50:56,871 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:51:26,897 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:51:26,897 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:51:27,950 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:51:27,950 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:51:57,971 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:51:57,971 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:51:59,015 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:51:59,015 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:52:29,041 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:52:29,041 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:52:30,096 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:52:30,096 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:53:00,125 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:53:00,125 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:53:01,185 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:53:01,185 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:53:31,214 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:53:31,214 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:53:32,261 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:53:32,261 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:54:02,292 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:54:02,292 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:54:03,341 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:54:03,341 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:54:33,363 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:54:33,363 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:54:34,410 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:54:34,410 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:55:04,436 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:55:04,436 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:55:05,477 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:55:05,477 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:55:35,513 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:55:35,513 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:55:36,566 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:55:36,566 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:56:06,592 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:56:06,592 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:56:07,646 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:56:07,646 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:56:37,678 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:56:37,678 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:56:38,725 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:56:38,725 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:57:08,750 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:57:08,750 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:57:09,806 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:57:09,806 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:57:39,830 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:57:39,830 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:57:40,878 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:57:40,878 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:58:10,898 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:58:10,898 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:58:11,936 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:58:11,936 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:58:41,964 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:58:41,964 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:58:43,011 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:58:43,011 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:59:13,035 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:59:13,035 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:59:14,092 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:59:14,092 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:59:44,118 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:59:44,118 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:59:45,170 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:59:45,170 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:00:15,203 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:00:15,203 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:00:16,264 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:00:16,264 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:00:46,291 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:00:46,291 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:00:47,343 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:00:47,343 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:01:17,365 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:01:17,365 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:01:18,426 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:01:18,426 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:01:48,456 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:01:48,456 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:01:49,509 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:01:49,509 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:02:19,538 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:02:19,538 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:02:20,588 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:02:20,588 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:02:50,612 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:02:50,612 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:02:51,651 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:02:51,651 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:03:21,675 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:03:21,675 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:03:22,730 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:03:22,730 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:03:52,764 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:03:52,764 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:03:53,811 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:03:53,811 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:04:23,844 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:04:23,844 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:04:24,899 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:04:24,899 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:04:54,923 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:04:54,923 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:04:55,967 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:04:55,967 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:05:26,001 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:05:26,001 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:05:27,054 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:05:27,054 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:05:57,073 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:05:57,073 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:05:58,124 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:05:58,124 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:06:28,168 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:06:28,168 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:06:29,218 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:06:29,218 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:06:59,241 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:06:59,241 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:07:00,293 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:07:00,293 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:07:30,313 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:07:30,313 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:07:31,364 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:07:31,364 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:08:01,395 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:08:01,395 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:08:02,451 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:08:02,451 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:08:32,483 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:08:32,483 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:08:33,522 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:08:33,522 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:09:03,549 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:09:03,549 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:09:04,600 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:09:04,600 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:09:34,628 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:09:34,628 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:09:35,688 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:09:35,688 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:10:05,714 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:10:05,714 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:10:06,752 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:10:06,752 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:10:36,777 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:10:36,777 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:10:37,821 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:10:37,821 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:11:07,846 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:11:07,846 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:11:08,895 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:11:08,895 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:11:38,920 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:11:38,920 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:11:39,959 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:11:39,959 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:12:09,991 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:12:09,991 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:12:11,041 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:12:11,041 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:12:41,071 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:12:41,071 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:12:42,124 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:12:42,124 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:13:12,145 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:13:12,145 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:13:13,208 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:13:13,208 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:13:43,240 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:13:43,240 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:13:44,289 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:13:44,289 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:14:14,324 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:14:14,324 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:14:15,377 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:14:15,377 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:14:45,403 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:14:45,403 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:14:46,451 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:14:46,451 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:15:16,477 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:15:16,477 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:15:17,531 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:15:17,531 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:15:47,559 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:15:47,559 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:15:48,611 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:15:48,611 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:16:18,641 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:16:18,641 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:16:19,697 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:16:19,697 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:16:49,720 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:16:49,720 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:16:50,759 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:16:50,759 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:17:20,791 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:17:20,791 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:17:21,849 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:17:21,849 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:17:51,875 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:17:51,875 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:17:52,925 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:17:52,925 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:18:22,948 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:18:22,948 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:18:24,003 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:18:24,003 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:18:54,024 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:18:54,024 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:18:55,067 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:18:55,067 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:19:25,095 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:19:25,095 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:19:26,151 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:19:26,151 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:19:56,186 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:19:56,186 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:19:57,237 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:19:57,237 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:20:27,270 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:20:27,270 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:20:28,324 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:20:28,324 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:20:58,343 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:20:58,343 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:20:59,391 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:20:59,391 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:21:29,423 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:21:29,423 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:21:30,483 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:21:30,483 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:22:00,506 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:22:00,506 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:22:01,552 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:22:01,552 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:22:31,584 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:22:31,584 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:22:32,639 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:22:32,639 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:23:02,678 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:23:02,678 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:23:03,731 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:23:03,731 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:23:33,762 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:23:33,762 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:23:34,814 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:23:34,814 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:24:04,844 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:24:04,844 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:24:05,910 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:24:05,910 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:24:35,938 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:24:35,938 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:24:36,986 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:24:36,986 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:25:07,019 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:25:07,019 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:25:08,061 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:25:08,061 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:25:38,085 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:25:38,085 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:25:39,134 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:25:39,134 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:26:09,159 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:26:09,159 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:26:10,204 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:26:10,204 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:26:40,230 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:26:40,230 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:26:41,282 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:26:41,282 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:27:11,310 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:27:11,310 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:27:12,368 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:27:12,368 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:27:42,402 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:27:42,402 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:27:43,456 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:27:43,456 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:28:13,483 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:28:13,483 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:28:14,532 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:28:14,532 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:28:44,558 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:28:44,558 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:28:45,596 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:28:45,596 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:29:15,628 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:29:15,628 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:29:16,679 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:29:16,679 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:29:46,711 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:29:46,711 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:29:47,762 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:29:47,762 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:30:17,796 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:30:17,796 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:30:18,849 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:30:18,849 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:30:48,883 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:30:48,883 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:30:49,938 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:30:49,938 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:31:19,966 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:31:19,966 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:31:21,013 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:31:21,013 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:31:51,044 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:31:51,044 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:31:52,095 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:31:52,095 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:32:22,124 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:32:22,124 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:32:23,176 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:32:23,176 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:32:53,203 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:32:53,203 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:32:54,259 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:32:54,259 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:33:24,293 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:33:24,293 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:33:25,341 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:33:25,341 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:33:55,369 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:33:55,369 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:33:56,415 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:33:56,415 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:34:26,455 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:34:26,455 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:34:27,505 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:34:27,505 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:34:57,534 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:34:57,534 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:34:58,577 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:34:58,577 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:35:28,606 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:35:28,606 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:35:29,662 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:35:29,662 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:35:59,693 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:35:59,693 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:36:00,752 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:36:00,752 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:36:30,776 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:36:30,776 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:36:31,823 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:36:31,823 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:37:01,842 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:37:01,842 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:37:02,882 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:37:02,882 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:37:32,902 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:37:32,902 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:37:33,942 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:37:33,942 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:38:03,970 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:38:03,970 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:38:05,011 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:38:05,011 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:38:35,033 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:38:35,033 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:38:36,083 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:38:36,083 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:39:06,107 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:39:06,107 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:39:07,164 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:39:07,164 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:39:37,194 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:39:37,194 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:39:38,253 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:39:38,253 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:40:08,282 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:40:08,282 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:40:09,336 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:40:09,336 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:40:39,370 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:40:39,370 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:40:40,431 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:40:40,431 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:41:10,464 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:41:10,464 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:41:11,520 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:41:11,520 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:41:41,550 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:41:41,550 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:41:42,592 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:41:42,592 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:42:12,626 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:42:12,626 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:42:13,674 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:42:13,674 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:42:43,702 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:42:43,702 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:42:44,754 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:42:44,754 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:43:14,785 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:43:14,785 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:43:15,845 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:43:15,845 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:43:45,869 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:43:45,869 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:43:46,908 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:43:46,908 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:44:16,931 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:44:16,931 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:44:17,985 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:44:17,985 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:44:48,007 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:44:48,007 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:44:49,055 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:44:49,055 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:45:19,084 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:45:19,084 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:45:20,143 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:45:20,143 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:45:50,180 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:45:50,180 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:45:51,232 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:45:51,232 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:46:21,255 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:46:21,255 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:46:22,308 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:46:22,308 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:46:52,333 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:46:52,333 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:46:53,384 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:46:53,384 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:47:23,423 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:47:23,423 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:47:24,477 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:47:24,477 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:47:54,503 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:47:54,503 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:47:55,532 - INFO - No assignments available. Sleeping for 60 seconds.
+2026-07-20 10:47:55,532 - root - INFO - No assignments available. Sleeping for 60 seconds.
+2026-07-20 10:48:55,554 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:48:55,554 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:48:56,610 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:48:56,610 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:49:26,637 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:49:26,637 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:49:27,695 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:49:27,695 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:49:57,729 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:49:57,729 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:49:58,771 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:49:58,771 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:50:28,800 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:50:28,800 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:50:29,856 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:50:29,856 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:50:59,882 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:50:59,882 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:51:00,923 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:51:00,923 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:51:30,946 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:51:30,946 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:51:31,998 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:51:31,998 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:52:02,024 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:52:02,024 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:52:03,065 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:52:03,065 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:52:33,098 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:52:33,098 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:52:34,160 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:52:34,160 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:53:04,191 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:53:04,191 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:53:05,242 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:53:05,242 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:53:35,272 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:53:35,272 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:53:36,322 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:53:36,322 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:54:06,351 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:54:06,351 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:54:07,399 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:54:07,399 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:54:37,434 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:54:37,434 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:54:38,491 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:54:38,491 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:55:08,521 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:55:08,521 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:55:09,572 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:55:09,572 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:55:39,604 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:55:39,604 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:55:40,650 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:55:40,650 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:56:10,676 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:56:10,676 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:56:11,721 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:56:11,721 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:56:41,750 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:56:41,750 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:56:42,814 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:56:42,814 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:57:12,841 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:57:12,841 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:57:13,886 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:57:13,886 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:57:43,915 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:57:43,915 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:57:44,973 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:57:44,973 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:58:15,000 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:58:15,000 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:58:16,059 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:58:16,059 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:58:46,089 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:58:46,089 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:58:47,142 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:58:47,142 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:59:17,170 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:59:17,170 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:59:18,221 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:59:18,221 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:59:48,250 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:59:48,250 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:59:49,308 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:59:49,308 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:00:19,339 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:00:19,339 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:00:20,394 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:00:20,394 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:00:50,423 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:00:50,423 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:00:51,477 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:00:51,477 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:01:21,512 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:01:21,512 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:01:22,582 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:01:22,582 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:01:52,609 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:01:52,609 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:01:53,662 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:01:53,662 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:02:23,694 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:02:23,694 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:02:24,758 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:02:24,758 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:02:54,784 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:02:54,784 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:02:55,828 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:02:55,828 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:03:25,852 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:03:25,852 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:03:26,888 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:03:26,888 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:03:56,909 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:03:56,909 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:03:57,946 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:03:57,946 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:04:27,971 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:04:27,971 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:04:29,021 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:04:29,021 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:04:59,049 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:04:59,049 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:05:00,108 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:05:00,108 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:05:30,125 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:05:30,125 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:05:31,174 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:05:31,174 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:06:01,202 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:06:01,202 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:06:02,264 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:06:02,264 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:06:32,304 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:06:32,304 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:06:33,357 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:06:33,357 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:07:03,379 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:07:03,379 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:07:04,427 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:07:04,427 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:07:34,454 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:07:34,454 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:07:35,518 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:07:35,518 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:08:05,542 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:08:05,542 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:08:06,600 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:08:06,600 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:08:36,621 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:08:36,621 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:08:37,688 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:08:37,688 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:09:07,716 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:09:07,716 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:09:08,780 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:09:08,780 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:09:38,811 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:09:38,811 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:09:39,875 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:09:39,875 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:10:09,912 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:10:09,912 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:10:10,984 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:10:10,984 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:10:41,015 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:10:41,015 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:10:42,067 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:10:42,067 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:11:12,096 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:11:12,096 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:11:13,143 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:11:13,143 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:11:43,169 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:11:43,169 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:11:44,223 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:11:44,223 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:12:14,249 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:12:14,249 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:12:15,287 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:12:15,287 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:12:45,312 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:12:45,312 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:12:46,378 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:12:46,378 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:13:16,405 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:13:16,405 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:13:17,453 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:13:17,453 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:13:47,482 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:13:47,482 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:13:48,544 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:13:48,544 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:14:18,573 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:14:18,573 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:14:19,633 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:14:19,633 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:14:49,660 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:14:49,660 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:14:50,718 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:14:50,718 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:15:20,764 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:15:20,764 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:15:21,814 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:15:21,814 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:15:51,847 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:15:51,847 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:15:52,914 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:15:52,914 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:16:22,948 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:16:22,948 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:16:24,004 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:16:24,004 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:16:54,039 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:16:54,039 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:16:55,105 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:16:55,105 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:17:25,133 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:17:25,133 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:17:26,186 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:17:26,186 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:17:56,214 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:17:56,214 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:17:57,271 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:17:57,271 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:18:27,298 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:18:27,298 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:18:28,355 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:18:28,355 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:18:58,379 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:18:58,379 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:18:59,436 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:18:59,436 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:19:29,462 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:19:29,462 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:19:30,517 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:19:30,517 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:20:00,542 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:20:00,542 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:20:01,588 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:20:01,588 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:20:31,618 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:20:31,618 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:20:32,664 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:20:32,664 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:21:02,683 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:21:02,683 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:21:03,720 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:21:03,720 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:21:33,745 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:21:33,745 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:21:34,796 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:21:34,796 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:22:04,813 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:22:04,813 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:22:05,856 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:22:05,856 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:22:35,882 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:22:35,882 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:22:36,930 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:22:36,930 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:23:06,951 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:23:06,951 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:23:07,998 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:23:07,998 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:23:38,025 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:23:38,025 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:23:39,080 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:23:39,080 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:24:09,105 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:24:09,105 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:24:10,146 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:24:10,146 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:24:40,176 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:24:40,176 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:24:41,223 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:24:41,223 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:25:11,268 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:25:11,268 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:25:12,327 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:25:12,327 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:25:42,357 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:25:42,357 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:25:43,411 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:25:43,411 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:26:13,445 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:26:13,445 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:26:14,492 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:26:14,492 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:26:44,526 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:26:44,526 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:26:45,582 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:26:45,582 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:27:15,610 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:27:15,610 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:27:16,661 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:27:16,661 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:27:46,688 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:27:46,688 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:27:47,734 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:27:47,734 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:28:17,776 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:28:17,776 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:28:18,820 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:28:18,820 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:28:48,852 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:28:48,852 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:28:49,903 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:28:49,903 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:29:19,933 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:29:19,933 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:29:20,978 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:29:20,978 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:29:51,004 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:29:51,004 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:29:52,053 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:29:52,053 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:30:22,088 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:30:22,088 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:30:23,142 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:30:23,142 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:30:53,172 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:30:53,172 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:30:54,229 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:30:54,229 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:31:24,253 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:31:24,253 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:31:25,300 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:31:25,300 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:31:55,332 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:31:55,332 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:31:56,376 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:31:56,376 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:32:26,406 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:32:26,406 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:32:27,451 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:32:27,451 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:32:57,484 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:32:57,484 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:32:58,527 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:32:58,527 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:33:28,556 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:33:28,556 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:33:29,615 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:33:29,615 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:33:59,640 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:33:59,640 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:34:00,693 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:34:00,693 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:34:30,727 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:34:30,727 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:34:31,790 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:34:31,790 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:35:01,813 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:35:01,813 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:35:02,853 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:35:02,853 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:35:32,877 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:35:32,877 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:35:33,920 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:35:33,920 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:36:03,941 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:36:03,941 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:36:04,986 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:36:04,986 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:36:35,010 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:36:35,010 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:36:36,054 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:36:36,054 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:37:06,085 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:37:06,085 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:37:07,120 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:37:07,120 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:37:37,143 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:37:37,143 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:37:38,193 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:37:38,193 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:38:08,224 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:38:08,224 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:38:09,275 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:38:09,275 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:38:39,303 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:38:39,303 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:38:40,353 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:38:40,353 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:39:10,384 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:39:10,384 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:39:11,432 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:39:11,432 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:39:41,457 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:39:41,457 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:39:42,510 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:39:42,510 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:40:12,538 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:40:12,538 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:40:13,603 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:40:13,603 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:40:43,621 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:40:43,621 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:40:44,663 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:40:44,663 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:41:14,691 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:41:14,691 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:41:15,757 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:41:15,757 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:41:45,785 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:41:45,785 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:41:46,833 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:41:46,833 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:42:16,861 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:42:16,861 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:42:17,912 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:42:17,912 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:42:47,946 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:42:47,946 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 11:42:48,998 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 11:42:48,998 - INFO - No assignments available. Sleeping for 30 seconds.

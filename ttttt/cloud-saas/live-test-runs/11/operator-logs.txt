@@ -1,0 +1,606 @@
+Starting Headless Worker Node connecting to http://cloud-saas-prod:8000...
+2026-07-20 09:16:19,723 - INFO - Loaded existing worker credentials: worker_5cc74783
+2026-07-20 09:16:19,724 - INFO - Starting Worker Node Scheduler Engine...
+2026-07-20 09:16:19,724 - root - INFO - Starting Worker Node Scheduler Engine...
+2026-07-20 09:16:19,735 - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/assignments/next (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-07-20 09:16:19,735 - root - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/assignments/next (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-07-20 09:16:19,736 - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/heartbeat (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-07-20 09:16:19,736 - root - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/heartbeat (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-07-20 09:16:19,736 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:16:19,736 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:16:19,737 - root - WARNING - Heartbeat failed
+2026-07-20 09:16:19,737 - WARNING - Heartbeat failed
+2026-07-20 09:16:49,779 - root - INFO - SaaS requested runtime config refresh
+2026-07-20 09:16:49,779 - INFO - SaaS requested runtime config refresh
+2026-07-20 09:16:50,795 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:16:50,795 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:17:21,825 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:17:21,825 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:17:52,859 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:17:52,859 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:18:23,883 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:18:23,883 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:18:54,918 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:18:54,918 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:19:25,974 - root - INFO - Received Assignment #7 for center 138:26,137:26.
+2026-07-20 09:19:25,974 - INFO - Received Assignment #7 for center 138:26,137:26.
+2026-07-20 09:19:26,072 - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 09:19:26,072 - root - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 09:19:26,072 - INFO - Executing login flow for account ammarashrafsialkot@gmail.com...
+2026-07-20 09:19:26,072 - root - INFO - Executing login flow for account ammarashrafsialkot@gmail.com...
+2026-07-20 09:19:26,072 - root - INFO - Validating existing session...
+2026-07-20 09:19:26,072 - INFO - Validating existing session...
+2026-07-20 09:19:29,824 - root - INFO - Session has expired (401). Must login again.
+2026-07-20 09:19:29,825 - root - INFO - Attempting login for ammarashrafsialkot@gmail.com...
+2026-07-20 09:19:29,824 - INFO - Session has expired (401). Must login again.
+2026-07-20 09:19:29,825 - INFO - Attempting login for ammarashrafsialkot@gmail.com...
+2026-07-20 09:19:29,825 - root - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-07-20 09:19:29,825 - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-07-20 09:19:44,571 - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-20 09:19:44,571 - root - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-20 09:19:44,789 - root - INFO - CapSolver job submitted successfully. Task ID: 53046a78-ea4f-45d9-b936-e522e1b54d6e
+2026-07-20 09:19:44,789 - INFO - CapSolver job submitted successfully. Task ID: 53046a78-ea4f-45d9-b936-e522e1b54d6e
+2026-07-20 09:19:44,791 - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-20 09:19:44,791 - root - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-20 09:20:10,299 - root - ERROR - CapSolver task failed: Failed to solve the captcha: 1001
+2026-07-20 09:20:10,300 - root - WARNING - CapSolver attempt 1 timed out or failed.
+2026-07-20 09:20:10,299 - ERROR - CapSolver task failed: Failed to solve the captcha: 1001
+2026-07-20 09:20:10,300 - WARNING - CapSolver attempt 1 timed out or failed.
+2026-07-20 09:20:10,300 - INFO - [Attempt 2/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-20 09:20:10,300 - root - INFO - [Attempt 2/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-20 09:20:10,540 - INFO - CapSolver job submitted successfully. Task ID: 34622792-8aed-48d8-b2d5-01bcee6cb377
+2026-07-20 09:20:10,541 - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-20 09:20:10,540 - root - INFO - CapSolver job submitted successfully. Task ID: 34622792-8aed-48d8-b2d5-01bcee6cb377
+2026-07-20 09:20:10,541 - root - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-20 09:20:17,986 - root - INFO - CapSolver solved the CAPTCHA successfully!
+2026-07-20 09:20:17,986 - INFO - CapSolver solved the CAPTCHA successfully!
+2026-07-20 09:20:34,152 - root - INFO - Login successful!
+2026-07-20 09:20:34,152 - INFO - Login successful!
+2026-07-20 09:20:34,153 - INFO - Saved session cookies to file for future runs.
+2026-07-20 09:20:34,153 - root - INFO - Saved session cookies to file for future runs.
+2026-07-20 09:20:34,212 - INFO - Checking slots for 01/09/2026 at VAC 138 (Type 26)...
+2026-07-20 09:20:34,213 - INFO - Searching for slots from 01/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:20:34,213 - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:20:34,212 - root - INFO - Checking slots for 01/09/2026 at VAC 138 (Type 26)...
+2026-07-20 09:20:34,213 - root - INFO - Searching for slots from 01/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:20:34,213 - root - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:20:34,908 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:20:34,908 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:20:34,908 - INFO - Waiting 7.25s before next check...
+2026-07-20 09:20:34,908 - root - INFO - Waiting 7.25s before next check...
+2026-07-20 09:20:42,154 - INFO - Checking slots for 01/09/2026 at VAC 137 (Type 26)...
+2026-07-20 09:20:42,154 - root - INFO - Checking slots for 01/09/2026 at VAC 137 (Type 26)...
+2026-07-20 09:20:42,155 - INFO - Searching for slots from 01/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:20:42,155 - root - INFO - Searching for slots from 01/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:20:42,156 - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-20 09:20:42,156 - root - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-20 09:20:51,954 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:20:51,955 - INFO - Waiting 5.76s before next check...
+2026-07-20 09:20:51,954 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:20:51,955 - root - INFO - Waiting 5.76s before next check...
+2026-07-20 09:20:57,719 - root - INFO - Checking slots for 02/09/2026 at VAC 138 (Type 26)...
+2026-07-20 09:20:57,719 - INFO - Checking slots for 02/09/2026 at VAC 138 (Type 26)...
+2026-07-20 09:20:57,720 - INFO - Searching for slots from 02/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:20:57,720 - root - INFO - Searching for slots from 02/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:20:57,720 - root - INFO - Form Data (Payload) sent: {'datefrom': '02/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:20:57,720 - INFO - Form Data (Payload) sent: {'datefrom': '02/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:21:05,778 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:21:05,779 - INFO - Waiting 5.71s before next check...
+2026-07-20 09:21:05,778 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:21:05,779 - root - INFO - Waiting 5.71s before next check...
+2026-07-20 09:21:11,490 - INFO - Checking slots for 02/09/2026 at VAC 137 (Type 26)...
+2026-07-20 09:21:11,490 - root - INFO - Checking slots for 02/09/2026 at VAC 137 (Type 26)...
+2026-07-20 09:21:11,491 - root - INFO - Searching for slots from 02/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:21:11,491 - INFO - Searching for slots from 02/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:21:11,491 - INFO - Form Data (Payload) sent: {'datefrom': '02/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-20 09:21:11,491 - root - INFO - Form Data (Payload) sent: {'datefrom': '02/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-20 09:21:39,409 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:21:39,409 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:21:39,409 - root - INFO - Waiting 6.80s before next check...
+2026-07-20 09:21:39,409 - INFO - Waiting 6.80s before next check...
+2026-07-20 09:21:46,213 - root - INFO - Checking slots for 03/09/2026 at VAC 138 (Type 26)...
+2026-07-20 09:21:46,214 - root - INFO - Searching for slots from 03/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:21:46,213 - INFO - Checking slots for 03/09/2026 at VAC 138 (Type 26)...
+2026-07-20 09:21:46,214 - INFO - Searching for slots from 03/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:21:46,214 - root - INFO - Form Data (Payload) sent: {'datefrom': '03/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:21:46,214 - INFO - Form Data (Payload) sent: {'datefrom': '03/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:21:49,090 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:21:49,090 - INFO - Waiting 6.71s before next check...
+2026-07-20 09:21:49,090 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:21:49,090 - root - INFO - Waiting 6.71s before next check...
+2026-07-20 09:21:55,804 - INFO - Checking slots for 03/09/2026 at VAC 137 (Type 26)...
+2026-07-20 09:21:55,805 - INFO - Searching for slots from 03/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:21:55,805 - INFO - Form Data (Payload) sent: {'datefrom': '03/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-20 09:21:55,804 - root - INFO - Checking slots for 03/09/2026 at VAC 137 (Type 26)...
+2026-07-20 09:21:55,805 - root - INFO - Searching for slots from 03/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:21:55,805 - root - INFO - Form Data (Payload) sent: {'datefrom': '03/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-20 09:21:56,611 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:21:56,611 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:21:56,612 - INFO - Waiting 5.20s before next check...
+2026-07-20 09:21:56,612 - root - INFO - Waiting 5.20s before next check...
+2026-07-20 09:22:01,815 - INFO - Finished checking assignment date range. No slots found.
+2026-07-20 09:22:01,815 - root - INFO - Finished checking assignment date range. No slots found.
+2026-07-20 09:22:01,868 - INFO - Transmitted 10 network logs to SaaS.
+2026-07-20 09:22:01,868 - root - INFO - Transmitted 10 network logs to SaaS.
+2026-07-20 09:22:02,945 - INFO - Received Assignment #10 for center 138:26.
+2026-07-20 09:22:02,945 - root - INFO - Received Assignment #10 for center 138:26.
+2026-07-20 09:22:02,945 - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 09:22:02,945 - root - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 09:22:02,946 - INFO - Loaded previous session cookies from file.
+2026-07-20 09:22:02,946 - INFO - Executing login flow for account ammarashrafsialkot@gmail.com...
+2026-07-20 09:22:02,946 - root - INFO - Loaded previous session cookies from file.
+2026-07-20 09:22:02,946 - root - INFO - Executing login flow for account ammarashrafsialkot@gmail.com...
+2026-07-20 09:22:02,946 - root - INFO - Validating existing session...
+2026-07-20 09:22:02,946 - INFO - Validating existing session...
+2026-07-20 09:22:17,953 - WARNING - Session validation error on attempt 1: Failed to perform, curl: (28) Operation timed out after 15002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:22:17,953 - root - WARNING - Session validation error on attempt 1: Failed to perform, curl: (28) Operation timed out after 15002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:22:22,358 - root - INFO - Session is fully valid. Bypassing login.
+2026-07-20 09:22:22,358 - INFO - Session is fully valid. Bypassing login.
+2026-07-20 09:22:22,387 - INFO - Checking slots for 19/08/2026 at VAC 138 (Type 26)...
+2026-07-20 09:22:22,387 - INFO - Searching for slots from 19/08/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:22:22,387 - root - INFO - Checking slots for 19/08/2026 at VAC 138 (Type 26)...
+2026-07-20 09:22:22,387 - root - INFO - Searching for slots from 19/08/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:22:22,388 - INFO - Form Data (Payload) sent: {'datefrom': '19/08/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:22:22,388 - root - INFO - Form Data (Payload) sent: {'datefrom': '19/08/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:22:34,862 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [{'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '09:00', 'endtime': '09:15', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '09:15', 'endtime': '09:30', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '09:30', 'endtime': '09:45', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '09:45', 'endtime': '10:00', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '10:00', 'endtime': '10:15', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '10:15', 'endtime': '10:30', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '10:30', 'endtime': '10:45', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '10:45', 'endtime': '11:00', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '11:00', 'endtime': '11:15', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '11:15', 'endtime': '11:30', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '11:30', 'endtime': '11:45', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '11:45', 'endtime': '12:00', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '12:00', 'endtime': '12:15', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '12:15', 'endtime': '12:30', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '12:30', 'endtime': '12:45', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '12:45', 'endtime': '13:00', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '13:00', 'endtime': '13:15', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '13:15', 'endtime': '13:30', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '13:30', 'endtime': '13:45', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '13:45', 'endtime': '14:00', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '14:00', 'endtime': '14:15', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '14:15', 'endtime': '14:30', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:22:34,862 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [{'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '09:00', 'endtime': '09:15', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '09:15', 'endtime': '09:30', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '09:30', 'endtime': '09:45', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '09:45', 'endtime': '10:00', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '10:00', 'endtime': '10:15', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '10:15', 'endtime': '10:30', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '10:30', 'endtime': '10:45', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '10:45', 'endtime': '11:00', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '11:00', 'endtime': '11:15', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '11:15', 'endtime': '11:30', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '11:30', 'endtime': '11:45', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '11:45', 'endtime': '12:00', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '12:00', 'endtime': '12:15', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '12:15', 'endtime': '12:30', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '12:30', 'endtime': '12:45', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '12:45', 'endtime': '13:00', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '13:00', 'endtime': '13:15', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '13:15', 'endtime': '13:30', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '13:30', 'endtime': '13:45', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '13:45', 'endtime': '14:00', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '14:00', 'endtime': '14:15', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}, {'id': None, 'periodid': 14106, 'timestamp': None, 'date': None, 'starttime': '14:15', 'endtime': '14:30', 'numofavailableslots': 0, 'numofreservedslots': None, 'numoftotalslots': None, 'isavailable': False, 'isselectable': False, 'related': [], 'underdeletion': None, 'vacname': None, 'type': None}], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:22:34,863 - INFO - Waiting 4.80s before next check...
+2026-07-20 09:22:34,863 - root - INFO - Waiting 4.80s before next check...
+2026-07-20 09:22:39,661 - root - INFO - Finished checking assignment date range. No slots found.
+2026-07-20 09:22:39,661 - INFO - Finished checking assignment date range. No slots found.
+2026-07-20 09:22:39,738 - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:22:39,738 - root - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:22:40,793 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:22:40,793 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:23:10,834 - root - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:23:10,834 - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:23:11,893 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:23:11,893 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:23:41,934 - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:23:41,934 - root - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:23:42,986 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:23:42,986 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:24:13,020 - root - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:24:13,020 - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:24:14,064 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:24:14,064 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:24:44,111 - root - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:24:44,111 - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:24:45,156 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:24:45,156 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:25:15,190 - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:25:15,190 - root - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:25:16,230 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:25:16,230 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:25:46,271 - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:25:46,271 - root - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:25:47,329 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:25:47,329 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:26:17,371 - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:26:17,371 - root - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:26:18,419 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:26:18,419 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:26:48,458 - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:26:48,458 - root - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:26:49,514 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:26:49,514 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:27:19,546 - root - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:27:19,546 - INFO - Transmitted 4 network logs to SaaS.
+2026-07-20 09:27:20,627 - INFO - Received Assignment #7 for center 138:26,137:26.
+2026-07-20 09:27:20,627 - root - INFO - Received Assignment #7 for center 138:26,137:26.
+2026-07-20 09:27:20,628 - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 09:27:20,628 - root - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 09:27:20,629 - root - INFO - Loaded previous session cookies from file.
+2026-07-20 09:27:20,630 - root - INFO - Executing login flow for account ammarashrafsialkot@gmail.com...
+2026-07-20 09:27:20,629 - INFO - Loaded previous session cookies from file.
+2026-07-20 09:27:20,630 - INFO - Executing login flow for account ammarashrafsialkot@gmail.com...
+2026-07-20 09:27:20,630 - INFO - Validating existing session...
+2026-07-20 09:27:20,630 - root - INFO - Validating existing session...
+2026-07-20 09:27:24,910 - root - INFO - Session is fully valid. Bypassing login.
+2026-07-20 09:27:24,910 - INFO - Session is fully valid. Bypassing login.
+2026-07-20 09:27:24,932 - INFO - Checking slots for 01/09/2026 at VAC 138 (Type 26)...
+2026-07-20 09:27:24,932 - root - INFO - Checking slots for 01/09/2026 at VAC 138 (Type 26)...
+2026-07-20 09:27:24,932 - INFO - Searching for slots from 01/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:27:24,932 - root - INFO - Searching for slots from 01/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:27:24,932 - root - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:27:24,932 - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:27:39,094 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:27:39,094 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:27:39,095 - root - INFO - Waiting 5.24s before next check...
+2026-07-20 09:27:39,095 - INFO - Waiting 5.24s before next check...
+2026-07-20 09:27:44,332 - root - INFO - Checking slots for 01/09/2026 at VAC 137 (Type 26)...
+2026-07-20 09:27:44,333 - root - INFO - Searching for slots from 01/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:27:44,332 - INFO - Checking slots for 01/09/2026 at VAC 137 (Type 26)...
+2026-07-20 09:27:44,333 - INFO - Searching for slots from 01/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:27:44,333 - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-20 09:27:44,333 - root - INFO - Form Data (Payload) sent: {'datefrom': '01/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-20 09:27:53,310 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:27:53,310 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:27:53,311 - root - INFO - Waiting 7.52s before next check...
+2026-07-20 09:27:53,311 - INFO - Waiting 7.52s before next check...
+2026-07-20 09:28:00,831 - INFO - Checking slots for 02/09/2026 at VAC 138 (Type 26)...
+2026-07-20 09:28:00,832 - INFO - Searching for slots from 02/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:28:00,831 - root - INFO - Checking slots for 02/09/2026 at VAC 138 (Type 26)...
+2026-07-20 09:28:00,832 - root - INFO - Searching for slots from 02/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:28:00,832 - INFO - Form Data (Payload) sent: {'datefrom': '02/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:28:00,832 - root - INFO - Form Data (Payload) sent: {'datefrom': '02/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:28:15,439 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:28:15,439 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:28:15,439 - INFO - Waiting 7.06s before next check...
+2026-07-20 09:28:15,439 - root - INFO - Waiting 7.06s before next check...
+2026-07-20 09:28:22,499 - root - INFO - Checking slots for 02/09/2026 at VAC 137 (Type 26)...
+2026-07-20 09:28:22,499 - root - INFO - Searching for slots from 02/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:28:22,499 - INFO - Checking slots for 02/09/2026 at VAC 137 (Type 26)...
+2026-07-20 09:28:22,499 - INFO - Searching for slots from 02/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:28:22,500 - INFO - Form Data (Payload) sent: {'datefrom': '02/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-20 09:28:22,500 - root - INFO - Form Data (Payload) sent: {'datefrom': '02/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-20 09:28:37,233 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:28:37,233 - root - INFO - Waiting 5.48s before next check...
+2026-07-20 09:28:37,233 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:28:37,233 - INFO - Waiting 5.48s before next check...
+2026-07-20 09:28:42,714 - root - INFO - Checking slots for 03/09/2026 at VAC 138 (Type 26)...
+2026-07-20 09:28:42,714 - INFO - Checking slots for 03/09/2026 at VAC 138 (Type 26)...
+2026-07-20 09:28:42,715 - INFO - Searching for slots from 03/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:28:42,715 - root - INFO - Searching for slots from 03/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:28:42,715 - INFO - Form Data (Payload) sent: {'datefrom': '03/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:28:42,715 - root - INFO - Form Data (Payload) sent: {'datefrom': '03/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-07-20 09:28:47,442 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:28:47,442 - INFO - Waiting 5.94s before next check...
+2026-07-20 09:28:47,442 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:28:47,442 - root - INFO - Waiting 5.94s before next check...
+2026-07-20 09:28:53,384 - root - INFO - Checking slots for 03/09/2026 at VAC 137 (Type 26)...
+2026-07-20 09:28:53,384 - INFO - Checking slots for 03/09/2026 at VAC 137 (Type 26)...
+2026-07-20 09:28:53,384 - root - INFO - Searching for slots from 03/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:28:53,384 - INFO - Searching for slots from 03/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-07-20 09:28:53,384 - INFO - Form Data (Payload) sent: {'datefrom': '03/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-20 09:28:53,384 - root - INFO - Form Data (Payload) sent: {'datefrom': '03/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-07-20 09:28:55,449 - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:28:55,449 - INFO - Waiting 5.53s before next check...
+2026-07-20 09:28:55,449 - root - INFO - Slots retrieved successfully from https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots: {'message': '', 'returnobject': {'slots': [], 'paidAmount': 0.0, 'serviceFee': None, 'vasFee': None, 'currency': None, 'paymenthours': None, 'payment': False, 'visapaidAmount': None, 'visafee': None, 'visacurrency': None, 'visapaymenthours': None, 'visapayment': False, 'visafeeAmount': None, 'commission': None}, 'code': 'SUCCESS'}
+2026-07-20 09:28:55,449 - root - INFO - Waiting 5.53s before next check...
+2026-07-20 09:29:00,984 - INFO - Finished checking assignment date range. No slots found.
+2026-07-20 09:29:00,984 - root - INFO - Finished checking assignment date range. No slots found.
+2026-07-20 09:29:01,031 - root - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:29:01,031 - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:29:02,084 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:29:02,084 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:29:32,116 - root - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:29:32,116 - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:29:33,174 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:29:33,174 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:30:03,194 - root - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:30:03,194 - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:30:04,247 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:30:04,247 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:30:34,288 - root - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:30:34,288 - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:30:35,339 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:30:35,339 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:31:05,361 - root - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:31:05,361 - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:31:06,402 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:31:06,402 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:31:36,431 - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:31:36,431 - root - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:31:37,478 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:31:37,478 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:32:07,499 - root - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:32:07,499 - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:32:08,551 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:32:08,551 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:32:38,583 - root - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:32:38,583 - INFO - Transmitted 7 network logs to SaaS.
+2026-07-20 09:32:39,644 - INFO - Received Assignment #10 for center 138:26.
+2026-07-20 09:32:39,644 - root - INFO - Received Assignment #10 for center 138:26.
+2026-07-20 09:32:39,645 - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 09:32:39,645 - root - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-07-20 09:32:39,647 - root - INFO - Loaded previous session cookies from file.
+2026-07-20 09:32:39,648 - root - INFO - Executing login flow for account ammarashrafsialkot@gmail.com...
+2026-07-20 09:32:39,648 - root - INFO - Validating existing session...
+2026-07-20 09:32:39,647 - INFO - Loaded previous session cookies from file.
+2026-07-20 09:32:39,648 - INFO - Executing login flow for account ammarashrafsialkot@gmail.com...
+2026-07-20 09:32:39,648 - INFO - Validating existing session...
+2026-07-20 09:32:54,653 - WARNING - Session validation error on attempt 1: Failed to perform, curl: (28) Operation timed out after 15001 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:32:54,653 - root - WARNING - Session validation error on attempt 1: Failed to perform, curl: (28) Operation timed out after 15001 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:33:12,664 - WARNING - Session validation error on attempt 2: Failed to perform, curl: (28) Operation timed out after 15002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:33:12,665 - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 09:33:12,664 - root - WARNING - Session validation error on attempt 2: Failed to perform, curl: (28) Operation timed out after 15002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:33:12,665 - root - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 09:33:13,649 - INFO - Navigating to https://pk-gr-services.gvcworld.eu/login to clear WAF...
+2026-07-20 09:33:13,649 - root - INFO - Navigating to https://pk-gr-services.gvcworld.eu/login to clear WAF...
+2026-07-20 09:33:15,296 - INFO - Waiting for Imperva JS challenge to clear and login form to render...
+2026-07-20 09:33:15,296 - root - INFO - Waiting for Imperva JS challenge to clear and login form to render...
+2026-07-20 09:33:54,103 - INFO - Login form detected! WAF challenge successfully bypassed.
+2026-07-20 09:33:54,103 - root - INFO - Login form detected! WAF challenge successfully bypassed.
+2026-07-20 09:33:54,115 - root - INFO - Successfully refreshed 4 WAF cookies.
+2026-07-20 09:33:54,115 - INFO - Successfully refreshed 4 WAF cookies.
+2026-07-20 09:33:54,116 - root - INFO - Saved session cookies to file for future runs.
+2026-07-20 09:33:54,116 - INFO - Saved session cookies to file for future runs.
+2026-07-20 09:34:09,195 - root - INFO - Attempting login for ammarashrafsialkot@gmail.com...
+2026-07-20 09:34:09,195 - INFO - Attempting login for ammarashrafsialkot@gmail.com...
+2026-07-20 09:34:09,196 - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-07-20 09:34:09,196 - root - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-07-20 09:34:24,203 - WARNING - Pre-flight navigation failed (WAF might still block us): Failed to perform, curl: (28) Operation timed out after 15002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:34:24,203 - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-20 09:34:24,203 - root - WARNING - Pre-flight navigation failed (WAF might still block us): Failed to perform, curl: (28) Operation timed out after 15002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:34:24,203 - root - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-07-20 09:34:24,426 - INFO - CapSolver job submitted successfully. Task ID: 1e934697-d11e-4607-92c4-452554cc3299
+2026-07-20 09:34:24,426 - root - INFO - CapSolver job submitted successfully. Task ID: 1e934697-d11e-4607-92c4-452554cc3299
+2026-07-20 09:34:24,428 - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-20 09:34:24,428 - root - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-07-20 09:34:44,702 - root - INFO - CapSolver solved the CAPTCHA successfully!
+2026-07-20 09:34:44,702 - INFO - CapSolver solved the CAPTCHA successfully!
+2026-07-20 09:35:17,720 - root - ERROR - Network error during login request (Attempt 1/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:35:17,720 - root - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 09:35:17,720 - ERROR - Network error during login request (Attempt 1/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:35:17,720 - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 09:35:18,482 - INFO - Navigating to https://pk-gr-services.gvcworld.eu/login to clear WAF...
+2026-07-20 09:35:18,482 - root - INFO - Navigating to https://pk-gr-services.gvcworld.eu/login to clear WAF...
+2026-07-20 09:35:20,251 - root - INFO - Waiting for Imperva JS challenge to clear and login form to render...
+2026-07-20 09:35:20,251 - INFO - Waiting for Imperva JS challenge to clear and login form to render...
+2026-07-20 09:36:50,340 - root - ERROR - Failed to refresh WAF cookies via Playwright: Page.wait_for_selector: Timeout 90000ms exceeded.
+
+:
+waiting for locator("input[name=\"username\"], input[type=\"email\"], input[id*=\"user\"]") to be visible
+2026-07-20 09:36:50,340 - ERROR - Failed to refresh WAF cookies via Playwright: Page.wait_for_selector: Timeout 90000ms exceeded.
+
+:
+waiting for locator("input[name=\"username\"], input[type=\"email\"], input[id*=\"user\"]") to be visible
+2026-07-20 09:37:26,359 - root - ERROR - Network error during login request (Attempt 2/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:37:26,360 - root - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 09:37:26,359 - ERROR - Network error during login request (Attempt 2/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:37:26,360 - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 09:37:27,101 - root - INFO - Navigating to https://pk-gr-services.gvcworld.eu/login to clear WAF...
+2026-07-20 09:37:27,101 - INFO - Navigating to https://pk-gr-services.gvcworld.eu/login to clear WAF...
+2026-07-20 09:37:29,946 - INFO - Waiting for Imperva JS challenge to clear and login form to render...
+2026-07-20 09:37:29,946 - root - INFO - Waiting for Imperva JS challenge to clear and login form to render...
+2026-07-20 09:38:41,278 - root - INFO - Login form detected! WAF challenge successfully bypassed.
+2026-07-20 09:38:41,278 - INFO - Login form detected! WAF challenge successfully bypassed.
+2026-07-20 09:38:41,292 - INFO - Successfully refreshed 4 WAF cookies.
+2026-07-20 09:38:41,292 - root - INFO - Successfully refreshed 4 WAF cookies.
+2026-07-20 09:38:41,293 - INFO - Saved session cookies to file for future runs.
+2026-07-20 09:38:41,293 - root - INFO - Saved session cookies to file for future runs.
+2026-07-20 09:39:17,390 - root - ERROR - Network error during login request (Attempt 3/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:39:17,390 - root - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 09:39:17,390 - ERROR - Network error during login request (Attempt 3/3): Failed to perform, curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-07-20 09:39:17,390 - WARNING - Refreshing WAF cookies via Headless Playwright...
+2026-07-20 09:39:18,151 - root - INFO - Navigating to https://pk-gr-services.gvcworld.eu/login to clear WAF...
+2026-07-20 09:39:18,151 - INFO - Navigating to https://pk-gr-services.gvcworld.eu/login to clear WAF...
+2026-07-20 09:39:20,330 - INFO - Waiting for Imperva JS challenge to clear and login form to render...
+2026-07-20 09:39:20,330 - root - INFO - Waiting for Imperva JS challenge to clear and login form to render...
+2026-07-20 09:40:25,965 - INFO - Login form detected! WAF challenge successfully bypassed.
+2026-07-20 09:40:25,965 - root - INFO - Login form detected! WAF challenge successfully bypassed.
+2026-07-20 09:40:25,983 - root - INFO - Successfully refreshed 4 WAF cookies.
+2026-07-20 09:40:25,983 - INFO - Successfully refreshed 4 WAF cookies.
+2026-07-20 09:40:25,984 - INFO - Saved session cookies to file for future runs.
+2026-07-20 09:40:25,984 - root - INFO - Saved session cookies to file for future runs.
+2026-07-20 09:40:29,119 - root - ERROR - Login failed. Discarding assignment lease.
+2026-07-20 09:40:29,119 - ERROR - Login failed. Discarding assignment lease.
+2026-07-20 09:40:34,148 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:40:34,148 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:40:35,198 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:40:35,198 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:41:05,228 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:41:05,228 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:41:06,284 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:41:06,284 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:41:36,313 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:41:36,313 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:41:37,371 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:41:37,371 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:42:07,401 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:42:07,401 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:42:08,463 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:42:08,463 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:42:38,489 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:42:38,489 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:42:39,544 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:42:39,544 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:43:09,570 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:43:09,570 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:43:10,623 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:43:10,623 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:43:40,652 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:43:40,652 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:43:41,711 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:43:41,711 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:44:11,744 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:44:11,744 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:44:12,800 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:44:12,800 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:44:42,829 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:44:42,829 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:44:43,888 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:44:43,888 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:45:13,916 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:45:13,916 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:45:14,979 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:45:14,979 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:45:44,995 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:45:44,995 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:45:46,030 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:45:46,030 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:46:16,057 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:46:16,057 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:46:17,104 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:46:17,104 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:46:47,134 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:46:47,134 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:46:48,191 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:46:48,191 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:47:18,217 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:47:18,217 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:47:19,255 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:47:19,255 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:47:49,278 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:47:49,278 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:47:50,373 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:47:50,373 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:48:20,410 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:48:20,410 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:48:21,467 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:48:21,467 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:48:51,505 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:48:51,505 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:48:52,555 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:48:52,555 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:49:22,581 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:49:22,581 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:49:23,631 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:49:23,631 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:49:53,659 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:49:53,659 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:49:54,719 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:49:54,719 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:50:24,741 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:50:24,741 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:50:25,785 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:50:25,785 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:50:55,814 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:50:55,814 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:50:56,871 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:50:56,871 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:51:26,897 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:51:26,897 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:51:27,950 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:51:27,950 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:51:57,971 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:51:57,971 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:51:59,015 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:51:59,015 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:52:29,041 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:52:29,041 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:52:30,096 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:52:30,096 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:53:00,125 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:53:00,125 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:53:01,185 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:53:01,185 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:53:31,214 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:53:31,214 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:53:32,261 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:53:32,261 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:54:02,292 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:54:02,292 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:54:03,341 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:54:03,341 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:54:33,363 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:54:33,363 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:54:34,410 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:54:34,410 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:55:04,436 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:55:04,436 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:55:05,477 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:55:05,477 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:55:35,513 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:55:35,513 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:55:36,566 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:55:36,566 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:56:06,592 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:56:06,592 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:56:07,646 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:56:07,646 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:56:37,678 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:56:37,678 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:56:38,725 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:56:38,725 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:57:08,750 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:57:08,750 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:57:09,806 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:57:09,806 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:57:39,830 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:57:39,830 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:57:40,878 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:57:40,878 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:58:10,898 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:58:10,898 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:58:11,936 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:58:11,936 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:58:41,964 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:58:41,964 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:58:43,011 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:58:43,011 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:59:13,035 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:59:13,035 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:59:14,092 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:59:14,092 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:59:44,118 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:59:44,118 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 09:59:45,170 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 09:59:45,170 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:00:15,203 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:00:15,203 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:00:16,264 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:00:16,264 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:00:46,291 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:00:46,291 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:00:47,343 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:00:47,343 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:01:17,365 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:01:17,365 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:01:18,426 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:01:18,426 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:01:48,456 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:01:48,456 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:01:49,509 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:01:49,509 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:02:19,538 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:02:19,538 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:02:20,588 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:02:20,588 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:02:50,612 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:02:50,612 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:02:51,651 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:02:51,651 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:03:21,675 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:03:21,675 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:03:22,730 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:03:22,730 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:03:52,764 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:03:52,764 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:03:53,811 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:03:53,811 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:04:23,844 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:04:23,844 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:04:24,899 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:04:24,899 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:04:54,923 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:04:54,923 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:04:55,967 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:04:55,967 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:05:26,001 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:05:26,001 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:05:27,054 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:05:27,054 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:05:57,073 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:05:57,073 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:05:58,124 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:05:58,124 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:06:28,168 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:06:28,168 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:06:29,218 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:06:29,218 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:06:59,241 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:06:59,241 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:07:00,293 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:07:00,293 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:07:30,313 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:07:30,313 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:07:31,364 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:07:31,364 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:08:01,395 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:08:01,395 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:08:02,451 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:08:02,451 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:08:32,483 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:08:32,483 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:08:33,522 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:08:33,522 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:09:03,549 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:09:03,549 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:09:04,600 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:09:04,600 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:09:34,628 - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:09:34,628 - root - INFO - Transmitted 12 network logs to SaaS.
+2026-07-20 10:09:35,688 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-07-20 10:09:35,688 - INFO - No assignments available. Sleeping for 30 seconds.
