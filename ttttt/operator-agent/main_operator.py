@@ -225,11 +225,8 @@ class OperatorAgent:
                 
                 # Extract and inject cookies
                 cookies = context.cookies()
+                self.session.cookies.clear() # Completely wipe the old tainted cookie jar
                 for cookie in cookies:
-                    try:
-                        self.session.cookies.delete(cookie['name'])
-                    except Exception:
-                        pass
                     self.session.cookies.set(cookie['name'], cookie['value'], domain=cookie.get('domain', 'pk-gr-services.gvcworld.eu'))
                     
                 logging.info(f"Successfully refreshed {len(cookies)} WAF cookies.")
