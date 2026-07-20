@@ -4,8 +4,8 @@ test.describe('Tenant Admin Testing Workflow', () => {
 
   test('0.1 Prerequisites: Log in as TENANT_ADMIN', async ({ page }) => {
     await page.goto('/login');
-    await page.fill('input[name="email"]', 'admin@kausar.com');
-    await page.fill('input[name="password"]', 'SecurePass123!');
+    await page.fill('input[name="email"]', process.env.TENANT_ADMIN_EMAIL);
+    await page.fill('input[name="password"]', process.env.TENANT_ADMIN_PASSWORD);
     await page.click('button[type="submit"]');
     await page.waitForURL('**/', { timeout: 10000 });
   });
@@ -14,8 +14,8 @@ test.describe('Tenant Admin Testing Workflow', () => {
     test('1.1 Action: Navigate to PWA Dashboard', async ({ page }) => {
       // Re-login inside block if session isn't persisted (Playwright usually needs this unless using state)
       await page.goto('/login');
-      await page.fill('input[name="email"]', 'admin@kausar.com');
-      await page.fill('input[name="password"]', 'SecurePass123!');
+      await page.fill('input[name="email"]', process.env.TENANT_ADMIN_EMAIL);
+      await page.fill('input[name="password"]', process.env.TENANT_ADMIN_PASSWORD);
       await page.click('button[type="submit"]');
 
       await page.goto('/');
@@ -26,8 +26,8 @@ test.describe('Tenant Admin Testing Workflow', () => {
     test('1.2 Action: Navigate to Asset Burn Dashboard', async ({ page }) => {
       // Re-login
       await page.goto('/login');
-      await page.fill('input[name="email"]', 'admin@kausar.com');
-      await page.fill('input[name="password"]', 'SecurePass123!');
+      await page.fill('input[name="email"]', process.env.TENANT_ADMIN_EMAIL);
+      await page.fill('input[name="password"]', process.env.TENANT_ADMIN_PASSWORD);
       await page.click('button[type="submit"]');
 
       // Tenant 2 is Kausar Trade Agency (assuming ID 1 is system core)
@@ -42,8 +42,8 @@ test.describe('Tenant Admin Testing Workflow', () => {
   test.describe('2. Staff Management', () => {
     test('2.1 Expected Result: Ensure Tenant Admin cannot grant SUPER_ADMIN', async ({ page }) => {
       await page.goto('/login');
-      await page.fill('input[name="email"]', 'admin@kausar.com');
-      await page.fill('input[name="password"]', 'SecurePass123!');
+      await page.fill('input[name="email"]', process.env.TENANT_ADMIN_EMAIL);
+      await page.fill('input[name="password"]', process.env.TENANT_ADMIN_PASSWORD);
       await page.click('button[type="submit"]');
 
       // Attempt to view users list (usually /staff or /users in UI, assuming /staff)

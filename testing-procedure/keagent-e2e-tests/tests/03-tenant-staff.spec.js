@@ -6,8 +6,8 @@ test.describe('Tenant Staff (Travel Agent) Testing Workflow', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/login');
     // Assuming staff@kausar.com is a standard STAFF account created during Tenant Admin testing
-    await page.fill('input[name="email"]', 'staff@kausar.com');
-    await page.fill('input[name="password"]', 'StaffPass123!');
+    await page.fill('input[name="email"]', process.env.TENANT_STAFF_EMAIL);
+    await page.fill('input[name="password"]', process.env.TENANT_STAFF_PASSWORD);
     await page.click('button[type="submit"]');
     await page.waitForURL('**/', { timeout: 10000 });
   });

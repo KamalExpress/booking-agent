@@ -5,8 +5,8 @@ test.describe('SaaS Admin (Super Admin) Testing Workflow', () => {
   // Re-authenticate before running each test block
   test.beforeEach(async ({ page }) => {
     await page.goto('/login');
-    await page.fill('input[id="email"]', 'amr.shah@gmail.com');
-    await page.fill('input[id="password"]', 'RootSamWMgr429');
+    await page.fill('input[id="email"]', process.env.SAAS_ADMIN_EMAIL);
+    await page.fill('input[id="password"]', process.env.SAAS_ADMIN_PASSWORD);
     await page.click('button[type="submit"]');
     
     // Ensure navigation completes before test starts
@@ -60,8 +60,8 @@ test.describe('SaaS Admin (Super Admin) Testing Workflow', () => {
       await expect(page.locator('#createTenantModal')).toBeVisible();
       
       await page.fill('input[name="tenant_name"]', 'Kausar Trade Agency');
-      await page.fill('input[name="admin_email"]', 'admin@kausar.com');
-      await page.fill('input[name="admin_password"]', 'SecurePass123!');
+      await page.fill('input[name="admin_email"]', process.env.TENANT_ADMIN_EMAIL);
+      await page.fill('input[name="admin_password"]', process.env.TENANT_ADMIN_PASSWORD);
       await page.click('button[type="submit"]:has-text("Create Tenant")');
       
       // Wait for navigation/reload after create
