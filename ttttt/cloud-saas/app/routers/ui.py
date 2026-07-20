@@ -1150,7 +1150,10 @@ async def update_tenant_status(
 @router.get("/tenants/{tenant_id}", response_class=HTMLResponse)
 async def tenant_detail_page(tenant_id: int, request: Request, db: Session = Depends(get_db)):
     user = get_ui_user(request, db)
-    if not user or user.role != RoleEnum.SUPER_ADMIN:
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+        
+    if user.role != RoleEnum.SUPER_ADMIN and (user.role != RoleEnum.TENANT_ADMIN or user.tenant_id != tenant_id):
         return RedirectResponse(url="/", status_code=303)
         
     tenant = db.query(Tenant).filter(Tenant.id == tenant_id).first()
