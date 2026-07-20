@@ -243,17 +243,17 @@ class OperatorAgent:
         Lightweight check to see if the loaded session cookies are still valid.
         This prevents burning CapSolver credits if we already have a valid session.
         """
-        try:
-            logging.info("Validating existing session...")
-            url = f"{self.base_url}/api/v1/periodslot/slots"
-            # Dummy payload just to check authentication state
-            payload = {
-                "datefrom": "01/01/2026", "type": 26, "bookingfor": 0, "members": 1, "method": 1,
-                "travelpurposes": -1, "howmanyapplicantsareunder12": 0, "appointmentId": "undefined",
-                "id": 0, "vac": {"id": 138}
-            }
-            
-            for attempt in range(2):
+        logging.info("Validating existing session...")
+        url = f"{self.base_url}/api/v1/periodslot/slots"
+        # Dummy payload just to check authentication state
+        payload = {
+            "datefrom": "01/01/2026", "type": 26, "bookingfor": 0, "members": 1, "method": 1,
+            "travelpurposes": -1, "howmanyapplicantsareunder12": 0, "appointmentId": "undefined",
+            "id": 0, "vac": {"id": 138}
+        }
+        
+        for attempt in range(2):
+            try:
                 response = self.session.put(url, json=payload, timeout=15)
                 if response.status_code == 200:
                     logging.info("Session is fully valid. Bypassing login.")
@@ -267,19 +267,28 @@ class OperatorAgent:
                     continue
                 else:
                     return False
-            return False
-        except Exception as e:
-            logging.warning(f"Session validation error: {e}")
-            # If timeout/WAF drop, try to refresh WAF once
-            if "28" in str(e) or "timeout" in str(e).lower():
-                self.refresh_waf_cookies()
-                try:
-                    response = self.session.put(url, json=payload, timeout=15)
-                    if response.status_code == 200:
-                        return True
-                except:
-                    pass
-            return False
+            except Exception as e:
+                logging.warning(f"Session validation error on attempt {attempt+1}: {e}")
+                # If it's a stale keep-alive drop (curl 28 or 52/56), retrying should fix it without a WAF refresh.
+                if attempt == 0:
+                    # Quick dummy request to consume any remaining dead sockets in the pool
+                    try:
+                        self.session.get(f"{self.base_url}/favicon.ico", timeout=3)
+                    except Exception:
+                        pass
+                    continue
+                
+                # If it fails twice on timeout, it's a real WAF tarpit
+                if "28" in str(e) or "timeout" in str(e).lower():
+                    self.refresh_waf_cookies()
+                    try:
+                        response = self.session.put(url, json=payload, timeout=15)
+                        if response.status_code == 200:
+                            return True
+                    except:
+                        pass
+                return False
+        return False
 
     def login(self):
         if self.is_authenticated():
