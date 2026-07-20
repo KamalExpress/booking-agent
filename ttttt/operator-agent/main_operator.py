@@ -310,33 +310,34 @@ class OperatorAgent:
         except Exception as e:
             logging.warning(f"Pre-flight navigation failed (WAF might still block us): {e}")
 
-        # 2. Solve CAPTCHA
-        captcha_token = self.captcha_service.solve(self.sitekey, f"{self.base_url}/login", session=self.session)
-        
-        # Intelligent fallback to Manual mode if Auto mode fails
-        if not captcha_token and self.captcha_service.__class__.__name__ in ['NopeChaService', 'CapSolverService']:
-            logging.warning(f"{self.captcha_service.__class__.__name__} failed! Falling back to Manual Browser Captcha...")
-            from captcha_service import ManualCaptchaService
-            manual_svc = ManualCaptchaService()
-            captcha_token = manual_svc.solve(self.sitekey, f"{self.base_url}/login", session=self.session)
-        
         url = f"{self.base_url}/api/v1/auth/login"
-        payload = {
-            "username": self.username,
-            "password": self.password,
-            "g-recaptcha-response": captcha_token
-        }
-        
-        logging.debug(f"Login payload: {payload}")
-        
-        # Consume any dead keep-alive connection resulting from the Captcha wait
-        try:
-            self.session.get(f"{self.base_url}/favicon.ico", timeout=3)
-        except Exception:
-            pass
-            
         max_retries = 3
         for attempt in range(max_retries):
+            # 2. Solve CAPTCHA (inside retry loop so we get a fresh token if we refreshed WAF cookies)
+            captcha_token = self.captcha_service.solve(self.sitekey, f"{self.base_url}/login", session=self.session)
+            
+            # Intelligent fallback to Manual mode if Auto mode fails
+            if not captcha_token and self.captcha_service.__class__.__name__ in ['NopeChaService', 'CapSolverService']:
+                logging.warning(f"{self.captcha_service.__class__.__name__} failed! Falling back to Manual Browser Captcha...")
+                from captcha_service import ManualCaptchaService
+                manual_svc = ManualCaptchaService()
+                captcha_token = manual_svc.solve(self.sitekey, f"{self.base_url}/login", session=self.session)
+            
+            payload = {
+                "username": self.username,
+                "password": self.password,
+                "g-recaptcha-response": captcha_token
+            }
+            
+            logging.debug(f"Login payload: {payload}")
+            
+            # Consume any dead keep-alive connection resulting from the Captcha wait
+            try:
+                self.session.get(f"{self.base_url}/favicon.ico", timeout=3)
+            except Exception:
+                pass
+            
+
             try:
                 response = self.session.post(url, json=payload, timeout=30)
                 logging.debug(f"Login response status: {response.status_code}, text: {response.text}")
@@ -456,37 +457,39 @@ class OperatorAgent:
         """
         logging.info("Submitting final booking request...")
         
-        captcha_token = self.captcha_service.solve(self.sitekey, f"{self.base_url}/appointments/add", session=self.session)
-        
         # We will assume standard form submission endpoint or API endpoint
         url = f"{self.base_url}/appointments/add"
         
-        payload = {
-            "vac": os.getenv('APPOINTMENT_VAC_ID', '138'),
-            "type": os.getenv('APPOINTMENT_TYPE', '26'),
-            "bookingfor": os.getenv('BOOKING_FOR', '0'),
-            "otp": otp,
-            "g-recaptcha-response": captcha_token
-        }
-        
-        if applicant_data:
-            payload.update(applicant_data)
-            
-        if slot_details and "id" in slot_details:
-             payload["periodslot"] = slot_details["id"]
-            
-        logging.debug(f"Book appointment payload: {payload}")
-        
-        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-        
-        # Consume any dead keep-alive connection resulting from the booking Captcha wait
-        try:
-            self.session.get(f"{self.base_url}/favicon.ico", timeout=3)
-        except Exception:
-            pass
-            
         max_retries = 3
         for attempt in range(max_retries):
+            # Solve CAPTCHA inside loop to ensure fresh token after WAF refresh
+            captcha_token = self.captcha_service.solve(self.sitekey, f"{self.base_url}/appointments/add", session=self.session)
+            
+            payload = {
+                "vac": os.getenv('APPOINTMENT_VAC_ID', '138'),
+                "type": os.getenv('APPOINTMENT_TYPE', '26'),
+                "bookingfor": os.getenv('BOOKING_FOR', '0'),
+                "otp": otp,
+                "g-recaptcha-response": captcha_token
+            }
+            
+            if applicant_data:
+                payload.update(applicant_data)
+                
+            if slot_details and "id" in slot_details:
+                 payload["periodslot"] = slot_details["id"]
+                
+            logging.debug(f"Book appointment payload: {payload}")
+            
+            headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+            
+            # Consume any dead keep-alive connection resulting from the booking Captcha wait
+            try:
+                self.session.get(f"{self.base_url}/favicon.ico", timeout=3)
+            except Exception:
+                pass
+                
+
             try:
                 response = self.session.post(url, data=payload, headers=headers, timeout=30)
                 logging.debug(f"Book appointment response status: {response.status_code}, text: {response.text}")
