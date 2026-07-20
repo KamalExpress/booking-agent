@@ -69,3 +69,7 @@ settings.json
 node_modules/
 test-results/
 playwright-report/
+
+# DevOps Agent
+devops-agent/.env
+devops-agent/node_modules/
