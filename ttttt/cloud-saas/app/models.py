@@ -23,6 +23,8 @@ class Tenant(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True, nullable=False)
     is_active = Column(Boolean, default=True)
+    webhook_url = Column(String, nullable=True)
+    phone_number = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     
     users = relationship("User", back_populates="tenant", cascade="all, delete-orphan")

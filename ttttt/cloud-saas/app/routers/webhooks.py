@@ -44,6 +44,20 @@ async def receive_otp(request: Request, db: Session = Depends(get_db)):
         }
     )
     db.add(log)
+    
+    # Map to tenant via phone_number (device_id matches phone_number in SMS Gateway)
+    from models import Tenant, BookingTask
+    if otp_code:
+        tenant = db.query(Tenant).filter(Tenant.phone_number == device_id).first()
+        if tenant:
+            active_task = db.query(BookingTask).filter(
+                BookingTask.tenant_id == tenant.id,
+                BookingTask.status == 'PROCESSING'
+            ).order_by(BookingTask.updated_at.desc()).first()
+            
+            if active_task:
+                active_task.otp_code = otp_code
+                
     db.commit()
     
     return {"status": "ok", "extracted_otp": otp_code}

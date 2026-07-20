@@ -14,7 +14,22 @@
 </header>
 
 {% if user.role.value == 'SUPER_ADMIN' %}
-<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+    <!-- Auto-Scaling Dial -->
+    <div class="card p-6 flex flex-col justify-between border-indigo-500/20 bg-indigo-500/5">
+        <div class="flex flex-row items-center justify-between space-y-0 pb-2">
+            <h3 class="tracking-tight text-sm font-medium text-indigo-400">Auto-Scaling Dial</h3>
+            <i data-lucide="gauge" class="w-4 h-4 text-indigo-400"></i>
+        </div>
+        <div class="mt-2 flex flex-col gap-1">
+            <div class="flex items-baseline gap-2">
+                <span class="text-3xl font-bold text-white">{{ metrics.capacity_ratio }}%</span>
+                <span class="text-xs {% if metrics.capacity_ratio >= 100 %}text-emerald-500{% else %}text-amber-500{% endif %}">Capacity</span>
+            </div>
+            <p class="text-[10px] text-zinc-500">{{ metrics.idle_workers }} Idle / {{ metrics.pending_tasks }} Pending</p>
+        </div>
+    </div>
+    
     <div class="card p-6 flex flex-col justify-between">
         <div class="flex flex-row items-center justify-between space-y-0 pb-2">
             <h3 class="tracking-tight text-sm font-medium">Active Workers</h3>
@@ -43,7 +58,7 @@
             <i data-lucide="calendar-check" class="w-4 h-4 text-muted-foreground"></i>
         </div>
         <div class="mt-2 flex items-baseline gap-2">
-            <span class="text-3xl font-bold text-emerald-500" id="statSlots">{{ slots_found }}</span>
+            <span class="text-3xl font-bold text-emerald-500" id="statSlots">{{ slots_found_24h }}</span>
         </div>
     </div>
 
@@ -220,15 +235,74 @@
 </div>
 {% endif %}
 
-{% endif %}
+
+{% endif %}
 
 {% if user.role.value == 'SUPER_ADMIN' %}
-<div class="card p-6 border-border">
-    <h3 class="text-xl font-semibold mb-4 tracking-tight">Quick Actions</h3>
-    <div class="flex gap-4">
-        <a href="/assignments" class="btn btn-primary">Manage Assignments</a>
-        <a href="/accounts" class="btn btn-secondary border border-border">Manage Accounts</a>
-        <a href="/logs" class="btn btn-secondary border border-border">View Live Logs</a>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Global Assignment Map -->
+    <div class="card overflow-hidden">
+        <div class="p-5 border-b border-zinc-800 bg-zinc-900/50 flex justify-between items-center">
+            <h3 class="font-medium text-zinc-100 flex items-center gap-2">
+                <i data-lucide="map" class="w-4 h-4 text-emerald-400"></i> Global Assignment Map
+            </h3>
+            <a href="/assignments" class="text-xs text-indigo-400 hover:text-indigo-300">View All</a>
+        </div>
+        <div class="overflow-x-auto max-h-[400px] overflow-y-auto">
+            <table class="w-full text-sm text-left">
+                <thead class="text-xs text-zinc-400 uppercase bg-zinc-900/30 sticky top-0">
+                    <tr>
+                        <th class="px-5 py-3 font-medium">Visa Center</th>
+                        <th class="px-5 py-3 font-medium">Worker ID</th>
+                        <th class="px-5 py-3 font-medium">Expires</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-zinc-800">
+                    {% for assignment in global_assignments %}
+                    <tr class="hover:bg-zinc-800/30 transition-colors">
+                        <td class="px-5 py-4">
+                            <div class="font-medium text-white">{{ assignment.visa_center }}</div>
+                            <div class="text-[10px] text-zinc-500">App Type: {{ assignment.appointment_type }}</div>
+                        </td>
+                        <td class="px-5 py-4">
+                            <span class="inline-flex items-center rounded-full border border-indigo-500/20 bg-indigo-500/10 px-2.5 py-0.5 text-xs font-medium text-indigo-400">
+                                Worker #{{ assignment.worker_id }}
+                            </span>
+                        </td>
+                        <td class="px-5 py-4 text-zinc-400 text-xs local-time" data-utc="{{ assignment.expires_at.isoformat() }}Z">
+                            {{ assignment.expires_at | format_time(ui_timezone, '%H:%M') }}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" class="px-5 py-8 text-center text-zinc-500">No active global assignments found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Centralized Settings -->
+    <div class="card overflow-hidden">
+        <div class="p-5 border-b border-zinc-800 bg-zinc-900/50 flex justify-between items-center">
+            <h3 class="font-medium text-zinc-100 flex items-center gap-2">
+                <i data-lucide="settings" class="w-4 h-4 text-zinc-400"></i> Centralized Settings
+            </h3>
+        </div>
+        <form action="/settings/update" method="POST" class="p-5 space-y-4">
+            {% for setting in system_settings %}
+            <div>
+                <label class="block text-sm font-medium mb-1 text-zinc-300">{{ setting.key }}</label>
+                <input type="text" name="setting_{{ setting.key }}" value="{{ setting.value }}" class="input bg-zinc-950 border-zinc-800 text-white w-full">
+            </div>
+            {% else %}
+            <div class="text-sm text-zinc-500 py-4">No system settings found.</div>
+            {% endfor %}
+            <div class="pt-2">
+                <button type="submit" class="btn bg-indigo-600 hover:bg-indigo-700 text-white w-full">Save Settings</button>
+            </div>
+        </form>
     </div>
 </div>
 {% endif %}

@@ -105,6 +105,17 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
     
     active_assignments = db.query(Assignment).filter(Assignment.status == 'Leased').count()
     
+    # Auto-Scaling Metrics
+    from models import BookingTask
+    idle_workers = db.query(WorkerNode).filter(
+        WorkerNode.status == 'Active',
+        WorkerNode.last_heartbeat >= cutoff,
+        WorkerNode.current_concurrency == 0
+    ).count()
+    
+    pending_tasks = db.query(BookingTask).filter(BookingTask.status == 'PENDING').count()
+    capacity_ratio = (idle_workers / pending_tasks * 100) if pending_tasks > 0 else 100
+    
     # Slots found in last 24h
     yesterday = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=1)
     slots_found = db.query(EventLog).filter(
@@ -202,20 +213,33 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
     push_logs = push_query.all()
     monthly_push_count = sum(log.payload.get('success_count', 0) if log.payload else 0 for log in push_logs)
     
+    # Fetch system settings
+    system_settings = db.query(SystemSetting).all()
+    
+    # Fetch global assignments
+    global_assignments = db.query(Assignment).filter(Assignment.status == 'Leased').all()
+
     return render_template("index.html", {
         "request": request,
         "user": user,
         "active_page": "overview",
         "active_workers": active_workers,
         "active_assignments": active_assignments,
-        "slots_found": slots_found,
+        "slots_found_24h": slots_found,
+        "global_last_checked_time": global_last_checked_time,
         "center_statuses": center_statuses,
         "recent_logs": recent_logs,
+        "metrics": {
+            "idle_workers": idle_workers,
+            "pending_tasks": pending_tasks,
+            "capacity_ratio": int(capacity_ratio)
+        },
         "monthly_push_count": monthly_push_count,
-        "global_last_checked_time": global_last_checked_time,
         "health_score": health_score,
         "is_healthy": is_healthy,
-        "pwa_settings": pwa_settings
+        "pwa_settings": pwa_settings,
+        "system_settings": system_settings,
+        "global_assignments": global_assignments
     }, db)
 
 @router.get("/workers", response_class=HTMLResponse)
@@ -1341,3 +1365,24 @@ async def toggle_mute(req: ToggleMuteRequest, request: Request, db: Session = De
     db.commit()
     
     return {"status": "success", "is_muted": is_muted}
+
+@router.post("/settings/update")
+async def update_system_settings(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    form_data = await request.form()
+    
+    for key, value in form_data.items():
+        if key.startswith("setting_"):
+            setting_key = key.replace("setting_", "", 1)
+            setting = db.query(SystemSetting).filter(SystemSetting.key == setting_key).first()
+            if setting:
+                setting.value = str(value)
+            else:
+                new_setting = SystemSetting(key=setting_key, value=str(value))
+                db.add(new_setting)
+                
+    db.commit()
+    return RedirectResponse(url="/", status_code=303)

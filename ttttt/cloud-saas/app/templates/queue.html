@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+
+{% block title %}Applicant Queue - Kamal Express{% endblock %}
+
+{% block content %}
+<header class="mb-8 flex justify-between items-start">
+    <div>
+        <h2 class="text-3xl font-bold tracking-tight">Applicant Queue</h2>
+        <p class="text-muted-foreground mt-1">Manage applicants and the booking waitlist</p>
+    </div>
+    <button onclick="document.getElementById('addApplicantModal').classList.remove('hidden')" class="btn btn-primary whitespace-nowrap px-5 py-2.5 h-auto">
+        <i data-lucide="user-plus" class="w-4 h-4 mr-2"></i> Add Applicant
+    </button>
+</header>
+
+<div class="space-y-8">
+    <!-- Waitlist Queue -->
+    <div class="card overflow-hidden">
+        <div class="p-5 border-b border-zinc-800 bg-zinc-900/50 flex justify-between items-center">
+            <h3 class="font-medium text-zinc-100 flex items-center gap-2">
+                <i data-lucide="clock" class="w-4 h-4 text-purple-400"></i> Active Waitlist Queue
+            </h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+                <thead class="text-xs text-zinc-400 uppercase bg-zinc-900/30">
+                    <tr>
+                        <th class="px-5 py-3 font-medium">Applicant</th>
+                        <th class="px-5 py-3 font-medium">Visa Center</th>
+                        <th class="px-5 py-3 font-medium">Priority</th>
+                        <th class="px-5 py-3 font-medium">Status</th>
+                        <th class="px-5 py-3 font-medium">Added On</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-zinc-800">
+                    {% for w in waitlist %}
+                    <tr class="hover:bg-zinc-800/30 transition-colors">
+                        <td class="px-5 py-4 text-white">
+                            <div class="font-medium">{{ w.applicant.firstname }} {{ w.applicant.surname }}</div>
+                            <div class="text-xs text-zinc-400">Passport: {{ w.applicant.passportnumber }}</div>
+                        </td>
+                        <td class="px-5 py-4">
+                            <span class="inline-flex items-center rounded-full bg-zinc-800 px-2.5 py-0.5 text-xs font-medium text-zinc-300">
+                                {{ w.provider }} - {{ w.visa_center }}
+                            </span>
+                        </td>
+                        <td class="px-5 py-4 font-mono text-zinc-400">{{ w.priority }}</td>
+                        <td class="px-5 py-4">
+                            {% if w.status == 'PENDING' %}
+                                <span class="inline-flex items-center rounded-full border border-yellow-500/20 bg-yellow-500/10 px-2.5 py-0.5 text-xs font-medium text-yellow-500">Pending</span>
+                            {% elif w.status == 'BOOKED' %}
+                                <span class="inline-flex items-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-500">Booked</span>
+                            {% else %}
+                                <span class="inline-flex items-center rounded-full border border-zinc-700/50 bg-zinc-800/50 px-2.5 py-0.5 text-xs font-medium text-zinc-400">{{ w.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-5 py-4 text-zinc-400 text-xs">{{ w.created_at | format_time(ui_timezone, '%Y-%m-%d %H:%M') }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="px-5 py-8 text-center text-zinc-500">No applicants currently in the waitlist.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Client Directory -->
+    <div class="card overflow-hidden">
+        <div class="p-5 border-b border-zinc-800 bg-zinc-900/50 flex justify-between items-center">
+            <h3 class="font-medium text-zinc-100 flex items-center gap-2">
+                <i data-lucide="users" class="w-4 h-4 text-zinc-400"></i> Client Directory
+            </h3>
+        </div>
+        <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
+            <table class="w-full text-sm text-left">
+                <thead class="text-xs text-zinc-400 uppercase bg-zinc-900/30 sticky top-0 z-10 backdrop-blur-sm">
+                    <tr>
+                        <th class="px-5 py-3 font-medium">Name</th>
+                        <th class="px-5 py-3 font-medium">Contact</th>
+                        <th class="px-5 py-3 font-medium">Passport Details</th>
+                        <th class="px-5 py-3 font-medium text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-zinc-800">
+                    {% for a in applicants %}
+                    <tr class="hover:bg-zinc-800/30 transition-colors">
+                        <td class="px-5 py-4 text-white">
+                            <div class="font-medium">{{ a.firstname }} {{ a.surname }}</div>
+                            <div class="text-xs text-zinc-400">DOB: {{ a.dateofbirth }} | Gender: {{ a.gender }}</div>
+                        </td>
+                        <td class="px-5 py-4">
+                            <div class="text-zinc-300 text-xs">{{ a.email }}</div>
+                            <div class="text-zinc-400 text-xs">+{{ a.phone_prefix }} {{ a.phone_number }}</div>
+                        </td>
+                        <td class="px-5 py-4">
+                            <div class="text-zinc-300 text-xs">{{ a.passportnumber }} ({{ a.nationality }})</div>
+                            <div class="text-zinc-400 text-xs">Exp: {{ a.passport_expiry }}</div>
+                        </td>
+                        <td class="px-5 py-4 text-right">
+                            <button onclick="openWaitlistModal({{ a.id }}, '{{ a.firstname }} {{ a.surname }}')" class="btn btn-sm bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600/40">
+                                Queue
+                            </button>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="px-5 py-8 text-center text-zinc-500">No applicants found in the directory.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Applicant Modal -->
+<div id="addApplicantModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div class="bg-zinc-900 border border-zinc-700 w-full max-w-2xl rounded-xl shadow-xl overflow-hidden">
+        <div class="px-6 py-4 border-b border-zinc-800 flex justify-between items-center bg-zinc-900/50">
+            <h3 class="font-semibold text-lg text-white">Add New Applicant</h3>
+            <button class="text-zinc-500 hover:text-zinc-300 transition-colors" onclick="document.getElementById('addApplicantModal').classList.add('hidden')">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <form action="/queue/applicants/create" method="post" class="p-6">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-zinc-400">First Name</label>
+                    <input type="text" name="firstname" class="input bg-zinc-950 border-zinc-800 text-white" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-zinc-400">Surname</label>
+                    <input type="text" name="surname" class="input bg-zinc-950 border-zinc-800 text-white" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-zinc-400">Date of Birth (DD/MM/YYYY)</label>
+                    <input type="text" name="dateofbirth" class="input bg-zinc-950 border-zinc-800 text-white" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-zinc-400">Gender</label>
+                    <select name="gender" class="input bg-zinc-950 border-zinc-800 text-white" required>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-zinc-400">Passport Number</label>
+                    <input type="text" name="passportnumber" class="input bg-zinc-950 border-zinc-800 text-white" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-zinc-400">Passport Expiry (DD/MM/YYYY)</label>
+                    <input type="text" name="passport_expiry" class="input bg-zinc-950 border-zinc-800 text-white" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-zinc-400">Nationality</label>
+                    <input type="text" name="nationality" class="input bg-zinc-950 border-zinc-800 text-white" value="PAK" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-zinc-400">Email Address</label>
+                    <input type="email" name="email" class="input bg-zinc-950 border-zinc-800 text-white" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-zinc-400">Phone Prefix</label>
+                    <input type="text" name="phone_prefix" class="input bg-zinc-950 border-zinc-800 text-white" value="92" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-zinc-400">Phone Number</label>
+                    <input type="text" name="phone_number" class="input bg-zinc-950 border-zinc-800 text-white" required>
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 mt-6">
+                <button type="button" class="btn border border-zinc-700 text-zinc-300 hover:bg-zinc-800" onclick="document.getElementById('addApplicantModal').classList.add('hidden')">Cancel</button>
+                <button type="submit" class="btn bg-indigo-600 hover:bg-indigo-700 text-white">Save Applicant</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Add to Waitlist Modal -->
+<div id="waitlistModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div class="bg-zinc-900 border border-zinc-700 w-full max-w-md rounded-xl shadow-xl overflow-hidden">
+        <div class="px-6 py-4 border-b border-zinc-800 flex justify-between items-center bg-zinc-900/50">
+            <h3 class="font-semibold text-lg text-white">Queue Applicant</h3>
+            <button class="text-zinc-500 hover:text-zinc-300 transition-colors" onclick="document.getElementById('waitlistModal').classList.add('hidden')">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <form action="/queue/add" method="post" class="p-6">
+            <input type="hidden" id="queueApplicantId" name="applicant_id">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-zinc-400">Selected Applicant</label>
+                    <input type="text" id="queueApplicantName" class="input bg-zinc-900 border-zinc-800 text-zinc-500" disabled>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-zinc-400">Target Visa Center</label>
+                    <input type="text" name="visa_center" class="input bg-zinc-950 border-zinc-800 text-white" placeholder="e.g., 138 (Lahore)" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-zinc-400">Priority (0-100)</label>
+                    <input type="number" name="priority" class="input bg-zinc-950 border-zinc-800 text-white" value="0" required>
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 mt-6">
+                <button type="button" class="btn border border-zinc-700 text-zinc-300 hover:bg-zinc-800" onclick="document.getElementById('waitlistModal').classList.add('hidden')">Cancel</button>
+                <button type="submit" class="btn bg-indigo-600 hover:bg-indigo-700 text-white">Queue Applicant</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function openWaitlistModal(id, name) {
+    document.getElementById('queueApplicantId').value = id;
+    document.getElementById('queueApplicantName').value = name;
+    document.getElementById('waitlistModal').classList.remove('hidden');
+}
+</script>
+{% endblock %}

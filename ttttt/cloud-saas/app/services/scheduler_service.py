@@ -262,7 +262,17 @@ class SchedulerService:
         account = self.db.query(PortalAccount).filter_by(id=lease.portal_account_id).first()
         proxy = self.db.query(Proxy).filter_by(id=lease.proxy_id).first()
         
-        if event_type == "LOGIN_FAILED":
+        if event_type == "SLOT_FOUND":
+            visa_center = details.get("visa_center") if details else None
+            slot_count = details.get("slot_count", 1) if details else 1
+            if not visa_center and lease.assignment_id:
+                assignment = self.db.query(Assignment).filter_by(id=lease.assignment_id).first()
+                if assignment:
+                    visa_center = assignment.visa_center
+            if visa_center:
+                self.auto_dispatch_queue(visa_center, slot_count)
+                
+        elif event_type == "LOGIN_FAILED":
             if account:
                 account.failure_count += 1
                 account.last_failure = now
