@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 import zoneinfo
 
 import os
-from models import WorkerNode, Assignment, Lease, EventLog, PortalAccount, Proxy, BookingTask, SchedulerDecision, SystemSetting, User, Tenant, PushSubscription, AuditLog, WorkerLog
+from models import WorkerNode, Assignment, Lease, EventLog, PortalAccount, Proxy, BookingTask, SchedulerDecision, SystemSetting, User, Tenant, PushSubscription, AuditLog, WorkerLog, Applicant, WaitlistQueue
 from models import SessionLocal
 from secrets_manager import secrets_manager
 from auth import get_current_user, require_tenant_admin, get_current_user_from_cookie, RoleEnum, get_password_hash
@@ -795,6 +795,125 @@ async def booking_tasks_page(request: Request, db: Session = Depends(get_db)):
         "active_page": "booking_tasks",
         "tasks": tasks
     }, db)
+
+@router.get("/clients", response_class=HTMLResponse)
+async def clients_page(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+        
+    query = db.query(Applicant)
+    if user.role in [RoleEnum.TENANT_ADMIN, RoleEnum.STAFF]:
+        query = query.filter(Applicant.tenant_id == user.tenant_id)
+    elif user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    clients = query.order_by(Applicant.id.desc()).all()
+    
+    return render_template("clients.html", {
+        "request": request,
+        "user": user,
+        "active_page": "clients",
+        "clients": clients
+    }, db)
+
+@router.post("/clients/create")
+async def create_client(
+    request: Request,
+    first_name: str = Form(...),
+    last_name: str = Form(...),
+    passport_number: str = Form(...),
+    phone_number: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    user = get_ui_user(request, db)
+    if not user or user.role not in [RoleEnum.TENANT_ADMIN, RoleEnum.STAFF, RoleEnum.SUPER_ADMIN]:
+        return RedirectResponse(url="/", status_code=303)
+        
+    # Provide dummy defaults for required fields not filled by the simple form
+    new_client = Applicant(
+        tenant_id=user.tenant_id,
+        firstname=first_name,
+        surname=last_name,
+        passportnumber=passport_number,
+        phone_number=phone_number,
+        dateofbirth="01/01/1990",
+        gender="M",
+        nationality="PAK",
+        passport_expiry="01/01/2030",
+        email=f"dummy_{passport_number}@example.com",
+        phone_prefix="+92"
+    )
+    db.add(new_client)
+    db.commit()
+    return RedirectResponse(url="/clients", status_code=303)
+
+@router.get("/queue", response_class=HTMLResponse)
+async def queue_page(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+        
+    query = db.query(WaitlistQueue)
+    applicants_query = db.query(Applicant)
+    
+    if user.role in [RoleEnum.TENANT_ADMIN, RoleEnum.STAFF]:
+        query = query.filter(WaitlistQueue.tenant_id == user.tenant_id)
+        applicants_query = applicants_query.filter(Applicant.tenant_id == user.tenant_id)
+    elif user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    queue_items = query.order_by(WaitlistQueue.priority.desc(), WaitlistQueue.created_at.asc()).all()
+    applicants = applicants_query.all()
+    
+    # Parse available centers from settings
+    vc_setting = db.query(SystemSetting).filter(SystemSetting.key == "global.visa_centers_config").first()
+    vc_config_str = vc_setting.value if vc_setting and vc_setting.value else "138:26:Lahore, 137:26:Islamabad, 140:24:Doc Verification"
+    available_centers = []
+    for center_str in vc_config_str.split(","):
+        parts = center_str.strip().split(":")
+        if len(parts) >= 3:
+            available_centers.append({
+                "id": parts[0],
+                "type": parts[1],
+                "name": parts[2],
+                "value": parts[0]
+            })
+            
+    return render_template("queue.html", {
+        "request": request,
+        "user": user,
+        "active_page": "queue",
+        "queue_items": queue_items,
+        "applicants": applicants,
+        "available_centers": available_centers
+    }, db)
+
+@router.post("/queue/add")
+async def add_to_queue(
+    request: Request,
+    applicant_id: int = Form(...),
+    visa_center_id: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    user = get_ui_user(request, db)
+    if not user or user.role not in [RoleEnum.TENANT_ADMIN, RoleEnum.STAFF, RoleEnum.SUPER_ADMIN]:
+        return RedirectResponse(url="/", status_code=303)
+        
+    # Verify applicant belongs to tenant
+    applicant = db.query(Applicant).filter(Applicant.id == applicant_id, Applicant.tenant_id == user.tenant_id).first()
+    if applicant:
+        new_entry = WaitlistQueue(
+            tenant_id=user.tenant_id,
+            applicant_id=applicant.id,
+            visa_center=visa_center_id,
+            status="PENDING",
+            priority=0
+        )
+        db.add(new_entry)
+        db.commit()
+        
+    return RedirectResponse(url="/queue", status_code=303)
 
 @router.get("/logs", response_class=HTMLResponse)
 async def logs_page(request: Request, db: Session = Depends(get_db)):

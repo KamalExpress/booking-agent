@@ -1,0 +1,22 @@
+{
+  "name": "keagent-e2e-tests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:admin": "npx playwright test tests/01-saas-admin.spec.js",
+    "test:tenant": "npx playwright test tests/02-tenant-admin.spec.js",
+    "test:staff": "npx playwright test tests/03-tenant-staff.spec.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.61.1"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2"
+  }
+}

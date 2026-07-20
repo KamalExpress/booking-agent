@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Client Directory - {{ env_branding.title_prefix }}{{ branding.brand_name | default('Alamia Automation') }}{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-8">
+    <div>
+        <h2 class="text-2xl font-bold tracking-tight text-white">Client Directory</h2>
+        <p class="text-sm text-zinc-400 mt-1">Manage your visa applicants and their details.</p>
+    </div>
+    <div class="flex items-center gap-3">
+        <button class="btn btn-primary" onclick="document.getElementById('createApplicantModal').classList.remove('hidden')">
+            <i data-lucide="plus" class="w-4 h-4 mr-2"></i> Add Applicant
+        </button>
+    </div>
+</div>
+
+<div class="card overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm text-zinc-300">
+            <thead class="bg-zinc-900/50 text-xs uppercase text-zinc-400 border-b border-zinc-800">
+                <tr>
+                    <th scope="col" class="px-6 py-4 font-medium">Name</th>
+                    <th scope="col" class="px-6 py-4 font-medium">Passport</th>
+                    <th scope="col" class="px-6 py-4 font-medium">Phone</th>
+                    <th scope="col" class="px-6 py-4 font-medium">Created</th>
+                    <th scope="col" class="px-6 py-4 font-medium text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-zinc-800/50">
+                {% for client in clients %}
+                <tr class="hover:bg-zinc-900/30 transition-colors group">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="font-medium text-white">{{ client.firstname }} {{ client.surname }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap font-mono text-xs">
+                        {{ client.passportnumber }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {{ client.phone_number }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-xs text-zinc-500">
+                        {{ client.created_at | format_time(ui_timezone) }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right">
+                        <!-- Action buttons can go here -->
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="px-6 py-12 text-center text-zinc-500">
+                        <div class="flex flex-col items-center justify-center">
+                            <i data-lucide="users" class="w-8 h-8 mb-3 text-zinc-600"></i>
+                            <p>No applicants found.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Create Applicant Modal -->
+<div id="createApplicantModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+        <div class="flex items-center justify-between p-4 border-b border-zinc-800 bg-zinc-900/50">
+            <h3 class="text-lg font-semibold text-white">Add New Applicant</h3>
+            <button onclick="document.getElementById('createApplicantModal').classList.add('hidden')" class="text-zinc-400 hover:text-white transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <div class="p-6">
+            <form action="/clients/create" method="POST" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-medium text-zinc-400">First Name <span class="text-red-500">*</span></label>
+                        <input type="text" name="first_name" required class="input" placeholder="Ali">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-medium text-zinc-400">Last Name <span class="text-red-500">*</span></label>
+                        <input type="text" name="last_name" required class="input" placeholder="Raza">
+                    </div>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-xs font-medium text-zinc-400">Passport Number <span class="text-red-500">*</span></label>
+                    <input type="text" name="passport_number" required class="input" placeholder="AB1234567">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="text-xs font-medium text-zinc-400">Phone Number <span class="text-red-500">*</span></label>
+                    <input type="text" name="phone_number" required class="input" placeholder="+923001234567">
+                </div>
+                
+                <div class="pt-4 flex justify-end gap-3 border-t border-zinc-800 mt-6">
+                    <button type="button" onclick="document.getElementById('createApplicantModal').classList.add('hidden')" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Applicant</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

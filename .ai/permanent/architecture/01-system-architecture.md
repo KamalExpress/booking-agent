@@ -42,6 +42,12 @@ To orchestrate distributed headless workers for visa appointment scraping and sl
 - Can deploy workers on residential proxies, AWS workspaces, or Raspberry Pis seamlessly because the API is standard HTTP polling.
 - The `Provider` dimension enables scaling out from a single visa portal (e.g., VFS) to multiple portals (BLS, GVC) gracefully.
 
+## Deployment Topology
+- **Strictly VPS & Docker:** The system runs exclusively on a cloud VPS managed via Portainer. Agents must NEVER attempt to run Docker containers or Alembic database migrations locally.
+- **Environment Split:**
+  - `feature/staging` branch deployed as the **Staging Stack** (contains all new booking/waitlist features).
+  - `feature/headless-worker` branch deployed as the **Production Stack** (currently stable and in use).
+
 ## Related Source Directories
 - `ttttt/cloud-saas/app/services/scheduler_service.py`
 - `ttttt/cloud-saas/app/services/scoring_policy.py`
