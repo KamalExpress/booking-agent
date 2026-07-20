@@ -64,3 +64,8 @@ accounts.json
 settings.json
 *.log
 *.env
+
+# NodeJS & Playwright
+node_modules/
+test-results/
+playwright-report/
