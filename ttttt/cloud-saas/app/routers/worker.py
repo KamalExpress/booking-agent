@@ -45,6 +45,8 @@ class RegisterRequest(BaseModel):
     python_version: Optional[str] = None
     max_concurrency: Optional[int] = 1
     labels: Dict[str, str] = {} # e.g. {"system.os": "windows"}
+    can_scrape: bool = True
+    can_book: bool = False
 
 class RegisterResponse(BaseModel):
     worker_id: str
@@ -187,7 +189,71 @@ def get_next_assignment(
         response.headers["Retry-After"] = "30"
         return
         
-    return next_lease
+    # Serialize Lease
+    from app.models import Assignment, PortalAccount, BookingTask, Proxy, Applicant
+    
+    # Common account info
+    acc = db.query(PortalAccount).filter(PortalAccount.id == next_lease.portal_account_id).first()
+    proxy = db.query(Proxy).filter(Proxy.id == next_lease.proxy_id).first() if next_lease.proxy_id else None
+    
+    # We provide a unified account struct that merging the Proxy model string 
+    proxy_string = proxy.proxy_string if proxy else acc.proxy_string if acc else None
+    account_info = {
+        "id": acc.id if acc else 0,
+        "username": acc.username if acc else "",
+        "password": acc.password if acc else "",
+        "proxy_string": proxy_string,
+        "proxy_mode": acc.proxy_mode if acc else ""
+    }
+    
+    res_dict = {
+        "lease_id": next_lease.id,
+        "scraper_account": account_info,
+        "expiry": next_lease.expires_at.isoformat(),
+        "heartbeat_interval": 30 # default
+    }
+    
+    if next_lease.assignment_id:
+        asm = db.query(Assignment).filter(Assignment.id == next_lease.assignment_id).first()
+        res_dict["assignment_context"] = {
+            "id": asm.id,
+            "visa_center": asm.visa_center,
+            "date_from": asm.date_from,
+            "date_to": asm.date_to
+        }
+        
+    elif next_lease.booking_task_id:
+        task = db.query(BookingTask).filter(BookingTask.id == next_lease.booking_task_id).first()
+        applicant = db.query(Applicant).filter(Applicant.id == task.applicant_id).first() if task.applicant_id else None
+        
+        # Serialize applicant data if any
+        app_data = {}
+        if applicant:
+            app_data = {
+                "id": applicant.id,
+                "email": applicant.email,
+                "phone_number": applicant.phone_number,
+                "phone_prefix_id": applicant.phone_prefix,
+                "surname": applicant.surname,
+                "firstname": applicant.firstname,
+                "dateofbirth": applicant.dateofbirth,
+                "passportnumber": applicant.passportnumber,
+                "passport_expiry": applicant.passport_expiry,
+                "gender_id": applicant.gender,
+                "nationality_id": applicant.nationality,
+                "slot_id": task.slot_payload.get("id") if task.slot_payload else None
+            }
+            
+        res_dict["booking_task_context"] = {
+            "id": task.id,
+            "visa_center": task.visa_center,
+            "target_date": task.target_date,
+            "target_time": task.target_time,
+            "slot_payload": task.slot_payload,
+            "applicant_data": app_data
+        }
+
+    return res_dict
 
 @router.post("/assignments/{assignment_id}/complete")
 def complete_assignment(
@@ -369,7 +435,7 @@ def submit_logs(
     return {"status": "ok"}
 
 @router.post("/api/v1/worker/worker-logs")
-def receive_worker_logs(req: dict, worker: WorkerNode = Depends(require_worker), db: Session = Depends(get_db)):
+def receive_worker_logs(req: dict, worker: WorkerNode = Depends(verify_worker_hmac), db: Session = Depends(get_db)):
     # Safely handle potential massive logs
     logs = req.get("payload", [])
     if len(str(logs)) > 1024 * 1024:
@@ -378,7 +444,7 @@ def receive_worker_logs(req: dict, worker: WorkerNode = Depends(require_worker),
     return {"status": "success"}
 
 @router.get("/api/v1/worker/booking-tasks/{task_id}/otp")
-def get_task_otp(task_id: int, worker: WorkerNode = Depends(require_worker), db: Session = Depends(get_db)):
+def get_task_otp(task_id: int, worker: WorkerNode = Depends(verify_worker_hmac), db: Session = Depends(get_db)):
     task = db.query(BookingTask).filter(BookingTask.id == task_id).first()
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
