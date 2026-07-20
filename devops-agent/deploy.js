@@ -37,7 +37,6 @@ async function deployStack() {
     if (await redeployBtn.count() === 0) {
       console.error('ERROR: Could not find the "Pull and redeploy" or "Update the stack" button. Please check the URL and ensure you are on the Stack details page.');
       await page.close();
-      browser.disconnect();
       process.exit(1);
     }
 
@@ -57,8 +56,8 @@ async function deployStack() {
     
     // Wait for a success notification from Portainer
     // Portainer uses toast-notifications, usually with text "Success" or "Stack successfully deployed"
-    const successToast = page.locator('div.toast-success, div:has-text("Stack successfully updated"), div:has-text("Stack successfully deployed")');
-    await expect(successToast).toBeVisible({ timeout: 120000 }).catch(() => {
+    const successToast = page.locator('div.toast-success, div:has-text("Stack successfully updated"), div:has-text("Stack successfully deployed")').first();
+    await successToast.waitFor({ state: 'visible', timeout: 120000 }).catch(() => {
         console.log('Did not see success toast, but waiting a bit just in case.');
     });
     
@@ -68,7 +67,7 @@ async function deployStack() {
     console.log('✅ Deployment triggered and completed successfully!');
 
     await page.close();
-    await browser.disconnect();
+    process.exit(0);
   } catch (err) {
     console.error('Deployment script failed:', err.message);
     process.exit(1);
