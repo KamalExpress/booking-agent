@@ -37,7 +37,11 @@
                         {{ client.passportnumber }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        {{ client.phone_prefix }}{{ client.phone_number }}
+                        {% if client.phone_prefix and client.phone_number and client.phone_number.startswith(client.phone_prefix) %}
+                            {{ client.phone_number }}
+                        {% else %}
+                            {{ client.phone_prefix | default('') }}{{ client.phone_number }}
+                        {% endif %}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-xs text-zinc-500">
                         {{ client.created_at | format_time(ui_timezone) }}
