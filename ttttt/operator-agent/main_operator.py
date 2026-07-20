@@ -213,20 +213,15 @@ class OperatorAgent:
                     except ImportError:
                         logging.warning("playwright_stealth not found, WAF might still detect headless.")
                 
-                # Navigate and wait for Imperva JS to execute (network idle usually signifies completion)
-                logging.info(f"Navigating to {self.base_url}/?lang=en_US to clear WAF...")
-                page.goto(f"{self.base_url}/?lang=en_US", wait_until="networkidle", timeout=30000)
+                # Navigate to the login page (without networkidle, as tracking scripts can prevent it)
+                logging.info(f"Navigating to {self.base_url}/login to clear WAF...")
+                page.goto(f"{self.base_url}/login", timeout=30000)
                 
-                # Poll for the crucial ___utmvc clearance cookie (JS challenge might take several seconds)
-                logging.info("Waiting for Imperva JS challenge to compute and set ___utmvc cookie...")
-                for _ in range(15):
-                    cookies = context.cookies()
-                    if any(c['name'] == '___utmvc' for c in cookies):
-                        logging.info("___utmvc cookie detected! Challenge solved.")
-                        break
-                    page.wait_for_timeout(1000)
-                else:
-                    logging.warning("___utmvc cookie not found after 15 seconds. Proceeding anyway, but WAF might still block.")
+                # Wait for the username input box to appear. This guarantees Imperva has fully cleared us.
+                logging.info("Waiting for Imperva JS challenge to clear and login form to render...")
+                username_selector = 'input[name="username"], input[type="email"], input[id*="user"]'
+                page.wait_for_selector(username_selector, timeout=30000)
+                logging.info("Login form detected! WAF challenge successfully bypassed.")
                 
                 # Extract and inject cookies
                 cookies = context.cookies()
