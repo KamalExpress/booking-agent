@@ -21,10 +21,19 @@ This session focused entirely on frontend user experience, PWA mobile compliance
   - Mapped tenant names onto the `/notifications` scope table by passing a `tenants_map` dictionary to the Jinja template, resolving the "Tenant #1" issue.
   - Fixed Jinja2 syntax nesting (`{% endif %}`) bugs and optimized padding (`pb-32`) to prevent the mobile nav bar from obscuring the lowest list items.
 
+- **Tenant Staff UI Workflow & Queue Management:**
+  - Designed and built the missing `/clients` and `/queue` UI interfaces.
+  - Aligned the `Applicant` data model with the UI (Name, Surname, DOB, Gender, Nationality, Passport Expiry, Phone Prefix, Phone Number, Email).
+  - Integrated a "Quick Enqueue" modal straight from the Client Directory.
+  - Successfully surfaced standard GVC `Appointment Types` (e.g. 0, 2, 5, 6, 26).
+
+- **DevOps & E2E Testing Automation:**
+  - Automated the staging stack redeployment using a Playwright/CDP script (`devops-agent/deploy.js`) that attaches to an existing authenticated Chrome session (port 9222) to bypass Cloudflare and interact with Portainer.
+  - Implemented the `keagent-e2e-tests` Playwright suite (Node.js) which successfully mapped and verified the Tenant Staff workflow endpoints.
+
 ## 2. Pending Work / Next Session Objectives
 - **BUG FIX PRIORITY:** On the PWA mobile view, the bottom navigation bar is mysteriously disappearing (or being obscured) when navigating specifically to the `/staff` tab. Investigate if the modal z-indexes or horizontal overflow of the staff table is breaking the fixed viewport.
 - **Stale Notification Cleanup:** Implement a background task (or admin trigger) to remove expired or dead Web Push subscriptions from the database to prevent noisy broadcast errors.
-- **Robust Appointment Type Support:** Expand the Assignment creation UI to support dynamic visa appointment types (e.g., Types 0, 2, 6, 26).
 - **Worker Management UI:** Refine the `/workers` dashboard to visualize worker health (Heartbeats, Scheduling State, Assignments) with greater detail.
 - **Future Sprint (Epic 5 - The Service Layer):** The backend endpoints in `cloud-saas/app/routers/worker.py` and `assignment.py` are still monolithic. Architecture dictates moving logic into `WorkerService`, `LeaseService`, and `MaintenanceService`.
 - **Future Sprint (Dual Pools):** Architect two distinct pools of workers: the **Scrapers Pool** and the **Slot Booking Pool**.

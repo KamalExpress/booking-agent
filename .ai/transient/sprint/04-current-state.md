@@ -8,6 +8,8 @@ Sprint 11 (Implementation Complete / Awaiting Verification)
 - **Level 2 (Control Plane):** Built the `POST /api/webhooks/otp` endpoint to intercept SMS from the Android gateway. Upgraded `scheduler_service.py` to auto-dispatch applicants from the waitlist upon receiving `SLOT_FOUND` events.
 - **Level 3 (Execution Plane):** Built `headless_booker.py` and unified `GVCAdapter` to log in, bypass Pre-OTP captchas, and poll the SaaS for intercepted OTPs.
 - **Level 4 (UI/UX):** Updated SaaS admin dashboards with Auto-Scaling Metrics (capacity ratio).
+- **Level 5 (DevOps & Testing):** Created a Playwright E2E testing suite (`keagent-e2e-tests`) mapped to tenant workflows. Implemented a CDP-based `devops-agent` to automatically pull and redeploy Portainer stacks on the VPS, bypassing Cloudflare.
+- **Tenant Staff Workflows:** Completed UI endpoints `/clients` and `/queue`, "Quick Enqueue" operations, aligned `Applicant` schema inputs, and integrated dynamic `Appointment Type` support (e.g., 26, 0, 2, 5, 6).
 
 ## In-Progress Work
 - **Regression Testing & Verification:** Currently testing all workflows on the staging environment.
