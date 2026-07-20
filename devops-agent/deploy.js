@@ -43,13 +43,13 @@ async function deployStack() {
     console.log('Clicking redeploy button...');
     await redeployBtn.click();
 
-    // If it's manual update, there might be a confirmation modal
-    if (!isGit) {
-      // Look for confirm button if manual update
-      const confirmBtn = page.locator('button:has-text("Update")').last();
-      if (await confirmBtn.isVisible()) {
-        await confirmBtn.click();
-      }
+    // Portainer often shows a confirmation modal
+    await page.waitForTimeout(1000);
+    
+    const confirmBtn = page.locator('.modal-dialog button.btn-primary, .bootbox-accept, button:has-text("Update")').last();
+    if (await confirmBtn.isVisible()) {
+      console.log('Confirmation modal detected, clicking confirm...');
+      await confirmBtn.click();
     }
 
     console.log('Waiting for deployment to finish (this may take up to 2 minutes)...');
