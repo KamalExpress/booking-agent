@@ -54,7 +54,7 @@ async def inbox_page(request: Request, db: Session = Depends(get_db)):
     if user.role == RoleEnum.SUPER_ADMIN:
         tenants = db.query(Tenant).all()
         
-    return templates.TemplateResponse("inbox.html", {
+    return templates.TemplateResponse(request=request, name="inbox.html", context={
         "request": request, 
         "user": user, 
         "messages": messages,
