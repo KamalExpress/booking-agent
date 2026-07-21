@@ -3,7 +3,7 @@ import enum
 from datetime import datetime, timedelta, timezone
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, DateTime, ForeignKey, Enum, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.orm import declarative_base, sessionmaker, relationship
+from sqlalchemy.orm import declarative_base, sessionmaker, relationship, backref
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/booking_saas")
 
@@ -83,6 +83,10 @@ class InboxMessage(Base):
     __tablename__ = "inbox_messages"
     id = Column(Integer, primary_key=True, index=True)
     tenant_id = Column(Integer, ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False)
+    sender_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    parent_id = Column(Integer, ForeignKey("inbox_messages.id", ondelete="CASCADE"), nullable=True)
+    
+    is_system_alert = Column(Boolean, default=False)
     severity = Column(String, default="info") # info, warning, error, success
     title = Column(String, nullable=False)
     body = Column(String, nullable=False)
@@ -90,6 +94,8 @@ class InboxMessage(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     
     tenant = relationship("Tenant")
+    sender = relationship("User")
+    replies = relationship("InboxMessage", backref=backref('parent', remote_side=[id]), cascade="all, delete-orphan")
 
 class Applicant(Base):
     __tablename__ = "applicants"

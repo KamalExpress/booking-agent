@@ -22,6 +22,10 @@ This index maps high-level architectural concepts to their actual source code lo
 - **Documentation:** `.ai/permanent/architecture/02-database.md`
 - **Related ADRs:** `ADR-002 EventLog Telemetry`
 
+### 4. Frontend UI / Dashboard (PWA)
+- **Implementation:** `ttttt/cloud-saas/static/` (Unified SaaS Admin & Tenant Dashboard)
+- **Note:** The frontend is a Progressive Web App (PWA) embedded directly within the SaaS backend repository. There is no separate frontend repo.
+
 ---
 
 ## Worker Node (Execution Plane)
@@ -44,4 +48,13 @@ This index maps high-level architectural concepts to their actual source code lo
 - **Lessons:** `.ai/lessons/imperva-tls-fingerprint.md`
 
 ---
-*Last Reviewed: Sprint 10 | Implementation Verified: YES | Owner: Knowledge Manager | Confidence: High*
+
+## Testing & Automation
+
+### 7. End-to-End (E2E) Testing
+- **Implementation:** `testing-procedure/keagent-e2e-tests/`
+- **Documentation:** `.ai/transient/sprint/05-e2e-coverage.md`
+- **Note:** Uses Playwright for tenant workflow testing and background verification.
+
+---
+*Last Reviewed: Sprint 11 | Implementation Verified: YES | Owner: Knowledge Manager | Confidence: High*

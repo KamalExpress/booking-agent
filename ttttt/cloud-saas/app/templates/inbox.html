@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% set active_page = "inbox" %}
+
+{% block content %}
+<header class="flex justify-between items-center mb-8">
+    <div>
+        <h1 class="text-2xl font-semibold tracking-tight">Inbox</h1>
+        <p class="text-sm text-muted-foreground mt-1">System Notifications and Direct Messages</p>
+    </div>
+    {% if user.role.value == 'SUPER_ADMIN' %}
+    <button class="btn btn-primary shadow-sm" onclick="document.getElementById('composeModal').classList.remove('hidden')">
+        <i data-lucide="pen-square" class="w-4 h-4 mr-2"></i> Compose
+    </button>
+    {% endif %}
+</header>
+
+{% if user.role.value == 'SUPER_ADMIN' %}
+<!-- Compose Modal -->
+<div id="composeModal" class="hidden fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div class="bg-card border border-border w-full max-w-md rounded-xl shadow-xl overflow-hidden">
+        <div class="px-6 py-4 border-b border-border flex justify-between items-center bg-muted/30">
+            <h3 class="font-semibold text-lg">Send Message to Tenant</h3>
+            <button class="text-muted-foreground hover:text-foreground transition-colors" onclick="document.getElementById('composeModal').classList.add('hidden')">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <form onsubmit="sendMessage(event)" class="p-6">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Select Tenant</label>
+                    <select id="composeTenant" class="input" required>
+                        <option value="" disabled selected>-- Select Tenant --</option>
+                        {% for t in tenants %}
+                        <option value="{{ t.id }}">{{ t.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Subject</label>
+                    <input type="text" id="composeSubject" class="input" placeholder="Message Subject" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Message</label>
+                    <textarea id="composeBody" class="input h-32 py-2" placeholder="Write your message here..." required></textarea>
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 mt-6">
+                <button type="button" class="btn btn-secondary border border-border" onclick="document.getElementById('composeModal').classList.add('hidden')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Send Message</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<div class="space-y-6">
+    {% for msg in messages %}
+    <div class="card p-6 {% if not msg.is_read %}border-l-4 border-l-blue-500{% endif %}" id="msg-{{ msg.id }}">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <h3 class="text-lg font-semibold flex items-center gap-2">
+                    {{ msg.title }}
+                    {% if msg.is_system_alert %}
+                        <span class="inline-flex items-center rounded-md bg-amber-400/10 px-2 py-1 text-[10px] font-medium text-amber-500 ring-1 ring-inset ring-amber-400/20">System Alert</span>
+                    {% endif %}
+                </h3>
+                <p class="text-sm text-muted-foreground">
+                    {{ msg.created_at | format_time(ui_timezone, '%Y-%m-%d %H:%M') if msg.created_at else '-' }}
+                    {% if user.role.value == 'SUPER_ADMIN' and msg.tenant %}
+                        • Tenant: {{ msg.tenant.name }}
+                    {% endif %}
+                </p>
+            </div>
+            {% if not msg.is_read %}
+            <button onclick="markRead({{ msg.id }})" class="text-xs text-blue-400 hover:text-blue-300 transition-colors underline">Mark as read</button>
+            {% endif %}
+        </div>
+        
+        <div class="prose prose-invert max-w-none text-sm text-zinc-300 mb-6 bg-muted/20 p-4 rounded-md border border-border">
+            {{ msg.body | replace('\n', '<br>') | safe }}
+        </div>
+
+        {% if msg.replies|length > 0 %}
+        <div class="ml-8 space-y-4 mb-6 border-l-2 border-border pl-4">
+            <h4 class="text-sm font-medium text-zinc-400">Replies</h4>
+            {% for reply in msg.replies %}
+            <div class="bg-muted/10 p-4 rounded-md border border-border/50">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs text-zinc-400 font-medium">{% if reply.sender_id == user.id %}You{% else %}Sender{% endif %}</span>
+                    <span class="text-[10px] text-zinc-500">{{ reply.created_at | format_time(ui_timezone, '%Y-%m-%d %H:%M') if reply.created_at else '-' }}</span>
+                </div>
+                <div class="text-sm text-zinc-300">
+                    {{ reply.body | replace('\n', '<br>') | safe }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if not msg.is_system_alert %}
+        <div class="mt-4 pt-4 border-t border-border">
+            <form onsubmit="replyMessage(event, {{ msg.id }})" class="flex gap-2">
+                <input type="text" id="replyBody-{{ msg.id }}" class="input flex-1" placeholder="Write a reply..." required>
+                <button type="submit" class="btn btn-secondary border border-border shrink-0">
+                    <i data-lucide="send" class="w-4 h-4 mr-2"></i> Reply
+                </button>
+            </form>
+        </div>
+        {% else %}
+        <div class="mt-4 pt-4 border-t border-border">
+            <p class="text-xs text-zinc-500 italic flex items-center gap-1">
+                <i data-lucide="info" class="w-3 h-3"></i> Replies are disabled for autogenerated system alerts.
+            </p>
+        </div>
+        {% endif %}
+    </div>
+    {% else %}
+    <div class="text-center p-12 card border border-dashed border-border">
+        <i data-lucide="inbox" class="w-12 h-12 text-zinc-600 mx-auto mb-4"></i>
+        <h3 class="text-lg font-medium">No messages</h3>
+        <p class="text-sm text-zinc-400 mt-1">Your inbox is empty.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    lucide.createIcons();
+    
+    async function sendMessage(e) {
+        e.preventDefault();
+        const tenant_id = document.getElementById('composeTenant').value;
+        const title = document.getElementById('composeSubject').value;
+        const body = document.getElementById('composeBody').value;
+        
+        try {
+            const res = await fetch('/api/inbox/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tenant_id: parseInt(tenant_id), title, body })
+            });
+            if (res.ok) {
+                window.location.reload();
+            } else {
+                const data = await res.json();
+                alert(data.detail || "Failed to send message");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Error sending message");
+        }
+    }
+
+    async function replyMessage(e, messageId) {
+        e.preventDefault();
+        const input = document.getElementById(`replyBody-${messageId}`);
+        const body = input.value;
+        
+        try {
+            const res = await fetch(`/api/inbox/${messageId}/reply`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ body })
+            });
+            if (res.ok) {
+                window.location.reload();
+            } else {
+                const data = await res.json();
+                alert(data.detail || "Failed to reply");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Error replying to message");
+        }
+    }
+
+    async function markRead(messageId) {
+        try {
+            const res = await fetch(`/api/inbox/${messageId}/read`, {
+                method: 'PUT'
+            });
+            if (res.ok) {
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+</script>
+{% endblock %}
