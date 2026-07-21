@@ -171,6 +171,31 @@ class LeaseService:
             
         self.db.commit()
 
+    def fail_lease(self, worker_id: str, assignment_id: int):
+        lease = self.db.query(Lease).filter(
+            Lease.assignment_id == assignment_id, 
+            Lease.worker_id == worker_id,
+            Lease.status.in_(["Leased", "Running"])
+        ).first()
+        if lease:
+            lease.status = "Failed"
+            log = EventLog(
+                source="lease_service",
+                worker_id=worker_id,
+                assignment_id=assignment_id,
+                severity="error",
+                event_type="LEASE_FAILED",
+                payload={}
+            )
+            self.db.add(log)
+            
+        assignment = self.db.query(Assignment).filter(Assignment.id == assignment_id).first()
+        if assignment:
+            assignment.status = "Active"
+            assignment.last_checked = datetime.utcnow()
+            
+        self.db.commit()
+
     def cancel_active_leases(self, assignment_ids: List[int]):
         leases = self.db.query(Lease).filter(
             Lease.assignment_id.in_(assignment_ids),

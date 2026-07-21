@@ -139,6 +139,14 @@ class SaaSClient:
                         if data.get("refresh_runtime_config"):
                             logging.info("SaaS requested runtime config refresh")
                             self.get_runtime_config(force=True)
+                    elif res and res.status_code == 401:
+                        logging.warning("Heartbeat failed with 401 Unauthorized. Worker missing in SaaS. Re-registering...")
+                        self.worker_id = None
+                        self.secret = None
+                        cred_path = "data/worker_creds.txt" if os.path.exists("data") else "worker_creds.txt"
+                        if os.path.exists(cred_path):
+                            os.remove(cred_path)
+                        self.register()
                     else:
                         logging.warning("Heartbeat failed")
                 except Exception as e:
@@ -191,6 +199,13 @@ class SaaSClient:
         
     def complete_assignment(self, assignment_id: int):
         self._request("POST", f"/api/v1/worker/assignments/{assignment_id}/complete")
+
+    def report_lease_result(self, assignment_id: int, status: str, reason: str = ""):
+        self.log_event(assignment_id, "LEASE_RESULT", "info" if status == "COMPLETED" else "error", {"status": status, "reason": reason})
+        if status == "FAILED":
+            self._request("POST", f"/api/v1/worker/assignments/{assignment_id}/fail")
+        else:
+            self.complete_assignment(assignment_id)
 
     def stream_logs(self, log_lines: list):
         if not log_lines:

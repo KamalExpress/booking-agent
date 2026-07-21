@@ -20,6 +20,14 @@
         <form action="/assignments/create" method="POST" class="space-y-4">
 
             <div>
+                <label class="block text-sm font-medium mb-1">Provider</label>
+                <select name="provider" class="input">
+                    <option value="VFS">VFS</option>
+                    <option value="GVC">GVC</option>
+                    <option value="BLS">BLS</option>
+                </select>
+            </div>
+            <div>
                 <label class="block text-sm font-medium mb-1">Target Start Date</label>
                 <input type="text" name="target_start_date" class="input" placeholder="DD/MM/YYYY" pattern="\d{2}/\d{2}/\d{4}" title="Format: DD/MM/YYYY" required>
             </div>

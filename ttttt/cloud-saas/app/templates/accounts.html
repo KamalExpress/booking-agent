@@ -19,6 +19,14 @@
         <h3 class="text-xl font-bold mb-4 tracking-tight">Add Portal Account</h3>
         <form action="/accounts/create" method="POST" class="space-y-4">
             <div>
+                <label class="block text-sm font-medium mb-1">Provider</label>
+                <select name="provider" class="input">
+                    <option value="VFS">VFS</option>
+                    <option value="GVC">GVC</option>
+                    <option value="BLS">BLS</option>
+                </select>
+            </div>
+            <div>
                 <label class="block text-sm font-medium mb-1">Username (Email)</label>
                 <input type="email" name="username" class="input" required>
             </div>

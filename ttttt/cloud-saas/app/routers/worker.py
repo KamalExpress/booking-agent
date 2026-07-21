@@ -264,6 +264,15 @@ def complete_assignment(
     lease_service.complete_lease(worker.worker_id, assignment_id)
     return {"status": "ok"}
 
+@router.post("/assignments/{assignment_id}/fail")
+def fail_assignment(
+    assignment_id: int,
+    worker: WorkerNode = Depends(verify_worker_hmac),
+    lease_service: LeaseService = Depends(get_lease_service)
+):
+    lease_service.fail_lease(worker.worker_id, assignment_id)
+    return {"status": "ok"}
+
 @router.post("/stream-logs")
 def stream_logs(
     req: StreamLogsRequest,

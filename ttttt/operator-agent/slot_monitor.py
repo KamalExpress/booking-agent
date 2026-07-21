@@ -102,6 +102,7 @@ class SlotMonitorEngine(threading.Thread):
                 if not login_success:
                     self.api.log_event(assignment_id, "LOGIN_FAILED", "error", {"username": account["username"]})
                     logging.error("Login failed. Discarding assignment lease.")
+                    self.api.report_lease_result(assignment_id, "FAILED", "Login failed")
                     # Sleep briefly and then continue to fetch another
                     self._stop_event.wait(5)
                     continue
@@ -169,6 +170,8 @@ class SlotMonitorEngine(threading.Thread):
                 try:
                     # assignment_id might not be bound if exception happened early, default to None
                     a_id = locals().get('assignment_id', None)
+                    if a_id:
+                        self.api.report_lease_result(a_id, "FAILED", str(e))
                     self.api.log_event(a_id, "WORKER_ERROR", "error", {"error": str(e), "traceback": "Check local worker logs for full trace."})
                 except Exception as log_e:
                     logging.error(f"Failed to push error log to SaaS: {log_e}")
@@ -186,9 +189,9 @@ class SlotMonitorEngine(threading.Thread):
                             logging.error(f"Failed to transmit network logs to SaaS: {log_e}")
                 
                 # If we completed the assignment, mark it complete and wait a tiny bit
-                if 'assignment_id' in locals() and assignment_id:
+                if 'assignment_id' in locals() and assignment_id and 'e' not in locals() and locals().get('login_success', False):
                     try:
-                        self.api.complete_assignment(assignment_id)
+                        self.api.report_lease_result(assignment_id, "COMPLETED")
                     except Exception as comp_e:
                         logging.error(f"Failed to complete assignment: {comp_e}")
                         

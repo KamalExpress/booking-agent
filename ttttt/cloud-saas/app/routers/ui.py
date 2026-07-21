@@ -474,6 +474,7 @@ async def assignments_page(request: Request, db: Session = Depends(get_db)):
 @router.post("/assignments/create")
 async def create_assignment(
     request: Request,
+    provider: str = Form("VFS"),
     target_start_date: str = Form(...),
     target_end_date: str = Form(...),
     visa_center: list[str] = Form(...),
@@ -500,6 +501,7 @@ async def create_assignment(
         vc_string = ",".join(visa_center)
         
         new_assignment = Assignment(
+            provider=provider,
             date_from=start_date.strftime('%d/%m/%Y'),
             date_to=end_date.strftime('%d/%m/%Y'),
             visa_center=vc_string,
@@ -664,6 +666,7 @@ async def accounts_page(request: Request, db: Session = Depends(get_db)):
 @router.post("/accounts/create")
 async def create_account(
     request: Request,
+    provider: str = Form("VFS"),
     username: str = Form(...),
     password: str = Form(...),
     supports_scraping: bool = Form(False),
@@ -674,6 +677,7 @@ async def create_account(
     if not user or user.role != RoleEnum.SUPER_ADMIN:
         return RedirectResponse(url="/", status_code=303)
     new_account = PortalAccount(
+        provider=provider,
         username=username,
         password=password,
         supports_scraping=supports_scraping,
@@ -752,7 +756,7 @@ async def create_proxies(
     if not user or user.role != RoleEnum.SUPER_ADMIN:
         return RedirectResponse(url="/", status_code=303)
         
-    lines = proxies_text.strip().split("\\n")
+    lines = proxies_text.strip().replace("\r", "").split("\n")
     for line in lines:
         line = line.strip()
         if not line: continue
