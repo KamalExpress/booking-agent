@@ -64,7 +64,7 @@ async def inbox_page(request: Request, db: Session = Depends(get_db)):
 
 # --- API Routes ---
 @router.post("/api/inbox/send")
-def send_message(req: SendMessageRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def send_message(req: SendMessageRequest, current_user: User = Depends(get_current_user_from_cookie), db: Session = Depends(get_db)):
     if current_user.role != RoleEnum.SUPER_ADMIN and req.tenant_id != current_user.tenant_id:
         raise HTTPException(status_code=403, detail="Cannot send message to another tenant")
         
@@ -81,7 +81,7 @@ def send_message(req: SendMessageRequest, current_user: User = Depends(get_curre
     return {"status": "success", "message_id": msg.id}
 
 @router.post("/api/inbox/{message_id}/reply")
-def reply_message(message_id: int, req: ReplyMessageRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def reply_message(message_id: int, req: ReplyMessageRequest, current_user: User = Depends(get_current_user_from_cookie), db: Session = Depends(get_db)):
     parent_msg = db.query(InboxMessage).filter(InboxMessage.id == message_id).first()
     if not parent_msg:
         raise HTTPException(status_code=404, detail="Message not found")
@@ -106,7 +106,7 @@ def reply_message(message_id: int, req: ReplyMessageRequest, current_user: User 
     return {"status": "success", "reply_id": reply.id}
 
 @router.put("/api/inbox/{message_id}/read")
-def mark_read(message_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def mark_read(message_id: int, current_user: User = Depends(get_current_user_from_cookie), db: Session = Depends(get_db)):
     msg = db.query(InboxMessage).filter(InboxMessage.id == message_id).first()
     if not msg:
         raise HTTPException(status_code=404, detail="Message not found")
