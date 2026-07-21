@@ -349,7 +349,6 @@ def submit_logs(
                 slot_count = len(slots)
                 if slots and "starttime" in slots[0]:
                     try:
-                        from datetime import datetime
                         time_obj = datetime.strptime(slots[0]['starttime'], "%H:%M")
                         start_time_str = f" at {time_obj.strftime('%I:%M %p')}"
                     except:
