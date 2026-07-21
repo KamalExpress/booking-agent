@@ -271,7 +271,7 @@
             <div class="flex items-center gap-2">
                 <h1 class="text-lg font-bold tracking-tight">{{ branding.brand_name | default('Alamia Automation') }}</h1>
             </div>
-            {% if user and user.role.value == 'SUPER_ADMIN' %}
+            {% if user %}
             <button id="mobileMenuBtn" class="p-2 text-zinc-400 hover:text-white rounded-md">
                 <i data-lucide="menu" class="w-6 h-6"></i>
             </button>
@@ -286,23 +286,19 @@
         
         {% if user and user.role.value != 'SUPER_ADMIN' %}
         <!-- Tenant Mobile Bottom Navigation -->
-        <div class="md:hidden fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur-md border-t border-[#27272a] z-50" style="padding-bottom: env(safe-area-inset-bottom);">
+        <div class="md:hidden fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-md border-t border-[#27272a] z-50" style="padding-bottom: env(safe-area-inset-bottom);">
             <div class="flex items-center justify-around px-2 py-1">
                 <a href="/" class="flex flex-col items-center p-2 {% if active_page == 'overview' %}text-indigo-400{% else %}text-zinc-500 hover:text-zinc-300{% endif %} transition-colors">
                     <i data-lucide="home" class="w-5 h-5 mb-0.5"></i>
                     <span class="text-[10px] font-medium">Home</span>
                 </a>
-                <a href="/booking-tasks" class="flex flex-col items-center p-2 {% if active_page == 'booking_tasks' %}text-indigo-400{% else %}text-zinc-500 hover:text-zinc-300{% endif %} transition-colors">
-                    <i data-lucide="calendar-check" class="w-5 h-5 mb-0.5"></i>
-                    <span class="text-[10px] font-medium">Bookings</span>
+                <a href="/clients" class="flex flex-col items-center p-2 {% if active_page == 'clients' %}text-indigo-400{% else %}text-zinc-500 hover:text-zinc-300{% endif %} transition-colors">
+                    <i data-lucide="contact" class="w-5 h-5 mb-0.5"></i>
+                    <span class="text-[10px] font-medium">Clients</span>
                 </a>
-                <a href="/notifications" class="flex flex-col items-center p-2 {% if active_page == 'notifications' %}text-indigo-400{% else %}text-zinc-500 hover:text-zinc-300{% endif %} transition-colors">
-                    <i data-lucide="bell" class="w-5 h-5 mb-0.5"></i>
-                    <span class="text-[10px] font-medium">Alerts</span>
-                </a>
-                <a href="/staff" class="flex flex-col items-center p-2 {% if active_page == 'staff' %}text-indigo-400{% else %}text-zinc-500 hover:text-zinc-300{% endif %} transition-colors">
-                    <i data-lucide="users" class="w-5 h-5 mb-0.5"></i>
-                    <span class="text-[10px] font-medium">Staff</span>
+                <a href="/inbox" class="flex flex-col items-center p-2 {% if active_page == 'inbox' %}text-indigo-400{% else %}text-zinc-500 hover:text-zinc-300{% endif %} transition-colors">
+                    <i data-lucide="inbox" class="w-5 h-5 mb-0.5"></i>
+                    <span class="text-[10px] font-medium">Inbox</span>
                 </a>
             </div>
         </div>
