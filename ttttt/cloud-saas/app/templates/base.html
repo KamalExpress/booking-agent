@@ -2,7 +2,7 @@
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>{% block title %}{{ env_branding.title_prefix }}{{ branding.brand_name | default('Alamia Automation') }}{% endblock %}</title>
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="{{ env_branding.theme_color }}">
@@ -277,7 +277,7 @@
         {% endif %}
         
         <!-- Mobile Header -->
-        <div class="md:hidden sticky top-0 flex-none flex items-center justify-between p-4 border-b border-[#27272a] bg-[#09090b]/90 backdrop-blur-md w-full z-20">
+        <div class="md:hidden sticky top-0 flex-none flex items-center justify-between px-4 pb-4 border-b border-[#27272a] bg-[#09090b]/90 backdrop-blur-md w-full z-20" style="padding-top: max(1rem, env(safe-area-inset-top));">
             <div class="flex items-center gap-2">
                 <h1 class="text-lg font-bold tracking-tight">{{ branding.brand_name | default('Alamia Automation') }}</h1>
             </div>
