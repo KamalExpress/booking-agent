@@ -144,6 +144,54 @@
                     </label>
                 </div>
                 
+                <div class="border-t border-zinc-800 pt-4 mt-4 space-y-3">
+                    <label class="block text-sm font-medium text-zinc-300 mb-2">PWA Navigation (Menu Permissions)</label>
+                    <p class="text-xs text-zinc-500 mb-4">Control which sections are visible to Tenant Admins vs Staff. Home, Inbox, Client Directory, and Push History are always visible.</p>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Tenant Admin Column -->
+                        <div class="space-y-3 bg-zinc-900/30 p-3 rounded-lg border border-zinc-800/50">
+                            <h5 class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Tenant Admin</h5>
+                            
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <span class="text-xs text-zinc-300">Queue Management</span>
+                                <input type="checkbox" name="nav_admin_queue" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if settings.get('nav.admin.show_queue') and settings.get('nav.admin.show_queue').value == 'true' %}checked{% endif %}>
+                            </label>
+                            
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <span class="text-xs text-zinc-300">Bookings</span>
+                                <input type="checkbox" name="nav_admin_bookings" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if settings.get('nav.admin.show_bookings') and settings.get('nav.admin.show_bookings').value == 'true' %}checked{% endif %}>
+                            </label>
+
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <span class="text-xs text-zinc-300">Staff Management</span>
+                                <input type="checkbox" name="nav_admin_staff" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if settings.get('nav.admin.show_staff') and settings.get('nav.admin.show_staff').value == 'true' %}checked{% endif %}>
+                            </label>
+                        </div>
+                        
+                        <!-- Staff Column -->
+                        <div class="space-y-3 bg-zinc-900/30 p-3 rounded-lg border border-zinc-800/50">
+                            <h5 class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Staff</h5>
+                            
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <span class="text-xs text-zinc-300">Queue Management</span>
+                                <input type="checkbox" name="nav_staff_queue" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if settings.get('nav.staff.show_queue') and settings.get('nav.staff.show_queue').value == 'true' %}checked{% endif %}>
+                            </label>
+                            
+                            <label class="flex items-center justify-between cursor-pointer opacity-50 cursor-not-allowed" title="Staff cannot manage Bookings or Staff">
+                                <span class="text-xs text-zinc-300">Bookings (Admin only)</span>
+                                <input type="checkbox" disabled class="rounded bg-black border-zinc-800">
+                            </label>
+
+                            <label class="flex items-center justify-between cursor-pointer opacity-50 cursor-not-allowed" title="Staff cannot manage Staff">
+                                <span class="text-xs text-zinc-300">Staff Mgmt (Admin only)</span>
+                                <input type="checkbox" disabled class="rounded bg-black border-zinc-800">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                
                 <div class="pt-4 mt-auto">
                     <button type="submit" class="w-full inline-flex justify-center items-center rounded-md text-sm font-medium h-9 px-4 py-2 bg-white text-black hover:bg-zinc-200 transition-colors shadow-sm">
                         Save Global Defaults

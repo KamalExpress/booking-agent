@@ -8,14 +8,11 @@
         <h1 class="text-2xl font-semibold tracking-tight">Inbox</h1>
         <p class="text-sm text-muted-foreground mt-1">System Notifications and Direct Messages</p>
     </div>
-    {% if user.role.value == 'SUPER_ADMIN' %}
     <button class="btn btn-primary shadow-sm" onclick="document.getElementById('composeModal').classList.remove('hidden')">
         <i data-lucide="pen-square" class="w-4 h-4 mr-2"></i> Compose
     </button>
-    {% endif %}
 </header>
 
-{% if user.role.value == 'SUPER_ADMIN' %}
 <!-- Compose Modal -->
 <div id="composeModal" class="hidden fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
     <div class="bg-card border border-border w-full max-w-md rounded-xl shadow-xl overflow-hidden">
@@ -27,6 +24,7 @@
         </div>
         <form onsubmit="sendMessage(event)" class="p-6">
             <div class="space-y-4">
+                {% if user.role.value == 'SUPER_ADMIN' %}
                 <div>
                     <label class="block text-sm font-medium mb-1">Select Tenant</label>
                     <select id="composeTenant" class="input" required>
@@ -36,6 +34,9 @@
                         {% endfor %}
                     </select>
                 </div>
+                {% else %}
+                <input type="hidden" id="composeTenant" value="{{ user.tenant_id }}">
+                {% endif %}
                 <div>
                     <label class="block text-sm font-medium mb-1">Subject</label>
                     <input type="text" id="composeSubject" class="input" placeholder="Message Subject" required>
@@ -52,7 +53,6 @@
         </form>
     </div>
 </div>
-{% endif %}
 
 <div class="space-y-3">
     {% for msg in messages %}

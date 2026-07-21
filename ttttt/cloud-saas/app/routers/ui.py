@@ -1034,6 +1034,10 @@ async def update_global_settings(
     pwa_health_indicator_mode: str = Form("percentage"),
     pwa_show_live_timeline: str = Form(None),
     pwa_show_notification_status: str = Form(None),
+    nav_admin_queue: str = Form(None),
+    nav_admin_bookings: str = Form(None),
+    nav_admin_staff: str = Form(None),
+    nav_staff_queue: str = Form(None),
     db: Session = Depends(get_db)
 ):
     user = get_ui_user(request, db)
@@ -1058,6 +1062,10 @@ async def update_global_settings(
         "pwa.health_indicator_mode": pwa_health_indicator_mode,
         "pwa.show_live_timeline": "true" if pwa_show_live_timeline else "false",
         "pwa.show_notification_status": "true" if pwa_show_notification_status else "false",
+        "nav.admin.show_queue": "true" if nav_admin_queue else "false",
+        "nav.admin.show_bookings": "true" if nav_admin_bookings else "false",
+        "nav.admin.show_staff": "true" if nav_admin_staff else "false",
+        "nav.staff.show_queue": "true" if nav_staff_queue else "false",
     }
     
     for key, value in settings_to_update.items():

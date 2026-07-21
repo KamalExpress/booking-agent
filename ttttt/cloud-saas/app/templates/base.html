@@ -75,10 +75,10 @@
 <body class="flex flex-col md:flex-row min-h-[100dvh] md:h-[100dvh] md:overflow-hidden antialiased bg-[#09090b] text-[#fafafa] {{ env_branding.border_class }}">
     
     <!-- Sidebar Overlay (mobile) -->
-    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden"></div>
 
     <!-- Sidebar -->
-    <aside id="sidebar" class="fixed md:static inset-y-0 left-0 w-64 border-r border-[#27272a] bg-[#09090b] flex flex-col z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out">
+    <aside id="sidebar" class="fixed md:static inset-y-0 left-0 w-64 border-r border-[#27272a] bg-[#09090b] flex flex-col z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out">
         <div class="p-6 flex items-center justify-between">
             <div>
                 <h1 class="text-xl font-bold tracking-tight">{{ env_branding.app_name }}</h1>
@@ -105,18 +105,28 @@
             <a href="/clients" class="nav-link {% if active_page == 'clients' %}active{% endif %}">
                 <i data-lucide="contact" class="w-4 h-4"></i> Client Directory
             </a>
+            
+            {% if (user.role.value == 'TENANT_ADMIN' and settings.get('nav.admin.show_queue') and settings.get('nav.admin.show_queue').value == 'true') or (user.role.value == 'STAFF' and settings.get('nav.staff.show_queue') and settings.get('nav.staff.show_queue').value == 'true') %}
             <a href="/queue" class="nav-link {% if active_page == 'queue' %}active{% endif %}">
                 <i data-lucide="list-ordered" class="w-4 h-4"></i> Queue Management
             </a>
             {% endif %}
+            {% endif %}
 
             {% if user and user.role.value == 'TENANT_ADMIN' %}
+            
+            {% if settings.get('nav.admin.show_bookings') and settings.get('nav.admin.show_bookings').value == 'true' %}
             <a href="/booking-tasks" class="nav-link {% if active_page == 'booking_tasks' %}active{% endif %}">
                 <i data-lucide="calendar-check" class="w-4 h-4"></i> Bookings
             </a>
+            {% endif %}
+            
+            {% if settings.get('nav.admin.show_staff') and settings.get('nav.admin.show_staff').value == 'true' %}
             <a href="/staff" class="nav-link {% if active_page == 'staff' %}active{% endif %}">
                 <i data-lucide="users" class="w-4 h-4"></i> Staff Management
             </a>
+            {% endif %}
+            
             <a href="/notifications" class="nav-link {% if active_page == 'notifications' %}active{% endif %}">
                 <i data-lucide="bell" class="w-4 h-4"></i> Push History
             </a>
@@ -286,7 +296,7 @@
         
         {% if user and user.role.value != 'SUPER_ADMIN' %}
         <!-- Tenant Mobile Bottom Navigation -->
-        <div class="md:hidden fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-md border-t border-[#27272a] z-50" style="padding-bottom: env(safe-area-inset-bottom);">
+        <div class="md:hidden fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-md border-t border-[#27272a] z-30" style="padding-bottom: env(safe-area-inset-bottom);">
             <div class="flex items-center justify-around px-2 py-1">
                 <a href="/" class="flex flex-col items-center p-2 {% if active_page == 'overview' %}text-indigo-400{% else %}text-zinc-500 hover:text-zinc-300{% endif %} transition-colors">
                     <i data-lucide="home" class="w-5 h-5 mb-0.5"></i>
@@ -296,6 +306,21 @@
                     <i data-lucide="contact" class="w-5 h-5 mb-0.5"></i>
                     <span class="text-[10px] font-medium">Clients</span>
                 </a>
+                
+                {% if (user.role.value == 'TENANT_ADMIN' and settings.get('nav.admin.show_queue') and settings.get('nav.admin.show_queue').value == 'true') or (user.role.value == 'STAFF' and settings.get('nav.staff.show_queue') and settings.get('nav.staff.show_queue').value == 'true') %}
+                <a href="/queue" class="flex flex-col items-center p-2 {% if active_page == 'queue' %}text-indigo-400{% else %}text-zinc-500 hover:text-zinc-300{% endif %} transition-colors">
+                    <i data-lucide="list-ordered" class="w-5 h-5 mb-0.5"></i>
+                    <span class="text-[10px] font-medium">Queue</span>
+                </a>
+                {% endif %}
+                
+                {% if user.role.value == 'TENANT_ADMIN' and settings.get('nav.admin.show_bookings') and settings.get('nav.admin.show_bookings').value == 'true' %}
+                <a href="/booking-tasks" class="flex flex-col items-center p-2 {% if active_page == 'booking_tasks' %}text-indigo-400{% else %}text-zinc-500 hover:text-zinc-300{% endif %} transition-colors">
+                    <i data-lucide="calendar-check" class="w-5 h-5 mb-0.5"></i>
+                    <span class="text-[10px] font-medium">Bookings</span>
+                </a>
+                {% endif %}
+                
                 <a href="/inbox" class="flex flex-col items-center p-2 {% if active_page == 'inbox' %}text-indigo-400{% else %}text-zinc-500 hover:text-zinc-300{% endif %} transition-colors">
                     <i data-lucide="inbox" class="w-5 h-5 mb-0.5"></i>
                     <span class="text-[10px] font-medium">Inbox</span>
