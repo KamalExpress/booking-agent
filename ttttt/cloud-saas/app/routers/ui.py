@@ -68,6 +68,10 @@ def render_template(name: str, context: dict, db: Session):
     context["branding"] = branding
     context["env_branding"] = get_env_branding()
     
+    if "settings" not in context:
+        all_settings = db.query(SystemSetting).all()
+        context["settings"] = {s.key: s for s in all_settings}
+    
     ui_tz = db.query(SystemSetting).filter(SystemSetting.key == "ui.timezone").first()
     context["ui_timezone"] = ui_tz.value if ui_tz and ui_tz.value else "Server Time"
     
