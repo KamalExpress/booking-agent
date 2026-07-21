@@ -57,46 +57,70 @@
 <div class="space-y-6">
     {% for msg in messages %}
     <div class="card p-6 {% if not msg.is_read %}border-l-4 border-l-blue-500{% endif %}" id="msg-{{ msg.id }}">
-        <div class="flex justify-between items-start mb-4">
+        <div class="flex justify-between items-start mb-6">
             <div>
-                <h3 class="text-lg font-semibold flex items-center gap-2">
+                <h3 class="text-xl font-semibold flex items-center gap-2 text-foreground">
                     {{ msg.title }}
                     {% if msg.is_system_alert %}
                         <span class="inline-flex items-center rounded-md bg-amber-400/10 px-2 py-1 text-[10px] font-medium text-amber-500 ring-1 ring-inset ring-amber-400/20">System Alert</span>
                     {% endif %}
                 </h3>
-                <p class="text-sm text-muted-foreground">
-                    {{ msg.created_at | format_time(ui_timezone, '%Y-%m-%d %H:%M') if msg.created_at else '-' }}
+                <p class="text-xs text-muted-foreground mt-1">
+                    Started on {{ msg.created_at | format_time(ui_timezone, '%Y-%m-%d') if msg.created_at else '-' }}
                     {% if user.role.value == 'SUPER_ADMIN' and msg.tenant %}
                         • Tenant: {{ msg.tenant.name }}
                     {% endif %}
                 </p>
             </div>
             {% if not msg.is_read %}
-            <button onclick="markRead({{ msg.id }})" class="text-xs text-blue-400 hover:text-blue-300 transition-colors underline">Mark as read</button>
+            <button onclick="markRead({{ msg.id }})" class="text-xs font-medium text-primary hover:text-primary/80 transition-colors bg-primary/10 px-3 py-1.5 rounded-full">Mark as read</button>
             {% endif %}
         </div>
         
-        <div class="prose prose-invert max-w-none text-sm text-zinc-300 mb-6 bg-muted/20 p-4 rounded-md border border-border">
-            {{ msg.body | replace('\n', '<br>') | safe }}
-        </div>
-
-        {% if msg.replies|length > 0 %}
-        <div class="ml-8 space-y-4 mb-6 border-l-2 border-border pl-4">
-            <h4 class="text-sm font-medium text-zinc-400">Replies</h4>
-            {% for reply in msg.replies %}
-            <div class="bg-muted/10 p-4 rounded-md border border-border/50">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-xs text-zinc-400 font-medium">{% if reply.sender_id == user.id %}You{% else %}Sender{% endif %}</span>
-                    <span class="text-[10px] text-zinc-500">{{ reply.created_at | format_time(ui_timezone, '%Y-%m-%d %H:%M') if reply.created_at else '-' }}</span>
+        <!-- Conversation Thread -->
+        <div class="space-y-4 mb-6 bg-background/50 rounded-xl p-4 border border-border/50">
+            <!-- Original Message -->
+            <div class="flex flex-col {% if msg.sender_id == user.id %}items-end{% else %}items-start{% endif %}">
+                <span class="text-[11px] text-zinc-500 mb-1 ml-1 mr-1">
+                    {% if msg.is_system_alert %}System Alert{% elif msg.sender_id == user.id %}You{% else %}{{ msg.sender.username | default('Admin') }}{% endif %}
+                </span>
+                <div class="max-w-[85%] rounded-2xl px-4 py-3 text-sm 
+                    {% if msg.sender_id == user.id %}
+                        bg-primary text-primary-foreground rounded-tr-sm
+                    {% else %}
+                        bg-muted text-foreground border border-border/50 rounded-tl-sm
+                    {% endif %}">
+                    <div class="prose prose-sm max-w-none {% if msg.sender_id == user.id %}text-primary-foreground{% else %}prose-invert{% endif %}">
+                        {{ msg.body | replace('\n', '<br>') | safe }}
+                    </div>
+                    <div class="text-[10px] opacity-70 mt-1.5 text-right">
+                        {{ msg.created_at | format_time(ui_timezone, '%H:%M') if msg.created_at else '-' }}
+                    </div>
                 </div>
-                <div class="text-sm text-zinc-300">
-                    {{ reply.body | replace('\n', '<br>') | safe }}
+            </div>
+
+            <!-- Replies -->
+            {% for reply in msg.replies %}
+            <div class="flex flex-col {% if reply.sender_id == user.id %}items-end{% else %}items-start{% endif %}">
+                <span class="text-[11px] text-zinc-500 mb-1 ml-1 mr-1">
+                    {% if reply.sender_id == user.id %}You{% else %}{{ reply.sender.username | default('User') }}{% endif %}
+                </span>
+                <div class="max-w-[85%] rounded-2xl px-4 py-3 text-sm 
+                    {% if reply.sender_id == user.id %}
+                        bg-primary text-primary-foreground rounded-tr-sm
+                    {% else %}
+                        bg-muted text-foreground border border-border/50 rounded-tl-sm
+                    {% endif %}">
+                    <div class="prose prose-sm max-w-none {% if reply.sender_id == user.id %}text-primary-foreground{% else %}prose-invert{% endif %}">
+                        {{ reply.body | replace('\n', '<br>') | safe }}
+                    </div>
+                    <div class="text-[10px] opacity-70 mt-1.5 text-right">
+                        {{ reply.created_at | format_time(ui_timezone, '%H:%M') if reply.created_at else '-' }}
+                    </div>
                 </div>
             </div>
             {% endfor %}
         </div>
-        {% endif %}
 
         {% if not msg.is_system_alert %}
         <div class="mt-4 pt-4 border-t border-border">
