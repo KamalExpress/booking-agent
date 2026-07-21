@@ -73,7 +73,7 @@
                 <!-- Content Summary -->
                 <div class="min-w-0 flex-1">
                     <div class="flex items-center justify-between mb-0.5">
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-2 min-w-0">
                             <span class="font-medium text-sm text-foreground truncate">
                                 {% if msg.is_system_alert %}
                                     System Alert
@@ -92,11 +92,8 @@
                                     <span class="text-xs text-muted-foreground ml-1">({{ msg.replies|length + 1 }})</span>
                                 {% endif %}
                             </span>
-                            {% if user.role.value == 'SUPER_ADMIN' and msg.tenant %}
-                                <span class="text-[10px] bg-muted px-1.5 py-0.5 rounded text-muted-foreground border border-border">{{ msg.tenant.name }}</span>
-                            {% endif %}
                         </div>
-                        <span class="text-xs text-muted-foreground shrink-0">{{ msg.created_at | format_time(ui_timezone, '%Y-%m-%d %H:%M') if msg.created_at else '-' }}</span>
+                        <span class="text-[10px] whitespace-nowrap text-muted-foreground shrink-0 ml-2">{{ msg.created_at | format_time(ui_timezone, '%Y-%m-%d %H:%M') if msg.created_at else '-' }}</span>
                     </div>
                     <div class="flex items-center justify-between gap-4">
                         <span class="text-sm font-medium truncate {% if msg.is_read %}text-zinc-300{% else %}text-foreground{% endif %}">{{ msg.title }}</span>
