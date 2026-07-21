@@ -54,12 +54,13 @@ async def inbox_page(request: Request, db: Session = Depends(get_db)):
     if user.role == RoleEnum.SUPER_ADMIN:
         tenants = db.query(Tenant).all()
         
-    return templates.TemplateResponse(request=request, name="inbox.html", context={
+    from routers.ui import render_template
+    return render_template("inbox.html", {
         "request": request, 
         "user": user, 
         "messages": messages,
         "tenants": tenants
-    })
+    }, db)
 
 # --- API Routes ---
 @router.post("/api/inbox/send")
