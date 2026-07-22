@@ -1,0 +1,18 @@
+# Project Brain config
+# Workflow modes:
+# - ultra-safe-manual: keep inject/review/approve/sweep fully manual
+# - recommended-semi-auto: hooks auto-detect, candidate-first, approval manual
+# - automation-first: hooks auto-detect, candidate-first, safe auto-approve enabled
+workflowMode: recommended-semi-auto
+maxInjectTokens: 1200
+# triggerMode: manual = only extract via CLI; detect = hooks/capture auto-detect
+triggerMode: detect
+# captureMode: direct = write active; candidate = write as candidate for review; reviewable = candidate + deferred merge
+captureMode: candidate
+language: en
+staleDays: 90
+sweepOnInject: false
+injectDiversity: true
+injectExplainMaxItems: 4
+autoApproveSafeCandidates: false
+# workflowSummary: Recommended semi-auto | Hooks auto-detect extraction; new memories start as candidates; approval stays human.

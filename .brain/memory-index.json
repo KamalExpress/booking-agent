@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "generated_at": "2026-07-22T09:02:43.851Z",
+  "entry_count": 1,
+  "entries": [
+    {
+      "id": "2026-07-22-lease-resource-state-management-and-task-matchin",
+      "relativePath": "gotchas/2026-07-22-lease-resource-state-management-and-task-matchin.md",
+      "title": "Lease Resource State Management and Task Matching",
+      "summary": "Leases must reset associated `PortalAccount` and `Proxy` statuses back to `\"READY\"` upon completion, failure, cancellation, or expiration.",
+      "tags": [
+        "ali raza",
+        "antigravity",
+        "gemini",
+        "gotcha",
+        "ide",
+        "users"
+      ],
+      "risk_level": "low",
+      "path_scope": [],
+      "files": [],
+      "token_size": 59,
+      "updated_at": "2026-07-22",
+      "date": "2026-07-22",
+      "type": "gotcha",
+      "status": "active",
+      "stale": false,
+      "review_state": "cleared",
+      "superseded_by": null,
+      "valid_from": "2026-07-22",
+      "valid_until": null,
+      "expires": null,
+      "source_mtime_ms": 1784710963854.602
+    }
+  ]
+}

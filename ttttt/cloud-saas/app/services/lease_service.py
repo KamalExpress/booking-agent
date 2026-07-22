@@ -1,9 +1,10 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any, List
 from fastapi import Depends
 
-from models import Lease, Assignment, PortalAccount, WorkerNode, EventLog, get_db
+from models import Lease, Assignment, PortalAccount, Proxy, WorkerNode, BookingTask, EventLog, get_db
 
 class LeaseService:
     def __init__(self, db: Session):
@@ -17,9 +18,35 @@ class LeaseService:
         ).all()
         for lease in expired_leases:
             lease.status = "Expired"
-            assignment = self.db.query(Assignment).filter(Assignment.id == lease.assignment_id).first()
-            if assignment:
-                assignment.status = "Active"
+            
+            # Reset PortalAccount status
+            if lease.portal_account_id:
+                account = self.db.query(PortalAccount).filter(PortalAccount.id == lease.portal_account_id).first()
+                if account and account.status == "LEASED":
+                    account.status = "READY"
+            
+            # Reset Proxy status
+            if lease.proxy_id:
+                proxy = self.db.query(Proxy).filter(Proxy.id == lease.proxy_id).first()
+                if proxy and proxy.status == "LEASED":
+                    proxy.status = "READY"
+                    
+            # Decrement worker concurrency
+            worker = self.db.query(WorkerNode).filter(WorkerNode.worker_id == lease.worker_id).first()
+            if worker and worker.current_concurrency > 0:
+                worker.current_concurrency -= 1
+                
+            # Handle assignment resetting if scraping lease
+            if lease.assignment_id:
+                assignment = self.db.query(Assignment).filter(Assignment.id == lease.assignment_id).first()
+                if assignment:
+                    assignment.status = "Active"
+                    
+            # Handle booking task resetting if booking lease
+            if lease.booking_task_id:
+                task = self.db.query(BookingTask).filter(BookingTask.id == lease.booking_task_id).first()
+                if task and task.status == "CLAIMED":
+                    task.status = "PENDING"
                 
             log = EventLog(
                 source="lease_service",
@@ -27,7 +54,7 @@ class LeaseService:
                 assignment_id=lease.assignment_id,
                 severity="warning",
                 event_type="LEASE_EXPIRED",
-                payload={"reason": "timeout"}
+                payload={"reason": "timeout", "booking_task_id": lease.booking_task_id} if lease.booking_task_id else {"reason": "timeout"}
             )
             self.db.add(log)
             
@@ -148,53 +175,112 @@ class LeaseService:
 
     def complete_lease(self, worker_id: str, assignment_id: int):
         lease = self.db.query(Lease).filter(
-            Lease.assignment_id == assignment_id, 
             Lease.worker_id == worker_id,
             Lease.status.in_(["Leased", "Running"])
+        ).filter(
+            (Lease.assignment_id == assignment_id) | (Lease.booking_task_id == assignment_id)
         ).first()
+        
         if lease:
             lease.status = "Completed"
+            
+            # Reset PortalAccount status
+            if lease.portal_account_id:
+                account = self.db.query(PortalAccount).filter(PortalAccount.id == lease.portal_account_id).first()
+                if account and account.status == "LEASED":
+                    account.status = "READY"
+            
+            # Reset Proxy status
+            if lease.proxy_id:
+                proxy = self.db.query(Proxy).filter(Proxy.id == lease.proxy_id).first()
+                if proxy and proxy.status == "LEASED":
+                    proxy.status = "READY"
+                    
+            # Decrement worker concurrency
+            worker = self.db.query(WorkerNode).filter(WorkerNode.worker_id == worker_id).first()
+            if worker and worker.current_concurrency > 0:
+                worker.current_concurrency -= 1
+
+            # Handle assignment resetting if scraping lease
+            if lease.assignment_id:
+                assignment = self.db.query(Assignment).filter(Assignment.id == lease.assignment_id).first()
+                if assignment:
+                    assignment.status = "Active"
+                    assignment.last_checked = datetime.utcnow()
+                    
+            # Handle booking task success if booking lease
+            if lease.booking_task_id:
+                task = self.db.query(BookingTask).filter(BookingTask.id == lease.booking_task_id).first()
+                if task:
+                    task.status = "SUCCESS"
+                    task.active_status = False
+            
             log = EventLog(
                 source="lease_service",
                 worker_id=worker_id,
-                assignment_id=assignment_id,
+                assignment_id=lease.assignment_id,
                 severity="info",
                 event_type="LEASE_COMPLETED",
-                payload={}
+                payload={"booking_task_id": lease.booking_task_id} if lease.booking_task_id else {}
             )
             self.db.add(log)
-            
-        assignment = self.db.query(Assignment).filter(Assignment.id == assignment_id).first()
-        if assignment:
-            assignment.status = "Active"
-            assignment.last_checked = datetime.utcnow()
-            
-        self.db.commit()
+            self.db.commit()
 
     def fail_lease(self, worker_id: str, assignment_id: int):
         lease = self.db.query(Lease).filter(
-            Lease.assignment_id == assignment_id, 
             Lease.worker_id == worker_id,
             Lease.status.in_(["Leased", "Running"])
+        ).filter(
+            (Lease.assignment_id == assignment_id) | (Lease.booking_task_id == assignment_id)
         ).first()
+        
         if lease:
             lease.status = "Failed"
+            
+            # Reset PortalAccount status
+            if lease.portal_account_id:
+                account = self.db.query(PortalAccount).filter(PortalAccount.id == lease.portal_account_id).first()
+                if account and account.status == "LEASED":
+                    account.status = "READY"
+            
+            # Reset Proxy status
+            if lease.proxy_id:
+                proxy = self.db.query(Proxy).filter(Proxy.id == lease.proxy_id).first()
+                if proxy and proxy.status == "LEASED":
+                    proxy.status = "READY"
+                    
+            # Decrement worker concurrency
+            worker = self.db.query(WorkerNode).filter(WorkerNode.worker_id == worker_id).first()
+            if worker and worker.current_concurrency > 0:
+                worker.current_concurrency -= 1
+
+            # Handle assignment resetting if scraping lease
+            if lease.assignment_id:
+                assignment = self.db.query(Assignment).filter(Assignment.id == lease.assignment_id).first()
+                if assignment:
+                    assignment.status = "Active"
+                    assignment.last_checked = datetime.utcnow()
+                    
+            # Handle booking task retry/failure if booking lease
+            if lease.booking_task_id:
+                task = self.db.query(BookingTask).filter(BookingTask.id == lease.booking_task_id).first()
+                if task:
+                    if task.attempts < task.max_attempts:
+                        task.status = "PENDING"
+                    else:
+                        task.status = "FAILED"
+                        task.active_status = False
+            
             log = EventLog(
                 source="lease_service",
                 worker_id=worker_id,
-                assignment_id=assignment_id,
+                assignment_id=lease.assignment_id,
                 severity="error",
                 event_type="LEASE_FAILED",
-                payload={}
+                payload={"booking_task_id": lease.booking_task_id} if lease.booking_task_id else {}
             )
             self.db.add(log)
-            
-        assignment = self.db.query(Assignment).filter(Assignment.id == assignment_id).first()
-        if assignment:
-            assignment.status = "Active"
-            assignment.last_checked = datetime.utcnow()
-            
-        self.db.commit()
+            self.db.commit()
 
     def cancel_active_leases(self, assignment_ids: List[int]):
         leases = self.db.query(Lease).filter(
@@ -203,6 +289,29 @@ class LeaseService:
         ).all()
         for lease in leases:
             lease.status = "Cancelled"
+            
+            # Reset PortalAccount status
+            if lease.portal_account_id:
+                account = self.db.query(PortalAccount).filter(PortalAccount.id == lease.portal_account_id).first()
+                if account and account.status == "LEASED":
+                    account.status = "READY"
+            
+            # Reset Proxy status
+            if lease.proxy_id:
+                proxy = self.db.query(Proxy).filter(Proxy.id == lease.proxy_id).first()
+                if proxy and proxy.status == "LEASED":
+                    proxy.status = "READY"
+                    
+            # Decrement worker concurrency
+            worker = self.db.query(WorkerNode).filter(WorkerNode.worker_id == lease.worker_id).first()
+            if worker and worker.current_concurrency > 0:
+                worker.current_concurrency -= 1
+
+            if lease.booking_task_id:
+                task = self.db.query(BookingTask).filter(BookingTask.id == lease.booking_task_id).first()
+                if task:
+                    task.status = "PENDING"
+            
             log = EventLog(
                 source="lease_service",
                 worker_id=lease.worker_id,
@@ -213,6 +322,50 @@ class LeaseService:
             )
             self.db.add(log)
         if leases:
+            self.db.commit()
+
+    def abandon_worker_leases(self, worker_id: str):
+        active_leases = self.db.query(Lease).filter(
+            Lease.worker_id == worker_id,
+            Lease.status.in_(["Leased", "Running"])
+        ).all()
+        for lease in active_leases:
+            lease.status = "Abandoned"
+            
+            # Reset PortalAccount status
+            if lease.portal_account_id:
+                account = self.db.query(PortalAccount).filter(PortalAccount.id == lease.portal_account_id).first()
+                if account and account.status == "LEASED":
+                    account.status = "READY"
+            
+            # Reset Proxy status
+            if lease.proxy_id:
+                proxy = self.db.query(Proxy).filter(Proxy.id == lease.proxy_id).first()
+                if proxy and proxy.status == "LEASED":
+                    proxy.status = "READY"
+                    
+            # Reset assignment status if scraping
+            if lease.assignment_id:
+                assignment = self.db.query(Assignment).filter(Assignment.id == lease.assignment_id).first()
+                if assignment:
+                    assignment.status = "Active"
+                    
+            # Reset booking task status if booking
+            if lease.booking_task_id:
+                task = self.db.query(BookingTask).filter(BookingTask.id == lease.booking_task_id).first()
+                if task and task.status == "CLAIMED":
+                    task.status = "PENDING"
+                    
+            log = EventLog(
+                source="lease_service",
+                worker_id=worker_id,
+                assignment_id=lease.assignment_id,
+                severity="warning",
+                event_type="LEASE_ABANDONED",
+                payload={"reason": "worker_offline", "booking_task_id": lease.booking_task_id} if lease.booking_task_id else {"reason": "worker_offline"}
+            )
+            self.db.add(log)
+        if active_leases:
             self.db.commit()
 
 def get_lease_service(db: Session = Depends(get_db)) -> LeaseService:

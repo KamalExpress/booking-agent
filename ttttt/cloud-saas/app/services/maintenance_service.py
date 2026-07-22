@@ -29,19 +29,27 @@ class MaintenanceService:
             WorkerNode.last_heartbeat < cutoff
         ).all()
         
-        for w in dead_workers:
-            w.status = "Offline"
-            # Emit EventLog
-            log = EventLog(
-                source="maintenance",
-                worker_id=w.worker_id,
-                severity="warning",
-                event_type="WORKER_OFFLINE",
-                payload={"reason": "heartbeat_timeout"}
-            )
-            self.db.add(log)
-            
         if dead_workers:
+            from services.lease_service import LeaseService
+            lease_svc = LeaseService(self.db)
+            
+            for w in dead_workers:
+                w.status = "Offline"
+                w.current_concurrency = 0
+                
+                # Abandon any active leases for this worker
+                lease_svc.abandon_worker_leases(w.worker_id)
+                
+                # Emit EventLog
+                log = EventLog(
+                    source="maintenance",
+                    worker_id=w.worker_id,
+                    severity="warning",
+                    event_type="WORKER_OFFLINE",
+                    payload={"reason": "heartbeat_timeout"}
+                )
+                self.db.add(log)
+                
             self.db.commit()
 
     def _lease_cleanup(self):

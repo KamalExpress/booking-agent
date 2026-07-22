@@ -1,0 +1,2 @@
+# Local-only session/runtime state (not shared via git)
+runtime/

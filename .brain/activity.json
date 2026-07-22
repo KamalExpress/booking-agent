@@ -1,0 +1,13 @@
+{
+  "lastInjectedAt": "2026-07-22",
+  "lastContextLoadedAt": "2026-07-22T08:51:17.268Z",
+  "lastContextSource": "route",
+  "lastSelectionContext": {
+    "task": "Fix Worker Stalling (Proxy State Leak)",
+    "paths": [
+      "devops-agent/deploy.js"
+    ],
+    "includeSessionProfile": true
+  },
+  "recentLoadedMemories": []
+}
