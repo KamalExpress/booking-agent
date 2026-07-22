@@ -28,11 +28,6 @@
         <div class="bg-[#09090b] border border-zinc-800 rounded-xl shadow-sm overflow-hidden">
             <div class="px-5 py-4 border-b border-zinc-800 bg-zinc-900/50 flex justify-between items-center">
                 <h3 class="font-medium text-zinc-100">Configuration</h3>
-                {% if account.proxy_string %}
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
-                    <i data-lucide="check" class="w-3.5 h-3.5"></i> Proxy Attached
-                </span>
-                {% endif %}
             </div>
             
             <form action="/accounts/{{ account.id }}/edit" method="POST" class="p-5 space-y-4">
@@ -45,15 +40,12 @@
                     <input type="password" name="password" value="{{ account.password }}" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500" required>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Proxy String</label>
-                    <input type="text" name="proxy_string" value="{{ account.proxy_string if account.proxy_string else '' }}" placeholder="http://user:pass@ip:port" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
-                </div>
-                <div>
                     <label class="block text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Status</label>
                     <select name="status" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
-                        <option value="Idle" {% if account.status == 'Idle' %}selected{% endif %}>Idle</option>
-                        <option value="Leased" {% if account.status == 'Leased' %}selected{% endif %}>Leased</option>
-                        <option value="Banned" {% if account.status == 'Banned' %}selected{% endif %}>Banned</option>
+                        <option value="READY" {% if account.status == 'READY' %}selected{% endif %}>READY</option>
+                        <option value="LEASED" {% if account.status == 'LEASED' %}selected{% endif %}>LEASED</option>
+                        <option value="COOLDOWN" {% if account.status == 'COOLDOWN' %}selected{% endif %}>COOLDOWN</option>
+                        <option value="DISABLED" {% if account.status == 'DISABLED' %}selected{% endif %}>DISABLED</option>
                     </select>
                 </div>
                 

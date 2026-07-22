@@ -142,6 +142,9 @@ class LeaseService:
         return self._build_lease_response(lease, best_assignment, acc)
 
     def _build_lease_response(self, lease: Lease, assignment: Assignment, acc: Optional[PortalAccount]) -> Dict[str, Any]:
+        proxy = self.db.query(Proxy).filter(Proxy.id == lease.proxy_id).first() if lease.proxy_id else None
+        proxy_string = proxy.proxy_string if proxy else None
+        
         return {
             "lease_id": lease.id,
             "assignment_context": {
@@ -151,11 +154,11 @@ class LeaseService:
                 "date_to": assignment.date_to
             },
             "scraper_account": {
-                "id": acc.id,
-                "username": acc.username,
-                "password": acc.password,
-                "proxy_string": acc.proxy_string,
-                "proxy_mode": acc.proxy_mode
+                "id": acc.id if acc else 0,
+                "username": acc.username if acc else "",
+                "password": acc.password if acc else "",
+                "proxy_string": proxy_string,
+                "proxy_mode": "POOL"
             } if acc else {},
             "expiry": lease.expires_at.isoformat(),
             "heartbeat_interval": WorkerNode.HEARTBEAT_INTERVAL_SECONDS

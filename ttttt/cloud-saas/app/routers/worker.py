@@ -197,13 +197,13 @@ def get_next_assignment(
     proxy = db.query(Proxy).filter(Proxy.id == next_lease.proxy_id).first() if next_lease.proxy_id else None
     
     # We provide a unified account struct that merging the Proxy model string 
-    proxy_string = proxy.proxy_string if proxy else acc.proxy_string if acc else None
+    proxy_string = proxy.proxy_string if proxy else None
     account_info = {
         "id": acc.id if acc else 0,
         "username": acc.username if acc else "",
         "password": acc.password if acc else "",
         "proxy_string": proxy_string,
-        "proxy_mode": acc.proxy_mode if acc else ""
+        "proxy_mode": "POOL"
     }
     
     res_dict = {
