@@ -1,0 +1,7 @@
+FROM ghcr.io/berriai/litellm:main-latest
+USER root
+RUN apk add --no-cache git
+RUN pip install "git+https://github.com/study8677/repobrain.git#subdirectory=engine"
+RUN pip install "git+https://github.com/study8677/repobrain.git#subdirectory=cli"
+WORKDIR /workspace
+ENTRYPOINT ["rb-refresh"]

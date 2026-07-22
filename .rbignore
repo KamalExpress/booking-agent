@@ -1,0 +1,32 @@
+# Virtual Environments & Packages
+venv/
+venv2/
+.venv/
+node_modules/
+vendor/
+
+# Python Cache & Bytecode
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+
+# Build & Test Artifacts
+dist/
+build/
+*.egg-info/
+playwright-report/
+test-results/
+
+# Data and Media
+*.csv
+*.json
+*.png
+*.jpg
+*.mp4
+
+# Transient logs & Scratch
+.ai/transient/scratch/
+.cache/
+data/
+artifacts/
