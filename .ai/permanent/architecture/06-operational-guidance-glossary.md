@@ -40,6 +40,7 @@ This document serves as the master dictionary for all operational events, errors
 | `LEASE_COMPLETED` | A lease was successfully finished. | The worker finished its task and reported back. | N/A | N/A |
 | `LEASE_CANCELLED` | A lease was explicitly cancelled. | An admin manually cancelled the lease via the UI, or the system paused it. | N/A | N/A |
 | `LEASE_EXPIRED` | A lease expired before completion. | The worker took too long to complete the task or died without sending a heartbeat. | Ensure worker instances have sufficient resources to complete tasks within TTL. | The task will be instantly re-queued for another worker. |
+| `LEASE_ABANDONED` | A lease was marked abandoned. | The worker died or missed heartbeats, and its active leases were forcefully reclaimed by maintenance. | Restart the worker node if it crashed, or check network connectivity. | Yes, the task is re-queued and resources are freed. |
 | `PUSH_SENT` | A Web Push payload was dispatched. | A booking task triggered an admin notification. | N/A | N/A |
 
 ## Entity Statuses (Portal Accounts, Proxies, Workers)
