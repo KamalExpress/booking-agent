@@ -13,7 +13,7 @@ class BrowserTrustService:
     def __init__(self, captcha_api_key: str, proxy_string: str = None):
         self.captcha_api_key = captcha_api_key
         self.proxy_string = proxy_string
-        self.base_url = "https://pk-gr-services.gvcworld.eu"
+        self.base_url = os.getenv('BOOKING_PORTAL_URL', "https://pk-gr-services.gvcworld.eu")
         
     def authenticate(self, username: str, password: str, sitekey: str) -> Optional[Dict]:
         """

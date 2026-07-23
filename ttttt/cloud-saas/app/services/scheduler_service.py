@@ -60,7 +60,7 @@ class SchedulerService:
         task = self.db.query(BookingTask).filter(
             BookingTask.status == "PENDING",
             BookingTask.expires_at > now
-        ).order_by(BookingTask.priority.desc(), BookingTask.created_at.asc()).first()
+        ).order_by(BookingTask.priority.desc(), BookingTask.created_at.asc()).with_for_update(skip_locked=True).first()
         
         if not task:
             return None
@@ -86,6 +86,18 @@ class SchedulerService:
             self._log_decision(worker.worker_id, "NO_READY_ACCOUNT", "No capable booking account available", booking_task_id=task.id)
             return None
 
+        # Concurrency verification lock
+        locked_account = self.db.query(PortalAccount).filter(
+            PortalAccount.id == best_account.id,
+            PortalAccount.status == "READY"
+        ).with_for_update(skip_locked=True).first()
+        
+        if not locked_account:
+            # Someone else took it while we were scoring
+            return None
+            
+        best_account = locked_account
+
         # Find best proxy
         proxies = self.db.query(Proxy).filter(
             Proxy.supports_booking == True,
@@ -103,6 +115,17 @@ class SchedulerService:
         if not best_proxy:
             self._log_decision(worker.worker_id, "NO_READY_PROXY", "No capable booking proxy available", booking_task_id=task.id)
             return None
+
+        # Concurrency verification lock
+        locked_proxy = self.db.query(Proxy).filter(
+            Proxy.id == best_proxy.id,
+            Proxy.status == "READY"
+        ).with_for_update(skip_locked=True).first()
+        
+        if not locked_proxy:
+            return None
+            
+        best_proxy = locked_proxy
 
         # Create lease
         lease = Lease(
@@ -132,10 +155,10 @@ class SchedulerService:
 
     def _try_schedule_scraping(self, worker: WorkerNode) -> Lease:
         now = ScoringPolicy.get_utcnow()
-        # Find due assignments
+        # Find due assignments (we lock them to prevent concurrent threads from scoring the same assignment)
         assignments = self.db.query(Assignment).filter(
             Assignment.status == "Active"
-        ).order_by(Assignment.priority.desc()).all()
+        ).order_by(Assignment.priority.desc()).with_for_update(skip_locked=True).all()
         
         due_assignment = None
         for a in assignments:
@@ -165,6 +188,17 @@ class SchedulerService:
             self._log_decision(worker.worker_id, "NO_READY_ACCOUNT", "No capable scraping account available", assignment_id=due_assignment.id)
             return None
 
+        # Concurrency verification lock
+        locked_account = self.db.query(PortalAccount).filter(
+            PortalAccount.id == best_account.id,
+            PortalAccount.status == "READY"
+        ).with_for_update(skip_locked=True).first()
+        
+        if not locked_account:
+            return None
+            
+        best_account = locked_account
+
         # Find best proxy
         proxies = self.db.query(Proxy).filter(
             Proxy.supports_scraping == True,
@@ -182,6 +216,17 @@ class SchedulerService:
         if not best_proxy:
             self._log_decision(worker.worker_id, "NO_READY_PROXY", "No capable scraping proxy available", assignment_id=due_assignment.id)
             return None
+
+        # Concurrency verification lock
+        locked_proxy = self.db.query(Proxy).filter(
+            Proxy.id == best_proxy.id,
+            Proxy.status == "READY"
+        ).with_for_update(skip_locked=True).first()
+        
+        if not locked_proxy:
+            return None
+            
+        best_proxy = locked_proxy
 
         # Create lease
         lease = Lease(
@@ -208,9 +253,10 @@ class SchedulerService:
         self.db.commit()
         return lease
 
-    def auto_dispatch_queue(self, visa_center: str, slot_count: int):
+    def auto_dispatch_queue(self, visa_center: str, slots: list, assignment_id: int, target_date: str):
         from app.models import WaitlistQueue, Applicant
         now = ScoringPolicy.get_utcnow()
+        slot_count = len(slots)
         
         # 1. Get PENDING waitlist entries for this visa center, ordered by priority
         entries = self.db.query(WaitlistQueue).join(Applicant).filter(
@@ -235,13 +281,18 @@ class SchedulerService:
                 continue
                 
             # 3. Generate BookingTask
+            slot = slots[dispatched_count]
+            slot_time = slot.get("starttime", "00:00")
+            
             task = BookingTask(
+                assignment_id=assignment_id,
                 tenant_id=entry.tenant_id,
                 applicant_id=entry.applicant_id,
                 provider=entry.provider,
                 visa_center=entry.visa_center,
-                target_date="TBD", 
-                target_time=f"TBD-{entry.id}",
+                target_date=target_date, 
+                target_time=slot_time,
+                slot_payload=slot,
                 priority=entry.priority,
                 expires_at=now + timedelta(hours=2)
             )

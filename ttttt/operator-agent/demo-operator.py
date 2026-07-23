@@ -27,15 +27,25 @@ class OperatorAgent:
     def __init__(self, captcha_service: CaptchaService):
         self.session = requests.Session()
         # Set some common headers to mimic a browser
+        target_domain = os.getenv('BOOKING_PORTAL_URL', 'https://pk-gr-services.gvcworld.eu')
+        preflight_headers = {
+            "Origin": target_domain,
+            "Referer": f"{target_domain}/?lang=en_US",
+            "X-Requested-With": "XMLHttpRequest",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin"
+        }
         self.session.headers.update({
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
             'Accept': 'application/json, text/plain, */*',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            **preflight_headers
         })
         
-        self.username = os.getenv('GVC_USERNAME')
-        self.password = os.getenv('GVC_PASSWORD')
-        self.base_url = os.getenv('BASE_URL', 'https://pk-gr-services.gvcworld.eu')
+        self.username = os.getenv('PORTAL_USERNAME')
+        self.password = os.getenv('PORTAL_PASSWORD')
+        self.base_url = target_domain
         self.sitekey = os.getenv('TARGET_SITEKEY', '6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2')
         self.captcha_service = captcha_service
         

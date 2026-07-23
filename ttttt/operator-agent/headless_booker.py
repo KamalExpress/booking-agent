@@ -31,7 +31,7 @@ class SaaSStreamHandler(logging.Handler):
 class BookerEngine(threading.Thread):
     def __init__(self, base_url: str):
         super().__init__(daemon=True)
-        self.api = SaaSClient(base_url)
+        self.api = SaaSClient(base_url, cred_file="booker_creds.txt")
         self._stop_event = threading.Event()
 
     def stop(self):
@@ -91,8 +91,14 @@ class BookerEngine(threading.Thread):
                         proxy_string = f"http://{user}:{pwd}@{host}:{port}"
                     else:
                         proxy_string = f"http://{proxy_string}"
+                if proxy_string and "127.0.0.1" in os.getenv("BOOKING_PORTAL_URL", ""):
+                    proxy_string = None
                 
-                captcha_svc = CapSolverService(api_key=captcha_config.get("api_key", ""), proxy_string=proxy_string)
+                if os.getenv('USE_MOCK_CAPTCHA', 'False').lower() in ['true', '1']:
+                    from mock_captcha import MockCaptchaService
+                    captcha_svc = MockCaptchaService()
+                else:
+                    captcha_svc = CapSolverService(api_key=captcha_config.get("api_key", ""), proxy_string=proxy_string)
                 
                 # Instantiate our new unified GVCAdapter!
                 adapter = GVCAdapter(captcha_service=captcha_svc, headless=True, proxy_string=proxy_string)

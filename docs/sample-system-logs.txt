@@ -1,0 +1,76 @@
+🟢 **Slot found**
+New slot 2514741 queued for Long-Term Type D (Seasonal/Dependent Employment) at Lahore Visa Application Center for Greece.
+
+- slot id: 2514741
+- vac: Lahore Visa Application Center for Greece
+- appointment type: Long-Term Type D (Seasonal/Dependent Employment)
+- date: 22/07/2026
+- time: 11:30
+
+🔵 **Booking started**
+Started booking slot 2514741 for muhammad usman.
+
+- task id: ff7336fb-022f-418b-9d0e-9ccded7c7e51
+- gvc username: banaras1234
+- first name: muhammad
+- surname: usman
+- phone: 3420218724
+- passport: gh2858761
+- appointment for: 26
+- slot id: 2514741
+- date: 22/07/2026
+- time: 11:30
+- Total: 0.0s
+- Booking attempts: 0
+
+📱 **Booking OTP sent**
+OTP sent to 3420218724 for slot 2514741 (muhammad usman). Elapsed: 3.1s since booking started.
+
+- task id: ff7336fb-022f-418b-9d0e-9ccded7c7e51
+- gvc username: banaras1234
+- first name: muhammad
+- surname: usman
+- phone: 3420218724
+- passport: gh2858761
+- appointment for: 26
+- slot id: 2514741
+- date: 22/07/2026
+- time: 11:30
+- otp phone: 3420218724
+- Elapsed: 3.1s
+- Total: 3.1s
+- Booking attempts: 0
+
+📨 **Booking OTP received**
+OTP received for muhammad usman (slot 2514741).
+
+- task id: ff7336fb-022f-418b-9d0e-9ccded7c7e51
+- phone: 3420218724
+- slot id: 2514741
+- slot date: 22/07/2026
+- slot time: 11:30
+- appointment for: 26
+- sent stamp: 1784562499000
+- received stamp: 1784562500543
+
+
+❌ **Booking failed**
+Failed to book slot 2514741 for muhammad usman: Unauthorized access | username=banarasali7866@gmail.com | session=booker:2:banaras1234 | operation=book_appointment | gvc_user_id=900231 | status_code=200 | datefrom=22/07/2026 | selectedtime=11:30 | applicants=1 | response_code=PERMISSION
+Time to OTP: 26.5s | OTP to booking submit: 0.0s | Submit to finish: 4.9s | Total: 31.4s | Booking attempts: 1
+
+- task id: ff7336fb-022f-418b-9d0e-9ccded7c7e51
+- gvc username: banaras1234
+- first name: muhammad
+- surname: usman
+- phone: 3420218724
+- passport: gh2858761
+- appointment for: 26
+- slot id: 2514741
+- date: 22/07/2026
+- time: 11:30
+- reason: Unauthorized access | username=banarasali7866@gmail.com | session=booker:2:banaras1234 | operation=book_appointment | gvc_user_id=900231 | status_code=200 | datefrom=22/07/2026 | selectedtime=11:30 | applicants=1 | response_code=PERMISSION
+- Total: 31.4s
+- Booking attempts: 1
+- Time to OTP: 26.5s
+- OTP to submit: 0.0s
+- Submit to finish: 4.9s

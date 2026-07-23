@@ -37,7 +37,7 @@ class SlotMonitorEngine(threading.Thread):
         self.daemon = True
         self.previously_seen_slot_ids = set()
         self.session_manager = SessionManager()
-        self.base_url = "https://pk-gr-services.gvcworld.eu"
+        self.base_url = os.getenv('BOOKING_PORTAL_URL', "https://pk-gr-services.gvcworld.eu")
         
     def stop(self):
         logging.info("Stopping Cloud Slot Monitor Engine...")

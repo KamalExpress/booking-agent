@@ -9,10 +9,11 @@ import platform
 import sys
 
 class SaaSClient:
-    def __init__(self, base_url: str):
+    def __init__(self, base_url: str, cred_file: str = "worker_creds.txt"):
         self.base_url = base_url.rstrip('/')
         self.worker_id = None
         self.secret = None
+        self.cred_file = cred_file
         self.session = requests.Session()
         self._config_cache = None
         self._config_expires_at = 0
@@ -20,7 +21,7 @@ class SaaSClient:
 
     def load_credentials(self):
         try:
-            cred_path = "data/worker_creds.txt" if os.path.exists("data") else "worker_creds.txt"
+            cred_path = f"data/{self.cred_file}" if os.path.exists("data") else self.cred_file
             if os.path.exists(cred_path):
                 with open(cred_path, "r") as f:
                     self.worker_id, self.secret = f.read().strip().split(':')
@@ -31,7 +32,7 @@ class SaaSClient:
     def save_credentials(self):
         if not os.path.exists("data"):
             os.makedirs("data", exist_ok=True)
-        cred_path = "data/worker_creds.txt"
+        cred_path = f"data/{self.cred_file}"
         with open(cred_path, "w") as f:
             f.write(f"{self.worker_id}:{self.secret}")
 

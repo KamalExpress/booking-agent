@@ -158,8 +158,8 @@ class ManualCaptchaService(CaptchaService):
             
             # Autofill credentials so the human doesn't have to
             import os
-            username = os.getenv('GVC_USERNAME', '')
-            password = os.getenv('GVC_PASSWORD', '')
+            username = os.getenv('PORTAL_USERNAME', '')
+            password = os.getenv('PORTAL_PASSWORD', '')
             if username and password:
                 try:
                     # Attempt standard login form selectors

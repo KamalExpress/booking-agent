@@ -47,6 +47,18 @@
                         <option value="COOLDOWN" {% if account.status == 'COOLDOWN' %}selected{% endif %}>COOLDOWN</option>
                         <option value="DISABLED" {% if account.status == 'DISABLED' %}selected{% endif %}>DISABLED</option>
                     </select>
+                    <p class="text-[11px] text-zinc-500 mt-1">Set to DISABLED to prevent the scheduler from using this account.</p>
+                </div>
+                
+                <div class="flex items-center gap-4 py-3 border-t border-zinc-800 mt-2">
+                    <label class="flex items-center gap-2 text-sm font-medium text-zinc-300 cursor-pointer">
+                        <input type="checkbox" name="supports_scraping" value="true" class="rounded bg-zinc-900 border-zinc-700 text-zinc-500 focus:ring-zinc-500" {% if account.supports_scraping %}checked{% endif %}>
+                        Use for Scraping
+                    </label>
+                    <label class="flex items-center gap-2 text-sm font-medium text-zinc-300 cursor-pointer">
+                        <input type="checkbox" name="supports_booking" value="true" class="rounded bg-zinc-900 border-zinc-700 text-zinc-500 focus:ring-zinc-500" {% if account.supports_booking %}checked{% endif %}>
+                        Use for Booking
+                    </label>
                 </div>
                 
                 <div class="pt-2">

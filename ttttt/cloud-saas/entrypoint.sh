@@ -24,8 +24,8 @@ import os, sys, subprocess
 engine = create_engine(os.environ['DATABASE_URL'])
 inspector = inspect(engine)
 if not inspector.has_table('alembic_version'):
-    print('No alembic_version found. Stamping database at 001_baseline so subsequent migrations can run.')
-    subprocess.run([sys.executable, '-m', 'alembic', 'stamp', '001_baseline'])
+    print('No alembic_version found. Stamping database at head since Base.metadata.create_all created all tables.')
+    subprocess.run([sys.executable, '-m', 'alembic', 'stamp', 'head'])
 else:
     # Self-healing: if alembic is stamped but migrations were skipped, force rollback stamp
     if inspector.has_table('leases'):

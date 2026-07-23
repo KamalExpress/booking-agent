@@ -185,13 +185,13 @@
                 }
             });
             const data = await res.json();
-            if(data.status === "ok") {
-                alert(`CapSolver Balance: $${data.balance}`);
+            if (res.ok) {
+                uiToast(`CapSolver Balance: $${data.balance}`, "info");
             } else {
-                alert(`Error: ${data.detail || JSON.stringify(data)}`);
+                uiToast(`Error: ${data.detail || JSON.stringify(data)}`, "error");
             }
         } catch(err) {
-            alert(`Network error: ${err}`);
+            uiToast(`Network error: ${err}`, "error");
         }
 
         btn.innerHTML = originalText;
@@ -216,12 +216,12 @@
             });
             const data = await res.json();
             if(res.ok) {
-                alert(`Test push notification sent! Delivered to ${data.delivered} devices.`);
+                uiToast(`Test push notification sent! Delivered to ${data.delivered} devices.`, "success");
             } else {
-                alert(`Error: ${data.detail || JSON.stringify(data)}`);
+                uiToast(`Error: ${data.detail || JSON.stringify(data)}`, "error");
             }
         } catch(err) {
-            alert(`Network error: ${err}`);
+            uiToast(`Network error: ${err}`, "error");
         }
 
         btn.innerHTML = originalText;
@@ -252,14 +252,14 @@
                     body: formData
                 });
                 
+                const data = await res.json();
                 if (res.ok) {
-                    alert(`Successfully simulated: ${eventType}`);
+                    uiToast(`Successfully simulated: ${eventType}`, "success");
                 } else {
-                    const data = await res.json();
-                    alert(`Simulation failed: ${data.detail || JSON.stringify(data)}`);
+                    uiToast(`Simulation failed: ${data.detail || JSON.stringify(data)}`, "error");
                 }
             } catch(err) {
-                alert(`Network error: ${err}`);
+                uiToast(`Network error: ${err}`, "error");
             }
 
             btn.innerHTML = originalText;
@@ -269,7 +269,8 @@
     });
 
     async function deleteSubscription(subId) {
-        if (!confirm("Are you sure you want to delete this device's subscription?")) return;
+        const confirmed = await uiConfirm("Are you sure you want to delete this device's subscription?");
+        if (!confirmed) return;
         
         try {
             const token = localStorage.getItem("token") || "";
@@ -281,14 +282,13 @@
             });
             
             if (res.ok) {
-                const el = document.getElementById(`sub-${subId}`);
-                if (el) el.remove();
+                window.location.reload();
             } else {
                 const data = await res.json();
-                alert(`Failed to delete: ${data.detail || JSON.stringify(data)}`);
+                uiToast(`Failed to delete: ${data.detail || JSON.stringify(data)}`, "error");
             }
         } catch(err) {
-            alert(`Network error: ${err}`);
+            uiToast(`Network error: ${err}`, "error");
         }
     }
 </script>

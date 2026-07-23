@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  operator-agent-local:
+    build: .
+    container_name: operator-agent-local
+    restart: unless-stopped
+    command: python headless.py
+    environment:
+      - SAAS_BASE_URL=http://cloud-saas:8000
+    volumes:
+      - .:/app
+    networks:
+      - sam-agent-platform_default
+
+networks:
+  sam-agent-platform_default:
+    external: true

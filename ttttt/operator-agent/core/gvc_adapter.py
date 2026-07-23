@@ -32,19 +32,20 @@ class GVCAdapter(BasePortalAdapter):
         if proxy_string:
             self.session.proxies = {"http": proxy_string, "https": proxy_string}
             
+        target_domain = os.getenv('BOOKING_PORTAL_URL', "https://pk-gr-services.gvcworld.eu")
         self.session.headers.update({
             "Accept": "application/json, text/plain, */*",
             "Accept-Language": "en-US,en;q=0.9",
             "Connection": "keep-alive",
-            "Origin": "https://pk-gr-services.gvcworld.eu",
-            "Referer": "https://pk-gr-services.gvcworld.eu/?lang=en_US",
+            "Origin": target_domain,
+            "Referer": f"{target_domain}/?lang=en_US",
             "X-Requested-With": "XMLHttpRequest",
             "Sec-Fetch-Dest": "empty",
             "Sec-Fetch-Mode": "cors",
             "Sec-Fetch-Site": "same-origin"
         })
         
-        self.base_url = "https://pk-gr-services.gvcworld.eu"
+        self.base_url = target_domain
         self.sitekey = os.getenv('TARGET_SITEKEY', '6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2')
         self.captcha_service = captcha_service
         self.applicant_data_cache = {}

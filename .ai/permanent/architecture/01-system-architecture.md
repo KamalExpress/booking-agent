@@ -43,7 +43,9 @@ To orchestrate distributed headless workers for visa appointment scraping and sl
 - The `Provider` dimension enables scaling out from a single visa portal (e.g., VFS) to multiple portals (BLS, GVC) gracefully.
 
 ## Deployment Topology
-- **Strictly VPS & Docker:** The system runs exclusively on a cloud VPS managed via Portainer. Agents must NEVER attempt to run Docker containers or Alembic database migrations locally.
+- **Machine Awareness:** Agents MUST check the `Device name` in their User Context metadata or via hostname.
+- **High-End Local Dev (`DESKTOP-5E6DM1M`):** On this specific machine, agents are AUTHORIZED and ENCOURAGED to run local Docker Compose stacks, execute `alembic` migrations, and build containers locally.
+- **Low-End/Other Machines:** The system runs exclusively on a cloud VPS managed via Portainer. Agents must NEVER attempt to run Docker containers or Alembic database migrations locally on these machines.
 - **Environment Split:**
   - `feature/staging` branch deployed as the **Staging Stack** (contains all new booking/waitlist features).
   - `feature/headless-worker` branch deployed as the **Production Stack** (currently stable and in use).

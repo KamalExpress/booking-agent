@@ -12,7 +12,7 @@ import uuid
 import json
 from notifications import send_push_notification
 
-from models import WorkerNode, Assignment, Lease, EventLog, PortalAccount, SystemSetting, WorkerVersion, WorkerLog
+from models import WorkerNode, Assignment, Lease, EventLog, PortalAccount, SystemSetting, WorkerVersion, WorkerLog, get_db
 from secrets_manager import secrets_manager
 from models import SessionLocal
 
@@ -20,13 +20,6 @@ from services.worker_service import WorkerService, get_worker_service
 from services.lease_service import LeaseService, get_lease_service
 from services.maintenance_service import MaintenanceService, get_maintenance_service
 from services.scheduler_service import SchedulerService
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 router = APIRouter(prefix="/api/v1/worker", tags=["Worker"])
 
@@ -179,15 +172,15 @@ def get_next_assignment(
     # 1.5. Check if THIS worker already has an active lease (e.g. it crashed and restarted)
     existing_lease = lease_service.get_existing_lease_for_worker(worker)
     if existing_lease:
-        return existing_lease
-        
-    # 2 & 3 & 4. Find next assignment and create lease
-    scheduler = SchedulerService(db)
-    next_lease = scheduler.get_next_lease(worker.worker_id)
-    if not next_lease:
-        response.status_code = status.HTTP_204_NO_CONTENT
-        response.headers["Retry-After"] = "30"
-        return
+        next_lease = existing_lease
+    else:
+        # 2 & 3 & 4. Find next assignment and create lease
+        scheduler = SchedulerService(db)
+        next_lease = scheduler.get_next_lease(worker.worker_id)
+        if not next_lease:
+            response.status_code = status.HTTP_204_NO_CONTENT
+            response.headers["Retry-After"] = "30"
+            return
         
     # Serialize Lease
     from app.models import Assignment, PortalAccount, BookingTask, Proxy, Applicant
@@ -316,6 +309,17 @@ def submit_logs(
     )
     db.add(log)
     
+    # Broadcast live log to the dashboard monitor
+    from core.websocket_manager import sync_broadcast
+    from datetime import datetime
+    sync_broadcast({
+        "event_type": req.event_type,
+        "worker_id": worker.worker_id,
+        "assignment_id": req.assignment_id,
+        "payload": req.payload,
+        "timestamp": datetime.utcnow().isoformat()
+    })
+    
     if req.event_type == "LOGIN_SUCCESS" and req.assignment_id:
         assignment = db.query(Assignment).filter(Assignment.id == req.assignment_id).first()
         if assignment and 'lease' in locals() and lease:
@@ -368,31 +372,14 @@ def submit_logs(
                 )
                 db.add(availability)
                 
-                # Event-driven Deduplication & Booking Pipeline
-                if slot_count > 0 and "slots" in req.payload:
-                    for slot in req.payload["slots"]:
-                        slot_time = slot.get("starttime", "00:00")
-                        try:
-                            bt = BookingTask(
-                                assignment_id=assignment.id,
-                                provider=assignment.provider,
-                                visa_center=vac_id,
-                                target_date=target_date,
-                                target_time=slot_time,
-                                slot_payload=slot,
-                                priority=10,
-                                expires_at=datetime.utcnow() + timedelta(hours=2)
-                            )
-                            db.add(bt)
-                            db.commit() # This will fail if duplicate due to UniqueConstraint
-                        except Exception as e:
-                            # IntegrityError: Duplicate booking task ignored
-                            db.rollback()
-                            continue
-                
                 # Dispatch Waitlist Queue (Level 2)
-                if slot_count > 0:
-                    dispatched = scheduler.auto_dispatch_queue(vac_id, slot_count)
+                if slot_count > 0 and "slots" in req.payload:
+                    dispatched = scheduler.auto_dispatch_queue(
+                        visa_center=vac_id, 
+                        slots=req.payload["slots"],
+                        assignment_id=assignment.id,
+                        target_date=target_date
+                    )
                     if dispatched > 0:
                         import logging
                         logging.getLogger(__name__).info(f"Auto-dispatched {dispatched} applicants from WaitlistQueue for center {vac_id}")

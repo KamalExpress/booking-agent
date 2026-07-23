@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}Live System Monitor | Kamal Express SaaS{% endblock %}
+
+{% block content %}
+<div class="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-white">Live System Monitor</h1>
+            <p class="mt-2 text-sm text-zinc-400">Real-time execution feed from all headless workers</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="relative flex w-3 h-3">
+              <span class="absolute inline-flex w-full h-full bg-green-400 rounded-full opacity-75 animate-ping"></span>
+              <span class="relative inline-flex w-3 h-3 bg-green-500 rounded-full"></span>
+            </span>
+            <span class="text-sm font-medium text-green-500" id="connection-status">Connecting...</span>
+        </div>
+    </div>
+
+    <!-- Feed Container -->
+    <div id="logs-container" class="space-y-4 max-h-[80vh] overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent pb-10">
+        <!-- Logs will be prepended here via WebSockets -->
+    </div>
+</div>
+
+<style>
+    /* Glassmorphism Log Card */
+    .log-card {
+        background: rgba(24, 24, 27, 0.65); /* zinc-900 with opacity */
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(63, 63, 70, 0.5); /* zinc-700 */
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        animation: slideIn 0.3s ease-out forwards;
+    }
+    
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px) scale(0.98);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const statusEl = document.getElementById("connection-status");
+        const logsContainer = document.getElementById("logs-container");
+        
+        let wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+        let wsUrl = wsProtocol + "//" + window.location.host + "/ws/live-logs";
+        let ws;
+
+        function connect() {
+            ws = new WebSocket(wsUrl);
+            
+            ws.onopen = function() {
+                statusEl.textContent = "Live";
+                statusEl.classList.replace("text-yellow-500", "text-green-500");
+                statusEl.classList.replace("text-red-500", "text-green-500");
+                statusEl.previousElementSibling.querySelector('.animate-ping').classList.remove('hidden');
+                statusEl.previousElementSibling.querySelector('.relative.inline-flex').classList.replace("bg-yellow-500", "bg-green-500");
+                statusEl.previousElementSibling.querySelector('.relative.inline-flex').classList.replace("bg-red-500", "bg-green-500");
+            };
+            
+            ws.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    renderLog(data);
+                } catch(e) {
+                    console.error("Failed to parse log", e);
+                }
+            };
+            
+            ws.onclose = function() {
+                statusEl.textContent = "Disconnected - Reconnecting...";
+                statusEl.classList.replace("text-green-500", "text-red-500");
+                statusEl.previousElementSibling.querySelector('.animate-ping').classList.add('hidden');
+                statusEl.previousElementSibling.querySelector('.relative.inline-flex').classList.replace("bg-green-500", "bg-red-500");
+                setTimeout(connect, 3000);
+            };
+        }
+
+        function renderLog(data) {
+            const { event_type, worker_id, assignment_id, payload, timestamp } = data;
+            
+            let emoji = "ℹ️";
+            let colorClass = "text-zinc-300";
+            let title = event_type;
+            let description = "";
+            
+            // Format title and emoji based on event type matching sample-system-logs.txt
+            if (event_type.includes("SLOT_FOUND")) {
+                emoji = "🟢"; title = "Slot found"; colorClass = "text-green-400";
+            } else if (event_type.includes("BOOKING_STARTED")) {
+                emoji = "🔵"; title = "Booking started"; colorClass = "text-blue-400";
+            } else if (event_type.includes("OTP_SENT")) {
+                emoji = "📱"; title = "Booking OTP sent"; colorClass = "text-orange-400";
+            } else if (event_type.includes("OTP_RECEIVED")) {
+                emoji = "📨"; title = "Booking OTP received"; colorClass = "text-purple-400";
+            } else if (event_type.includes("BOOKING_FAILED")) {
+                emoji = "❌"; title = "Booking failed"; colorClass = "text-red-400";
+            } else if (event_type.includes("BOOKING_SUCCESS")) {
+                emoji = "✅"; title = "Booking successful"; colorClass = "text-emerald-400";
+            }
+
+            // Create formatted key-value pairs
+            let detailsHtml = "";
+            if (payload && typeof payload === 'object') {
+                for (const [key, value] of Object.entries(payload)) {
+                    // Ignore some verbose or internal keys if needed, but per request we show them
+                    if (key === 'description') {
+                        description = value;
+                    } else {
+                        detailsHtml += `<li class="text-sm font-mono text-zinc-400"><span class="text-zinc-500 mr-2">-</span><span class="text-zinc-300 font-medium">${key}:</span> ${value}</li>`;
+                    }
+                }
+            }
+
+            const timeStr = new Date(timestamp).toLocaleTimeString();
+            
+            const cardHtml = `
+                <div class="p-5 rounded-xl log-card">
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">${emoji}</span>
+                            <h3 class="text-lg font-bold ${colorClass}">**${title}**</h3>
+                        </div>
+                        <span class="text-xs font-medium text-zinc-500">${timeStr} | worker: ${worker_id || 'unknown'}</span>
+                    </div>
+                    ${description ? `<p class="mt-3 text-sm text-zinc-300">${description}</p>` : ''}
+                    ${detailsHtml ? `<ul class="mt-4 space-y-1.5">${detailsHtml}</ul>` : ''}
+                </div>
+            `;
+            
+            // Prepend to feed
+            logsContainer.insertAdjacentHTML('afterbegin', cardHtml);
+            
+            // Keep max 100 logs to prevent DOM bloat
+            if (logsContainer.children.length > 100) {
+                logsContainer.lastElementChild.remove();
+            }
+        }
+
+        // Render any initial historical logs passed from backend
+        {% if initial_logs_json %}
+        try {
+            const initialLogs = {{ initial_logs_json | safe }};
+            initialLogs.forEach(log => renderLog(log));
+        } catch(e) {
+            console.error("Failed to parse initial logs", e);
+        }
+        {% endif %}
+
+        connect();
+    });
+</script>
+{% endblock %}

@@ -130,17 +130,18 @@ class SessionManager:
         Creates a lightweight HTTP client (curl_cffi) spoofing Chrome 120, loaded with the authenticated cookies.
         """
         session = requests.Session(impersonate="chrome120")
+        target_domain = os.getenv('BOOKING_PORTAL_URL', "https://pk-gr-services.gvcworld.eu")
         
         # Add basic standard headers just in case
         session.headers.update({
             "Accept": "application/json, text/plain, */*",
             "Accept-Language": "en-US,en;q=0.9",
-            "Origin": "https://pk-gr-services.gvcworld.eu",
-            "Referer": "https://pk-gr-services.gvcworld.eu/",
+            "Origin": target_domain,
+            "Referer": f"{target_domain}/",
         })
         
         # Inject the cookies
         for name, value in cookies.items():
-            session.cookies.set(name, value, domain="pk-gr-services.gvcworld.eu")
+            session.cookies.set(name, value, domain=target_domain.split('//')[-1])
             
         return session

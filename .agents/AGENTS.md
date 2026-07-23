@@ -47,8 +47,9 @@ Whenever a new operational event, technical term, scheduling decision, or error 
 *Always mirror sprint planning artifacts to `.ai/transient/handoffs/` when closing out a sprint.*
 
 ## 8. Deployment & Migrations Constraints
-- **Local Environment:** The user develops on a low-end laptop without Docker installed.
-- **Agent Constraint:** Agents **MUST NOT** attempt to run `alembic` migrations or `docker-compose` commands locally (unless specifically authorized). 
+- **Machine Awareness:** Agents MUST check the `Device name` in their User Context metadata or via hostname.
+- **High-End Local Dev (`DESKTOP-5E6DM1M`):** On this specific machine, agents are AUTHORIZED and ENCOURAGED to run local Docker Compose stacks, execute `alembic` migrations, and build containers locally.
+- **Low-End/Other Machines:** On all other machines, the user develops without Docker. Agents **MUST NOT** attempt to run `alembic` migrations or `docker-compose` locally. 
 - **Production Pipeline:** Database migrations and docker builds are automatically handled via Portainer on the VPS (staging/production) utilizing the configurations in the `vps-setup` directory.
 
 ## 9. Testing & Deployment Tooling

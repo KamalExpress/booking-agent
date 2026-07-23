@@ -27,6 +27,46 @@ def get_db():
 
 router = APIRouter(tags=["UI"])
 
+from fastapi import WebSocket, WebSocketDisconnect
+from core.websocket_manager import manager
+
+@router.websocket("/ws/live-logs")
+async def websocket_live_logs(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        while True:
+            await websocket.receive_text() # keep alive
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+
+@router.get("/dashboard/logs", response_class=HTMLResponse)
+def live_logs_dashboard(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user:
+        return RedirectResponse("/login")
+    import json
+    
+    recent_logs = db.query(EventLog).order_by(EventLog.id.desc()).limit(50).all()
+    logs_data = []
+    for log in recent_logs:
+        logs_data.append({
+            "event_type": log.event_type,
+            "worker_id": log.worker_id,
+            "assignment_id": log.assignment_id,
+            "payload": log.payload,
+            "timestamp": log.created_at.isoformat()
+        })
+        
+    # Reverse so they are rendered in correct chronological order on the client
+    # (since client uses insertAdjacentHTML('afterbegin', ...), if we insert oldest first, newest will be at top)
+    logs_data.reverse()
+        
+    return render_template("dashboard_logs.html", {
+        "request": request, 
+        "user": user,
+        "initial_logs_json": json.dumps(logs_data)
+    }, db)
+
 from core.branding import get_env_branding
 
 # Build absolute path to templates directory to avoid Docker WORKDIR issues
@@ -79,6 +119,69 @@ def render_template(name: str, context: dict, db: Session):
     from services.ui_guidance import NAV_GUIDANCE_DICT
     context["guidance_dict"] = GUIDANCE_DICT
     context["nav_guidance_dict"] = NAV_GUIDANCE_DICT
+    
+    # Calculate Missing Setup Steps globally
+    missing_setup_steps = []
+    user = context.get("user")
+    if user and user.role.value == 'SUPER_ADMIN':
+        captcha_setting = db.query(SystemSetting).filter(SystemSetting.key == "captcha.api_key").first()
+        if not captcha_setting or not captcha_setting.value:
+            missing_setup_steps.append({
+                "title": "Captcha Setup Incomplete",
+                "message": "Workers will fail WAF challenges without a valid Captcha solver.",
+                "link": "/captcha",
+                "link_text": "Configure Captcha"
+            })
+            
+        if db.query(Proxy).count() == 0:
+            missing_setup_steps.append({
+                "title": "No Proxies Configured",
+                "message": "Workers need proxies to rotate IPs and avoid rate limits.",
+                "link": "/proxies",
+                "link_text": "Add Proxies"
+            })
+            
+        if db.query(PortalAccount).count() == 0:
+            missing_setup_steps.append({
+                "title": "No Portal Accounts",
+                "message": "Workers require target portal accounts to log in and check for slots.",
+                "link": "/accounts",
+                "link_text": "Add Accounts"
+            })
+            
+        if db.query(WorkerNode).count() == 0:
+            missing_setup_steps.append({
+                "title": "No Workers Deployed",
+                "message": "Deploy headless worker nodes to your infrastructure so they can execute tasks.",
+                "link": "/playbook",
+                "link_text": "View Playbook"
+            })
+        else:
+            from datetime import datetime, timezone, timedelta
+            now = datetime.now(timezone.utc).replace(tzinfo=None)
+            cutoff = now - timedelta(seconds=WorkerNode.WORKER_TIMEOUT_SECONDS)
+            active_count = db.query(WorkerNode).filter(
+                WorkerNode.status == 'Online',
+                WorkerNode.last_heartbeat >= cutoff
+            ).count()
+            
+            if active_count == 0:
+                missing_setup_steps.append({
+                    "title": "No Active Workers",
+                    "message": "All your previously deployed workers are currently Offline. The system is stalled.",
+                    "link": "/workers",
+                    "link_text": "View Workers"
+                })
+            
+        if db.query(Assignment).count() == 0:
+            missing_setup_steps.append({
+                "title": "No Scraper Assignments",
+                "message": "Create an assignment to tell the scheduler which visa centers, locations, and dates to monitor for slot availability.",
+                "link": "/assignments",
+                "link_text": "Create Assignment"
+            })
+    context["missing_setup_steps"] = missing_setup_steps
+
     return templates.TemplateResponse(request=context["request"], name=name, context=context)
 
 @router.get("/login", response_class=HTMLResponse)
@@ -101,9 +204,9 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
     now = datetime.now(timezone.utc).replace(tzinfo=None)
     cutoff = now - timedelta(seconds=WorkerNode.WORKER_TIMEOUT_SECONDS)
     
-    # Active workers are those not banned/disabled AND have sent a heartbeat in the last 60s
+    # Active workers are those not banned/disabled AND have sent a heartbeat in the last 90s
     active_workers = db.query(WorkerNode).filter(
-        WorkerNode.status == 'Active',
+        WorkerNode.status == 'Online',
         WorkerNode.last_heartbeat >= cutoff
     ).count()
     
@@ -112,7 +215,7 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
     # Auto-Scaling Metrics
     from models import BookingTask
     idle_workers = db.query(WorkerNode).filter(
-        WorkerNode.status == 'Active',
+        WorkerNode.status == 'Online',
         WorkerNode.last_heartbeat >= cutoff,
         WorkerNode.current_concurrency == 0
     ).count()
@@ -544,6 +647,75 @@ async def reset_assignment(assignment_id: int, request: Request, db: Session = D
         
     return RedirectResponse(url="/assignments", status_code=303)
 
+@router.post("/assignments/{assignment_id}/update")
+async def update_assignment(
+    assignment_id: int,
+    request: Request,
+    provider: str = Form(...),
+    target_start_date: str = Form(...),
+    target_end_date: str = Form(...),
+    visa_center: list[str] = Form(...),
+    required_labels: str = Form(""),
+    db: Session = Depends(get_db)
+):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    import json
+    try:
+        assignment = db.query(Assignment).filter(Assignment.id == assignment_id).first()
+        if assignment:
+            start_date = datetime.strptime(target_start_date, '%d/%m/%Y')
+            end_date = datetime.strptime(target_end_date, '%d/%m/%Y')
+            
+            parsed_labels = {}
+            if required_labels:
+                try:
+                    parsed_labels = json.loads(required_labels)
+                except json.JSONDecodeError:
+                    pass
+            
+            assignment.provider = provider
+            assignment.date_from = start_date.strftime('%d/%m/%Y')
+            assignment.date_to = end_date.strftime('%d/%m/%Y')
+            assignment.visa_center = ",".join(visa_center)
+            assignment.required_labels = parsed_labels
+            db.commit()
+    except Exception as e:
+        print(f"Failed to update assignment: {e}")
+        db.rollback()
+        
+    return RedirectResponse(url="/assignments", status_code=303)
+
+@router.post("/assignments/{assignment_id}/delete")
+async def delete_assignment(assignment_id: int, request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    try:
+        assignment = db.query(Assignment).filter(Assignment.id == assignment_id).first()
+        if assignment:
+            # Delete associated records first to avoid foreign key constraints
+            from models import SchedulerDecision, WorkerLog, SlotAvailability, BookingTask, EventLog, LeaseArchive
+            db.query(Lease).filter(Lease.assignment_id == assignment_id).delete()
+            db.query(LeaseArchive).filter(LeaseArchive.assignment_id == assignment_id).delete()
+            db.query(SchedulerDecision).filter(SchedulerDecision.selected_assignment_id == assignment_id).delete()
+            db.query(WorkerLog).filter(WorkerLog.assignment_id == assignment_id).delete()
+            db.query(SlotAvailability).filter(SlotAvailability.assignment_id == assignment_id).delete()
+            db.query(BookingTask).filter(BookingTask.assignment_id == assignment_id).delete()
+            db.query(EventLog).filter(EventLog.assignment_id == assignment_id).delete()
+            
+            db.delete(assignment)
+            db.commit()
+    except Exception as e:
+        print(f"Failed to delete assignment: {e}")
+        import traceback
+        traceback.print_exc()
+        db.rollback()
+        
+    return RedirectResponse(url="/assignments", status_code=303)
 @router.post("/workers/{worker_id}/edit")
 async def edit_worker(worker_id: str, request: Request, labels: str = Form(""), max_concurrency: int = Form(1), db: Session = Depends(get_db)):
     user = get_ui_user(request, db)
@@ -1209,7 +1381,7 @@ async def simulate_event(event_type: str = Form(...), current_user: User = Depen
             
         db.commit()
         
-    return RedirectResponse(url="/diagnostics", status_code=303)
+    return {"status": "ok", "event_type": event_type}
 
 
 @router.get("/tenants", response_class=HTMLResponse)
