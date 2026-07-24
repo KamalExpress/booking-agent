@@ -9,7 +9,8 @@ Instead, you must strictly follow this read order:
 1. Read `.ai/README.md` (Master Index)
 2. Read `.ai/transient/sprint/04-current-state.md` (or equivalent current sprint handoff)
 3. Read `.ai/permanent/architecture/01-system-architecture.md`
-4. Read `.ai/indexes/repository.md` to map concepts to code.
+4. Read `.ai/indexes/repository.md` to map concepts to code. 
+   - *Note:* Check `.ai/repobrain_status.md` to verify RepoBrain's index status. If RepoBrain artifacts exist in the `.repobrain/` directory within the module you are working on (e.g., `ttttt/cloud-saas/.repobrain/` or `ttttt/operator-agent/.repobrain/`), query its generated `conventions.md` and `knowledge_graph.md` for fast symbol navigation.
 5. Only then may you inspect the source code.
 
 ## 2. Project Purpose
@@ -65,3 +66,9 @@ When building UI or filling Queue Management data, strictly use the following GV
 - `5`: Premium Lounge (optional service at an additional charge)
 - `6`: Prime Time (optional service at an additional charge)
 - `26`: Long-Term Type D (Seasonal/Dependent Employment) - *(Default)*
+
+## 11. RepoBrain Optimization Engine
+RepoBrain is an AI context optimization engine that runs via Docker (`scripts\update_repobrain.ps1`) to maintain the workspace knowledge graphs.
+- **Do not run the refresh script at the start of every session.** It is resource intensive.
+- Always check `.ai/repobrain_status.md` to verify the last time it was executed.
+- Only run an incremental refresh (`scripts\update_repobrain.ps1`) if significant architectural changes or documentation updates have occurred since the last logged run.

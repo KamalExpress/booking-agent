@@ -125,7 +125,7 @@ def render_template(name: str, context: dict, db: Session):
     user = context.get("user")
     if user and user.role.value == 'SUPER_ADMIN':
         captcha_setting = db.query(SystemSetting).filter(SystemSetting.key == "captcha.api_key").first()
-        if not captcha_setting or not captcha_setting.value:
+        if not captcha_setting or not (captcha_setting.value or captcha_setting.encrypted_value):
             missing_setup_steps.append({
                 "title": "Captcha Setup Incomplete",
                 "message": "Workers will fail WAF challenges without a valid Captcha solver.",
@@ -1342,7 +1342,8 @@ async def test_captcha_api(current_user: User = Depends(require_tenant_admin), d
     if captcha_api_key_setting:
         from secrets_manager import secrets_manager
         try:
-            decrypted_api_key = secrets_manager.decrypt(captcha_api_key_setting.value)
+            val_to_decrypt = captcha_api_key_setting.encrypted_value or captcha_api_key_setting.value
+            decrypted_api_key = secrets_manager.decrypt(val_to_decrypt)
         except:
             pass
 

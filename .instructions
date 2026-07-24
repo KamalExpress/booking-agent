@@ -1,5 +1,6 @@
 - Prefer MCP tools over LLM reasoning.
 - Never read entire JS bundles; use ripgrep first.
+- ALWAYS prefer querying RepoBrain indexes (e.g., .repobrain/knowledge_graph.md, conventions.md) for symbol navigation and context before falling back to manual grep searches.
 - Never read entire HAR files; use Python tooling to extract only relevant data.
 - Persist discoveries under /knowledge.
 - Reuse existing knowledge before analyzing again.
