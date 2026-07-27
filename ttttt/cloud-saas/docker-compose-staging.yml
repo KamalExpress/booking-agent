@@ -52,6 +52,23 @@ services:
     volumes:
       - operator_data_staging:/app/data
 
+  booker-agent-staging:
+    image: operator-agent:staging
+    build:
+      context: ../operator-agent
+      dockerfile: Dockerfile
+    container_name: booker-agent-staging
+    restart: unless-stopped
+    command: python headless_booker.py
+    environment:
+      - SAAS_BASE_URL=http://cloud-saas-staging:8000
+    depends_on:
+      - cloud-saas-staging
+    networks:
+      - sam-agent-platform_staging
+    volumes:
+      - booker_data_staging:/app/data
+
 networks:
   sam-agent-platform_staging:
     driver: bridge
@@ -60,3 +77,4 @@ volumes:
   postgres_staging_data:
   cloud_saas_data:
   operator_data_staging:
+  booker_data_staging:
