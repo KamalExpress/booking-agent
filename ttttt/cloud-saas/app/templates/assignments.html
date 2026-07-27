@@ -80,8 +80,8 @@
             <div>
                 <label class="block text-sm font-medium mb-1">Provider</label>
                 <select name="provider" id="edit-provider" class="input">
-                    <option value="VFS">VFS</option>
                     <option value="GVC">GVC</option>
+                    <option value="VFS">VFS</option>
                     <option value="BLS">BLS</option>
                 </select>
             </div>
@@ -136,6 +136,7 @@
             <thead>
             <tr class="border-b border-border bg-muted/50">
                 <th class="p-4 font-medium text-muted-foreground">ID</th>
+                <th class="p-4 font-medium text-muted-foreground">Provider</th>
                 <th class="p-4 font-medium text-muted-foreground">Target Date Range</th>
                 <th class="p-4 font-medium text-muted-foreground">Visa Center</th>
                 <th class="p-4 font-medium text-muted-foreground">Status</th>
@@ -149,6 +150,9 @@
             <tr class="border-b border-border hover:bg-muted/50 transition-colors">
                 <td class="p-4 text-muted-foreground font-mono">
                     <a href="/assignments/{{ asm.id }}" class="text-blue-500 hover:underline">#{{ asm.id }}</a>
+                </td>
+                <td class="p-4 font-mono">
+                    <span class="px-2 py-0.5 rounded text-xs font-semibold bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">{{ asm.provider }}</span>
                 </td>
                 <td class="p-4 text-foreground font-medium">
                     {{ asm.date_from }} to {{ asm.date_to }}

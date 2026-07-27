@@ -798,6 +798,7 @@ async def update_assignment_status(
 async def edit_assignment(
     assignment_id: int,
     request: Request,
+    provider: str = Form("GVC"),
     visa_center: list[str] = Form(...),
     date_from: str = Form(...),
     date_to: str = Form(...),
@@ -811,6 +812,7 @@ async def edit_assignment(
 
     assignment = db.query(Assignment).filter(Assignment.id == assignment_id).first()
     if assignment:
+        assignment.provider = provider
         assignment.visa_center = ",".join(visa_center)
         assignment.date_from = date_from
         assignment.date_to = date_to
