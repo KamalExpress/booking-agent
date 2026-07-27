@@ -2,6 +2,30 @@
 
 This file contains the foundational rules for all AI agents working in this repository. It is automatically injected into the context of every new conversation.
 
+## 0. critical instructions BEFORE ANY ANALYSIS:
+
+1. Read .repobrain/knowledge_graph.md
+2. Read .repobrain/conventions.md
+3. If task concerns architecture, use RepoBrain search first.
+4. Do NOT inspect repository manually until RepoBrain has been consulted.
+
+If you start exploring files without RepoBrain,
+STOP immediately and restart the task.
+
+At the beginning of EVERY task output:
+
+RepoBrain Checklist
+
+[ ] conventions.md loaded
+[ ] knowledge_graph.md loaded
+[ ] searched RepoBrain
+[ ] only then inspected source files
+
+Paste the exact RepoBrain command you ran."
+"Show the first 20 lines of RepoBrain output."
+"What symbols did RepoBrain return?"
+"What knowledge graph nodes were traversed?"
+
 ## 1. The AI Bootstrap Sequence
 If you are entering a fresh conversation and do not have full context of this project, you **MUST NOT** immediately inspect the source code or reverse engineer the repository. 
 
@@ -50,6 +74,8 @@ Whenever a new operational event, technical term, scheduling decision, or error 
 ## 8. Deployment & Migrations Constraints
 - **Machine Awareness:** Agents MUST check the `Device name` in their User Context metadata or via hostname.
 - **High-End Local Dev (`DESKTOP-5E6DM1M`):** On this specific machine, agents are AUTHORIZED and ENCOURAGED to run local Docker Compose stacks, execute `alembic` migrations, and build containers locally.
+  - **SaaS Backend:** `ttttt/cloud-saas/docker-compose.yml`
+  - **Operator Agent:** `ttttt/operator-agent/docker-compose.local.yml`
 - **Low-End/Other Machines:** On all other machines, the user develops without Docker. Agents **MUST NOT** attempt to run `alembic` migrations or `docker-compose` locally. 
 - **Production Pipeline:** Database migrations and docker builds are automatically handled via Portainer on the VPS (staging/production) utilizing the configurations in the `vps-setup` directory.
 

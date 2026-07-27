@@ -1033,6 +1033,53 @@ async def create_client(
     db.commit()
     return RedirectResponse(url="/clients", status_code=303)
 
+@router.post("/clients/{client_id}/edit")
+async def edit_client(
+    request: Request,
+    client_id: int,
+    first_name: str = Form(...),
+    last_name: str = Form(...),
+    dateofbirth: str = Form(...),
+    gender: str = Form(...),
+    nationality: str = Form(...),
+    passport_number: str = Form(...),
+    passport_expiry: str = Form(...),
+    email: str = Form(...),
+    phone_prefix: str = Form(...),
+    phone_number: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    user = get_ui_user(request, db)
+    if not user or user.role not in [RoleEnum.TENANT_ADMIN, RoleEnum.STAFF, RoleEnum.SUPER_ADMIN]:
+        return RedirectResponse(url="/", status_code=303)
+        
+    client = db.query(Applicant).filter(Applicant.id == client_id, Applicant.tenant_id == user.tenant_id).first()
+    if client:
+        client.firstname = first_name
+        client.surname = last_name
+        client.dateofbirth = dateofbirth
+        client.gender = gender
+        client.nationality = nationality
+        client.passportnumber = passport_number
+        client.passport_expiry = passport_expiry
+        client.email = email
+        client.phone_prefix = phone_prefix
+        client.phone_number = phone_number
+        db.commit()
+    return RedirectResponse(url="/clients", status_code=303)
+
+@router.post("/clients/{client_id}/delete")
+async def delete_client(request: Request, client_id: int, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role not in [RoleEnum.TENANT_ADMIN, RoleEnum.STAFF, RoleEnum.SUPER_ADMIN]:
+        return RedirectResponse(url="/", status_code=303)
+        
+    client = db.query(Applicant).filter(Applicant.id == client_id, Applicant.tenant_id == user.tenant_id).first()
+    if client:
+        db.delete(client)
+        db.commit()
+    return RedirectResponse(url="/clients", status_code=303)
+
 @router.get("/queue", response_class=HTMLResponse)
 async def queue_page(request: Request, db: Session = Depends(get_db)):
     user = get_ui_user(request, db)
@@ -1098,6 +1145,19 @@ async def add_to_queue(
             priority=0
         )
         db.add(new_entry)
+        db.commit()
+        
+    return RedirectResponse(url="/queue", status_code=303)
+
+@router.post("/queue/{entry_id}/delete")
+async def remove_from_queue(request: Request, entry_id: int, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role not in [RoleEnum.TENANT_ADMIN, RoleEnum.STAFF, RoleEnum.SUPER_ADMIN]:
+        return RedirectResponse(url="/", status_code=303)
+        
+    entry = db.query(WaitlistQueue).filter(WaitlistQueue.id == entry_id, WaitlistQueue.tenant_id == user.tenant_id).first()
+    if entry:
+        db.delete(entry)
         db.commit()
         
     return RedirectResponse(url="/queue", status_code=303)
