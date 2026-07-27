@@ -196,10 +196,10 @@
                 </div>
 
                 <div
-                    class="flex justify-between items-center text-[10px] font-medium text-emerald-600/70 border-t border-emerald-500/20 pt-2">
+                    class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1 text-[10px] font-medium text-emerald-600/70 border-t border-emerald-500/20 pt-2">
                     <span>Poll. Interval: 300s</span>
                     {% if center.last_checked_time %}
-                    <span>Checked: <span class="local-time" data-utc="{{ center.last_checked_time.isoformat() }}Z">{{
+                    <span>Last Checked: <span class="local-time" data-utc="{{ center.last_checked_time.isoformat() }}Z">{{
                             center.last_checked_time | format_time(ui_timezone, '%H:%M:%S') }}</span></span>
                     {% endif %}
                 </div>
@@ -224,7 +224,7 @@
                     We'll keep checking and notify you instantly when one appears.</p>
             </div>
             <div
-                class="relative z-10 flex justify-between items-center text-[10px] font-medium text-zinc-600 border-t border-zinc-800 pt-2 mt-4">
+                class="relative z-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1 text-[10px] font-medium text-zinc-600 border-t border-zinc-800 pt-2 mt-4">
                 <span>Poll. Interval: 300s</span>
                 {% if center.last_checked_time %}
                 <span>Last Checked: <span class="local-time" data-utc="{{ center.last_checked_time.isoformat() }}Z">{{
