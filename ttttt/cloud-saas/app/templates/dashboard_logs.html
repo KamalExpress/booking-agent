@@ -122,7 +122,8 @@
                 }
             }
 
-            const timeStr = new Date(timestamp).toLocaleTimeString();
+            const dateObj = new Date(timestamp);
+            const timeStr = dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ', ' + dateObj.toLocaleTimeString();
             
             const cardHtml = `
                 <div class="p-5 rounded-xl log-card">

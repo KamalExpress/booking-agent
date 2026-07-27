@@ -1174,13 +1174,41 @@ async def logs_page(request: Request, db: Session = Depends(get_db)):
     if not user:
         return RedirectResponse(url="/login", status_code=303)
         
-    logs = db.query(EventLog).order_by(EventLog.id.desc()).limit(100).all()
+    if user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    event_logs = db.query(EventLog).order_by(EventLog.created_at.desc()).limit(100).all()
+    from models import SchedulerDecision
+    scheduler_decisions = db.query(SchedulerDecision).order_by(SchedulerDecision.created_at.desc()).limit(100).all()
+    
+    unified_logs = []
+    
+    for e in event_logs:
+        unified_logs.append({
+            "timestamp": e.created_at,
+            "source": f"Worker: {e.worker_id[:8]}" if e.worker_id else (e.source or "System"),
+            "severity": e.severity,
+            "event_type": e.event_type,
+            "details": str(e.payload) if e.payload else (getattr(e, 'message', '') or "")
+        })
+        
+    for s in scheduler_decisions:
+        unified_logs.append({
+            "timestamp": s.created_at,
+            "source": "Scheduler",
+            "severity": "info" if s.decision_type in ["SUCCESS", "ASSIGNMENT_STARTED"] else "warning",
+            "event_type": s.decision_type,
+            "details": s.decision_reason or ""
+        })
+        
+    unified_logs.sort(key=lambda x: x["timestamp"], reverse=True)
+    unified_logs = unified_logs[:150]
     
     return render_template("logs.html", {
         "request": request,
         "user": user,
         "active_page": "logs",
-        "logs": logs
+        "logs": unified_logs
     }, db)
 
 @router.get("/settings", response_class=HTMLResponse)
