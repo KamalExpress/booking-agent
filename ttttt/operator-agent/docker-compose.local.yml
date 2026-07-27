@@ -13,6 +13,18 @@ services:
     networks:
       - sam-agent-platform_default
 
+  booker-agent-local:
+    build: .
+    container_name: booker-agent-local
+    restart: unless-stopped
+    command: python headless_booker.py
+    environment:
+      - SAAS_BASE_URL=http://cloud-saas:8000
+    volumes:
+      - .:/app
+    networks:
+      - sam-agent-platform_default
+
 networks:
   sam-agent-platform_default:
     external: true
