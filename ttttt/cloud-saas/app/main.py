@@ -12,7 +12,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from models import SessionLocal, engine, Base, User, Tenant, RoleEnum, AuditLog, MonitorConfig, PushSubscription, PortalAccount
-from auth import get_current_user, require_super_admin, require_tenant_admin, create_access_token, verify_password, get_password_hash
+from auth import get_current_user, get_current_user_from_cookie, require_super_admin, require_tenant_admin, create_access_token, verify_password, get_password_hash
 # VAPID setup moved to notifications.py
 
 app = FastAPI(title="Kamal Express SaaS Backend")
@@ -480,7 +480,7 @@ def get_vapid_public_key():
     return {"public_key": VAPID_PUBLIC_KEY}
 
 @app.post("/api/push/subscribe")
-def subscribe_push(req_body: PushSubRequest, request: Request, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def subscribe_push(req_body: PushSubRequest, request: Request, current_user: User = Depends(get_current_user_from_cookie), db: Session = Depends(get_db)):
     existing = db.query(PushSubscription).filter(PushSubscription.endpoint == req_body.endpoint).first()
     if not existing:
         user_agent_str = request.headers.get("user-agent", "")
@@ -531,7 +531,7 @@ def subscribe_push(req_body: PushSubRequest, request: Request, current_user: Use
     return {"status": "success"}
 
 @app.delete("/api/push/unsubscribe")
-def unsubscribe_push(req: PushSubRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def unsubscribe_push(req: PushSubRequest, request: Request, current_user: User = Depends(get_current_user_from_cookie), db: Session = Depends(get_db)):
     sub = db.query(PushSubscription).filter(PushSubscription.endpoint == req.endpoint).first()
     if sub:
         db.delete(sub)
@@ -539,7 +539,7 @@ def unsubscribe_push(req: PushSubRequest, current_user: User = Depends(get_curre
     return {"status": "success"}
 
 @app.post("/api/push/delete/{sub_id}")
-def delete_push_sub(sub_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def delete_push_sub(sub_id: int, request: Request, current_user: User = Depends(get_current_user_from_cookie), db: Session = Depends(get_db)):
     sub = db.query(PushSubscription).filter(PushSubscription.id == sub_id).first()
     if sub:
         db.delete(sub)
@@ -574,7 +574,7 @@ def broadcast_push_alert(req: BroadcastRequest, current_user: User = Depends(req
     return {"status": "ok", "delivered": success_count}
 
 @app.post("/api/push/test")
-def test_push_alert(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def test_push_alert(request: Request, current_user: User = Depends(get_current_user_from_cookie), db: Session = Depends(get_db)):
     from notifications import send_push_notification
     success_count = send_push_notification(db, "Test Push Notification", "This is a test notification from the SaaS dashboard.")
     return {"status": "ok", "delivered": success_count}
