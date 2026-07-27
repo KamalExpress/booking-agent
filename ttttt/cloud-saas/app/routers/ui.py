@@ -577,7 +577,7 @@ async def assignments_page(request: Request, db: Session = Depends(get_db)):
 @router.post("/assignments/create")
 async def create_assignment(
     request: Request,
-    provider: str = Form("VFS"),
+    provider: str = Form("GVC"),
     target_start_date: str = Form(...),
     target_end_date: str = Form(...),
     visa_center: list[str] = Form(...),
@@ -838,7 +838,7 @@ async def accounts_page(request: Request, db: Session = Depends(get_db)):
 @router.post("/accounts/create")
 async def create_account(
     request: Request,
-    provider: str = Form("VFS"),
+    provider: str = Form("GVC"),
     username: str = Form(...),
     password: str = Form(...),
     supports_scraping: bool = Form(False),
@@ -883,7 +883,7 @@ async def account_detail_page(account_id: int, request: Request, db: Session = D
 @router.post("/accounts/{account_id}/edit")
 async def edit_account(
     account_id: int,
-    provider: str = Form("VFS"),
+    provider: str = Form("GVC"),
     username: str = Form(...),
     password: str = Form(...),
     status: str = Form(...),

@@ -201,7 +201,7 @@ class PortalAccount(Base):
     tenant_id = Column(Integer, ForeignKey("tenants.id", ondelete="SET NULL"), nullable=True)
     username = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
-    provider = Column(String, default="VFS")
+    provider = Column(String, default="GVC")
     supports_scraping = Column(Boolean, default=True)
     supports_booking = Column(Boolean, default=False)
     
@@ -248,7 +248,7 @@ class Proxy(Base):
 class Assignment(Base):
     __tablename__ = "assignments"
     id = Column(Integer, primary_key=True, index=True)
-    provider = Column(String, default="VFS")
+    provider = Column(String, default="GVC")
     visa_center = Column(String, default="138")
     date_from = Column(String, nullable=False)
     date_to = Column(String, nullable=False)
@@ -265,7 +265,7 @@ class BookingTask(Base):
     tenant_id = Column(Integer, ForeignKey("tenants.id"), nullable=True)
     applicant_id = Column(Integer, ForeignKey("applicants.id", ondelete="SET NULL"), nullable=True)
     assignment_id = Column(Integer, ForeignKey("assignments.id"), nullable=True)
-    provider = Column(String, default="VFS")
+    provider = Column(String, default="GVC")
     visa_center = Column(String, nullable=False)
     target_date = Column(String, nullable=False)
     target_time = Column(String, nullable=False)
