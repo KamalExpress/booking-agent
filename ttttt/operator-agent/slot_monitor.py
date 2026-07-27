@@ -33,7 +33,7 @@ class SlotMonitorEngine(threading.Thread):
         # 1. Register with SaaS (with retries in case FastAPI is still booting)
         registered = False
         for attempt in range(10):
-            if self.api.register(hostname="worker-01"):
+            if self.api.register(hostname="worker-01", can_scrape=True, can_book=True):
                 registered = True
                 break
             logging.info(f"SaaS not ready yet (Attempt {attempt+1}/10). Retrying in 3 seconds...")

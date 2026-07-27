@@ -36,7 +36,7 @@ class SaaSClient:
         with open(cred_path, "w") as f:
             f.write(f"{self.worker_id}:{self.secret}")
 
-    def register(self, hostname="worker", location="unknown", labels=None, can_scrape=True, can_book=False):
+    def register(self, hostname="worker", location="unknown", labels=None, can_scrape=True, can_book=True):
         if self.worker_id and self.secret:
             return True
             
