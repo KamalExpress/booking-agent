@@ -10,11 +10,29 @@ from main_operator import OperatorAgent
 from captcha_service import CapSolverService
 
 def generate_dates_between(start_str, end_str):
-    date_format = "%d/%m/%Y"
-    start_date = datetime.strptime(start_str, date_format)
-    end_date = datetime.strptime(end_str, date_format)
+    formats = ["%d/%m/%Y", "%Y-%m-%d", "%m/%d/%Y"]
+    start_date = None
+    end_date = None
+    for fmt in formats:
+        try:
+            if not start_date:
+                start_date = datetime.strptime(str(start_str).strip(), fmt)
+        except Exception:
+            pass
+        try:
+            if not end_date:
+                end_date = datetime.strptime(str(end_str).strip(), fmt)
+        except Exception:
+            pass
+            
+    if not start_date or not end_date:
+        start_date = datetime.utcnow()
+        end_date = start_date + timedelta(days=7)
+        
     delta = end_date - start_date
-    return [(start_date + timedelta(days=i)).strftime(date_format) for i in range(delta.days + 1)]
+    if delta.days < 0:
+        return [start_date.strftime("%d/%m/%Y")]
+    return [(start_date + timedelta(days=i)).strftime("%d/%m/%Y") for i in range(delta.days + 1)]
 
 class SlotMonitorEngine(threading.Thread):
     def __init__(self, base_url: str):
@@ -169,27 +187,16 @@ class SlotMonitorEngine(threading.Thread):
                     logging.info(f"Checking slots for {target_date} at VAC {vac_id} (Type {app_type})...")
                     
                     # --- POC MOCK LOGIC ---
-                    date_obj = datetime.strptime(target_date, "%d/%m/%Y")
-                    if date_obj.weekday() < 5: # Monday is 0, Sunday is 6. Weekdays are 0-4.
-                        logging.info("POC Mock: Injecting 1 mock slot for weekday.")
-                        mock_slots = []
-                        for i in range(1):
-                            mock_slots.append({
-                                "isavailable": True,
-                                "isselectable": True,
-                                "starttime": f"{8 + (i // 4):02d}:{(i % 4) * 15:02d}", # 08:00, 08:15...
-                            })
-                        slots_response = {
-                            "code": "SUCCESS",
-                            "returnobject": {"slots": mock_slots}
-                        }
-                    else:
-                        # For weekends, either run normal check or mock empty.
-                        # Since it's a POC, let's just mock empty for weekends to save requests.
-                        slots_response = {
-                            "code": "SUCCESS",
-                            "returnobject": {"slots": []}
-                        }
+                    logging.info("POC Mock: Injecting 1 open mock slot.")
+                    mock_slots = [{
+                        "isavailable": True,
+                        "isselectable": True,
+                        "starttime": "09:00",
+                    }]
+                    slots_response = {
+                        "code": "SUCCESS",
+                        "returnobject": {"slots": mock_slots}
+                    }
                     # --- END POC MOCK LOGIC ---
                     
                     if slots_response and slots_response.get("code") == "SUCCESS":
