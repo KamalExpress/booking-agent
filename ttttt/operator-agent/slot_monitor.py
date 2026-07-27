@@ -186,18 +186,24 @@ class SlotMonitorEngine(threading.Thread):
                     
                     logging.info(f"Checking slots for {target_date} at VAC {vac_id} (Type {app_type})...")
                     
-                    # --- POC MOCK LOGIC ---
-                    logging.info("POC Mock: Injecting 1 open mock slot.")
-                    mock_slots = [{
-                        "isavailable": True,
-                        "isselectable": True,
-                        "starttime": "09:00",
-                    }]
-                    slots_response = {
-                        "code": "SUCCESS",
-                        "returnobject": {"slots": mock_slots}
-                    }
-                    # --- END POC MOCK LOGIC ---
+                    # --- CONFIGURABLE MOCK LOGIC ---
+                    testing_cfg = runtime_config.get("testing", {}) if isinstance(runtime_config, dict) else {}
+                    enable_mock_slots = testing_cfg.get("enable_mock_slots", False)
+                    
+                    if enable_mock_slots:
+                        logging.info("POC Mock: Injecting 1 open mock slot (enabled via SaaS Admin Settings).")
+                        mock_slots = [{
+                            "isavailable": True,
+                            "isselectable": True,
+                            "starttime": "09:00",
+                        }]
+                        slots_response = {
+                            "code": "SUCCESS",
+                            "returnobject": {"slots": mock_slots}
+                        }
+                    else:
+                        slots_response = agent.search_slots(target_date, app_type, vac_id)
+                    # --- END MOCK LOGIC ---
                     
                     if slots_response and slots_response.get("code") == "SUCCESS":
                         ret_obj = slots_response.get("returnobject")

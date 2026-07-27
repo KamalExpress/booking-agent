@@ -80,6 +80,9 @@ def init_db():
         if not db.query(SystemSetting).filter(SystemSetting.key == "captcha.provider").first():
             db.add(SystemSetting(key="captcha.provider", value="capsolver", updated_by="system"))
             db.commit()
+        if not db.query(SystemSetting).filter(SystemSetting.key == "testing.enable_mock_slots").first():
+            db.add(SystemSetting(key="testing.enable_mock_slots", value="false", updated_by="system"))
+            db.commit()
 
         print("Database initialization complete.")
 

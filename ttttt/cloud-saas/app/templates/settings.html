@@ -189,9 +189,21 @@
                             </label>
                         </div>
                     </div>
+                <div class="pt-4 border-t border-zinc-800">
+                    <h4 class="text-md font-semibold text-zinc-200 mb-3 flex items-center gap-2">
+                        <i data-lucide="flask-conical" class="w-4 h-4 text-indigo-400"></i> Testing & Mock Controls
+                    </h4>
+                    <div class="bg-indigo-950/20 border border-indigo-500/20 rounded-lg p-3">
+                        <label class="flex items-start gap-3 cursor-pointer">
+                            <input type="checkbox" name="enable_mock_slots" value="true" {{ 'checked' if settings.get('testing.enable_mock_slots') and settings.get('testing.enable_mock_slots').value == 'true' else '' }} class="mt-0.5 rounded bg-black border-zinc-800 text-indigo-600 focus:ring-indigo-500">
+                            <div>
+                                <span class="text-sm font-medium text-zinc-200 block">Enable Mock Slot Drop (Testing Mode)</span>
+                                <span class="text-xs text-zinc-400 block mt-0.5">When checked, worker slot checks drop 1 mock open slot to test Push Alerts and Waitlist Auto-Dispatch end-to-end without waiting for real portal drops.</span>
+                            </div>
+                        </label>
+                    </div>
                 </div>
-                </div>
-                
+
                 <div class="pt-4 mt-auto">
                     <button type="submit" class="w-full inline-flex justify-center items-center rounded-md text-sm font-medium h-9 px-4 py-2 bg-white text-black hover:bg-zinc-200 transition-colors shadow-sm">
                         Save Global Defaults

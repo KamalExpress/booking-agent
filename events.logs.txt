@@ -1,0 +1,98 @@
+Event Logs
+Live execution streams from distributed worker nodes
+
+Timestamp	Source	Event Type	Details
+Jul 27, 16:39:45	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:39:15	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:38:45	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:38:15	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:37:44	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:37:14	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:36:57	Worker: worker_d	LEASE_COMPLETED	
+Jul 27, 16:36:57	Worker: worker_d	LEASE_RESULT	{'reason': '', 'status': 'COMPLETED'}
+Jul 27, 16:36:45	Worker: worker_d	LOGIN_SUCCESS	{'username': 'ammarashrafsialkot@gmail.com'}
+Jul 27, 16:36:43	Scheduler	SUCCESS	Leased scraping task
+Jul 27, 16:36:19	Worker: worker_d	LEASE_COMPLETED	
+Jul 27, 16:36:19	Worker: worker_d	LEASE_RESULT	{'reason': '', 'status': 'COMPLETED'}
+Jul 27, 16:35:45	Worker: worker_d	LOGIN_SUCCESS	{'username': 'malikjawadtanveer@gmail.com'}
+Jul 27, 16:35:42	Scheduler	SUCCESS	Leased scraping task
+Jul 27, 16:35:12	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:34:42	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:34:12	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:33:42	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:33:12	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:32:42	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:32:12	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:31:42	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:31:12	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:30:56	Worker: worker_d	LEASE_COMPLETED	
+Jul 27, 16:30:56	Worker: worker_d	LEASE_RESULT	{'reason': '', 'status': 'COMPLETED'}
+Jul 27, 16:30:43	Worker: worker_d	LOGIN_SUCCESS	{'username': 'mnoon2404@gmail.com'}
+Jul 27, 16:30:41	Scheduler	SUCCESS	Leased scraping task
+Jul 27, 16:30:19	Worker: worker_d	LEASE_COMPLETED	
+Jul 27, 16:30:19	Worker: worker_d	LEASE_RESULT	{'reason': '', 'status': 'COMPLETED'}
+Jul 27, 16:29:44	Worker: worker_d	LOGIN_SUCCESS	{'username': 'malikjawadtanveer@gmail.com'}
+Jul 27, 16:29:39	Scheduler	SUCCESS	Leased scraping task
+Jul 27, 16:29:09	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:28:39	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:28:09	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:27:39	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:27:09	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:26:39	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:26:09	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:25:39	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:25:09	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:24:54	Worker: worker_d	LEASE_COMPLETED	
+Jul 27, 16:24:54	Worker: worker_d	LEASE_RESULT	{'reason': '', 'status': 'COMPLETED'}
+Jul 27, 16:24:41	Worker: worker_d	LOGIN_SUCCESS	{'username': 'ammarashrafsialkot@gmail.com'}
+Jul 27, 16:24:38	Scheduler	SUCCESS	Leased scraping task
+Jul 27, 16:24:15	Worker: worker_d	LEASE_COMPLETED	
+Jul 27, 16:24:14	Worker: worker_d	LEASE_RESULT	{'reason': '', 'status': 'COMPLETED'}
+Jul 27, 16:23:38	Worker: worker_d	LOGIN_SUCCESS	{'username': 'malikjawadtanveer@gmail.com'}
+Jul 27, 16:23:37	Scheduler	SUCCESS	Leased scraping task
+Jul 27, 16:23:07	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:22:37	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:22:07	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:21:36	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:21:06	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:20:36	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:20:06	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:19:36	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:19:34	Worker: worker_d	LEASE_COMPLETED	
+Jul 27, 16:19:34	Worker: worker_d	LEASE_RESULT	{'reason': '', 'status': 'COMPLETED'}
+Jul 27, 16:19:23	Worker: worker_d	LOGIN_SUCCESS	{'username': 'mnoon2404@gmail.com'}
+Jul 27, 16:18:35	Scheduler	SUCCESS	Leased scraping task
+Jul 27, 16:18:10	Worker: worker_d	LEASE_COMPLETED	
+Jul 27, 16:18:10	Worker: worker_d	LEASE_RESULT	{'reason': '', 'status': 'COMPLETED'}
+Jul 27, 16:17:35	System	PUSH_SENT	{'body': 'Worker successfully logged into malikjawadtanveer@gmail.com (Center 138:26,137:26)', 'title': 'Login Successful', 'tenant_id': 1, 'failure_count': 0, 'success_count': 1}
+Jul 27, 16:17:35	Worker: worker_d	LOGIN_SUCCESS	{'username': 'malikjawadtanveer@gmail.com'}
+Jul 27, 16:17:34	Scheduler	SUCCESS	Leased scraping task
+Jul 27, 16:17:04	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:16:34	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:16:04	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:15:34	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:15:04	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:14:34	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:14:04	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:13:34	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:13:04	Scheduler	NO_ASSIGNMENT	No scraping or booking tasks available.
+Jul 27, 16:12:45	Worker: worker_d	LEASE_COMPLETED	
+Jul 27, 16:12:45	Worker: worker_d	LEASE_RESULT	{'reason': '', 'status': 'COMPLETED'}
+Jul 27, 16:12:35	System	PUSH_SENT	{'body': 'Worker successfully logged into ammarashrafsialkot@gmail.com (Center 138:26,137:26)', 'title': 'Login Successful', 'tenant_id': 1, 'failure_count': 0, 'success_count': 1}
+Jul 27, 16:12:35	Worker: worker_d	LOGIN_SUCCESS	{'username': 'ammarashrafsialkot@gmail.com'}
+Jul 27, 16:12:32	Scheduler	SUCCESS	Leased scraping task
+Jul 27, 16:12:26	Worker: worker_d	LEASE_COMPLETED	
+Jul 27, 16:12:26	Worker: worker_d	LEASE_RESULT	{'reason': '', 'status': 'COMPLETED'}
+Jul 27, 16:11:51	System	PUSH_SENT	{'body': 'Worker successfully logged into malikjawadtanveer@gmail.com (Center 138:26,137:26)', 'title': 'Login Successful', 'tenant_id': 1, 'failure_count': 0, 'success_count': 1}
+Jul 27, 16:11:51	Worker: worker_d	LOGIN_SUCCESS	{'username': 'malikjawadtanveer@gmail.com'}
+Jul 27, 16:11:31	Scheduler	SUCCESS	Leased scraping task
+Jul 27, 16:11:01	Scheduler	NO_READY_ACCOUNT	No portal account registered for provider 'GVC' with scraping enabled.
+Jul 27, 16:10:31	Scheduler	NO_READY_ACCOUNT	No portal account registered for provider 'GVC' with scraping enabled.
+Jul 27, 16:10:01	Scheduler	NO_READY_ACCOUNT	No portal account registered for provider 'GVC' with scraping enabled.
+Jul 27, 16:09:31	Scheduler	NO_READY_ACCOUNT	No portal account registered for provider 'GVC' with scraping enabled.
+Jul 27, 16:09:01	Scheduler	NO_READY_ACCOUNT	No portal account registered for provider 'GVC' with scraping enabled.
+Jul 27, 16:08:31	Scheduler	NO_READY_ACCOUNT	No portal account registered for provider 'GVC' with scraping enabled.
+Jul 27, 16:08:01	Scheduler	NO_READY_ACCOUNT	No portal account registered for provider 'GVC' with scraping enabled.
+Jul 27, 16:07:31	Scheduler	NO_READY_ACCOUNT	No portal account registered for provider 'GVC' with scraping enabled.
+Jul 27, 16:07:01	Scheduler	NO_READY_ACCOUNT	No portal account registered for provider 'GVC' with scraping enabled.
+Jul 27, 16:06:31	Scheduler	NO_READY_ACCOUNT	No portal account registered for provider 'GVC' with scraping enabled.

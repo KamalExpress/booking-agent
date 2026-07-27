@@ -101,6 +101,8 @@ class WorkerService:
                 
         min_slot_delay = self.db.query(SystemSetting).filter(SystemSetting.key == "global.min_slot_delay").first()
         max_slot_delay = self.db.query(SystemSetting).filter(SystemSetting.key == "global.max_slot_delay").first()
+        enable_mock_slots_setting = self.db.query(SystemSetting).filter(SystemSetting.key == "testing.enable_mock_slots").first()
+        enable_mock_slots = enable_mock_slots_setting.value == "true" if enable_mock_slots_setting and enable_mock_slots_setting.value else False
         
         return {
             "version": saas_version,
@@ -108,6 +110,9 @@ class WorkerService:
             "captcha": {
                 "provider": captcha_provider.value if captcha_provider else "capsolver",
                 "api_key": decrypted_api_key
+            },
+            "testing": {
+                "enable_mock_slots": enable_mock_slots
             },
             "proxy": {},
             "browser": {

@@ -1326,6 +1326,7 @@ async def update_global_settings(
     nav_admin_bookings: str = Form(None),
     nav_admin_staff: str = Form(None),
     nav_staff_queue: str = Form(None),
+    enable_mock_slots: str = Form(None),
     db: Session = Depends(get_db)
 ):
     user = get_ui_user(request, db)
@@ -1354,6 +1355,7 @@ async def update_global_settings(
         "nav.admin.show_bookings": "true" if nav_admin_bookings else "false",
         "nav.admin.show_staff": "true" if nav_admin_staff else "false",
         "nav.staff.show_queue": "true" if nav_staff_queue else "false",
+        "testing.enable_mock_slots": "true" if enable_mock_slots else "false",
     }
     
     for key, value in settings_to_update.items():
