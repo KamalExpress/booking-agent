@@ -21,7 +21,11 @@
 - **Execution Plane & Docker Compose Alignment:**
   - Configured `headless_booker.py` as dedicated Booker Agent (`can_scrape=False, can_book=True`) and `slot_monitor.py` as dedicated Scraper Agent (`can_scrape=True, can_book=False`).
   - Updated `docker-compose-staging.yml` and `vps-setup/docker-compose-staging.yml` with `booker-agent-staging` container service running `python headless_booker.py` (leaving `docker-compose.prod.yml` untouched).
-  - Added multi-format date parser (`%d/%m/%Y`, `%Y-%m-%d`, `%m/%d/%Y`) and 1 mock slot injector for E2E testing in `slot_monitor.py`.
+  - Added multi-format date parser (`%d/%m/%Y`, `%Y-%m-%d`, `%m/%d/%Y`) in `slot_monitor.py`.
+- **Configurable Mock Slot Drop (SaaS Admin Settings):**
+  - Added **Testing & Mock Controls** UI section to `/settings` with **Enable Mock Slot Drop (Testing Mode)** checkbox.
+  - Persisted `"testing.enable_mock_slots"` setting in PostgreSQL `SystemSetting` and exposed it in worker `/api/v1/worker/runtime-config` payload.
+  - Updated `slot_monitor.py` to dynamically check `enable_mock_slots` flag before dropping 1 open mock slot (`09:00 AM`). When unchecked, worker executes real portal API slot searches.
 - **WAF Log Analysis & Diagnosis:**
   - Analyzed captured HAR network log (`worker_worker_5cc74783_network_log_25610.json`) and diagnosed an **Imperva Incapsula 403 Forbidden IP Block** on proxy `185.193.214.18`.
 
