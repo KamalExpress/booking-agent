@@ -481,39 +481,49 @@ def get_vapid_public_key():
 
 @app.post("/api/push/subscribe")
 def subscribe_push(req_body: PushSubRequest, request: Request, current_user: User = Depends(get_current_user_from_cookie), db: Session = Depends(get_db)):
-    existing = db.query(PushSubscription).filter(PushSubscription.endpoint == req_body.endpoint).first()
-    if not existing:
-        user_agent_str = request.headers.get("user-agent", "")
-        ip_addr = request.client.host if request.client else ""
-        
-        browser = ""
-        os_name = ""
-        device_name = ""
-        location = ""
-        
-        if ip_addr and ip_addr not in ["127.0.0.1", "localhost", "::1"]:
-            try:
-                import requests
-                res = requests.get(f"http://ip-api.com/json/{ip_addr}", timeout=2)
-                if res.status_code == 200:
-                    data = res.json()
-                    if data.get("status") == "success":
-                        location = f"{data.get('city', '')}, {data.get('country', '')}".strip(", ")
-            except Exception:
-                pass
-        
-        if user_agent_str:
-            try:
-                from user_agents import parse
-                ua = parse(user_agent_str)
-                browser = f"{ua.browser.family} {ua.browser.version_string}".strip()
-                os_name = f"{ua.os.family} {ua.os.version_string}".strip()
-                device_name = f"{ua.device.brand} {ua.device.model}".strip()
-                if device_name == "None None" or not device_name:
-                    device_name = ua.device.family
-            except Exception:
-                pass
+    user_agent_str = request.headers.get("user-agent", "")
+    ip_addr = request.client.host if request.client else ""
+    
+    browser = ""
+    os_name = ""
+    device_name = ""
+    location = ""
+    
+    if ip_addr and ip_addr not in ["127.0.0.1", "localhost", "::1"]:
+        try:
+            import requests
+            res = requests.get(f"http://ip-api.com/json/{ip_addr}", timeout=2)
+            if res.status_code == 200:
+                data = res.json()
+                if data.get("status") == "success":
+                    location = f"{data.get('city', '')}, {data.get('country', '')}".strip(", ")
+        except Exception:
+            pass
+    
+    if user_agent_str:
+        try:
+            from user_agents import parse
+            ua = parse(user_agent_str)
+            browser = f"{ua.browser.family} {ua.browser.version_string}".strip()
+            os_name = f"{ua.os.family} {ua.os.version_string}".strip()
+            device_name = f"{ua.device.brand} {ua.device.model}".strip()
+            if device_name == "None None" or not device_name:
+                device_name = ua.device.family
+        except Exception:
+            pass
 
+    existing = db.query(PushSubscription).filter(PushSubscription.endpoint == req_body.endpoint).first()
+    if existing:
+        existing.user_id = current_user.id
+        existing.p256dh = req_body.p256dh
+        existing.auth = req_body.auth
+        existing.ip_address = ip_addr
+        existing.location = location
+        existing.user_agent = user_agent_str
+        existing.browser = browser
+        existing.os_name = os_name
+        existing.device_name = device_name
+    else:
         sub = PushSubscription(
             user_id=current_user.id,
             endpoint=req_body.endpoint,
@@ -527,7 +537,7 @@ def subscribe_push(req_body: PushSubRequest, request: Request, current_user: Use
             device_name=device_name
         )
         db.add(sub)
-        db.commit()
+    db.commit()
     return {"status": "success"}
 
 @app.delete("/api/push/unsubscribe")

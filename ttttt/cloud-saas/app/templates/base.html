@@ -472,8 +472,35 @@
             return outputArray;
         }
 
+        function markButtonSubscribed(btn) {
+            if (!btn) return;
+            btn.innerHTML = `<span class="flex items-center gap-2 text-emerald-400 font-semibold"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> Subscribed</span>`;
+            btn.disabled = true;
+            btn.classList.remove('hover:bg-zinc-800');
+            btn.classList.add('bg-emerald-500/10', 'border', 'border-emerald-500/30', 'text-emerald-400', 'cursor-default');
+            if (window.lucide) window.lucide.createIcons();
+        }
+
+        async function checkPushState(btnElement) {
+            if ('serviceWorker' in navigator && 'PushManager' in window) {
+                try {
+                    const registration = await navigator.serviceWorker.ready;
+                    const subscription = await registration.pushManager.getSubscription();
+                    if (subscription) {
+                        markButtonSubscribed(btnElement);
+                        return true;
+                    }
+                } catch (e) {
+                    console.error("Push check failed:", e);
+                }
+            }
+            return false;
+        }
+
         const globalPushBtn = document.getElementById("globalPushBtn");
         if (globalPushBtn) {
+            checkPushState(globalPushBtn);
+            
             globalPushBtn.addEventListener("click", async (e) => {
                 const btn = e.currentTarget;
                 const originalContent = btn.innerHTML;
@@ -516,7 +543,7 @@
                     });
 
                     if (subRes.ok) {
-                        btn.innerHTML = `<span class="flex items-center gap-3 text-emerald-500"><i data-lucide="check" class="w-4 h-4"></i> Subscribed!</span>`;
+                        markButtonSubscribed(btn);
                     } else {
                         throw new Error("Server error.");
                     }

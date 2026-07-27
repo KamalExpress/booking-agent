@@ -232,77 +232,99 @@
 
 {% block scripts %}
 <script>
-    document.getElementById("subscribePushBtn").addEventListener("click", async (e) => {
-        const btn = e.currentTarget;
-        const originalText = btn.innerHTML;
+    document.addEventListener("DOMContentLoaded", async function() {
+        const btn = document.getElementById("subscribePushBtn");
         const statusDiv = document.getElementById("pushStatus");
-        
-        btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 mr-2 animate-spin"></i> Subscribing...`;
-        btn.disabled = true;
-        statusDiv.classList.add("hidden");
 
-        try {
-            // Check for support
-            if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-                throw new Error("Push notifications are not supported in this browser.");
-            }
-
-            // Ask permission
-            const permission = await Notification.requestPermission();
-            if (permission !== 'granted') {
-                throw new Error("Notification permission denied.");
-            }
-
-            // Get VAPID key
-            const vapidRes = await fetch('/api/push/vapid-public-key');
-            if (!vapidRes.ok) throw new Error("Failed to fetch VAPID key");
-            const vapidData = await vapidRes.json();
-            const convertedVapidKey = urlBase64ToUint8Array(vapidData.public_key);
-
-            // Subscribe
-            const registration = await navigator.serviceWorker.ready;
-            const subscription = await registration.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: convertedVapidKey
-            });
-
-            // Send to server
-            const token = localStorage.getItem("token") || "";
-            const subData = subscription.toJSON();
-            const payload = {
-                endpoint: subData.endpoint,
-                p256dh: subData.keys.p256dh,
-                auth: subData.keys.auth
-            };
-
-            const subRes = await fetch("/api/push/subscribe", {
-                method: "POST",
-                body: JSON.stringify(payload),
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
-                }
-            });
-
-            if (subRes.ok) {
-                statusDiv.textContent = "Successfully subscribed to push notifications!";
-                statusDiv.className = "text-sm mt-3 text-emerald-500 font-medium";
-            } else {
-                const errData = await subRes.json();
-                let errMsg = errData.detail;
-                if (typeof errMsg === 'object') errMsg = JSON.stringify(errMsg);
-                throw new Error(errMsg || "Failed to save subscription on server.");
-            }
-
-        } catch (err) {
-            statusDiv.textContent = err.message || err;
-            statusDiv.className = "text-sm mt-3 text-red-500 font-medium";
+        function markSubscribed() {
+            if (!btn) return;
+            btn.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 mr-2 text-emerald-400"></i> Subscribed`;
+            btn.disabled = true;
+            btn.className = "inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 cursor-default shadow-sm";
+            if (window.lucide) window.lucide.createIcons();
         }
 
-        statusDiv.classList.remove("hidden");
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-        lucide.createIcons();
+        if ('serviceWorker' in navigator && 'PushManager' in window) {
+            try {
+                const registration = await navigator.serviceWorker.ready;
+                const subscription = await registration.pushManager.getSubscription();
+                if (subscription) {
+                    markSubscribed();
+                    statusDiv.textContent = "Your device is currently subscribed to real-time push alerts.";
+                    statusDiv.className = "text-sm mt-3 text-emerald-400 font-medium";
+                    statusDiv.classList.remove("hidden");
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        btn.addEventListener("click", async (e) => {
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 mr-2 animate-spin"></i> Subscribing...`;
+            btn.disabled = true;
+            statusDiv.classList.add("hidden");
+
+            try {
+                if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                    throw new Error("Push notifications are not supported in this browser.");
+                }
+
+                const permission = await Notification.requestPermission();
+                if (permission !== 'granted') {
+                    throw new Error("Notification permission denied.");
+                }
+
+                const vapidRes = await fetch('/api/push/vapid-public-key');
+                if (!vapidRes.ok) throw new Error("Failed to fetch VAPID key");
+                const vapidData = await vapidRes.json();
+                const convertedVapidKey = urlBase64ToUint8Array(vapidData.public_key);
+
+                const registration = await navigator.serviceWorker.ready;
+                const subscription = await registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: convertedVapidKey
+                });
+
+                const token = localStorage.getItem("token") || "";
+                const subData = subscription.toJSON();
+                const payload = {
+                    endpoint: subData.endpoint,
+                    p256dh: subData.keys.p256dh,
+                    auth: subData.keys.auth
+                };
+
+                const subRes = await fetch("/api/push/subscribe", {
+                    method: "POST",
+                    body: JSON.stringify(payload),
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + token
+                    }
+                });
+
+                if (subRes.ok) {
+                    markSubscribed();
+                    statusDiv.textContent = "Successfully subscribed to push notifications!";
+                    statusDiv.className = "text-sm mt-3 text-emerald-500 font-medium";
+                    statusDiv.classList.remove("hidden");
+                } else {
+                    const errData = await subRes.json();
+                    let errMsg = errData.detail;
+                    if (typeof errMsg === 'object') errMsg = JSON.stringify(errMsg);
+                    throw new Error(errMsg || "Failed to save subscription on server.");
+                }
+
+            } catch (err) {
+                statusDiv.textContent = err.message || err;
+                statusDiv.className = "text-sm mt-3 text-red-500 font-medium";
+                statusDiv.classList.remove("hidden");
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                if (window.lucide) window.lucide.createIcons();
+            }
+        });
+        });
     });
 </script>
 {% endblock %}
