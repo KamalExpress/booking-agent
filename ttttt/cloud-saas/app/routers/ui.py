@@ -935,10 +935,10 @@ async def create_proxies(
         parts = line.split(":")
         if len(parts) >= 2:
             p = Proxy(
-                host=parts[0],
-                port=parts[1],
-                username=parts[2] if len(parts) > 2 else None,
-                password=parts[3] if len(parts) > 3 else None,
+                host=parts[0].strip(),
+                port=parts[1].strip(),
+                username=parts[2].strip() if len(parts) > 2 else None,
+                password=parts[3].strip().replace("\r", "").replace("\n", "") if len(parts) > 3 else None,
                 supports_scraping=supports_scraping,
                 supports_booking=supports_booking
             )

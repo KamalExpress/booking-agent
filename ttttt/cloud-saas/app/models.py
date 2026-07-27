@@ -237,9 +237,13 @@ class Proxy(Base):
 
     @property
     def proxy_string(self) -> str:
+        h = self.host.strip() if self.host else ""
+        p = self.port.strip() if isinstance(self.port, str) else self.port
         if self.username and self.password:
-            return f"http://{self.username}:{self.password}@{self.host}:{self.port}"
-        return f"http://{self.host}:{self.port}"
+            u = self.username.strip()
+            pw = self.password.strip().replace("\r", "").replace("\n", "")
+            return f"http://{u}:{pw}@{h}:{p}"
+        return f"http://{h}:{p}"
 
 class Assignment(Base):
     __tablename__ = "assignments"
