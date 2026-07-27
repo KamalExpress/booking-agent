@@ -58,6 +58,7 @@
             <thead>
             <tr class="border-b border-border bg-muted/50">
                 <th class="p-4 font-medium text-muted-foreground">ID</th>
+                <th class="p-4 font-medium text-muted-foreground">Provider</th>
                 <th class="p-4 font-medium text-muted-foreground">Username</th>
                 <th class="p-4 font-medium text-muted-foreground">Capabilities</th>
                 <th class="p-4 font-medium text-muted-foreground">Health</th>
@@ -70,6 +71,9 @@
             <tr class="border-b border-border hover:bg-muted/50 transition-colors">
                 <td class="p-4 text-muted-foreground font-mono">
                     <a href="/accounts/{{ acc.id }}" class="text-blue-500 hover:underline">#{{ acc.id }}</a>
+                </td>
+                <td class="p-4 font-medium">
+                    <span class="inline-flex items-center rounded-md border border-indigo-500/20 bg-indigo-500/10 px-2 py-0.5 text-xs font-semibold text-indigo-400 font-mono">{{ acc.provider }}</span>
                 </td>
                 <td class="p-4 text-foreground font-medium">{{ acc.username }}</td>
                 <td class="p-4 text-muted-foreground flex gap-1">

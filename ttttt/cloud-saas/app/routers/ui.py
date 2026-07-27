@@ -883,6 +883,7 @@ async def account_detail_page(account_id: int, request: Request, db: Session = D
 @router.post("/accounts/{account_id}/edit")
 async def edit_account(
     account_id: int,
+    provider: str = Form("VFS"),
     username: str = Form(...),
     password: str = Form(...),
     status: str = Form(...),
@@ -892,6 +893,7 @@ async def edit_account(
 ):
     account = db.query(PortalAccount).filter(PortalAccount.id == account_id).first()
     if account:
+        account.provider = provider
         account.username = username
         account.password = password
         account.supports_scraping = supports_scraping
