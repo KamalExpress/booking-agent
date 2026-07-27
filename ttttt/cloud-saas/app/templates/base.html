@@ -81,7 +81,16 @@
     <aside id="sidebar" class="fixed md:static inset-y-0 left-0 w-64 border-r border-[#27272a] bg-[#09090b] flex flex-col z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out">
         <div class="p-6 flex items-center justify-between">
             <div>
-                <h1 class="text-xl font-bold tracking-tight">{{ env_branding.app_name }}</h1>
+                <h1 class="text-xl font-bold tracking-tight flex items-center gap-3">
+                    {{ env_branding.app_name }}
+                    <div class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20" title="System is actively monitoring slots">
+                        <span class="relative flex w-1.5 h-1.5">
+                            <span class="absolute inline-flex w-full h-full bg-emerald-400 rounded-full opacity-75 animate-ping"></span>
+                            <span class="relative inline-flex w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                        </span>
+                        <span class="text-[9px] font-bold tracking-widest uppercase text-emerald-500">Live</span>
+                    </div>
+                </h1>
                 <p class="text-sm text-[#a1a1aa] mt-1">
                     {{ branding.brand_subtitle | default('Automating Business Solutions') }}
                     {% if env_branding.badge_text %}
@@ -281,8 +290,15 @@
         
         <!-- Mobile Header -->
         <div class="md:hidden sticky top-0 flex-none flex items-center justify-between px-4 pb-4 border-b border-[#27272a] bg-[#09090b]/90 backdrop-blur-md w-full z-20" style="padding-top: max(1rem, env(safe-area-inset-top));">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-3">
                 <h1 class="text-lg font-bold tracking-tight">{{ branding.brand_name | default('Alamia Automation') }}</h1>
+                <div class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20" title="System is actively monitoring slots">
+                    <span class="relative flex w-1.5 h-1.5">
+                        <span class="absolute inline-flex w-full h-full bg-emerald-400 rounded-full opacity-75 animate-ping"></span>
+                        <span class="relative inline-flex w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                    </span>
+                    <span class="text-[9px] font-bold tracking-widest uppercase text-emerald-500">Live</span>
+                </div>
             </div>
             {% if user %}
             <button id="mobileMenuBtn" class="p-2 text-zinc-400 hover:text-white rounded-md">
