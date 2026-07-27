@@ -115,6 +115,51 @@ GUIDANCE_DICT = {
         "auto_recovery": "Account enters cooldown; will retry later.",
         "severity": "Error"
     },
+    "LEASE_COMPLETED": {
+        "title": "Lease Completed",
+        "summary": "Worker completed assignment checks successfully.",
+        "why": "All date range checks were executed without errors and the lease was cleanly released.",
+        "how_to_fix": [],
+        "auto_recovery": "Assignment resets for next polling schedule.",
+        "severity": "Success"
+    },
+    "LEASE_EXPIRED": {
+        "title": "Lease Expired",
+        "summary": "Lease TTL elapsed before worker reported completion.",
+        "why": "Worker became unresponsive, encountered a network delay, or crashed.",
+        "how_to_fix": [
+            "Check worker process logs for stalls.",
+            "Increase lease TTL if network checks require more time."
+        ],
+        "auto_recovery": "System automatically re-claims resources for re-scheduling.",
+        "severity": "Warning"
+    },
+    "PREFLIGHT_SUCCESS": {
+        "title": "Pre-Flight Trust Established",
+        "summary": "Worker established TLS/WAF trust with portal.",
+        "why": "Browser fingerprint and TLS handshake passed Imperva/Cloudflare security check.",
+        "how_to_fix": [],
+        "auto_recovery": "Worker proceeds to authentication.",
+        "severity": "Success"
+    },
+    "CAPTCHA_SOLVING": {
+        "title": "Captcha Solving",
+        "summary": "Submitting captcha challenge to solver service.",
+        "why": "Portal login or form required reCAPTCHA/hCaptcha verification.",
+        "how_to_fix": [
+            "Ensure CapSolver/NopeCha API balance is positive."
+        ],
+        "auto_recovery": "Worker polls solver service up to 150s.",
+        "severity": "Info"
+    },
+    "CAPTCHA_SUCCESS": {
+        "title": "Captcha Solved",
+        "summary": "Valid token received from solver service.",
+        "why": "Automated solver successfully bypassed visual challenge.",
+        "how_to_fix": [],
+        "auto_recovery": "Worker submits token to portal.",
+        "severity": "Success"
+    },
     "CAPTCHA_FAILED": {
         "title": "Captcha Failed",
         "summary": "Captcha could not be bypassed.",
@@ -125,6 +170,62 @@ GUIDANCE_DICT = {
         ],
         "auto_recovery": "System will retry on the next lease.",
         "severity": "Error"
+    },
+    "WORKER_ERROR": {
+        "title": "Worker Execution Error",
+        "summary": "Worker node encountered an unhandled exception.",
+        "why": "An unexpected exception, DOM element mismatch, or script timeout occurred.",
+        "how_to_fix": [
+            "Inspect worker logs for stack trace.",
+            "Verify portal page elements haven't changed."
+        ],
+        "auto_recovery": "Assignment lease is discarded and rescheduled.",
+        "severity": "Error"
+    },
+    "RATE_LIMIT_HIT": {
+        "title": "Rate Limit Encountered",
+        "summary": "Portal responded with 429 Too Many Requests.",
+        "why": "Worker IP or portal account exceeded request rate threshold.",
+        "how_to_fix": [
+            "Increase assignment polling interval.",
+            "Add additional proxies to distribute load."
+        ],
+        "auto_recovery": "Account and proxy placed on temporary cooldown.",
+        "severity": "Warning"
+    },
+    "OTP_SENT": {
+        "title": "Booking OTP Requested",
+        "summary": "One-Time Password requested for 2FA.",
+        "why": "Portal requires 2FA confirmation code to proceed with booking.",
+        "how_to_fix": [
+            "Enter received OTP in dashboard prompt promptly."
+        ],
+        "auto_recovery": "Worker waits for OTP submission via API.",
+        "severity": "Info"
+    },
+    "OTP_RECEIVED": {
+        "title": "Booking OTP Received",
+        "summary": "OTP code received by worker node.",
+        "why": "User submitted 2FA code from dashboard.",
+        "how_to_fix": [],
+        "auto_recovery": "Worker submits OTP to portal to finalize booking.",
+        "severity": "Success"
+    },
+    "BOOKING_STARTED": {
+        "title": "Booking Flow Initiated",
+        "summary": "Worker started automated booking sequence.",
+        "why": "Available slot detected and assigned to applicant.",
+        "how_to_fix": [],
+        "auto_recovery": "Worker executes automated form submission.",
+        "severity": "Info"
+    },
+    "BOOKING_SUCCESS": {
+        "title": "Appointment Booked!",
+        "summary": "Visa appointment successfully secured.",
+        "why": "All portal booking steps and confirmation details were processed cleanly.",
+        "how_to_fix": [],
+        "auto_recovery": "Generates confirmation record and notifies applicant.",
+        "severity": "Success"
     },
     "PROXY_TIMEOUT": {
         "title": "Proxy Timeout",

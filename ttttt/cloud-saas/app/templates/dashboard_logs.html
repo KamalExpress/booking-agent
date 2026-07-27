@@ -130,7 +130,8 @@
                     <div class="flex items-start justify-between">
                         <div class="flex items-center gap-2">
                             <span class="text-xl">${emoji}</span>
-                            <h3 class="text-lg font-bold ${colorClass}">**${title}**</h3>
+                            <h3 class="text-lg font-bold ${colorClass}">${title}</h3>
+                            <operational-guidance code="${event_type}"></operational-guidance>
                         </div>
                         <span class="text-xs font-medium text-zinc-500">${timeStr} | worker: ${worker_id || 'unknown'}</span>
                     </div>
