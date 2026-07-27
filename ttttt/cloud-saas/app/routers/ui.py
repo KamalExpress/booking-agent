@@ -232,8 +232,18 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
 
     from models import SlotAvailability
     
-    last_check_event = db.query(EventLog).filter(EventLog.event_type.in_(['SLOT_FOUND', 'NO_SLOTS_FOUND'])).order_by(EventLog.created_at.desc()).first()
-    global_last_checked_time = last_check_event.created_at if last_check_event else None
+    last_check_event = db.query(EventLog).filter(
+        EventLog.event_type.in_(['SLOT_FOUND', 'NO_SLOTS_FOUND', 'LEASE_COMPLETED', 'LOGIN_SUCCESS'])
+    ).order_by(EventLog.created_at.desc()).first()
+    event_time = last_check_event.created_at if last_check_event else None
+
+    last_asm = db.query(Assignment).filter(
+        Assignment.last_checked.isnot(None)
+    ).order_by(Assignment.last_checked.desc()).first()
+    asm_time = last_asm.last_checked if last_asm else None
+
+    check_times = [t for t in [event_time, asm_time] if t is not None]
+    global_last_checked_time = max(check_times) if check_times else None
     
     # Build status per visa center
     vc_setting = db.query(SystemSetting).filter(SystemSetting.key == "global.visa_centers_config").first()
