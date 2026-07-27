@@ -187,10 +187,17 @@ class SchedulerService:
                 best_account = account
                 
         if not best_account:
+            matching_provider_accounts = [a for a in accounts if a.provider and a.provider.strip().upper() == due_assignment.provider.strip().upper()]
+            if not matching_provider_accounts:
+                reason = f"No portal account registered for provider '{due_assignment.provider}' with scraping enabled."
+            else:
+                statuses = set(a.status for a in matching_provider_accounts)
+                reason = f"Account(s) for '{due_assignment.provider}' exist, but none are READY (current status: {', '.join(statuses)})."
+                
             self._log_decision(
                 worker.worker_id, 
                 "NO_READY_ACCOUNT", 
-                f"No ready scraping account for provider '{due_assignment.provider}'", 
+                reason, 
                 assignment_id=due_assignment.id
             )
             return None
