@@ -412,6 +412,13 @@
                 }
             });
         });
+
+        // Auto-refresh PWA Home Screen every 90 seconds (1.5 mins) when active
+        setInterval(function () {
+            if (!document.hidden) {
+                window.location.reload();
+            }
+        }, 90000);
     });
 </script>
 {% endblock %}
