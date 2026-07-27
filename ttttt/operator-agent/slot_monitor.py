@@ -171,9 +171,9 @@ class SlotMonitorEngine(threading.Thread):
                     # --- POC MOCK LOGIC ---
                     date_obj = datetime.strptime(target_date, "%d/%m/%Y")
                     if date_obj.weekday() < 5: # Monday is 0, Sunday is 6. Weekdays are 0-4.
-                        logging.info("POC Mock: Injecting 3 mock slots for weekday.")
+                        logging.info("POC Mock: Injecting 1 mock slot for weekday.")
                         mock_slots = []
-                        for i in range(3):
+                        for i in range(1):
                             mock_slots.append({
                                 "isavailable": True,
                                 "isselectable": True,
