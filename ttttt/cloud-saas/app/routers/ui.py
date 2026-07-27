@@ -951,6 +951,12 @@ async def delete_proxy(proxy_id: int, request: Request, db: Session = Depends(ge
     user = get_ui_user(request, db)
     if not user or user.role != RoleEnum.SUPER_ADMIN:
         return RedirectResponse(url="/", status_code=303)
+        
+    from models import SchedulerDecision, Lease, LeaseArchive
+    db.query(SchedulerDecision).filter(SchedulerDecision.selected_proxy_id == proxy_id).update({"selected_proxy_id": None})
+    db.query(Lease).filter(Lease.proxy_id == proxy_id).update({"proxy_id": None})
+    db.query(LeaseArchive).filter(LeaseArchive.proxy_id == proxy_id).update({"proxy_id": None})
+    
     db.query(Proxy).filter(Proxy.id == proxy_id).delete()
     db.commit()
     return RedirectResponse(url="/proxies", status_code=303)
