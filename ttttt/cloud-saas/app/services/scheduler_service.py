@@ -38,6 +38,10 @@ class SchedulerService:
         if not worker:
             return None
 
+        # Automatically expire stale leases to free up locked accounts/proxies
+        from app.services.lease_service import LeaseService
+        LeaseService(self.db).expire_stale_leases()
+
         # 1. Booking Phase
         if worker.can_book:
             lease = self._try_schedule_booking(worker)
@@ -50,8 +54,6 @@ class SchedulerService:
             if lease:
                 return lease
                 
-        # 3. No Work Found
-        self._log_decision(worker.worker_id, "NO_ASSIGNMENT", "No scraping or booking tasks available.")
         return None
 
     def _try_schedule_booking(self, worker: WorkerNode) -> Lease:
@@ -168,12 +170,12 @@ class SchedulerService:
                     break
                     
         if not due_assignment:
+            self._log_decision(worker.worker_id, "NO_ASSIGNMENT", "No scraping or booking tasks available.")
             return None
             
-        # Find best account
+        # Find best account (allow global accounts or any registered scraping accounts)
         accounts = self.db.query(PortalAccount).filter(
-            PortalAccount.supports_scraping == True,
-            PortalAccount.tenant_id == None
+            PortalAccount.supports_scraping == True
         ).all()
         best_account = None
         best_account_score = -1
@@ -185,7 +187,12 @@ class SchedulerService:
                 best_account = account
                 
         if not best_account:
-            self._log_decision(worker.worker_id, "NO_READY_ACCOUNT", "No capable scraping account available", assignment_id=due_assignment.id)
+            self._log_decision(
+                worker.worker_id, 
+                "NO_READY_ACCOUNT", 
+                f"No ready scraping account for provider '{due_assignment.provider}'", 
+                assignment_id=due_assignment.id
+            )
             return None
 
         # Concurrency verification lock
@@ -201,8 +208,7 @@ class SchedulerService:
 
         # Find best proxy
         proxies = self.db.query(Proxy).filter(
-            Proxy.supports_scraping == True,
-            Proxy.tenant_id == None
+            Proxy.supports_scraping == True
         ).all()
         best_proxy = None
         best_proxy_score = -1

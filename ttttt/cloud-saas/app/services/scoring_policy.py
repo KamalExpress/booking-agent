@@ -20,7 +20,10 @@ class ScoringPolicy:
         if account.status != "READY":
             return -1
             
-        if account.provider != task_provider:
+        if account.provider and task_provider:
+            if account.provider.strip().upper() != task_provider.strip().upper():
+                return -1
+        elif account.provider != task_provider:
             return -1
             
         now = ScoringPolicy.get_utcnow()
