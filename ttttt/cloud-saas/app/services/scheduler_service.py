@@ -332,7 +332,7 @@ class SchedulerService:
             if proxy:
                 proxy.failure_count += 1
                 proxy.cooldown_until = now + timedelta(minutes=10)
-        elif event_type == "PROXY_TIMEOUT":
+        elif event_type in ["PROXY_TIMEOUT", "PROXY_BANNED"]:
             if proxy:
                 proxy.failure_count += 1
                 proxy.cooldown_until = now + timedelta(minutes=15)

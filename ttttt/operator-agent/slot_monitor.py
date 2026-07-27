@@ -113,6 +113,12 @@ class SlotMonitorEngine(threading.Thread):
                 captcha_svc = CapSolverService(api_key="", proxy_string=proxy_string)
             
             # Instantiate the unified operator agent
+            try:
+                from core.gvc_adapter import WAFBlockedException, LoginFailedException
+            except ImportError:
+                WAFBlockedException = type("WAFBlockedException", (Exception,), {})
+                LoginFailedException = type("LoginFailedException", (Exception,), {})
+                
             agent = OperatorAgent(captcha_svc, username=account["username"], password=account["password"], proxy_string=proxy_string)
             
             # Make sure the session file matches the account so we don't mix cookies
@@ -121,17 +127,22 @@ class SlotMonitorEngine(threading.Thread):
             
             # 5. Execute Assignment Logic
             logging.info(f"Executing login flow for account {account['username']}...")
+            login_success = False
             try:
                 login_success = agent.login()
+            except WAFBlockedException as e:
+                logging.warning(f"Worker Engine hit WAF block during login: {e}")
+                self.api.log_event(assignment_id, "PROXY_BANNED", "error", {"username": account["username"], "error": str(e)})
+            except LoginFailedException as e:
+                logging.error(f"Worker Engine login failed due to invalid credentials: {e}")
+                self.api.log_event(assignment_id, "LOGIN_FAILED", "error", {"username": account["username"], "error": str(e)})
             except Exception as e:
-                logging.error(f"Worker Engine encountered error during login: {e}")
+                logging.error(f"Worker Engine encountered unknown error during login: {e}")
                 self.api.log_event(assignment_id, "LOGIN_EXCEPTION", "error", {"username": account["username"], "error": str(e)})
-                login_success = False
             
             if not login_success:
-                self.api.log_event(assignment_id, "LOGIN_FAILED", "error", {"username": account["username"]})
-                logging.error("Login failed. Discarding assignment lease.")
-                self.api.report_lease_result(assignment_id, "FAILED", "Login failed")
+                logging.error("Login failed or blocked. Discarding assignment lease.")
+                self.api.report_lease_result(assignment_id, "FAILED", "Login failed or proxy blocked")
                 return
                 
             self.api.log_event(assignment_id, "LOGIN_SUCCESS", "info", {"username": account["username"]})

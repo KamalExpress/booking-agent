@@ -110,7 +110,26 @@ class BookerEngine(threading.Thread):
                 # 5. Execute Booking Flow
                 logging.info(f"Logging in to portal for account {account['username']}...")
                 try:
-                    if adapter.login(account["username"], account["password"]):
+                    from core.gvc_adapter import WAFBlockedException, LoginFailedException
+                except ImportError:
+                    WAFBlockedException = type("WAFBlockedException", (Exception,), {})
+                    LoginFailedException = type("LoginFailedException", (Exception,), {})
+                    
+                agent_login_success = False
+                try:
+                    agent_login_success = adapter.login(account["username"], account["password"])
+                except WAFBlockedException as e:
+                    logging.warning(f"Worker Engine hit WAF block during login: {e}")
+                    self.api.log_event(task_id, "PROXY_BANNED", "error", {"reason": str(e)})
+                except LoginFailedException as e:
+                    logging.error(f"Worker Engine login failed due to invalid credentials: {e}")
+                    self.api.log_event(task_id, "LOGIN_FAILED", "error", {"reason": str(e)})
+                except Exception as e:
+                    logging.error(f"Worker Engine encountered error during booking: {e}")
+                    self.api.log_event(task_id, "BOOKING_EXCEPTION", "error", {"error": str(e)})
+
+                try:
+                    if agent_login_success:
                         
                         logging.info("Injecting applicant data...")
                         adapter.inject_applicant_data(applicant_data, visa_center)
@@ -146,9 +165,11 @@ class BookerEngine(threading.Thread):
                         else:
                             self.api.log_event(task_id, "BOOKING_FAILED", "error", {"reason": "Pre-OTP Captcha failed"})
                     else:
-                        self.api.log_event(task_id, "LOGIN_FAILED", "error", {"reason": "Failed to login to portal"})
+                        if not agent_login_success:
+                            # event already logged in the except block above, but just in case
+                            pass
                 except Exception as e:
-                    logging.error(f"Worker Engine encountered error during booking: {e}")
+                    logging.error(f"Worker Engine encountered error during post-login booking flow: {e}")
                     self.api.log_event(task_id, "BOOKING_EXCEPTION", "error", {"error": str(e)})
                 finally:
                     # Don't complete the assignment if it failed so it can be retried by another worker

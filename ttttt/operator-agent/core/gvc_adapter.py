@@ -5,6 +5,13 @@ import json
 from core.portal_adapter import BasePortalAdapter
 from captcha_service import CaptchaService
 
+class WAFBlockedException(Exception):
+    pass
+
+class LoginFailedException(Exception):
+    pass
+
+
 class GVCAdapter(BasePortalAdapter):
     def __init__(self, captcha_service: CaptchaService, headless: bool = True, proxy_string: str = None):
         super().__init__(headless)
@@ -228,7 +235,7 @@ class GVCAdapter(BasePortalAdapter):
                     continue
                 else:
                     logging.error(f"GVCAdapter: Login failed. Status: {response.status_code}")
-                    return False
+                    raise LoginFailedException(f"Login failed with status {response.status_code}")
             except Exception as e:
                 logging.error(f"GVCAdapter: Network error during login: {e}")
                 if "28" in str(e) or "timeout" in str(e).lower():
@@ -240,8 +247,8 @@ class GVCAdapter(BasePortalAdapter):
                 if attempt < max_retries - 1:
                     time.sleep(3)
                     continue
-                return False
-        return False
+                raise WAFBlockedException(f"Network error or timeout during login: {e}")
+        raise WAFBlockedException("Max retries exceeded due to WAF blocks or network errors.")
 
     def inject_applicant_data(self, applicant_data: dict, visa_center: str) -> bool:
         logging.info("GVCAdapter: Caching applicant data for final injection.")
@@ -256,8 +263,25 @@ class GVCAdapter(BasePortalAdapter):
 
     def request_otp(self) -> bool:
         logging.info("GVCAdapter: Triggering OTP via API...")
-        # Placeholder for actual OTP trigger request if required by portal
-        return True
+        phone = self.applicant_data_cache.get('phone_number', '')
+        prefix_id = self.applicant_data_cache.get('phone_prefix_id', '197')
+        if not phone:
+            logging.error("GVCAdapter: Cannot request OTP, no phone number available.")
+            return False
+            
+        url = f"{self.base_url}/api/v1/onetimepassword/sendOtpBookAppointment/{phone}/{prefix_id}"
+        
+        try:
+            response = self.session.post(url, timeout=30)
+            if response.status_code in [200, 204]:
+                logging.info("GVCAdapter: OTP requested successfully.")
+                return True
+            else:
+                logging.error(f"GVCAdapter: Failed to request OTP. Status: {response.status_code}")
+                return False
+        except Exception as e:
+            logging.error(f"GVCAdapter: Network error requesting OTP: {e}")
+            return False
 
     def submit_otp_and_book(self, otp_code: str) -> bool:
         logging.info("GVCAdapter: Submitting OTP and final booking payload...")
