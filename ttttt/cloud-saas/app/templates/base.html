@@ -110,7 +110,7 @@
                 <i data-lucide="inbox" class="w-4 h-4"></i> Inbox
             </a>
 
-            {% if user and user.role.value in ['TENANT_ADMIN', 'STAFF'] %}
+            {% if user and user.role.value in ['SUPER_ADMIN', 'TENANT_ADMIN', 'STAFF'] %}
             <a href="/clients" class="nav-link {% if active_page == 'clients' %}active{% endif %}">
                 <i data-lucide="contact" class="w-4 h-4"></i> Client Directory
             </a>
