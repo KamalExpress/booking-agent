@@ -7,7 +7,6 @@ Create Date: 2026-07-28 13:15:00.000000
 """
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.engine.reflection import Inspector
 
 revision = '009_slot_availability_status'
 down_revision = '008_tenant_inbox_fields'
@@ -16,9 +15,10 @@ depends_on = None
 
 def upgrade() -> None:
     conn = op.get_bind()
-    inspector = Inspector.from_engine(conn.engine)
+    inspector = sa.inspect(conn)
+    tables = inspector.get_table_names()
     
-    if 'slot_availability' in inspector.get_table_names():
+    if 'slot_availability' in tables:
         columns = [c['name'] for c in inspector.get_columns('slot_availability')]
         if 'status' not in columns:
             op.add_column('slot_availability', sa.Column('status', sa.String(), nullable=False, server_default='AVAILABLE'))
@@ -27,11 +27,12 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     conn = op.get_bind()
-    inspector = Inspector.from_engine(conn.engine)
+    inspector = sa.inspect(conn)
+    tables = inspector.get_table_names()
     
-    if 'slot_availability' in inspector.get_table_names():
+    if 'slot_availability' in tables:
         columns = [c['name'] for c in inspector.get_columns('slot_availability')]
-        if 'status' in columns:
-            op.drop_column('slot_availability', 'status')
         if 'last_checked_at' in columns:
             op.drop_column('slot_availability', 'last_checked_at')
+        if 'status' in columns:
+            op.drop_column('slot_availability', 'status')
