@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Feature Guide & Platform Walkthrough - {{ env_branding.title_prefix }}{{ branding.brand_name | default('Alamia Automation') }}{% endblock %}
+
+{% block content %}
+<header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+        <h1 class="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
+            <i data-lucide="compass" class="w-8 h-8 text-indigo-400"></i> Platform Features & Guide
+        </h1>
+        <p class="text-sm text-zinc-400 mt-1">Comprehensive walkthrough of available features, workflows, and operational best practices.</p>
+    </div>
+    <div class="flex items-center gap-2">
+        <a href="/legal" class="btn btn-secondary text-xs border-zinc-700 hover:border-zinc-500">
+            <i data-lucide="shield-check" class="w-4 h-4 mr-1.5 inline"></i> Legal & Compliance
+        </a>
+    </div>
+</header>
+
+<!-- Quick Navigation Banner -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <a href="#client-directory" class="card p-4 hover:border-indigo-500/50 transition-colors flex items-center gap-3 group">
+        <div class="p-2.5 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 group-hover:bg-indigo-500/20">
+            <i data-lucide="contact" class="w-5 h-5"></i>
+        </div>
+        <div>
+            <h4 class="text-sm font-semibold text-white">Client Directory</h4>
+            <p class="text-[11px] text-zinc-400">Applicant Profiles & PII</p>
+        </div>
+    </a>
+    <a href="#queue-management" class="card p-4 hover:border-emerald-500/50 transition-colors flex items-center gap-3 group">
+        <div class="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 group-hover:bg-emerald-500/20">
+            <i data-lucide="list-ordered" class="w-5 h-5"></i>
+        </div>
+        <div>
+            <h4 class="text-sm font-semibold text-white">Waitlist Queue</h4>
+            <p class="text-[11px] text-zinc-400">Auto-Booking & Matching</p>
+        </div>
+    </a>
+    <a href="#slot-drops" class="card p-4 hover:border-amber-500/50 transition-colors flex items-center gap-3 group">
+        <div class="p-2.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20 group-hover:bg-amber-500/20">
+            <i data-lucide="bell-ring" class="w-5 h-5"></i>
+        </div>
+        <div>
+            <h4 class="text-sm font-semibold text-white">Slot Drops & Alerts</h4>
+            <p class="text-[11px] text-zinc-400">Live Scans & Push Push</p>
+        </div>
+    </a>
+    <a href="#data-security" class="card p-4 hover:border-blue-500/50 transition-colors flex items-center gap-3 group">
+        <div class="p-2.5 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20 group-hover:bg-blue-500/20">
+            <i data-lucide="lock" class="w-5 h-5"></i>
+        </div>
+        <div>
+            <h4 class="text-sm font-semibold text-white">Data Privacy</h4>
+            <p class="text-[11px] text-zinc-400">Tenant Isolation & SLA</p>
+        </div>
+    </a>
+</div>
+
+<!-- Modules Walkthrough -->
+<div class="space-y-8">
+
+    <!-- Section 1: Client Directory -->
+    <section id="client-directory" class="card p-6 border-zinc-800 bg-zinc-950">
+        <div class="flex items-center gap-3 mb-4 pb-4 border-b border-zinc-800">
+            <div class="p-2 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                <i data-lucide="contact" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h2 class="text-xl font-bold text-white">1. Client Directory & Applicant Profiles</h2>
+                <p class="text-xs text-zinc-400">Manage applicant records, passport info, and travel preferences.</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-4 text-sm text-zinc-300">
+                <div class="flex items-start gap-3">
+                    <span class="flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 font-bold text-xs shrink-0 mt-0.5">1</span>
+                    <div>
+                        <h4 class="font-semibold text-white">Register Visa Applicants</h4>
+                        <p class="text-xs text-zinc-400 mt-0.5">Add applicant first name, surname, date of birth, gender, nationality, passport number, and expiry date via the Client Directory.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-3">
+                    <span class="flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 font-bold text-xs shrink-0 mt-0.5">2</span>
+                    <div>
+                        <h4 class="font-semibold text-white">Strict Tenant Isolation</h4>
+                        <p class="text-xs text-zinc-400 mt-0.5">All applicant data added by your staff is strictly isolated to your agency tenant and never shared across agencies.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-3">
+                    <span class="flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 font-bold text-xs shrink-0 mt-0.5">3</span>
+                    <div>
+                        <h4 class="font-semibold text-white">Quick Enqueue Action</h4>
+                        <p class="text-xs text-zinc-400 mt-0.5">Click the <span class="text-indigo-400 font-medium">Enqueue</span> button beside any client to instantly add them to the automated slot booking queue.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-zinc-900/60 p-4 rounded-xl border border-zinc-800 space-y-3">
+                <div class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Pro-Tip for Staff</div>
+                <p class="text-xs text-zinc-300 leading-relaxed">
+                    Ensure passport expiration dates are accurate prior to enqueuing. The automated booking engine checks passport validity against target appointment dates to prevent portal rejections.
+                </p>
+                <div class="pt-2 border-t border-zinc-800/60 flex justify-between items-center">
+                    <span class="text-[11px] text-zinc-500">Shortcut: Navigate to Client Directory</span>
+                    <a href="/clients" class="text-xs text-indigo-400 hover:underline font-medium">Go to Clients &rarr;</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: Queue Management -->
+    <section id="queue-management" class="card p-6 border-zinc-800 bg-zinc-950">
+        <div class="flex items-center gap-3 mb-4 pb-4 border-b border-zinc-800">
+            <div class="p-2 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <i data-lucide="list-ordered" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h2 class="text-xl font-bold text-white">2. Waitlist Queue & Automated Booking Tasks</h2>
+                <p class="text-xs text-zinc-400">Prioritize applicants and match them automatically with discovered slot drops.</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-4 text-sm text-zinc-300">
+                <div class="flex items-start gap-3">
+                    <span class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xs shrink-0 mt-0.5">1</span>
+                    <div>
+                        <h4 class="font-semibold text-white">Automated Matching Engine</h4>
+                        <p class="text-xs text-zinc-400 mt-0.5">When headless workers discover a slot drop at Lahore or Islamabad, queued applicants are automatically matched based on target date criteria.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-3">
+                    <span class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xs shrink-0 mt-0.5">2</span>
+                    <div>
+                        <h4 class="font-semibold text-white">Standard Appointment Codes</h4>
+                        <p class="text-xs text-zinc-400 mt-0.5">The platform defaults to GVC appointment type <span class="font-mono text-emerald-400 font-bold">26</span> (Long-Term Type D Seasonal/Dependent Employment) for maximum booking success rates.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-zinc-900/60 p-4 rounded-xl border border-zinc-800 space-y-3">
+                <div class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Queue Priority Rules</div>
+                <ul class="text-xs text-zinc-300 space-y-2 list-disc list-inside">
+                    <li>First-In, First-Out (FIFO) queue ordering per Visa Center.</li>
+                    <li>Automatic retry up to 3 attempts per booking task in case of OTP delays.</li>
+                    <li>Instant status updates delivered to your agency inbox.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: Slot Drops & Web Push -->
+    <section id="slot-drops" class="card p-6 border-zinc-800 bg-zinc-950">
+        <div class="flex items-center gap-3 mb-4 pb-4 border-b border-zinc-800">
+            <div class="p-2 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                <i data-lucide="bell-ring" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h2 class="text-xl font-bold text-white">3. Live Slot Drop Tracking & Web Push Alerts</h2>
+                <p class="text-xs text-zinc-400">Receive real-time notifications on mobile & desktop the moment slots open.</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-zinc-900/40 p-4 rounded-xl border border-zinc-800">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    <h4 class="font-semibold text-emerald-400 text-sm">AVAILABLE Status</h4>
+                </div>
+                <p class="text-xs text-zinc-400">Indicates verified appointment drops detected in real time by scanning workers.</p>
+            </div>
+
+            <div class="bg-zinc-900/40 p-4 rounded-xl border border-zinc-800">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                    <h4 class="font-semibold text-amber-400 text-sm">VERIFYING Status</h4>
+                </div>
+                <p class="text-xs text-zinc-400">System is actively testing interval validation or completing a booking sequence.</p>
+            </div>
+
+            <div class="bg-zinc-900/40 p-4 rounded-xl border border-zinc-800">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-zinc-600"></span>
+                    <h4 class="font-semibold text-zinc-400 text-sm">UNAVAILABLE Status</h4>
+                </div>
+                <p class="text-xs text-zinc-400">Slots were claimed or interval expired. Worker nodes continue continuous monitoring.</p>
+            </div>
+        </div>
+    </section>
+
+</div>
+{% endblock %}

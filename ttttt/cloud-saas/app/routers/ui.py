@@ -552,6 +552,35 @@ async def notifications_page(request: Request, db: Session = Depends(get_db)):
         "tenants_map": tenants_map
     }, db)
 
+@router.get("/features", response_class=HTMLResponse)
+async def features_page(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+        
+    return render_template("features.html", {
+        "request": request,
+        "user": user,
+        "active_page": "features"
+    }, db)
+
+@router.get("/legal", response_class=HTMLResponse)
+async def legal_page(request: Request, tab: str = "terms", db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+        
+    valid_tabs = ["terms", "privacy", "cookies", "security"]
+    if tab not in valid_tabs:
+        tab = "terms"
+        
+    return render_template("legal.html", {
+        "request": request,
+        "user": user,
+        "active_page": "legal",
+        "current_tab": tab
+    }, db)
+
 @router.get("/slots", response_class=HTMLResponse)
 async def slots_history_page(request: Request, tab: str = "active", db: Session = Depends(get_db)):
     user = get_ui_user(request, db)
