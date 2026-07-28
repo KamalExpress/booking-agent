@@ -372,13 +372,20 @@ def submit_logs(
             assignment = db.query(Assignment).filter(Assignment.id == req.assignment_id).first()
             if assignment:
                 # Save to SlotAvailability database using the vac_id from the worker payload
-                from models import SlotAvailability, BookingTask
+                from models import SlotAvailability, BookingTask, Lease, PortalAccount
+                found_by_label = worker.worker_id
+                active_lease = db.query(Lease).filter(Lease.worker_id == worker.worker_id, Lease.status.in_(["Leased", "Running", "Pending"])).first()
+                if active_lease and active_lease.portal_account_id:
+                    portal_acc = db.query(PortalAccount).filter(PortalAccount.id == active_lease.portal_account_id).first()
+                    if portal_acc:
+                        found_by_label = f"{portal_acc.display_name} (Slot Agent)"
+
                 availability = SlotAvailability(
                     assignment_id=assignment.id,
                     visa_center=vac_id,
                     date=target_date,
                     slots_data=req.payload.get("slots", []) if req.payload else [],
-                    found_by=worker.worker_id,
+                    found_by=found_by_label,
                     status="AVAILABLE",
                     last_checked_at=datetime.utcnow()
                 )

@@ -81,7 +81,7 @@
                         </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-muted-foreground text-xs font-mono">
-                        {{ slot.found_by or 'System Scraper' }}
+                        {{ slot.display_found_by or slot.found_by or 'System Account' }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right">
                         <a href="/slots/{{ slot.id }}" class="btn btn-secondary text-xs py-1 px-3">View Details</a>

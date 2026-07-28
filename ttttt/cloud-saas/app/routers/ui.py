@@ -508,8 +508,32 @@ async def slots_history_page(request: Request, db: Session = Depends(get_db)):
     if not user:
         return RedirectResponse(url="/login", status_code=303)
         
-    from models import SlotAvailability
+    from models import SlotAvailability, Lease, PortalAccount
     slots = db.query(SlotAvailability).order_by(SlotAvailability.created_at.desc()).limit(200).all()
+    
+    # Bulk resolve worker_id to account display names
+    worker_ids = list(set([s.found_by for s in slots if s.found_by and s.found_by.startswith("worker_")]))
+    if worker_ids:
+        recent_leases = db.query(Lease).filter(Lease.worker_id.in_(worker_ids)).order_by(Lease.id.desc()).all()
+        account_ids = list(set([l.portal_account_id for l in recent_leases if l.portal_account_id]))
+        accounts_map = {}
+        if account_ids:
+            accounts = db.query(PortalAccount).filter(PortalAccount.id.in_(account_ids)).all()
+            accounts_map = {a.id: a.display_name for a in accounts}
+        
+        worker_account_map = {}
+        for l in recent_leases:
+            if l.worker_id and l.worker_id not in worker_account_map and l.portal_account_id in accounts_map:
+                worker_account_map[l.worker_id] = accounts_map[l.portal_account_id]
+                
+        for s in slots:
+            if s.found_by and s.found_by.startswith("worker_") and s.found_by in worker_account_map:
+                setattr(s, 'display_found_by', f"{worker_account_map[s.found_by]} (Slot Agent)")
+            else:
+                setattr(s, 'display_found_by', s.found_by or 'System Account')
+    else:
+        for s in slots:
+            setattr(s, 'display_found_by', s.found_by or 'System Account')
             
     return render_template("slot_history.html", {
         "request": request,
@@ -524,10 +548,24 @@ async def slot_detail_page(slot_id: int, request: Request, db: Session = Depends
     if not user:
         return RedirectResponse(url="/login", status_code=303)
         
-    from models import SlotAvailability
+    from models import SlotAvailability, Lease, PortalAccount
     slot = db.query(SlotAvailability).filter(SlotAvailability.id == slot_id).first()
     if not slot:
         return RedirectResponse(url="/slots")
+        
+    discovered_by_name = slot.found_by
+    if slot.found_by and slot.found_by.startswith("worker_"):
+        lease = db.query(Lease).filter(Lease.worker_id == slot.found_by).order_by(Lease.id.desc()).first()
+        if lease and lease.portal_account_id:
+            acc = db.query(PortalAccount).filter(PortalAccount.id == lease.portal_account_id).first()
+            if acc:
+                discovered_by_name = f"{acc.display_name} (Slot Agent)"
+            else:
+                discovered_by_name = f"Worker #{slot.found_by[:8]}"
+        else:
+            discovered_by_name = f"Worker #{slot.found_by[:8]}"
+            
+    setattr(slot, 'display_found_by', discovered_by_name or 'System Account')
             
     return render_template("slot_detail.html", {
         "request": request,
