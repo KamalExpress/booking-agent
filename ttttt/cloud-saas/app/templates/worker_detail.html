@@ -1,83 +1,98 @@
 {% extends "base.html" %}
 
-{% block title %}Worker {{ worker.worker_id }} - Kamal Express SaaS{% endblock %}
+{% block title %}Worker {{ worker.worker_id }} - KE Agent SaaS{% endblock %}
 
 {% block content %}
 <div class="mb-6">
     <a href="/workers" class="text-sm text-[#a1a1aa] hover:text-[#fafafa] flex items-center gap-1 w-fit mb-4">
         <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Workers
     </a>
-    
+
     <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
             <h1 class="text-2xl font-bold tracking-tight text-[#fafafa] font-mono">{{ worker.worker_id }}</h1>
-            
+
             {% if worker.agent_type_label == 'Booking Agent' %}
-                <span class="px-2.5 py-1 text-xs font-bold bg-indigo-500/10 text-indigo-400 rounded-full border border-indigo-500/30 flex items-center gap-1.5">
-                    <i data-lucide="zap" class="w-3.5 h-3.5 text-indigo-400"></i> Booking Agent
-                </span>
+            <span
+                class="px-2.5 py-1 text-xs font-bold bg-indigo-500/10 text-indigo-400 rounded-full border border-indigo-500/30 flex items-center gap-1.5">
+                <i data-lucide="zap" class="w-3.5 h-3.5 text-indigo-400"></i> Booking Agent
+            </span>
             {% elif worker.agent_type_label == 'Slot Agent' %}
-                <span class="px-2.5 py-1 text-xs font-bold bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/30 flex items-center gap-1.5">
-                    <i data-lucide="search" class="w-3.5 h-3.5 text-emerald-400"></i> Slot Agent
-                </span>
+            <span
+                class="px-2.5 py-1 text-xs font-bold bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/30 flex items-center gap-1.5">
+                <i data-lucide="search" class="w-3.5 h-3.5 text-emerald-400"></i> Slot Agent
+            </span>
             {% elif worker.agent_type_label == 'Dual Agent' %}
-                <span class="px-2.5 py-1 text-xs font-bold bg-sky-500/10 text-sky-400 rounded-full border border-sky-500/30 flex items-center gap-1.5">
-                    <i data-lucide="layers" class="w-3.5 h-3.5 text-sky-400"></i> Dual Agent
-                </span>
+            <span
+                class="px-2.5 py-1 text-xs font-bold bg-sky-500/10 text-sky-400 rounded-full border border-sky-500/30 flex items-center gap-1.5">
+                <i data-lucide="layers" class="w-3.5 h-3.5 text-sky-400"></i> Dual Agent
+            </span>
             {% endif %}
-            
+
             {% if worker.is_online %}
-                <span class="px-2.5 py-1 text-xs bg-emerald-500/10 text-emerald-500 rounded-full border border-emerald-500/20 flex items-center gap-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    Online
-                </span>
+            <span
+                class="px-2.5 py-1 text-xs bg-emerald-500/10 text-emerald-500 rounded-full border border-emerald-500/20 flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                Online
+            </span>
             {% else %}
-                <span class="px-2.5 py-1 text-xs bg-zinc-500/10 text-zinc-400 rounded-full border border-zinc-500/20 flex items-center gap-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-zinc-500"></span>
-                    Offline
-                </span>
+            <span
+                class="px-2.5 py-1 text-xs bg-zinc-500/10 text-zinc-400 rounded-full border border-zinc-500/20 flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-zinc-500"></span>
+                Offline
+            </span>
             {% endif %}
-            
+
             <span class="px-2.5 py-1 text-xs bg-[#27272a] text-[#a1a1aa] rounded-full border border-[#3f3f46]">
                 {{ worker.scheduling_state }}
             </span>
 
             {% if worker.is_archived %}
-                <span class="px-2.5 py-1 text-xs font-bold bg-red-500/10 text-red-400 rounded-full border border-red-500/30 flex items-center gap-1.5" title="Archived at {{ worker.archived_at }}">
-                    <i data-lucide="archive" class="w-3.5 h-3.5"></i> Archived
-                </span>
+            <span
+                class="px-2.5 py-1 text-xs font-bold bg-red-500/10 text-red-400 rounded-full border border-red-500/30 flex items-center gap-1.5"
+                title="Archived at {{ worker.archived_at }}">
+                <i data-lucide="archive" class="w-3.5 h-3.5"></i> Archived
+            </span>
             {% endif %}
         </div>
-        
+
         <div class="flex gap-2">
             {% if worker.is_archived %}
-                <form action="/workers/{{ worker.worker_id }}/restore" method="POST" class="inline">
-                    <button type="submit" class="btn btn-primary bg-emerald-600 hover:bg-emerald-500">Restore Worker</button>
-                </form>
+            <form action="/workers/{{ worker.worker_id }}/restore" method="POST" class="inline">
+                <button type="submit" class="btn btn-primary bg-emerald-600 hover:bg-emerald-500">Restore
+                    Worker</button>
+            </form>
             {% else %}
-                <form action="/workers/{{ worker.worker_id }}/action" method="POST" class="inline">
-                    {% if worker.scheduling_state == 'Accepting Jobs' %}
-                        <button type="submit" name="action" value="stop_accepting" class="btn btn-secondary">Stop Accepting Jobs</button>
-                        <button type="submit" name="action" value="drain" class="btn btn-secondary text-yellow-500">Drain</button>
-                    {% else %}
-                        <button type="submit" name="action" value="accept_jobs" class="btn btn-primary">Accept Jobs</button>
-                    {% endif %}
-                    <button type="submit" name="action" value="maintenance" class="btn btn-secondary">Maintenance</button>
-                    <button type="submit" name="action" value="disable" class="btn btn-destructive">Disable</button>
-                </form>
-                <form action="/workers/{{ worker.worker_id }}/archive" method="POST" class="inline" onsubmit="event.preventDefault(); promptConfirmModal({ title: 'Archive Worker Node', subtitle: 'Offline Node Cleanup', description: 'Are you sure you want to archive worker {{ worker.worker_id }}? It will be excluded from task scheduling.', confirmText: 'Confirm Archive', isDanger: false, form: this });">
-                    <button type="submit" class="btn btn-secondary border-red-500/30 text-red-400 hover:bg-red-500/10">Archive Worker</button>
-                </form>
+            <form action="/workers/{{ worker.worker_id }}/action" method="POST" class="inline">
+                {% if worker.scheduling_state == 'Accepting Jobs' %}
+                <button type="submit" name="action" value="stop_accepting" class="btn btn-secondary">Stop Accepting
+                    Jobs</button>
+                <button type="submit" name="action" value="drain"
+                    class="btn btn-secondary text-yellow-500">Drain</button>
+                {% else %}
+                <button type="submit" name="action" value="accept_jobs" class="btn btn-primary">Accept Jobs</button>
+                {% endif %}
+                <button type="submit" name="action" value="maintenance" class="btn btn-secondary">Maintenance</button>
+                <button type="submit" name="action" value="disable" class="btn btn-destructive">Disable</button>
+            </form>
+            <form action="/workers/{{ worker.worker_id }}/archive" method="POST" class="inline"
+                onsubmit="event.preventDefault(); promptConfirmModal({ title: 'Archive Worker Node', subtitle: 'Offline Node Cleanup', description: 'Are you sure you want to archive worker {{ worker.worker_id }}? It will be excluded from task scheduling.', confirmText: 'Confirm Archive', isDanger: false, form: this });">
+                <button type="submit"
+                    class="btn btn-secondary border-red-500/30 text-red-400 hover:bg-red-500/10">Archive Worker</button>
+            </form>
             {% endif %}
         </div>
     </div>
 </div>
 
 <!-- Custom Confirmation Modal -->
-<div id="confirmActionModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-    <div class="bg-zinc-900 border border-zinc-800 rounded-xl max-w-md w-full p-6 shadow-2xl animate-in fade-in zoom-in duration-150 text-left">
+<div id="confirmActionModal"
+    class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+    <div
+        class="bg-zinc-900 border border-zinc-800 rounded-xl max-w-md w-full p-6 shadow-2xl animate-in fade-in zoom-in duration-150 text-left">
         <div class="flex items-center gap-3 mb-4">
-            <div id="modalIconContainer" class="p-2.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            <div id="modalIconContainer"
+                class="p-2.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">
                 <i data-lucide="alert-triangle" class="w-6 h-6"></i>
             </div>
             <div>
@@ -89,10 +104,12 @@
             This action will modify the worker state.
         </p>
         <div class="flex justify-end gap-3">
-            <button type="button" onclick="closeConfirmModal()" class="px-4 py-2 text-xs font-medium text-zinc-300 bg-zinc-800 hover:bg-zinc-700 rounded-lg border border-zinc-700 transition-colors">
+            <button type="button" onclick="closeConfirmModal()"
+                class="px-4 py-2 text-xs font-medium text-zinc-300 bg-zinc-800 hover:bg-zinc-700 rounded-lg border border-zinc-700 transition-colors">
                 Cancel
             </button>
-            <button type="button" id="modalConfirmBtn" class="px-4 py-2 text-xs font-medium text-white bg-amber-600 hover:bg-amber-500 rounded-lg transition-colors shadow-lg shadow-amber-600/20">
+            <button type="button" id="modalConfirmBtn"
+                class="px-4 py-2 text-xs font-medium text-white bg-amber-600 hover:bg-amber-500 rounded-lg transition-colors shadow-lg shadow-amber-600/20">
                 Confirm
             </button>
         </div>
@@ -100,46 +117,47 @@
 </div>
 
 <script>
-let pendingFormToSubmit = null;
+    let pendingFormToSubmit = null;
 
-function promptConfirmModal({ title, subtitle, description, confirmText, isDanger, form }) {
-    pendingFormToSubmit = form;
-    document.getElementById('modalTitle').innerText = title;
-    document.getElementById('modalSubtitle').innerText = subtitle;
-    document.getElementById('modalDescription').innerText = description;
-    
-    const confirmBtn = document.getElementById('modalConfirmBtn');
-    confirmBtn.innerText = confirmText;
-    
-    const iconContainer = document.getElementById('modalIconContainer');
-    if (isDanger) {
-        confirmBtn.className = "px-4 py-2 text-xs font-medium text-white bg-red-600 hover:bg-red-500 rounded-lg transition-colors shadow-lg shadow-red-600/20";
-        iconContainer.className = "p-2.5 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20";
-    } else {
-        confirmBtn.className = "px-4 py-2 text-xs font-medium text-white bg-amber-600 hover:bg-amber-500 rounded-lg transition-colors shadow-lg shadow-amber-600/20";
-        iconContainer.className = "p-2.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20";
+    function promptConfirmModal({ title, subtitle, description, confirmText, isDanger, form }) {
+        pendingFormToSubmit = form;
+        document.getElementById('modalTitle').innerText = title;
+        document.getElementById('modalSubtitle').innerText = subtitle;
+        document.getElementById('modalDescription').innerText = description;
+
+        const confirmBtn = document.getElementById('modalConfirmBtn');
+        confirmBtn.innerText = confirmText;
+
+        const iconContainer = document.getElementById('modalIconContainer');
+        if (isDanger) {
+            confirmBtn.className = "px-4 py-2 text-xs font-medium text-white bg-red-600 hover:bg-red-500 rounded-lg transition-colors shadow-lg shadow-red-600/20";
+            iconContainer.className = "p-2.5 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20";
+        } else {
+            confirmBtn.className = "px-4 py-2 text-xs font-medium text-white bg-amber-600 hover:bg-amber-500 rounded-lg transition-colors shadow-lg shadow-amber-600/20";
+            iconContainer.className = "p-2.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20";
+        }
+
+        document.getElementById('confirmActionModal').classList.remove('hidden');
     }
-    
-    document.getElementById('confirmActionModal').classList.remove('hidden');
-}
 
-function closeConfirmModal() {
-    pendingFormToSubmit = null;
-    document.getElementById('confirmActionModal').classList.add('hidden');
-}
-
-document.getElementById('modalConfirmBtn').addEventListener('click', function() {
-    if (pendingFormToSubmit) {
-        pendingFormToSubmit.submit();
+    function closeConfirmModal() {
+        pendingFormToSubmit = null;
+        document.getElementById('confirmActionModal').classList.add('hidden');
     }
-});
+
+    document.getElementById('modalConfirmBtn').addEventListener('click', function () {
+        if (pendingFormToSubmit) {
+            pendingFormToSubmit.submit();
+        }
+    });
 </script>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
     <div class="card p-6 col-span-1 lg:col-span-2">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-sm font-semibold text-[#a1a1aa] uppercase tracking-wider">Worker Capabilities</h3>
-            <button onclick="openEditWorkerModal()" class="text-xs flex items-center gap-1.5 text-blue-400 hover:text-blue-300 transition-colors bg-blue-500/10 px-2.5 py-1 rounded-md border border-blue-500/20">
+            <button onclick="openEditWorkerModal()"
+                class="text-xs flex items-center gap-1.5 text-blue-400 hover:text-blue-300 transition-colors bg-blue-500/10 px-2.5 py-1 rounded-md border border-blue-500/20">
                 <i data-lucide="pencil" class="w-3.5 h-3.5"></i> Edit Config
             </button>
         </div>
@@ -173,18 +191,19 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
                 <p class="font-medium text-sm">{{ worker.current_concurrency }} / {{ worker.max_concurrency }}</p>
             </div>
         </div>
-        
+
         <div class="mt-6 pt-4 border-t border-[#27272a]">
             <p class="text-xs text-[#a1a1aa] mb-3">Labels</p>
             <div class="flex flex-wrap gap-2">
                 {% if worker.labels and worker.labels is mapping %}
-                    {% for key, val in worker.labels.items() %}
-                    <span class="px-2 py-1 text-xs bg-[#27272a] text-[#fafafa] rounded-md border border-[#3f3f46] flex items-center gap-1.5 shadow-sm">
-                        <span class="text-[#a1a1aa] font-medium">{{ key }}:</span>{{ val }}
-                    </span>
-                    {% endfor %}
+                {% for key, val in worker.labels.items() %}
+                <span
+                    class="px-2 py-1 text-xs bg-[#27272a] text-[#fafafa] rounded-md border border-[#3f3f46] flex items-center gap-1.5 shadow-sm">
+                    <span class="text-[#a1a1aa] font-medium">{{ key }}:</span>{{ val }}
+                </span>
+                {% endfor %}
                 {% else %}
-                    <span class="text-sm text-zinc-500 italic">No labels configured.</span>
+                <span class="text-sm text-zinc-500 italic">No labels configured.</span>
                 {% endif %}
             </div>
         </div>
@@ -202,7 +221,8 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
                 <p class="font-mono text-sm">
                     {{ worker.public_ip or 'Unknown' }}
                     {% if worker.public_ip and worker.observed_ip and worker.public_ip != worker.observed_ip %}
-                        <span class="ml-2 text-yellow-500 text-xs" title="Worker is likely behind a VPN/Proxy">(Mismatch)</span>
+                    <span class="ml-2 text-yellow-500 text-xs"
+                        title="Worker is likely behind a VPN/Proxy">(Mismatch)</span>
                     {% endif %}
                 </p>
             </div>
@@ -214,10 +234,10 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
                 <p class="text-xs text-[#a1a1aa] mb-1">Last Heartbeat</p>
                 <p class="font-medium text-sm">
                     {% if worker.last_heartbeat %}
-                        {{ worker.last_heartbeat | format_time(ui_timezone, '%Y-%m-%d %H:%M:%S') }} 
-                        <span class="text-[#a1a1aa] ml-1">({{ worker.heartbeat_age | round | int }}s ago)</span>
+                    {{ worker.last_heartbeat | format_time(ui_timezone, '%Y-%m-%d %H:%M:%S') }}
+                    <span class="text-[#a1a1aa] ml-1">({{ worker.heartbeat_age | round | int }}s ago)</span>
                     {% else %}
-                        Never
+                    Never
                     {% endif %}
                 </p>
             </div>
@@ -229,16 +249,23 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
 <div class="mb-4 border-b border-[#27272a]">
     <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="workerTabs">
         <li class="mr-2">
-            <button class="inline-block p-4 border-b-2 border-blue-500 text-blue-500 rounded-t-lg active" id="tab-live-btn" onclick="switchTab('live')">Live Operations</button>
+            <button class="inline-block p-4 border-b-2 border-blue-500 text-blue-500 rounded-t-lg active"
+                id="tab-live-btn" onclick="switchTab('live')">Live Operations</button>
         </li>
         <li class="mr-2">
-            <button class="inline-block p-4 border-b-2 border-transparent hover:text-[#a1a1aa] hover:border-[#a1a1aa] text-[#a1a1aa] rounded-t-lg" id="tab-historical-btn" onclick="switchTab('historical')">Historical Data</button>
+            <button
+                class="inline-block p-4 border-b-2 border-transparent hover:text-[#a1a1aa] hover:border-[#a1a1aa] text-[#a1a1aa] rounded-t-lg"
+                id="tab-historical-btn" onclick="switchTab('historical')">Historical Data</button>
         </li>
         <li class="mr-2">
-            <button class="inline-block p-4 border-b-2 border-transparent hover:text-[#a1a1aa] hover:border-[#a1a1aa] text-[#a1a1aa] rounded-t-lg" id="tab-terminal-btn" onclick="switchTab('terminal')">Terminal Logs</button>
+            <button
+                class="inline-block p-4 border-b-2 border-transparent hover:text-[#a1a1aa] hover:border-[#a1a1aa] text-[#a1a1aa] rounded-t-lg"
+                id="tab-terminal-btn" onclick="switchTab('terminal')">Terminal Logs</button>
         </li>
         <li class="mr-2">
-            <button class="inline-block p-4 border-b-2 border-transparent hover:text-[#a1a1aa] hover:border-[#a1a1aa] text-[#a1a1aa] rounded-t-lg" id="tab-network-btn" onclick="switchTab('network')">Network Captures</button>
+            <button
+                class="inline-block p-4 border-b-2 border-transparent hover:text-[#a1a1aa] hover:border-[#a1a1aa] text-[#a1a1aa] rounded-t-lg"
+                id="tab-network-btn" onclick="switchTab('network')">Network Captures</button>
         </li>
     </ul>
 </div>
@@ -250,31 +277,36 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
         <div class="overflow-x-auto">
             <table class="w-full text-sm text-left">
                 <thead class="text-xs text-[#a1a1aa] uppercase bg-[#18181b] border-b border-[#27272a]">
-                <tr>
-                    <th scope="col" class="px-6 py-4 font-medium">Lease ID</th>
-                    <th scope="col" class="px-6 py-4 font-medium">Assignment</th>
-                    <th scope="col" class="px-6 py-4 font-medium">Status</th>
-                    <th scope="col" class="px-6 py-4 font-medium">Expires At</th>
-                    <th scope="col" class="px-6 py-4 font-medium">Last Heartbeat</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-[#27272a]">
-                {% for lease in leases %}
-                <tr class="hover:bg-[#18181b]/50">
-                    <td class="px-6 py-4 font-medium font-mono text-blue-400">Lease #{{ lease.id }}</td>
-                    <td class="px-6 py-4 font-mono"><a href="/assignments/{{ lease.assignment_id }}" class="hover:underline">Asm #{{ lease.assignment_id }}</a></td>
-                    <td class="px-6 py-4">
-                        <span class="px-2 py-1 text-xs bg-[#27272a] text-[#a1a1aa] rounded">{{ lease.status }}</span>
-                    </td>
-                    <td class="px-6 py-4 font-mono text-xs">{{ lease.expires_at | format_time(ui_timezone, '%Y-%m-%d %H:%M:%S') }}</td>
-                    <td class="px-6 py-4 font-mono text-xs">{{ lease.last_heartbeat | format_time(ui_timezone, '%H:%M:%S') if lease.last_heartbeat else 'N/A' }}</td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="5" class="px-6 py-8 text-center text-[#a1a1aa]">No active leases for this worker.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
+                    <tr>
+                        <th scope="col" class="px-6 py-4 font-medium">Lease ID</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Assignment</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Status</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Expires At</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Last Heartbeat</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[#27272a]">
+                    {% for lease in leases %}
+                    <tr class="hover:bg-[#18181b]/50">
+                        <td class="px-6 py-4 font-medium font-mono text-blue-400">Lease #{{ lease.id }}</td>
+                        <td class="px-6 py-4 font-mono"><a href="/assignments/{{ lease.assignment_id }}"
+                                class="hover:underline">Asm #{{ lease.assignment_id }}</a></td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-1 text-xs bg-[#27272a] text-[#a1a1aa] rounded">{{ lease.status
+                                }}</span>
+                        </td>
+                        <td class="px-6 py-4 font-mono text-xs">{{ lease.expires_at | format_time(ui_timezone, '%Y-%m-%d
+                            %H:%M:%S') }}</td>
+                        <td class="px-6 py-4 font-mono text-xs">{{ lease.last_heartbeat | format_time(ui_timezone,
+                            '%H:%M:%S') if lease.last_heartbeat else 'N/A' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-8 text-center text-[#a1a1aa]">No active leases for this worker.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
             </table>
         </div>
     </div>
@@ -287,41 +319,46 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
         <div class="overflow-x-auto">
             <table class="w-full text-sm text-left">
                 <thead class="text-xs text-[#a1a1aa] uppercase bg-[#18181b] border-b border-[#27272a]">
-                <tr>
-                    <th scope="col" class="px-6 py-3">Timestamp</th>
-                    <th scope="col" class="px-6 py-3">Level</th>
-                    <th scope="col" class="px-6 py-3">Event Type</th>
-                    <th scope="col" class="px-6 py-3">Assignment</th>
-                    <th scope="col" class="px-6 py-3">Payload</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-[#27272a] font-mono text-xs">
-                {% for log in logs %}
-                <tr class="hover:bg-[#18181b]/50 transition-colors">
-                    <td class="px-6 py-4 text-[#a1a1aa] whitespace-nowrap">{{ log.created_at | format_time(ui_timezone, '%Y-%m-%d %H:%M:%S') }}</td>
-                    <td class="px-6 py-4">
-                        {% if log.severity == 'error' %}
+                    <tr>
+                        <th scope="col" class="px-6 py-3">Timestamp</th>
+                        <th scope="col" class="px-6 py-3">Level</th>
+                        <th scope="col" class="px-6 py-3">Event Type</th>
+                        <th scope="col" class="px-6 py-3">Assignment</th>
+                        <th scope="col" class="px-6 py-3">Payload</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[#27272a] font-mono text-xs">
+                    {% for log in logs %}
+                    <tr class="hover:bg-[#18181b]/50 transition-colors">
+                        <td class="px-6 py-4 text-[#a1a1aa] whitespace-nowrap">{{ log.created_at |
+                            format_time(ui_timezone, '%Y-%m-%d %H:%M:%S') }}</td>
+                        <td class="px-6 py-4">
+                            {% if log.severity == 'error' %}
                             <span class="text-red-500">ERROR</span>
-                        {% elif log.severity == 'warning' %}
+                            {% elif log.severity == 'warning' %}
                             <span class="text-yellow-500">WARN</span>
-                        {% else %}
+                            {% else %}
                             <span class="text-blue-400">INFO</span>
-                        {% endif %}
-                    </td>
-                    <td class="px-6 py-4 font-semibold"><operational-guidance code="{{ log.event_type }}"></operational-guidance></td>
-                    <td class="px-6 py-4 text-[#a1a1aa]">
-                        {% if log.assignment_id %}<a href="/assignments/{{ log.assignment_id }}" class="hover:underline text-blue-400">#{{ log.assignment_id }}</a>{% else %}-{% endif %}
-                    </td>
-                    <td class="px-6 py-4 text-[#a1a1aa]">
-                        <div class="max-w-xl truncate" title="{{ log.payload | string }}">{{ log.payload | string }}</div>
-                    </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="5" class="px-6 py-8 text-center text-[#a1a1aa] font-sans">No events logged yet.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 font-semibold"><operational-guidance
+                                code="{{ log.event_type }}"></operational-guidance></td>
+                        <td class="px-6 py-4 text-[#a1a1aa]">
+                            {% if log.assignment_id %}<a href="/assignments/{{ log.assignment_id }}"
+                                class="hover:underline text-blue-400">#{{ log.assignment_id }}</a>{% else %}-{% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-[#a1a1aa]">
+                            <div class="max-w-xl truncate" title="{{ log.payload | string }}">{{ log.payload | string }}
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-8 text-center text-[#a1a1aa] font-sans">No events logged yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
             </table>
         </div>
     </div>
@@ -331,9 +368,15 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
 <div id="tab-network" class="tab-content hidden">
     <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-semibold">Network Captures (HAR)</h3>
-        <form action="/workers/{{ worker.worker_id }}/network-logs/clear" method="POST" class="inline" onsubmit="event.preventDefault(); const f = this; uiConfirm('Clear all network capture logs?').then(c => { if(c) HTMLFormElement.prototype.submit.call(f); });">
-            <button type="submit" class="btn btn-danger px-3 py-1.5 text-xs flex items-center gap-1 bg-red-900/50 hover:bg-red-800/80 text-red-200 rounded-md transition-colors border border-red-800/50">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        <form action="/workers/{{ worker.worker_id }}/network-logs/clear" method="POST" class="inline"
+            onsubmit="event.preventDefault(); const f = this; uiConfirm('Clear all network capture logs?').then(c => { if(c) HTMLFormElement.prototype.submit.call(f); });">
+            <button type="submit"
+                class="btn btn-danger px-3 py-1.5 text-xs flex items-center gap-1 bg-red-900/50 hover:bg-red-800/80 text-red-200 rounded-md transition-colors border border-red-800/50">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                    </path>
+                </svg>
                 Clear All
             </button>
         </form>
@@ -342,36 +385,44 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
         <div class="overflow-x-auto">
             <table class="w-full text-sm text-left">
                 <thead class="text-xs text-[#a1a1aa] uppercase bg-[#18181b] border-b border-[#27272a]">
-                <tr>
-                    <th scope="col" class="px-6 py-3">Timestamp</th>
-                    <th scope="col" class="px-6 py-3">Assignment</th>
-                    <th scope="col" class="px-6 py-3">Size (Chars)</th>
-                    <th scope="col" class="px-6 py-3 text-right">Action</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-[#27272a] font-mono text-xs">
-                {% for log in network_logs %}
-                <tr class="hover:bg-[#18181b]/50 transition-colors">
-                    <td class="px-6 py-4 text-[#a1a1aa] whitespace-nowrap">{{ log.created_at | format_time(ui_timezone, '%Y-%m-%d %H:%M:%S') }}</td>
-                    <td class="px-6 py-4 text-[#a1a1aa]">
-                        {% if log.assignment_id %}<a href="/assignments/{{ log.assignment_id }}" class="hover:underline text-blue-400">#{{ log.assignment_id }}</a>{% else %}None{% endif %}
-                    </td>
-                    <td class="px-6 py-4 text-[#a1a1aa]">
-                        {{ log.payload | string | length }}
-                    </td>
-                    <td class="px-6 py-4 text-right">
-                        <a href="/workers/{{ worker.worker_id }}/network-logs/{{ log.id }}/download" class="text-blue-400 hover:text-blue-300 hover:underline flex items-center justify-end gap-1">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            Download JSON
-                        </a>
-                    </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="4" class="px-6 py-8 text-center text-[#a1a1aa] font-sans">No network logs captured yet.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
+                    <tr>
+                        <th scope="col" class="px-6 py-3">Timestamp</th>
+                        <th scope="col" class="px-6 py-3">Assignment</th>
+                        <th scope="col" class="px-6 py-3">Size (Chars)</th>
+                        <th scope="col" class="px-6 py-3 text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[#27272a] font-mono text-xs">
+                    {% for log in network_logs %}
+                    <tr class="hover:bg-[#18181b]/50 transition-colors">
+                        <td class="px-6 py-4 text-[#a1a1aa] whitespace-nowrap">{{ log.created_at |
+                            format_time(ui_timezone, '%Y-%m-%d %H:%M:%S') }}</td>
+                        <td class="px-6 py-4 text-[#a1a1aa]">
+                            {% if log.assignment_id %}<a href="/assignments/{{ log.assignment_id }}"
+                                class="hover:underline text-blue-400">#{{ log.assignment_id }}</a>{% else %}None{% endif
+                            %}
+                        </td>
+                        <td class="px-6 py-4 text-[#a1a1aa]">
+                            {{ log.payload | string | length }}
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <a href="/workers/{{ worker.worker_id }}/network-logs/{{ log.id }}/download"
+                                class="text-blue-400 hover:text-blue-300 hover:underline flex items-center justify-end gap-1">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                </svg>
+                                Download JSON
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="px-6 py-8 text-center text-[#a1a1aa] font-sans">No network logs captured
+                            yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
             </table>
         </div>
     </div>
@@ -383,60 +434,86 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
     <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-semibold">Live Terminal Output</h3>
         <div class="flex gap-2">
-            <a href="/workers/{{ worker.worker_id }}/logs/download" class="btn btn-secondary px-3 py-1.5 text-xs flex items-center gap-1 bg-[#27272a] hover:bg-[#3f3f46] text-white rounded-md transition-colors border border-[#3f3f46]">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            <a href="/workers/{{ worker.worker_id }}/logs/download"
+                class="btn btn-secondary px-3 py-1.5 text-xs flex items-center gap-1 bg-[#27272a] hover:bg-[#3f3f46] text-white rounded-md transition-colors border border-[#3f3f46]">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                </svg>
                 Download
             </a>
-            <form action="/workers/{{ worker.worker_id }}/logs/clear" method="POST" class="inline" onsubmit="event.preventDefault(); const f = this; uiConfirm('Clear all terminal logs?').then(c => { if(c) HTMLFormElement.prototype.submit.call(f); });">
-                <button type="submit" class="btn btn-danger px-3 py-1.5 text-xs flex items-center gap-1 bg-red-900/50 hover:bg-red-800/80 text-red-200 rounded-md transition-colors border border-red-800/50">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            <form action="/workers/{{ worker.worker_id }}/logs/clear" method="POST" class="inline"
+                onsubmit="event.preventDefault(); const f = this; uiConfirm('Clear all terminal logs?').then(c => { if(c) HTMLFormElement.prototype.submit.call(f); });">
+                <button type="submit"
+                    class="btn btn-danger px-3 py-1.5 text-xs flex items-center gap-1 bg-red-900/50 hover:bg-red-800/80 text-red-200 rounded-md transition-colors border border-red-800/50">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                        </path>
+                    </svg>
                     Clear
                 </button>
             </form>
         </div>
     </div>
     <div class="bg-[#000000] rounded-lg border border-[#27272a] p-4 overflow-x-auto">
-        <pre class="font-mono text-xs text-[#a1a1aa] whitespace-pre-wrap leading-relaxed h-[500px] overflow-y-auto" id="terminal-window">{{ terminal_logs }}</pre>
+        <pre class="font-mono text-xs text-[#a1a1aa] whitespace-pre-wrap leading-relaxed h-[500px] overflow-y-auto"
+            id="terminal-window">{{ terminal_logs }}</pre>
     </div>
 </div>
 
 <!-- Edit Worker Modal -->
-<div id="edit-worker-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/80 backdrop-blur-sm">
-    <div class="bg-[#18181b] border border-[#27272a] rounded-xl w-full max-w-lg shadow-2xl overflow-hidden transform scale-95 opacity-0 transition-all duration-200" id="edit-worker-modal-content">
-        <form action="/workers/{{ worker.worker_id }}/edit" method="POST" id="edit-worker-form" onsubmit="prepareLabelsSubmit()">
+<div id="edit-worker-modal"
+    class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/80 backdrop-blur-sm">
+    <div class="bg-[#18181b] border border-[#27272a] rounded-xl w-full max-w-lg shadow-2xl overflow-hidden transform scale-95 opacity-0 transition-all duration-200"
+        id="edit-worker-modal-content">
+        <form action="/workers/{{ worker.worker_id }}/edit" method="POST" id="edit-worker-form"
+            onsubmit="prepareLabelsSubmit()">
             <div class="px-6 py-4 border-b border-[#27272a] flex justify-between items-center">
                 <h3 class="text-lg font-semibold text-[#fafafa]">Edit Configuration</h3>
-                <button type="button" onclick="closeEditWorkerModal()" class="text-[#a1a1aa] hover:text-white transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <button type="button" onclick="closeEditWorkerModal()"
+                    class="text-[#a1a1aa] hover:text-white transition-colors"><i data-lucide="x"
+                        class="w-5 h-5"></i></button>
             </div>
             <div class="p-6 space-y-6">
                 <!-- Max Concurrency -->
                 <div>
                     <label class="block text-sm font-medium text-[#a1a1aa] mb-2">Max Concurrency</label>
-                    <input type="number" name="max_concurrency" value="{{ worker.max_concurrency }}" min="1" max="100" class="w-full bg-[#09090b] border border-[#27272a] rounded-md px-3 py-2 text-sm text-[#fafafa] focus:outline-none focus:border-blue-500 transition-colors">
+                    <input type="number" name="max_concurrency" value="{{ worker.max_concurrency }}" min="1" max="100"
+                        class="w-full bg-[#09090b] border border-[#27272a] rounded-md px-3 py-2 text-sm text-[#fafafa] focus:outline-none focus:border-blue-500 transition-colors">
                     <p class="text-xs text-zinc-500 mt-1">Maximum number of parallel tasks this worker can handle.</p>
                 </div>
-                
+
                 <!-- Labels UI -->
                 <div>
                     <label class="block text-sm font-medium text-[#a1a1aa] mb-2">Labels</label>
-                    <input type="hidden" name="labels" id="hidden-labels-input" value='{{ worker.labels | tojson | safe }}'>
-                    
-                    <div id="labels-container" class="flex flex-wrap gap-2 mb-3 min-h-[42px] p-2 bg-[#09090b] border border-[#27272a] rounded-md items-center">
+                    <input type="hidden" name="labels" id="hidden-labels-input"
+                        value='{{ worker.labels | tojson | safe }}'>
+
+                    <div id="labels-container"
+                        class="flex flex-wrap gap-2 mb-3 min-h-[42px] p-2 bg-[#09090b] border border-[#27272a] rounded-md items-center">
                         <!-- tags will be rendered here by JS -->
                     </div>
-                    
+
                     <div class="flex gap-2">
-                        <input type="text" id="label-key-input" placeholder="Key (e.g. location)" class="flex-1 bg-[#09090b] border border-[#27272a] rounded-md px-3 py-1.5 text-sm text-[#fafafa] focus:outline-none focus:border-blue-500">
-                        <input type="text" id="label-value-input" placeholder="Value (e.g. PK)" class="flex-1 bg-[#09090b] border border-[#27272a] rounded-md px-3 py-1.5 text-sm text-[#fafafa] focus:outline-none focus:border-blue-500" onkeypress="if(event.key === 'Enter'){ event.preventDefault(); addLabel(); }">
-                        <button type="button" onclick="addLabel()" class="px-3 py-1.5 bg-[#27272a] hover:bg-[#3f3f46] text-white rounded-md text-sm transition-colors flex items-center justify-center w-10 border border-[#3f3f46]">
+                        <input type="text" id="label-key-input" placeholder="Key (e.g. location)"
+                            class="flex-1 bg-[#09090b] border border-[#27272a] rounded-md px-3 py-1.5 text-sm text-[#fafafa] focus:outline-none focus:border-blue-500">
+                        <input type="text" id="label-value-input" placeholder="Value (e.g. PK)"
+                            class="flex-1 bg-[#09090b] border border-[#27272a] rounded-md px-3 py-1.5 text-sm text-[#fafafa] focus:outline-none focus:border-blue-500"
+                            onkeypress="if(event.key === 'Enter'){ event.preventDefault(); addLabel(); }">
+                        <button type="button" onclick="addLabel()"
+                            class="px-3 py-1.5 bg-[#27272a] hover:bg-[#3f3f46] text-white rounded-md text-sm transition-colors flex items-center justify-center w-10 border border-[#3f3f46]">
                             <i data-lucide="plus" class="w-4 h-4"></i>
                         </button>
                     </div>
                 </div>
             </div>
             <div class="px-6 py-4 border-t border-[#27272a] bg-[#09090b] flex justify-end gap-3">
-                <button type="button" onclick="closeEditWorkerModal()" class="px-4 py-2 text-sm text-[#a1a1aa] hover:text-white transition-colors">Cancel</button>
-                <button type="submit" class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors font-medium">Save Changes</button>
+                <button type="button" onclick="closeEditWorkerModal()"
+                    class="px-4 py-2 text-sm text-[#a1a1aa] hover:text-white transition-colors">Cancel</button>
+                <button type="submit"
+                    class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors font-medium">Save
+                    Changes</button>
             </div>
         </form>
     </div>
@@ -451,13 +528,13 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
         document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
         // Show target tab
         document.getElementById('tab-' + tabId).classList.remove('hidden');
-        
+
         // Reset all buttons
         document.querySelectorAll('#workerTabs button').forEach(el => {
             el.classList.remove('border-blue-500', 'text-blue-500');
             el.classList.add('border-transparent', 'text-[#a1a1aa]');
         });
-        
+
         // Highlight active button
         const activeBtn = document.getElementById('tab-' + tabId + '-btn');
         activeBtn.classList.remove('border-transparent', 'text-[#a1a1aa]');
@@ -468,7 +545,7 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
     try {
         const raw = document.getElementById('hidden-labels-input').value;
         if (raw) currentLabels = JSON.parse(raw);
-    } catch(e) { console.error("Failed to parse labels", e); }
+    } catch (e) { console.error("Failed to parse labels", e); }
 
     function renderLabels() {
         const container = document.getElementById('labels-container');
@@ -486,7 +563,7 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
             `;
             container.appendChild(tag);
         }
-        if(window.lucide) window.lucide.createIcons();
+        if (window.lucide) window.lucide.createIcons();
     }
 
     function addLabel() {
