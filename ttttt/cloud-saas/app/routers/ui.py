@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, timezone
 import zoneinfo
 
 import os
-from models import WorkerNode, Assignment, Lease, EventLog, PortalAccount, Proxy, BookingTask, SchedulerDecision, SystemSetting, User, Tenant, PushSubscription, AuditLog, WorkerLog, Applicant, WaitlistQueue
+from models import WorkerNode, Assignment, Lease, EventLog, PortalAccount, Proxy, BookingTask, SchedulerDecision, SystemSetting, User, Tenant, PushSubscription, AuditLog, WorkerLog, Applicant, WaitlistQueue, SlotAvailability
 from models import SessionLocal
 from secrets_manager import secrets_manager
 from auth import get_current_user, require_tenant_admin, get_current_user_from_cookie, RoleEnum, get_password_hash

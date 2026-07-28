@@ -96,24 +96,26 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right space-x-1">
                         <a href="/slots/{{ slot.id }}" class="btn btn-secondary text-xs py-1 px-2.5">Details</a>
-                        {% if slot.is_archived %}
-                            <form action="/slots/{{ slot.id }}/restore" method="POST" class="inline">
-                                <button type="submit" class="text-xs px-2 py-1 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-md font-medium transition-colors">
-                                    Restore
-                                </button>
-                            </form>
-                        {% else %}
-                            <form action="/slots/{{ slot.id }}/archive" method="POST" class="inline">
-                                <button type="submit" class="text-xs px-2 py-1 bg-zinc-800 text-zinc-400 hover:bg-red-500/10 hover:text-red-400 border border-zinc-700 hover:border-red-500/30 rounded-md font-medium transition-colors">
-                                    Archive
+                        {% if user.role.value == 'SUPER_ADMIN' %}
+                            {% if slot.is_archived %}
+                                <form action="/slots/{{ slot.id }}/restore" method="POST" class="inline">
+                                    <button type="submit" class="text-xs px-2 py-1 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-md font-medium transition-colors">
+                                        Restore
+                                    </button>
+                                </form>
+                            {% else %}
+                                <form action="/slots/{{ slot.id }}/archive" method="POST" class="inline">
+                                    <button type="submit" class="text-xs px-2 py-1 bg-zinc-800 text-zinc-400 hover:bg-red-500/10 hover:text-red-400 border border-zinc-700 hover:border-red-500/30 rounded-md font-medium transition-colors">
+                                        Archive
+                                    </button>
+                                </form>
+                            {% endif %}
+                            <form action="/slots/{{ slot.id }}/delete" method="POST" class="inline" onsubmit="return confirm('Permanently delete slot drop #{{ slot.id }}?');">
+                                <button type="submit" class="text-xs px-2 py-1 bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/30 rounded-md font-medium transition-colors">
+                                    Delete
                                 </button>
                             </form>
                         {% endif %}
-                        <form action="/slots/{{ slot.id }}/delete" method="POST" class="inline" onsubmit="return confirm('Permanently delete slot drop #{{ slot.id }}?');">
-                            <button type="submit" class="text-xs px-2 py-1 bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/30 rounded-md font-medium transition-colors">
-                                Delete
-                            </button>
-                        </form>
                     </td>
                 </tr>
                 {% else %}

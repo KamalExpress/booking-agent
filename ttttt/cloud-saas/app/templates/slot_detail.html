@@ -12,18 +12,20 @@
         <p class="text-sm text-muted-foreground mt-1">Found on {{ slot.created_at | format_time(ui_timezone, '%Y-%m-%d at %H:%M') }} by {{ slot.display_found_by or slot.found_by or 'System Account' }}</p>
     </div>
     <div class="flex items-center gap-2">
-        {% if slot.is_archived %}
-            <form action="/slots/{{ slot.id }}/restore" method="POST" class="inline">
-                <button type="submit" class="btn btn-primary bg-emerald-600 hover:bg-emerald-500 text-xs py-1.5 px-3">Restore</button>
-            </form>
-        {% else %}
-            <form action="/slots/{{ slot.id }}/archive" method="POST" class="inline">
-                <button type="submit" class="btn btn-secondary border border-border text-xs py-1.5 px-3">Archive</button>
+        {% if user.role.value == 'SUPER_ADMIN' %}
+            {% if slot.is_archived %}
+                <form action="/slots/{{ slot.id }}/restore" method="POST" class="inline">
+                    <button type="submit" class="btn btn-primary bg-emerald-600 hover:bg-emerald-500 text-xs py-1.5 px-3">Restore</button>
+                </form>
+            {% else %}
+                <form action="/slots/{{ slot.id }}/archive" method="POST" class="inline">
+                    <button type="submit" class="btn btn-secondary border border-border text-xs py-1.5 px-3">Archive</button>
+                </form>
+            {% endif %}
+            <form action="/slots/{{ slot.id }}/delete" method="POST" class="inline" onsubmit="return confirm('Permanently delete slot drop #{{ slot.id }}?');">
+                <button type="submit" class="btn btn-destructive text-xs py-1.5 px-3">Delete</button>
             </form>
         {% endif %}
-        <form action="/slots/{{ slot.id }}/delete" method="POST" class="inline" onsubmit="return confirm('Permanently delete slot drop #{{ slot.id }}?');">
-            <button type="submit" class="btn btn-destructive text-xs py-1.5 px-3">Delete</button>
-        </form>
         <a href="/slots" class="btn btn-secondary border border-border text-xs py-1.5 px-3">
             <i data-lucide="arrow-left" class="w-4 h-4 mr-1.5 inline"></i> Back to History
         </a>
