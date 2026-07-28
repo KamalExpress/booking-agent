@@ -104,13 +104,13 @@
                                     </button>
                                 </form>
                             {% else %}
-                                <form action="/slots/{{ slot.id }}/archive" method="POST" class="inline">
-                                    <button type="submit" class="text-xs px-2 py-1 bg-zinc-800 text-zinc-400 hover:bg-red-500/10 hover:text-red-400 border border-zinc-700 hover:border-red-500/30 rounded-md font-medium transition-colors">
+                                <form action="/slots/{{ slot.id }}/archive" method="POST" class="inline" onsubmit="event.preventDefault(); promptConfirmModal({ title: 'Archive Slot Drop', subtitle: 'Move to Archived tab', description: 'Are you sure you want to archive Slot Drop #{{ slot.id }} ({{ slot.display_visa_center or slot.visa_center }}, Date {{ slot.date }})?', confirmText: 'Confirm Archive', isDanger: false, form: this });">
+                                    <button type="submit" class="text-xs px-2 py-1 bg-zinc-800 text-zinc-400 hover:bg-amber-500/10 hover:text-amber-400 border border-zinc-700 hover:border-amber-500/30 rounded-md font-medium transition-colors">
                                         Archive
                                     </button>
                                 </form>
                             {% endif %}
-                            <form action="/slots/{{ slot.id }}/delete" method="POST" class="inline" onsubmit="return confirm('Permanently delete slot drop #{{ slot.id }}?');">
+                            <form action="/slots/{{ slot.id }}/delete" method="POST" class="inline" onsubmit="event.preventDefault(); promptConfirmModal({ title: 'Delete Slot Drop', subtitle: 'Permanent Removal', description: 'Are you sure you want to permanently delete Slot Drop #{{ slot.id }} ({{ slot.display_visa_center or slot.visa_center }}, Date {{ slot.date }})? This action cannot be undone.', confirmText: 'Confirm Delete', isDanger: true, form: this });">
                                 <button type="submit" class="text-xs px-2 py-1 bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/30 rounded-md font-medium transition-colors">
                                     Delete
                                 </button>
@@ -133,7 +133,67 @@
     </div>
 </div>
 
+<!-- Custom Confirmation Modal -->
+<div id="confirmActionModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+    <div class="bg-zinc-900 border border-zinc-800 rounded-xl max-w-md w-full p-6 shadow-2xl animate-in fade-in zoom-in duration-150">
+        <div class="flex items-center gap-3 mb-4">
+            <div id="modalIconContainer" class="p-2.5 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20">
+                <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h3 id="modalTitle" class="text-lg font-semibold text-white">Confirm Action</h3>
+                <p id="modalSubtitle" class="text-xs text-zinc-400">Are you sure you want to proceed?</p>
+            </div>
+        </div>
+        <p id="modalDescription" class="text-sm text-zinc-300 mb-6 leading-relaxed">
+            This action will modify the slot record.
+        </p>
+        <div class="flex justify-end gap-3">
+            <button type="button" onclick="closeConfirmModal()" class="px-4 py-2 text-xs font-medium text-zinc-300 bg-zinc-800 hover:bg-zinc-700 rounded-lg border border-zinc-700 transition-colors">
+                Cancel
+            </button>
+            <button type="button" id="modalConfirmBtn" class="px-4 py-2 text-xs font-medium text-white bg-red-600 hover:bg-red-500 rounded-lg transition-colors shadow-lg shadow-red-600/20">
+                Confirm
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
+let pendingFormToSubmit = null;
+
+function promptConfirmModal({ title, subtitle, description, confirmText, isDanger, form }) {
+    pendingFormToSubmit = form;
+    document.getElementById('modalTitle').innerText = title;
+    document.getElementById('modalSubtitle').innerText = subtitle;
+    document.getElementById('modalDescription').innerText = description;
+    
+    const confirmBtn = document.getElementById('modalConfirmBtn');
+    confirmBtn.innerText = confirmText;
+    
+    const iconContainer = document.getElementById('modalIconContainer');
+    if (isDanger) {
+        confirmBtn.className = "px-4 py-2 text-xs font-medium text-white bg-red-600 hover:bg-red-500 rounded-lg transition-colors shadow-lg shadow-red-600/20";
+        iconContainer.className = "p-2.5 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20";
+    } else {
+        confirmBtn.className = "px-4 py-2 text-xs font-medium text-white bg-amber-600 hover:bg-amber-500 rounded-lg transition-colors shadow-lg shadow-amber-600/20";
+        iconContainer.className = "p-2.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20";
+    }
+    
+    document.getElementById('confirmActionModal').classList.remove('hidden');
+}
+
+function closeConfirmModal() {
+    pendingFormToSubmit = null;
+    document.getElementById('confirmActionModal').classList.add('hidden');
+}
+
+document.getElementById('modalConfirmBtn').addEventListener('click', function() {
+    if (pendingFormToSubmit) {
+        pendingFormToSubmit.submit();
+    }
+});
+
 function filterStatus(status) {
     const rows = document.querySelectorAll('.slot-row');
     rows.forEach(row => {
