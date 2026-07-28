@@ -413,6 +413,10 @@ class SlotAvailability(Base):
     found_by = Column(String, nullable=True) # The worker_id that found the slot
     status = Column(String, default="AVAILABLE", nullable=False) # AVAILABLE, VERIFYING, UNAVAILABLE
     last_checked_at = Column(DateTime, default=datetime.utcnow)
+    is_archived = Column(Boolean, default=False, nullable=False)
+    archived_at = Column(DateTime, nullable=True)
+    archived_by_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    archived_by = relationship("User", foreign_keys=[archived_by_id])
     created_at = Column(DateTime, default=datetime.utcnow)
 
 class WorkerVersion(Base):

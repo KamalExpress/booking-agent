@@ -19,6 +19,17 @@
 </header>
 
 <div class="bg-card border border-border rounded-xl shadow-sm overflow-hidden mb-8">
+    <div class="p-6 border-b border-border bg-muted/30 flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <a href="/slots?tab=active" class="text-sm font-semibold px-3 py-1.5 rounded-md transition-colors {% if current_tab == 'active' %}bg-zinc-800 text-white border border-zinc-700{% else %}text-zinc-400 hover:text-white{% endif %}">
+                Active Slots ({{ total_active }})
+            </a>
+            <a href="/slots?tab=archived" class="text-sm font-semibold px-3 py-1.5 rounded-md transition-colors {% if current_tab == 'archived' %}bg-zinc-800 text-white border border-zinc-700{% else %}text-zinc-400 hover:text-white{% endif %}">
+                Archived Slots ({{ total_archived }})
+            </a>
+        </div>
+    </div>
+    
     <div class="overflow-x-auto">
         <table class="w-full text-sm text-left">
             <thead class="bg-muted/50 text-muted-foreground uppercase text-xs">
@@ -83,8 +94,26 @@
                     <td class="px-6 py-4 whitespace-nowrap text-muted-foreground text-xs font-mono">
                         {{ slot.display_found_by or slot.found_by or 'System Account' }}
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right">
-                        <a href="/slots/{{ slot.id }}" class="btn btn-secondary text-xs py-1 px-3">View Details</a>
+                    <td class="px-6 py-4 whitespace-nowrap text-right space-x-1">
+                        <a href="/slots/{{ slot.id }}" class="btn btn-secondary text-xs py-1 px-2.5">Details</a>
+                        {% if slot.is_archived %}
+                            <form action="/slots/{{ slot.id }}/restore" method="POST" class="inline">
+                                <button type="submit" class="text-xs px-2 py-1 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-md font-medium transition-colors">
+                                    Restore
+                                </button>
+                            </form>
+                        {% else %}
+                            <form action="/slots/{{ slot.id }}/archive" method="POST" class="inline">
+                                <button type="submit" class="text-xs px-2 py-1 bg-zinc-800 text-zinc-400 hover:bg-red-500/10 hover:text-red-400 border border-zinc-700 hover:border-red-500/30 rounded-md font-medium transition-colors">
+                                    Archive
+                                </button>
+                            </form>
+                        {% endif %}
+                        <form action="/slots/{{ slot.id }}/delete" method="POST" class="inline" onsubmit="return confirm('Permanently delete slot drop #{{ slot.id }}?');">
+                            <button type="submit" class="text-xs px-2 py-1 bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/30 rounded-md font-medium transition-colors">
+                                Delete
+                            </button>
+                        </form>
                     </td>
                 </tr>
                 {% else %}

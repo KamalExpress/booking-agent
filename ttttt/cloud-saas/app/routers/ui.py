@@ -287,7 +287,8 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
             
             recent_slots = db.query(SlotAvailability).filter(
                 SlotAvailability.visa_center == c_id,
-                SlotAvailability.created_at >= yesterday
+                SlotAvailability.created_at >= yesterday,
+                or_(SlotAvailability.is_archived == False, SlotAvailability.is_archived == None)
             ).order_by(SlotAvailability.created_at.desc()).limit(10).all()
             
             user_prefs = user.preferences or {}
@@ -503,13 +504,23 @@ async def notifications_page(request: Request, db: Session = Depends(get_db)):
     }, db)
 
 @router.get("/slots", response_class=HTMLResponse)
-async def slots_history_page(request: Request, db: Session = Depends(get_db)):
+async def slots_history_page(request: Request, tab: str = "active", db: Session = Depends(get_db)):
     user = get_ui_user(request, db)
     if not user:
         return RedirectResponse(url="/login", status_code=303)
         
-    from models import SlotAvailability, Lease, PortalAccount
-    slots = db.query(SlotAvailability).order_by(SlotAvailability.created_at.desc()).limit(200).all()
+    from models import SlotAvailability, Lease, PortalAccount, or_
+    
+    total_active = db.query(SlotAvailability).filter(or_(SlotAvailability.is_archived == False, SlotAvailability.is_archived == None)).count()
+    total_archived = db.query(SlotAvailability).filter(SlotAvailability.is_archived == True).count()
+    
+    if tab == "archived":
+        query = db.query(SlotAvailability).filter(SlotAvailability.is_archived == True)
+    else:
+        tab = "active"
+        query = db.query(SlotAvailability).filter(or_(SlotAvailability.is_archived == False, SlotAvailability.is_archived == None))
+        
+    slots = query.order_by(SlotAvailability.created_at.desc()).limit(200).all()
     
     # Bulk resolve worker_id to account display names
     worker_ids = list(set([s.found_by for s in slots if s.found_by and s.found_by.startswith("worker_")]))
@@ -539,7 +550,10 @@ async def slots_history_page(request: Request, db: Session = Depends(get_db)):
         "request": request,
         "user": user,
         "active_page": "slots",
-        "slots": slots
+        "slots": slots,
+        "current_tab": tab,
+        "total_active": total_active,
+        "total_archived": total_archived
     }, db)
 
 @router.get("/slots/{slot_id}", response_class=HTMLResponse)
@@ -573,6 +587,66 @@ async def slot_detail_page(slot_id: int, request: Request, db: Session = Depends
         "active_page": "slots",
         "slot": slot
     }, db)
+
+@router.post("/slots/{slot_id}/archive")
+async def archive_slot(slot_id: int, request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+    slot = db.query(SlotAvailability).filter(SlotAvailability.id == slot_id).first()
+    if slot:
+        slot.is_archived = True
+        slot.archived_at = datetime.utcnow()
+        slot.archived_by_id = user.id
+        
+        audit = AuditLog(
+            user_id=user.id,
+            tenant_id=user.tenant_id,
+            action=f"Archived Slot Drop #{slot_id} (Center {slot.visa_center}, Date {slot.date})",
+            ip_address=request.client.host if request.client else None
+        )
+        db.add(audit)
+        db.commit()
+    return RedirectResponse(url="/slots", status_code=303)
+
+@router.post("/slots/{slot_id}/restore")
+async def restore_slot(slot_id: int, request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+    slot = db.query(SlotAvailability).filter(SlotAvailability.id == slot_id).first()
+    if slot:
+        slot.is_archived = False
+        slot.archived_at = None
+        slot.archived_by_id = None
+        
+        audit = AuditLog(
+            user_id=user.id,
+            tenant_id=user.tenant_id,
+            action=f"Restored Slot Drop #{slot_id} (Center {slot.visa_center}, Date {slot.date})",
+            ip_address=request.client.host if request.client else None
+        )
+        db.add(audit)
+        db.commit()
+    return RedirectResponse(url="/slots?tab=archived", status_code=303)
+
+@router.post("/slots/{slot_id}/delete")
+async def delete_slot(slot_id: int, request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+    slot = db.query(SlotAvailability).filter(SlotAvailability.id == slot_id).first()
+    if slot:
+        audit = AuditLog(
+            user_id=user.id,
+            tenant_id=user.tenant_id,
+            action=f"Deleted Slot Drop #{slot_id} (Center {slot.visa_center}, Date {slot.date})",
+            ip_address=request.client.host if request.client else None
+        )
+        db.add(audit)
+        db.delete(slot)
+        db.commit()
+    return RedirectResponse(url="/slots", status_code=303)
 
 @router.get("/workers/{worker_id}", response_class=HTMLResponse)
 async def worker_detail_page(worker_id: str, request: Request, db: Session = Depends(get_db)):

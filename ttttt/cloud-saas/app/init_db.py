@@ -16,6 +16,9 @@ def init_db():
             with engine.connect() as conn:
                 conn.execute(text("ALTER TABLE slot_availability ADD COLUMN IF NOT EXISTS status VARCHAR DEFAULT 'AVAILABLE';"))
                 conn.execute(text("ALTER TABLE slot_availability ADD COLUMN IF NOT EXISTS last_checked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;"))
+                conn.execute(text("ALTER TABLE slot_availability ADD COLUMN IF NOT EXISTS is_archived BOOLEAN DEFAULT FALSE;"))
+                conn.execute(text("ALTER TABLE slot_availability ADD COLUMN IF NOT EXISTS archived_at TIMESTAMP;"))
+                conn.execute(text("ALTER TABLE slot_availability ADD COLUMN IF NOT EXISTS archived_by_id INTEGER;"))
                 conn.execute(text("ALTER TABLE portal_accounts ADD COLUMN IF NOT EXISTS account_name VARCHAR;"))
                 conn.execute(text("ALTER TABLE portal_accounts ADD COLUMN IF NOT EXISTS is_archived BOOLEAN DEFAULT FALSE;"))
                 conn.execute(text("ALTER TABLE portal_accounts ADD COLUMN IF NOT EXISTS archived_at TIMESTAMP;"))
