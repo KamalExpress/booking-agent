@@ -94,6 +94,33 @@ def format_time_filter(dt, tz_name="Server Time", fmt='%Y-%m-%d %H:%M:%S'):
 
 templates.env.filters["format_time"] = format_time_filter
 
+def human_duration_filter(seconds):
+    if seconds is None:
+        return "Never"
+    try:
+        sec = int(max(0, float(seconds)))
+    except (ValueError, TypeError):
+        return "Never"
+    if sec < 60:
+        return f"{sec}s ago"
+    mins = sec // 60
+    if mins < 60:
+        rem_sec = sec % 60
+        return f"{mins}m {rem_sec}s ago" if rem_sec > 0 else f"{mins}m ago"
+    hours = mins // 60
+    if hours < 24:
+        rem_mins = mins % 60
+        return f"{hours}h {rem_mins}m ago" if rem_mins > 0 else f"{hours}h ago"
+    days = hours // 24
+    rem_hours = hours % 24
+    if days < 30:
+        return f"{days}d {rem_hours}h ago" if rem_hours > 0 else f"{days}d ago"
+    months = days // 30
+    rem_days = days % 30
+    return f"{months}mo {rem_days}d ago"
+
+templates.env.filters["human_duration"] = human_duration_filter
+
 def render_template(name: str, context: dict, db: Session):
     # Fetch branding settings
     brand_name = db.query(SystemSetting).filter(SystemSetting.key == "global.brand_name").first()

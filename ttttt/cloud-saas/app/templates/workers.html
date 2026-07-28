@@ -87,9 +87,9 @@
                         {{ w.version }}<br>
                         <span class="text-xs">Chrome: {{ w.chrome_version or '?' }}</span>
                     </td>
-                    <td class="px-6 py-4 text-[#a1a1aa]">
+                    <td class="px-6 py-4 text-[#a1a1aa] whitespace-nowrap">
                         {% if w.heartbeat_age is not none %}
-                            {{ w.heartbeat_age | round | int }}s ago
+                            {{ w.heartbeat_age | human_duration }}
                         {% else %}
                             Never
                         {% endif %}

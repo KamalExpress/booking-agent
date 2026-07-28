@@ -206,6 +206,30 @@ class WorkerNode(Base):
         else:
             return "Worker"
 
+    @property
+    def human_heartbeat_age(self):
+        age_seconds = self.heartbeat_age
+        if age_seconds is None:
+            return "Never"
+        sec = int(max(0, age_seconds))
+        if sec < 60:
+            return f"{sec}s ago"
+        mins = sec // 60
+        if mins < 60:
+            rem_sec = sec % 60
+            return f"{mins}m {rem_sec}s ago" if rem_sec > 0 else f"{mins}m ago"
+        hours = mins // 60
+        if hours < 24:
+            rem_mins = mins % 60
+            return f"{hours}h {rem_mins}m ago" if rem_mins > 0 else f"{hours}h ago"
+        days = hours // 24
+        rem_hours = hours % 24
+        if days < 30:
+            return f"{days}d {rem_hours}h ago" if rem_hours > 0 else f"{days}d ago"
+        months = days // 30
+        rem_days = days % 30
+        return f"{months}mo {rem_days}d ago"
+
 class PortalAccount(Base):
     __tablename__ = "portal_accounts"
     id = Column(Integer, primary_key=True, index=True)
