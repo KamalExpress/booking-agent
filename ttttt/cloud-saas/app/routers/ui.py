@@ -360,42 +360,56 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
     push_logs = push_query.all()
     monthly_push_count = sum(log.payload.get('success_count', 0) if log.payload else 0 for log in push_logs)
     
-    # Fetch active assignments & active leases for Global Assignment Map
-    active_assignments_list = db.query(Assignment).filter(Assignment.status.in_(["Active", "Leased", "Running"])).all()
-    active_leases = db.query(Lease).filter(Lease.status.in_(["Leased", "Running", "Pending"])).all()
-    
-    lease_worker_account_map = {}
-    lease_account_ids = [l.portal_account_id for l in active_leases if l.portal_account_id]
-    if lease_account_ids:
-        accs = db.query(PortalAccount).filter(PortalAccount.id.in_(lease_account_ids)).all()
-        acc_map = {a.id: a.display_name for a in accs}
-        for l in active_leases:
-            if l.worker_id and l.portal_account_id in acc_map:
-                lease_worker_account_map[l.worker_id] = acc_map[l.portal_account_id]
+    # Build visa center map for human names
+    vc_setting = db.query(SystemSetting).filter(SystemSetting.key == "global.visa_centers_config").first()
+    vc_config_str = vc_setting.value if vc_setting and vc_setting.value else "138:26:Lahore, 137:26:Islamabad, 140:24:Doc Verification"
+    vc_map = {}
+    for center_str in vc_config_str.split(","):
+        parts = center_str.strip().split(":")
+        if len(parts) >= 3:
+            vc_map[parts[0]] = parts[2]
 
+    # Fetch active leases and active assignments for Global Assignment Map
+    active_leases = db.query(Lease).filter(Lease.status.in_(["Leased", "Running", "Pending"])).all()
+    active_assignments_list = db.query(Assignment).filter(Assignment.status.in_(["Active", "Leased", "Running"])).all()
+    
+    account_ids = list(set([l.portal_account_id for l in active_leases if l.portal_account_id]))
+    accounts_map = {}
+    if account_ids:
+        accs = db.query(PortalAccount).filter(PortalAccount.id.in_(account_ids)).all()
+        accounts_map = {a.id: a.display_name for a in accs}
+
+    assignment_map = {a.id: a for a in active_assignments_list}
+    
     global_assignments = []
-    for a in active_assignments_list:
-        worker_id_str = a.worker_id or "Auto-Sched"
-        account_name = lease_worker_account_map.get(a.worker_id)
-        display_worker = f"{account_name} ({worker_id_str})" if account_name else worker_id_str
+    for l in active_leases:
+        asm = assignment_map.get(l.assignment_id) if l.assignment_id else None
+        vc_id = asm.visa_center if asm else "138"
+        c_name = vc_map.get(str(vc_id), f"Center {vc_id}")
+        display_vc = f"{c_name} ({vc_id})" if c_name and not str(c_name).endswith(f"({vc_id})") else c_name
+        
+        acc_name = accounts_map.get(l.portal_account_id)
+        display_worker = f"{acc_name} ({l.worker_id})" if acc_name else l.worker_id
+        
         global_assignments.append({
-            "visa_center": f"Center {a.visa_center}" if not str(a.visa_center).startswith("Center") else a.visa_center,
-            "appointment_type": a.appointment_type or "26",
+            "visa_center": display_vc,
+            "appointment_type": "26",
             "worker_id": display_worker,
-            "expires_at": a.last_checked or a.created_at or datetime.utcnow(),
-            "status": a.status
+            "expires_at": l.expires_at or datetime.utcnow(),
+            "status": l.status
         })
 
-    for l in active_leases:
-        if not any(item["worker_id"] == l.worker_id or l.worker_id in item["worker_id"] for item in global_assignments):
-            account_name = lease_worker_account_map.get(l.worker_id)
-            display_worker = f"{account_name} ({l.worker_id})" if account_name else l.worker_id
+    leased_asm_ids = set([l.assignment_id for l in active_leases if l.assignment_id])
+    for a in active_assignments_list:
+        if a.id not in leased_asm_ids:
+            c_name = vc_map.get(str(a.visa_center), f"Center {a.visa_center}")
+            display_vc = f"{c_name} ({a.visa_center})" if c_name and not str(c_name).endswith(f"({a.visa_center})") else c_name
             global_assignments.append({
-                "visa_center": "Availability Check",
+                "visa_center": display_vc,
                 "appointment_type": "26",
-                "worker_id": display_worker,
-                "expires_at": l.expires_at or datetime.utcnow(),
-                "status": l.status
+                "worker_id": "Auto-Sched (Unassigned)",
+                "expires_at": a.last_checked or a.created_at or datetime.utcnow(),
+                "status": a.status
             })
 
     return render_template("index.html", {
