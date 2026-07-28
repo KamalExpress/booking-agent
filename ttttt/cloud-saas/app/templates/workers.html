@@ -31,10 +31,17 @@
             <tbody class="divide-y divide-[#27272a]">
                 {% for w in workers %}
                 <tr class="hover:bg-[#18181b]/50 transition-colors cursor-pointer" onclick="window.location.href='/workers/{{ w.worker_id }}'">
-                    <td class="px-6 py-4 font-medium font-mono text-blue-400">
-                        {{ w.worker_id }}
+                    <td class="px-6 py-4 font-medium">
+                        <div class="font-bold text-white text-sm">
+                            {% if w.active_account_name %}
+                                {{ w.active_account_name }}
+                            {% else %}
+                                Unassigned
+                            {% endif %}
+                        </div>
+                        <div class="font-mono text-xs text-blue-400 mt-0.5">{{ w.worker_id }}</div>
                         {% if w.scheduling_state != 'Accepting Jobs' %}
-                            <span class="ml-2 px-2 py-0.5 text-xs bg-yellow-500/10 text-yellow-500 rounded border border-yellow-500/20">{{ w.scheduling_state }}</span>
+                            <span class="mt-1 inline-block px-2 py-0.5 text-xs bg-yellow-500/10 text-yellow-500 rounded border border-yellow-500/20">{{ w.scheduling_state }}</span>
                         {% endif %}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">

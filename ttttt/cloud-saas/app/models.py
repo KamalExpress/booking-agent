@@ -210,6 +210,7 @@ class PortalAccount(Base):
     __tablename__ = "portal_accounts"
     id = Column(Integer, primary_key=True, index=True)
     tenant_id = Column(Integer, ForeignKey("tenants.id", ondelete="SET NULL"), nullable=True)
+    account_name = Column(String, nullable=True) # e.g., "Jameel", "Tayyab"
     username = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
     provider = Column(String, default="GVC")
@@ -227,6 +228,14 @@ class PortalAccount(Base):
     bookings_in_window = Column(Integer, default=0)
     booking_window_start = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+    @property
+    def display_name(self):
+        if self.account_name and self.account_name.strip():
+            return self.account_name.strip()
+        if self.username and "@" in self.username:
+            return self.username.split("@")[0]
+        return self.username or f"Account #{self.id}"
 
 class Proxy(Base):
     __tablename__ = "proxies"

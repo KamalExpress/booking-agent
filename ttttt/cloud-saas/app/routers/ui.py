@@ -363,7 +363,24 @@ async def workers_page(request: Request, db: Session = Depends(get_db)):
     if user.role != RoleEnum.SUPER_ADMIN:
         return RedirectResponse(url="/", status_code=303)
         
+    from models import Lease, PortalAccount
     workers = db.query(WorkerNode).order_by(WorkerNode.last_heartbeat.desc()).all()
+    
+    # Map active leased portal account name per worker
+    active_leases = db.query(Lease).filter(Lease.status.in_(["Leased", "Running", "Pending"])).all()
+    account_ids = [l.portal_account_id for l in active_leases if l.portal_account_id]
+    accounts_map = {}
+    if account_ids:
+        accounts = db.query(PortalAccount).filter(PortalAccount.id.in_(account_ids)).all()
+        accounts_map = {a.id: a.display_name for a in accounts}
+        
+    worker_account_map = {}
+    for l in active_leases:
+        if l.worker_id and l.portal_account_id in accounts_map:
+            worker_account_map[l.worker_id] = accounts_map[l.portal_account_id]
+            
+    for w in workers:
+        setattr(w, 'active_account_name', worker_account_map.get(w.worker_id))
             
     return render_template("workers.html", {
         "request": request,
@@ -851,6 +868,7 @@ async def accounts_page(request: Request, db: Session = Depends(get_db)):
 async def create_account(
     request: Request,
     provider: str = Form("GVC"),
+    account_name: Optional[str] = Form(None),
     username: str = Form(...),
     password: str = Form(...),
     supports_scraping: bool = Form(False),
@@ -862,6 +880,7 @@ async def create_account(
         return RedirectResponse(url="/", status_code=303)
     new_account = PortalAccount(
         provider=provider,
+        account_name=account_name.strip() if account_name else None,
         username=username,
         password=password,
         supports_scraping=supports_scraping,
@@ -896,6 +915,7 @@ async def account_detail_page(account_id: int, request: Request, db: Session = D
 async def edit_account(
     account_id: int,
     provider: str = Form("GVC"),
+    account_name: Optional[str] = Form(None),
     username: str = Form(...),
     password: str = Form(...),
     status: str = Form(...),
@@ -906,6 +926,7 @@ async def edit_account(
     account = db.query(PortalAccount).filter(PortalAccount.id == account_id).first()
     if account:
         account.provider = provider
+        account.account_name = account_name.strip() if account_name else None
         account.username = username
         account.password = password
         account.supports_scraping = supports_scraping

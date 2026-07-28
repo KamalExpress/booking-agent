@@ -16,6 +16,7 @@ def init_db():
             with engine.connect() as conn:
                 conn.execute(text("ALTER TABLE slot_availability ADD COLUMN IF NOT EXISTS status VARCHAR DEFAULT 'AVAILABLE';"))
                 conn.execute(text("ALTER TABLE slot_availability ADD COLUMN IF NOT EXISTS last_checked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;"))
+                conn.execute(text("ALTER TABLE portal_accounts ADD COLUMN IF NOT EXISTS account_name VARCHAR;"))
                 conn.commit()
         except Exception as e:
             print(f"Self-healing column check warning: {e}")
@@ -98,12 +99,21 @@ def init_db():
         # 5. Create Default Portal Accounts if not exists
         if db.query(PortalAccount).count() == 0:
             accounts = [
-                PortalAccount(username="mnoon2404@gmail.com", password="Shani@1122", supports_scraping=True, supports_booking=True, status="READY"),
-                PortalAccount(username="ammarashrafsialkot@gmail.com", password="Shani@1122", supports_scraping=True, supports_booking=True, status="READY")
+                PortalAccount(account_name="Jameel", username="mnoon2404@gmail.com", password="Shani@1122", supports_scraping=True, supports_booking=True, status="READY"),
+                PortalAccount(account_name="Tayyab", username="ammarashrafsialkot@gmail.com", password="Shani@1122", supports_scraping=True, supports_booking=True, status="READY")
             ]
             db.add_all(accounts)
             db.commit()
             print("Created default Portal Accounts.")
+        else:
+            # Backfill default account names if missing
+            acc1 = db.query(PortalAccount).filter(PortalAccount.username == "mnoon2404@gmail.com").first()
+            if acc1 and not acc1.account_name:
+                acc1.account_name = "Jameel"
+            acc2 = db.query(PortalAccount).filter(PortalAccount.username == "ammarashrafsialkot@gmail.com").first()
+            if acc2 and not acc2.account_name:
+                acc2.account_name = "Tayyab"
+            db.commit()
 
 if __name__ == "__main__":
     init_db()
