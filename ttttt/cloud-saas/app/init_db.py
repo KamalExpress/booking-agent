@@ -11,6 +11,15 @@ def init_db():
     from secrets_manager import secrets_manager
     
     with Session(engine) as db:
+        # Self-healing column additions for existing tables
+        try:
+            with engine.connect() as conn:
+                conn.execute(text("ALTER TABLE slot_availability ADD COLUMN IF NOT EXISTS status VARCHAR DEFAULT 'AVAILABLE';"))
+                conn.execute(text("ALTER TABLE slot_availability ADD COLUMN IF NOT EXISTS last_checked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;"))
+                conn.commit()
+        except Exception as e:
+            print(f"Self-healing column check warning: {e}")
+
         # 1. Create Default Tenant if not exists
         default_tenant = db.query(Tenant).filter(Tenant.id == 1).first()
             
