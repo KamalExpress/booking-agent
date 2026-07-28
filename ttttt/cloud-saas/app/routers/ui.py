@@ -2,6 +2,7 @@ from typing import Optional
 from fastapi import APIRouter, Request, Depends, Form
 from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
 from fastapi.templating import Jinja2Templates
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
 import zoneinfo
@@ -391,7 +392,7 @@ async def workers_page(request: Request, tab: str = "active", db: Session = Depe
     if user.role != RoleEnum.SUPER_ADMIN:
         return RedirectResponse(url="/", status_code=303)
         
-    from models import Lease, PortalAccount, or_
+    from models import Lease, PortalAccount
     
     total_active = db.query(WorkerNode).filter(or_(WorkerNode.is_archived == False, WorkerNode.is_archived == None)).count()
     total_archived = db.query(WorkerNode).filter(WorkerNode.is_archived == True).count()
@@ -939,7 +940,6 @@ async def accounts_page(request: Request, tab: str = "active", db: Session = Dep
     if not user or user.role != RoleEnum.SUPER_ADMIN:
         return RedirectResponse(url="/", status_code=303)
         
-    from models import or_
     total_active = db.query(PortalAccount).filter(or_(PortalAccount.is_archived == False, PortalAccount.is_archived == None)).count()
     total_archived = db.query(PortalAccount).filter(PortalAccount.is_archived == True).count()
     
