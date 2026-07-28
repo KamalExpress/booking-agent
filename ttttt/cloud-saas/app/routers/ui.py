@@ -1358,6 +1358,12 @@ async def clients_page(request: Request, db: Session = Depends(get_db)):
         
     clients = query.order_by(Applicant.id.desc()).all()
     
+    if user.role == RoleEnum.SUPER_ADMIN:
+        tenants = db.query(Tenant).all()
+        tenants_map = {t.id: t.name for t in tenants}
+        for c in clients:
+            setattr(c, 'tenant_name', tenants_map.get(c.tenant_id, 'System / Default'))
+    
     return render_template("clients.html", {
         "request": request,
         "user": user,
