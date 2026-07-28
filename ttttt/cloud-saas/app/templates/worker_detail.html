@@ -41,19 +41,34 @@
             <span class="px-2.5 py-1 text-xs bg-[#27272a] text-[#a1a1aa] rounded-full border border-[#3f3f46]">
                 {{ worker.scheduling_state }}
             </span>
+
+            {% if worker.is_archived %}
+                <span class="px-2.5 py-1 text-xs font-bold bg-red-500/10 text-red-400 rounded-full border border-red-500/30 flex items-center gap-1.5" title="Archived at {{ worker.archived_at }}">
+                    <i data-lucide="archive" class="w-3.5 h-3.5"></i> Archived
+                </span>
+            {% endif %}
         </div>
         
         <div class="flex gap-2">
-            <form action="/workers/{{ worker.worker_id }}/action" method="POST" class="inline">
-                {% if worker.scheduling_state == 'Accepting Jobs' %}
-                    <button type="submit" name="action" value="stop_accepting" class="btn btn-secondary">Stop Accepting Jobs</button>
-                    <button type="submit" name="action" value="drain" class="btn btn-secondary text-yellow-500">Drain</button>
-                {% else %}
-                    <button type="submit" name="action" value="accept_jobs" class="btn btn-primary">Accept Jobs</button>
-                {% endif %}
-                <button type="submit" name="action" value="maintenance" class="btn btn-secondary">Maintenance</button>
-                <button type="submit" name="action" value="disable" class="btn btn-destructive">Disable</button>
-            </form>
+            {% if worker.is_archived %}
+                <form action="/workers/{{ worker.worker_id }}/restore" method="POST" class="inline">
+                    <button type="submit" class="btn btn-primary bg-emerald-600 hover:bg-emerald-500">Restore Worker</button>
+                </form>
+            {% else %}
+                <form action="/workers/{{ worker.worker_id }}/action" method="POST" class="inline">
+                    {% if worker.scheduling_state == 'Accepting Jobs' %}
+                        <button type="submit" name="action" value="stop_accepting" class="btn btn-secondary">Stop Accepting Jobs</button>
+                        <button type="submit" name="action" value="drain" class="btn btn-secondary text-yellow-500">Drain</button>
+                    {% else %}
+                        <button type="submit" name="action" value="accept_jobs" class="btn btn-primary">Accept Jobs</button>
+                    {% endif %}
+                    <button type="submit" name="action" value="maintenance" class="btn btn-secondary">Maintenance</button>
+                    <button type="submit" name="action" value="disable" class="btn btn-destructive">Disable</button>
+                </form>
+                <form action="/workers/{{ worker.worker_id }}/archive" method="POST" class="inline" onsubmit="return confirm('Archive worker {{ worker.worker_id }}?');">
+                    <button type="submit" class="btn btn-secondary border-red-500/30 text-red-400 hover:bg-red-500/10">Archive Worker</button>
+                </form>
+            {% endif %}
         </div>
     </div>
 </div>

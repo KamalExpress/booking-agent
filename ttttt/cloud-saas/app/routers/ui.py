@@ -384,15 +384,25 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
     }, db)
 
 @router.get("/workers", response_class=HTMLResponse)
-async def workers_page(request: Request, db: Session = Depends(get_db)):
+async def workers_page(request: Request, tab: str = "active", db: Session = Depends(get_db)):
     user = get_ui_user(request, db)
     if not user:
         return RedirectResponse(url="/login", status_code=303)
     if user.role != RoleEnum.SUPER_ADMIN:
         return RedirectResponse(url="/", status_code=303)
         
-    from models import Lease, PortalAccount
-    workers = db.query(WorkerNode).order_by(WorkerNode.last_heartbeat.desc()).all()
+    from models import Lease, PortalAccount, or_
+    
+    total_active = db.query(WorkerNode).filter(or_(WorkerNode.is_archived == False, WorkerNode.is_archived == None)).count()
+    total_archived = db.query(WorkerNode).filter(WorkerNode.is_archived == True).count()
+    
+    if tab == "archived":
+        query = db.query(WorkerNode).filter(WorkerNode.is_archived == True)
+    else:
+        tab = "active"
+        query = db.query(WorkerNode).filter(or_(WorkerNode.is_archived == False, WorkerNode.is_archived == None))
+        
+    workers = query.order_by(WorkerNode.last_heartbeat.desc()).all()
     
     # Map active leased portal account name per worker
     active_leases = db.query(Lease).filter(Lease.status.in_(["Leased", "Running", "Pending"])).all()
@@ -414,8 +424,54 @@ async def workers_page(request: Request, db: Session = Depends(get_db)):
         "request": request,
         "user": user,
         "active_page": "workers",
-        "workers": workers
+        "workers": workers,
+        "current_tab": tab,
+        "total_active": total_active,
+        "total_archived": total_archived
     }, db)
+
+@router.post("/workers/{worker_id}/archive")
+async def archive_worker(worker_id: str, request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+    worker = db.query(WorkerNode).filter(WorkerNode.worker_id == worker_id).first()
+    if worker:
+        worker.is_archived = True
+        worker.archived_at = datetime.utcnow()
+        worker.archived_by_id = user.id
+        worker.status = "Offline"
+        
+        audit = AuditLog(
+            user_id=user.id,
+            tenant_id=user.tenant_id,
+            action=f"Archived Worker {worker_id}",
+            ip_address=request.client.host if request.client else None
+        )
+        db.add(audit)
+        db.commit()
+    return RedirectResponse(url="/workers", status_code=303)
+
+@router.post("/workers/{worker_id}/restore")
+async def restore_worker(worker_id: str, request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+    worker = db.query(WorkerNode).filter(WorkerNode.worker_id == worker_id).first()
+    if worker:
+        worker.is_archived = False
+        worker.archived_at = None
+        worker.archived_by_id = None
+        
+        audit = AuditLog(
+            user_id=user.id,
+            tenant_id=user.tenant_id,
+            action=f"Restored Worker {worker_id}",
+            ip_address=request.client.host if request.client else None
+        )
+        db.add(audit)
+        db.commit()
+    return RedirectResponse(url="/workers?tab=archived", status_code=303)
 
 @router.get("/notifications", response_class=HTMLResponse)
 async def notifications_page(request: Request, db: Session = Depends(get_db)):
@@ -878,18 +934,31 @@ async def edit_assignment(
     return RedirectResponse(url=f"/assignments/{assignment_id}", status_code=303)
 
 @router.get("/accounts", response_class=HTMLResponse)
-async def accounts_page(request: Request, db: Session = Depends(get_db)):
+async def accounts_page(request: Request, tab: str = "active", db: Session = Depends(get_db)):
     user = get_ui_user(request, db)
     if not user or user.role != RoleEnum.SUPER_ADMIN:
         return RedirectResponse(url="/", status_code=303)
         
-    accounts = db.query(PortalAccount).order_by(PortalAccount.id.desc()).all()
+    from models import or_
+    total_active = db.query(PortalAccount).filter(or_(PortalAccount.is_archived == False, PortalAccount.is_archived == None)).count()
+    total_archived = db.query(PortalAccount).filter(PortalAccount.is_archived == True).count()
+    
+    if tab == "archived":
+        query = db.query(PortalAccount).filter(PortalAccount.is_archived == True)
+    else:
+        tab = "active"
+        query = db.query(PortalAccount).filter(or_(PortalAccount.is_archived == False, PortalAccount.is_archived == None))
+        
+    accounts = query.order_by(PortalAccount.id.desc()).all()
     
     return render_template("accounts.html", {
         "request": request,
         "user": user,
         "active_page": "accounts",
-        "accounts": accounts
+        "accounts": accounts,
+        "current_tab": tab,
+        "total_active": total_active,
+        "total_archived": total_archived
     }, db)
 
 @router.post("/accounts/create")
@@ -963,6 +1032,50 @@ async def edit_account(
         db.commit()
             
     return RedirectResponse(url=f"/accounts/{account_id}", status_code=303)
+
+@router.post("/accounts/{account_id}/archive")
+async def archive_account(account_id: int, request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+    account = db.query(PortalAccount).filter(PortalAccount.id == account_id).first()
+    if account:
+        account.is_archived = True
+        account.archived_at = datetime.utcnow()
+        account.archived_by_id = user.id
+        account.status = "DISABLED"
+        
+        audit = AuditLog(
+            user_id=user.id,
+            tenant_id=user.tenant_id,
+            action=f"Archived Portal Account #{account_id} ({account.display_name})",
+            ip_address=request.client.host if request.client else None
+        )
+        db.add(audit)
+        db.commit()
+    return RedirectResponse(url="/accounts", status_code=303)
+
+@router.post("/accounts/{account_id}/restore")
+async def restore_account(account_id: int, request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+    account = db.query(PortalAccount).filter(PortalAccount.id == account_id).first()
+    if account:
+        account.is_archived = False
+        account.archived_at = None
+        account.archived_by_id = None
+        account.status = "READY"
+        
+        audit = AuditLog(
+            user_id=user.id,
+            tenant_id=user.tenant_id,
+            action=f"Restored Portal Account #{account_id} ({account.display_name})",
+            ip_address=request.client.host if request.client else None
+        )
+        db.add(audit)
+        db.commit()
+    return RedirectResponse(url="/accounts?tab=archived", status_code=303)
 
 @router.get("/proxies", response_class=HTMLResponse)
 async def proxies_page(request: Request, db: Session = Depends(get_db)):

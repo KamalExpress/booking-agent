@@ -12,7 +12,14 @@
 
 <div class="card overflow-hidden">
     <div class="p-6 border-b border-[#27272a] bg-[#18181b] flex justify-between items-center">
-        <h2 class="text-lg font-semibold">Active Inventory</h2>
+        <div class="flex items-center gap-4">
+            <a href="/workers?tab=active" class="text-sm font-semibold px-3 py-1.5 rounded-md transition-colors {% if current_tab == 'active' %}bg-zinc-800 text-white border border-zinc-700{% else %}text-zinc-400 hover:text-white{% endif %}">
+                Active Inventory ({{ total_active }})
+            </a>
+            <a href="/workers?tab=archived" class="text-sm font-semibold px-3 py-1.5 rounded-md transition-colors {% if current_tab == 'archived' %}bg-zinc-800 text-white border border-zinc-700{% else %}text-zinc-400 hover:text-white{% endif %}">
+                Archived Workers ({{ total_archived }})
+            </a>
+        </div>
     </div>
     
     <div class="overflow-x-auto">
@@ -26,6 +33,7 @@
                     <th scope="col" class="px-6 py-4 font-medium">Resources</th>
                     <th scope="col" class="px-6 py-4 font-medium">Version</th>
                     <th scope="col" class="px-6 py-4 font-medium">Last Seen</th>
+                    <th scope="col" class="px-6 py-4 font-medium text-right">Actions</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-[#27272a]">
@@ -94,10 +102,25 @@
                             Never
                         {% endif %}
                     </td>
+                    <td class="px-6 py-4 text-right" onclick="event.stopPropagation()">
+                        {% if w.is_archived %}
+                            <form action="/workers/{{ w.worker_id }}/restore" method="POST" class="inline">
+                                <button type="submit" class="text-xs px-2.5 py-1 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-md font-medium transition-colors">
+                                    Restore
+                                </button>
+                            </form>
+                        {% else %}
+                            <form action="/workers/{{ w.worker_id }}/archive" method="POST" class="inline" onsubmit="return confirm('Archive worker {{ w.worker_id }}?');">
+                                <button type="submit" class="text-xs px-2.5 py-1 bg-zinc-800 text-zinc-400 hover:bg-red-500/10 hover:text-red-400 border border-zinc-700 hover:border-red-500/30 rounded-md font-medium transition-colors">
+                                    Archive
+                                </button>
+                            </form>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="6" class="px-6 py-12 text-center text-[#a1a1aa]">
+                    <td colspan="8" class="px-6 py-12 text-center text-[#a1a1aa]">
                         <i data-lucide="server-off" class="w-8 h-8 mx-auto mb-3 opacity-50"></i>
                         <p>No workers registered yet.</p>
                     </td>

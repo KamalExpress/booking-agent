@@ -175,6 +175,10 @@ class WorkerNode(Base):
     last_heartbeat = Column(DateTime, nullable=True)
     status = Column(String, default="Offline") # Online, Offline, Error
     scheduling_state = Column(String, default="Accepting Jobs") # Accepting Jobs, Stop Accepting Jobs, Draining, Disabled, Maintenance
+    is_archived = Column(Boolean, default=False, nullable=False)
+    archived_at = Column(DateTime, nullable=True)
+    archived_by_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    archived_by = relationship("User", foreign_keys=[archived_by_id])
     created_at = Column(DateTime, default=datetime.utcnow)
 
     HEARTBEAT_INTERVAL_SECONDS = 30
@@ -251,6 +255,10 @@ class PortalAccount(Base):
     
     bookings_in_window = Column(Integer, default=0)
     booking_window_start = Column(DateTime, nullable=True)
+    is_archived = Column(Boolean, default=False, nullable=False)
+    archived_at = Column(DateTime, nullable=True)
+    archived_by_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    archived_by = relationship("User", foreign_keys=[archived_by_id])
     created_at = Column(DateTime, default=datetime.utcnow)
 
     @property

@@ -34,7 +34,10 @@ class SchedulerService:
         1. Try to assign a BookingTask first (priority)
         2. If none, try to assign a scraping Assignment
         """
-        worker = self.db.query(WorkerNode).filter(WorkerNode.worker_id == worker_id).first()
+        worker = self.db.query(WorkerNode).filter(
+            WorkerNode.worker_id == worker_id,
+            or_(WorkerNode.is_archived == False, WorkerNode.is_archived == None)
+        ).first()
         if not worker:
             return None
 
@@ -175,7 +178,8 @@ class SchedulerService:
             
         # Find best account (allow global accounts or any registered scraping accounts)
         accounts = self.db.query(PortalAccount).filter(
-            PortalAccount.supports_scraping == True
+            PortalAccount.supports_scraping == True,
+            or_(PortalAccount.is_archived == False, PortalAccount.is_archived == None)
         ).all()
         best_account = None
         best_account_score = -1
