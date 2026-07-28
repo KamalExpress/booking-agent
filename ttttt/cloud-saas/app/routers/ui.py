@@ -509,7 +509,7 @@ async def slots_history_page(request: Request, tab: str = "active", db: Session 
     if not user:
         return RedirectResponse(url="/login", status_code=303)
         
-    from models import SlotAvailability, Lease, PortalAccount, or_
+    from models import SlotAvailability, Lease, PortalAccount
     
     total_active = db.query(SlotAvailability).filter(or_(SlotAvailability.is_archived == False, SlotAvailability.is_archived == None)).count()
     total_archived = db.query(SlotAvailability).filter(SlotAvailability.is_archived == True).count()
