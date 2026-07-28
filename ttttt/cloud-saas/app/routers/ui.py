@@ -360,8 +360,43 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
     push_logs = push_query.all()
     monthly_push_count = sum(log.payload.get('success_count', 0) if log.payload else 0 for log in push_logs)
     
-    # Fetch global assignments
-    global_assignments = db.query(Assignment).filter(Assignment.status == 'Leased').all()
+    # Fetch active assignments & active leases for Global Assignment Map
+    active_assignments_list = db.query(Assignment).filter(Assignment.status.in_(["Active", "Leased", "Running"])).all()
+    active_leases = db.query(Lease).filter(Lease.status.in_(["Leased", "Running", "Pending"])).all()
+    
+    lease_worker_account_map = {}
+    lease_account_ids = [l.portal_account_id for l in active_leases if l.portal_account_id]
+    if lease_account_ids:
+        accs = db.query(PortalAccount).filter(PortalAccount.id.in_(lease_account_ids)).all()
+        acc_map = {a.id: a.display_name for a in accs}
+        for l in active_leases:
+            if l.worker_id and l.portal_account_id in acc_map:
+                lease_worker_account_map[l.worker_id] = acc_map[l.portal_account_id]
+
+    global_assignments = []
+    for a in active_assignments_list:
+        worker_id_str = a.worker_id or "Auto-Sched"
+        account_name = lease_worker_account_map.get(a.worker_id)
+        display_worker = f"{account_name} ({worker_id_str})" if account_name else worker_id_str
+        global_assignments.append({
+            "visa_center": f"Center {a.visa_center}" if not str(a.visa_center).startswith("Center") else a.visa_center,
+            "appointment_type": a.appointment_type or "26",
+            "worker_id": display_worker,
+            "expires_at": a.last_checked or a.created_at or datetime.utcnow(),
+            "status": a.status
+        })
+
+    for l in active_leases:
+        if not any(item["worker_id"] == l.worker_id or l.worker_id in item["worker_id"] for item in global_assignments):
+            account_name = lease_worker_account_map.get(l.worker_id)
+            display_worker = f"{account_name} ({l.worker_id})" if account_name else l.worker_id
+            global_assignments.append({
+                "visa_center": "Availability Check",
+                "appointment_type": "26",
+                "worker_id": display_worker,
+                "expires_at": l.expires_at or datetime.utcnow(),
+                "status": l.status
+            })
 
     return render_template("index.html", {
         "request": request,
@@ -542,9 +577,20 @@ async def slots_history_page(request: Request, tab: str = "active", db: Session 
                 setattr(s, 'display_found_by', f"{worker_account_map[s.found_by]} (Slot Agent)")
             else:
                 setattr(s, 'display_found_by', s.found_by or 'System Account')
-    else:
-        for s in slots:
-            setattr(s, 'display_found_by', s.found_by or 'System Account')
+    vc_setting = db.query(SystemSetting).filter(SystemSetting.key == "global.visa_centers_config").first()
+    vc_config_str = vc_setting.value if vc_setting and vc_setting.value else "138:26:Lahore, 137:26:Islamabad, 140:24:Doc Verification"
+    vc_map = {}
+    for center_str in vc_config_str.split(","):
+        parts = center_str.strip().split(":")
+        if len(parts) >= 3:
+            vc_map[parts[0]] = parts[2]
+
+    for s in slots:
+        c_name = vc_map.get(str(s.visa_center))
+        if c_name:
+            setattr(s, 'display_visa_center', f"{c_name} ({s.visa_center})")
+        else:
+            setattr(s, 'display_visa_center', f"Center {s.visa_center}")
             
     return render_template("slot_history.html", {
         "request": request,
@@ -580,6 +626,20 @@ async def slot_detail_page(slot_id: int, request: Request, db: Session = Depends
             discovered_by_name = f"Worker #{slot.found_by[:8]}"
             
     setattr(slot, 'display_found_by', discovered_by_name or 'System Account')
+    
+    vc_setting = db.query(SystemSetting).filter(SystemSetting.key == "global.visa_centers_config").first()
+    vc_config_str = vc_setting.value if vc_setting and vc_setting.value else "138:26:Lahore, 137:26:Islamabad, 140:24:Doc Verification"
+    vc_map = {}
+    for center_str in vc_config_str.split(","):
+        parts = center_str.strip().split(":")
+        if len(parts) >= 3:
+            vc_map[parts[0]] = parts[2]
+            
+    c_name = vc_map.get(str(slot.visa_center))
+    if c_name:
+        setattr(slot, 'display_visa_center', f"{c_name} ({slot.visa_center})")
+    else:
+        setattr(slot, 'display_visa_center', f"Center {slot.visa_center}")
             
     return render_template("slot_detail.html", {
         "request": request,
