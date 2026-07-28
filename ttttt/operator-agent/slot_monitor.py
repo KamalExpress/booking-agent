@@ -8,6 +8,7 @@ from api_client import SaaSClient
 # Using existing main_operator since it handles session, WAF, proxies
 from main_operator import OperatorAgent
 from captcha_service import CapSolverService
+from core.mock_slots import MockSlotGenerator
 
 def generate_dates_between(start_str, end_str):
     formats = ["%d/%m/%Y", "%Y-%m-%d", "%m/%d/%Y"]
@@ -191,16 +192,7 @@ class SlotMonitorEngine(threading.Thread):
                     enable_mock_slots = testing_cfg.get("enable_mock_slots", False)
                     
                     if enable_mock_slots:
-                        logging.info("POC Mock: Injecting 1 open mock slot (enabled via SaaS Admin Settings).")
-                        mock_slots = [{
-                            "isavailable": True,
-                            "isselectable": True,
-                            "starttime": "09:00",
-                        }]
-                        slots_response = {
-                            "code": "SUCCESS",
-                            "returnobject": {"slots": mock_slots}
-                        }
+                        slots_response = MockSlotGenerator.generate_mock_response(target_date)
                     else:
                         slots_response = agent.search_slots(target_date, app_type, vac_id)
                     # --- END MOCK LOGIC ---

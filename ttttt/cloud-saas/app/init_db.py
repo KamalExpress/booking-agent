@@ -31,8 +31,8 @@ def init_db():
             db.commit()
             
         # 2. Create Super Admin User if not exists
-        super_admin_email = os.getenv("SUPER_ADMIN_EMAIL", "superadmin@samwebdevs.dpdns.org")
-        super_admin_password = os.getenv("SUPER_ADMIN_PASSWORD", "admin123")
+        super_admin_email = os.getenv("SUPER_ADMIN_EMAIL", "amr.shah@gmail.com")
+        super_admin_password = os.getenv("SUPER_ADMIN_PASSWORD", "Admin@123")
         
         super_admin = db.query(User).filter(User.email == super_admin_email).first()
         if not super_admin:

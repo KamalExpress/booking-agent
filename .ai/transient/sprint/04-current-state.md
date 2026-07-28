@@ -21,7 +21,7 @@ Sprint 12 (Production Branch Synchronization & E2E Booking Validation)
   - Integrated 90-second smart auto-refresh script in `index.html` with `!document.hidden` visibility guard.
 - **Execution Plane & Docker Stacks:**
   - Configured `headless_booker.py` as dedicated Booker Agent (`can_scrape=False, can_book=True`) and `slot_monitor.py` as dedicated Scraper Agent (`can_scrape=True, can_book=False`).
-  - Updated `docker-compose-staging.yml` and `vps-setup/docker-compose-staging.yml` with `booker-agent-staging` container service running `python headless_booker.py`.
+  - Updated `docker-compose-staging.yml`, `vps-setup/docker-compose-staging.yml`, `vps-setup/docker-compose.prod.yml`, and `docker-compose.yml` with dedicated Booker worker services (`booker-agent` / `booker-worker-prod`) executing `python headless_booker.py`.
   - Added multi-format date parser (`%d/%m/%Y`, `%Y-%m-%d`, `%m/%d/%Y`) in `slot_monitor.py`.
 - **Configurable Mock Slot Drop (SaaS Admin Settings):**
   - Added **Testing & Mock Controls** UI section to `/settings` with **Enable Mock Slot Drop (Testing Mode)** checkbox.

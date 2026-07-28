@@ -1,10 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-<header class="flex justify-between items-center mb-8">
+<header class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
     <div>
-        <h1 class="text-2xl font-semibold tracking-tight">Slot History</h1>
-        <p class="text-sm text-muted-foreground mt-1">Review previously found slots across all Visa Centers.</p>
+        <h1 class="text-2xl font-semibold tracking-tight">Slot Drop History</h1>
+        <p class="text-sm text-muted-foreground mt-1">Review historical slot drops across all Visa Centers with real-time availability status.</p>
+    </div>
+    <div class="flex items-center gap-2">
+        <button onclick="filterStatus('ALL')" class="btn-filter px-3 py-1.5 rounded-lg text-xs font-medium bg-zinc-800 text-zinc-300 hover:bg-zinc-700 active-filter" data-status="ALL">All</button>
+        <button onclick="filterStatus('AVAILABLE')" class="btn-filter px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30" data-status="AVAILABLE">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block mr-1"></span> Available
+        </button>
+        <button onclick="filterStatus('VERIFYING')" class="btn-filter px-3 py-1.5 rounded-lg text-xs font-medium bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border border-amber-500/30" data-status="VERIFYING">
+            <span class="w-2 h-2 rounded-full bg-amber-400 inline-block mr-1 animate-ping"></span> Verifying
+        </button>
+        <button onclick="filterStatus('UNAVAILABLE')" class="btn-filter px-3 py-1.5 rounded-lg text-xs font-medium bg-zinc-800/80 text-zinc-400 hover:bg-zinc-800 border border-zinc-700" data-status="UNAVAILABLE">Unavailable</button>
     </div>
 </header>
 
@@ -13,33 +23,65 @@
         <table class="w-full text-sm text-left">
             <thead class="bg-muted/50 text-muted-foreground uppercase text-xs">
                 <tr>
+                    <th class="px-6 py-4 font-medium border-b border-border">Status</th>
                     <th class="px-6 py-4 font-medium border-b border-border">Found At</th>
                     <th class="px-6 py-4 font-medium border-b border-border">Target Date</th>
                     <th class="px-6 py-4 font-medium border-b border-border">Visa Center</th>
-                    <th class="px-6 py-4 font-medium border-b border-border">Total Slots</th>
-                    <th class="px-6 py-4 font-medium border-b border-border">Worker ID</th>
+                    <th class="px-6 py-4 font-medium border-b border-border">Open Time Slots</th>
+                    <th class="px-6 py-4 font-medium border-b border-border">Discovered By</th>
                     <th class="px-6 py-4 font-medium border-b border-border text-right">Actions</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-border">
+            <tbody class="divide-y divide-border" id="slot-history-body">
                 {% for slot in slots %}
-                <tr class="hover:bg-muted/30 transition-colors">
+                {% set current_status = slot.status or 'AVAILABLE' %}
+                <tr class="slot-row hover:bg-muted/30 transition-colors" data-status="{{ current_status }}">
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="font-medium">{{ slot.created_at | format_time(ui_timezone, '%Y-%m-%d %H:%M') }}</div>
+                        {% if current_status == 'AVAILABLE' %}
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            </span>
+                            AVAILABLE
+                        </span>
+                        {% elif current_status == 'VERIFYING' %}
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30 animate-pulse shadow-[0_0_10px_rgba(245,158,11,0.2)]">
+                            <i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i>
+                            VERIFYING
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-zinc-800/80 text-zinc-500 border border-zinc-700">
+                            <span class="h-2 w-2 rounded-full bg-zinc-600"></span>
+                            UNAVAILABLE
+                        </span>
+                        {% endif %}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="font-medium text-primary">{{ slot.date }}</span>
+                        <div class="font-medium local-time" data-utc="{{ slot.created_at.isoformat() }}Z">{{ slot.created_at | format_time(ui_timezone, '%Y-%m-%d %H:%M') }}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-500/10 text-blue-500">
+                        <span class="font-bold text-white text-base">{{ slot.date }}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
                             Center {{ slot.visa_center }}
                         </span>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap font-medium">
-                        {{ slot.slots_data|length }}
+                    <td class="px-6 py-4">
+                        <div class="flex flex-wrap gap-1 max-w-xs">
+                            {% for time_item in slot.slots_data[:6] %}
+                            <span class="text-[11px] font-mono font-medium px-2 py-0.5 rounded bg-black/40 border border-zinc-700 text-zinc-300">
+                                {{ time_item.starttime if time_item.starttime else time_item }}
+                            </span>
+                            {% endfor %}
+                            {% if slot.slots_data|length > 6 %}
+                            <span class="text-[10px] font-medium text-zinc-500 self-center">+{{ slot.slots_data|length - 6 }} more</span>
+                            {% endif %}
+                        </div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-muted-foreground">
-                        {{ slot.found_by or 'Unknown' }}
+                    <td class="px-6 py-4 whitespace-nowrap text-muted-foreground text-xs font-mono">
+                        {{ slot.found_by or 'System Scraper' }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right">
                         <a href="/slots/{{ slot.id }}" class="btn btn-secondary text-xs py-1 px-3">View Details</a>
@@ -47,7 +89,7 @@
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="6" class="px-6 py-12 text-center text-muted-foreground">
+                    <td colspan="7" class="px-6 py-12 text-center text-muted-foreground">
                         <div class="flex flex-col items-center justify-center">
                             <i data-lucide="calendar-off" class="w-12 h-12 mb-3 text-muted-foreground/50"></i>
                             <p>No slot history found.</p>
@@ -59,4 +101,17 @@
         </table>
     </div>
 </div>
+
+<script>
+function filterStatus(status) {
+    const rows = document.querySelectorAll('.slot-row');
+    rows.forEach(row => {
+        if (status === 'ALL' || row.getAttribute('data-status') === status) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+</script>
 {% endblock %}

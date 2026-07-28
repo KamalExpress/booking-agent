@@ -159,12 +159,17 @@
 
 <!-- LIVE STATUS WIDGET -->
 <div class="mb-4">
-    <h3 class="text-sm font-bold tracking-widest uppercase text-zinc-500 mb-4">Visa Centers</h3>
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="text-sm font-bold tracking-widest uppercase text-zinc-500">Visa Centers</h3>
+        <a href="/slots" class="text-xs font-medium text-emerald-400 hover:text-emerald-300 flex items-center gap-1 hover:underline">
+            <i data-lucide="history" class="w-3.5 h-3.5"></i> Slot Drop History &rarr;
+        </a>
+    </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for center in center_statuses %}
         {% if center.is_open %}
         <div
-            class="card p-5 border-emerald-500/40 bg-emerald-500/10 backdrop-blur-md relative overflow-hidden shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+            class="card p-5 border-emerald-500/40 bg-emerald-500/10 backdrop-blur-md relative overflow-hidden shadow-[0_0_15px_rgba(16,185,129,0.15)] flex flex-col justify-between">
             <div class="absolute top-0 right-0 p-4 flex gap-2 z-20">
                 <button
                     class="mute-center-btn p-1.5 rounded-md bg-black/40 hover:bg-black/60 transition-colors {% if center.is_muted %}text-zinc-500{% else %}text-emerald-400{% endif %}"
@@ -183,28 +188,40 @@
                 </h3>
                 <p class="text-[10px] font-bold tracking-widest text-emerald-500 mb-3">OPEN NOW</p>
 
-                <div class="space-y-2 mb-3">
-                    {% for record in center.recent_slots[:2] %}
-                    <div class="bg-black/40 rounded-md p-2 border border-emerald-500/20">
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm font-bold text-white">{{ record.date }}</span>
+                <!-- DYNAMIC GRID/CALENDAR DISPLAY OF AVAILABLE SLOTS -->
+                <div class="space-y-3 mb-3 max-h-48 overflow-y-auto pr-1">
+                    {% for record in center.recent_slots[:3] %}
+                    <div class="bg-black/40 rounded-md p-2.5 border border-emerald-500/20">
+                        <div class="flex justify-between items-center mb-1.5">
+                            <span class="text-xs font-bold text-white flex items-center gap-1.5">
+                                <i data-lucide="calendar" class="w-3.5 h-3.5 text-emerald-400"></i>
+                                {{ record.date }}
+                            </span>
                             <a href="/slots/{{ record.id }}"
-                                class="text-[10px] text-emerald-400 hover:underline">Details</a>
+                                class="text-[10px] text-emerald-400 hover:underline font-medium">Details</a>
+                        </div>
+                        <div class="grid grid-cols-3 gap-1">
+                            {% for slot_item in record.slots_data %}
+                            <span class="text-[10px] font-mono font-bold text-emerald-300 bg-emerald-500/20 border border-emerald-500/30 rounded px-1.5 py-0.5 text-center">
+                                {{ slot_item.starttime if slot_item.starttime else slot_item }}
+                            </span>
+                            {% endfor %}
                         </div>
                     </div>
                     {% endfor %}
                 </div>
+            </div>
 
-                <div
-                    class="flex items-center justify-between text-xs font-medium text-emerald-500/80 border-t border-emerald-500/20 pt-2">
-                    {% if center.last_checked_time %}
-                    <span>Last Checked: <span class="local-time"
-                            data-utc="{{ center.last_checked_time.isoformat() }}Z">{{
-                            center.last_checked_time | format_time(ui_timezone, '%H:%M:%S') }}</span></span>
-                    {% else %}
-                    <span>Last Checked: Never</span>
-                    {% endif %}
-                </div>
+            <div
+                class="relative z-10 flex items-center justify-between text-xs font-medium text-emerald-500/80 border-t border-emerald-500/20 pt-2 mt-2">
+                {% if center.last_checked_time %}
+                <span>Last Checked: <span class="local-time"
+                        data-utc="{{ center.last_checked_time.isoformat() }}Z">{{
+                        center.last_checked_time | format_time(ui_timezone, '%H:%M:%S') }}</span></span>
+                {% else %}
+                <span>Last Checked: Never</span>
+                {% endif %}
+                <a href="/slots" class="text-[10px] text-emerald-400 hover:underline">Full History</a>
             </div>
         </div>
         {% else %}
@@ -233,6 +250,7 @@
                 {% else %}
                 <span>Last Checked: Never</span>
                 {% endif %}
+                <a href="/slots" class="text-[10px] text-zinc-500 hover:text-zinc-400 hover:underline">History</a>
             </div>
         </div>
         {% endif %}

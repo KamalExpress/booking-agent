@@ -333,6 +333,16 @@ def submit_logs(
     elif req.event_type == "NO_SLOTS_FOUND":
         notify_no_slots = db.query(SystemSetting).filter(SystemSetting.key == "notify.no_slots_found").first()
         vac_id = req.payload.get("visa_center") if req.payload else None
+        if vac_id:
+            from models import SlotAvailability
+            open_slots = db.query(SlotAvailability).filter(
+                SlotAvailability.visa_center == vac_id,
+                SlotAvailability.status == "AVAILABLE"
+            ).all()
+            for s in open_slots:
+                s.status = "UNAVAILABLE"
+                s.last_checked_at = datetime.utcnow()
+                
         if not notify_no_slots or notify_no_slots.value == "true":
             friendly_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
             send_push_notification(db, "Slot Monitor", f"No Slots available; last checked: {friendly_time}", visa_center_id=vac_id)
@@ -368,7 +378,9 @@ def submit_logs(
                     visa_center=vac_id,
                     date=target_date,
                     slots_data=req.payload.get("slots", []) if req.payload else [],
-                    found_by=worker.worker_id
+                    found_by=worker.worker_id,
+                    status="AVAILABLE",
+                    last_checked_at=datetime.utcnow()
                 )
                 db.add(availability)
                 

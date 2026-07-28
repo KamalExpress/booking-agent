@@ -21,9 +21,44 @@ services:
     networks:
       - sam-agent-platform_default
 
+  operator-agent:
+    image: operator-agent:latest
+    build:
+      context: ../operator-agent
+      dockerfile: Dockerfile
+    container_name: operator-agent
+    restart: unless-stopped
+    environment:
+      - SAAS_BASE_URL=http://cloud-saas:8000
+    depends_on:
+      - cloud-saas
+    networks:
+      - sam-agent-platform_default
+    volumes:
+      - operator_data:/app/data
+
+  booker-agent:
+    image: operator-agent:latest
+    build:
+      context: ../operator-agent
+      dockerfile: Dockerfile
+    container_name: booker-agent
+    restart: unless-stopped
+    command: python headless_booker.py
+    environment:
+      - SAAS_BASE_URL=http://cloud-saas:8000
+    depends_on:
+      - cloud-saas
+    networks:
+      - sam-agent-platform_default
+    volumes:
+      - booker_data:/app/data
+
 networks:
   sam-agent-platform_default:
     external: true
 
 volumes:
   cloud_saas_data:
+  operator_data:
+  booker_data:
