@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>{% block title %}{{ env_branding.title_prefix }}{{ branding.brand_name | default('Alamia Automation') }}{% endblock %}</title>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>{% block title %}{{ env_branding.title_prefix }}{{ branding.brand_name | default('Alamia Automation') }}{%
+        endblock %}</title>
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="{{ env_branding.theme_color }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -23,12 +26,14 @@
     </script>
     <style>
         .card {
-            background-color: #09090b; /* zinc-950 */
-            border: 1px solid #27272a; /* zinc-800 */
+            background-color: #09090b;
+            /* zinc-950 */
+            border: 1px solid #27272a;
+            /* zinc-800 */
             border-radius: 0.5rem;
             box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
         }
-        
+
         .btn {
             display: inline-flex;
             align-items: center;
@@ -42,50 +47,98 @@
             transition: all 150ms;
             cursor: pointer;
         }
-        .btn-primary { background-color: #fafafa; color: #18181b; } /* text-zinc-950 bg-zinc-50 */
-        .btn-primary:hover { background-color: #e4e4e7; }
-        .btn-secondary { background-color: #27272a; color: #fafafa; border: 1px solid #3f3f46; }
-        .btn-secondary:hover { background-color: #3f3f46; }
-        .btn-destructive { background-color: #ef4444; color: #fafafa; }
-        .btn-destructive:hover { background-color: #dc2626; }
-        
+
+        .btn-primary {
+            background-color: #fafafa;
+            color: #18181b;
+        }
+
+        /* text-zinc-950 bg-zinc-50 */
+        .btn-primary:hover {
+            background-color: #e4e4e7;
+        }
+
+        .btn-secondary {
+            background-color: #27272a;
+            color: #fafafa;
+            border: 1px solid #3f3f46;
+        }
+
+        .btn-secondary:hover {
+            background-color: #3f3f46;
+        }
+
+        .btn-destructive {
+            background-color: #ef4444;
+            color: #fafafa;
+        }
+
+        .btn-destructive:hover {
+            background-color: #dc2626;
+        }
+
         .input {
             display: flex;
             height: 2.25rem;
             width: 100%;
             border-radius: 0.375rem;
-            border: 1px solid #3f3f46; /* zinc-700 */
+            border: 1px solid #3f3f46;
+            /* zinc-700 */
             background-color: #09090b;
             color: #fafafa;
             padding: 0.25rem 0.75rem;
             font-size: 0.875rem;
         }
-        .input:focus { outline: 2px solid #27272a; border-color: #fafafa; }
-        
-        .nav-link { 
-            display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.75rem; 
-            border-radius: 0.375rem; color: #a1a1aa; /* zinc-400 */
-            font-size: 0.875rem; font-weight: 500; transition: all 0.2s; 
+
+        .input:focus {
+            outline: 2px solid #27272a;
+            border-color: #fafafa;
         }
-        .nav-link:hover { background-color: #27272a; color: #fafafa; }
-        .nav-link.active { background-color: #27272a; color: #fafafa; }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            color: #a1a1aa;
+            /* zinc-400 */
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            background-color: #27272a;
+            color: #fafafa;
+        }
+
+        .nav-link.active {
+            background-color: #27272a;
+            color: #fafafa;
+        }
     </style>
     {% block head %}{% endblock %}
 </head>
-<body class="flex flex-col md:flex-row min-h-[100dvh] md:h-[100dvh] md:overflow-hidden antialiased bg-[#09090b] text-[#fafafa] {{ env_branding.border_class }}">
-    
+
+<body
+    class="flex flex-col md:flex-row min-h-[100dvh] md:h-[100dvh] md:overflow-hidden antialiased bg-[#09090b] text-[#fafafa] {{ env_branding.border_class }}">
+
     <!-- Sidebar Overlay (mobile) -->
     <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden"></div>
 
     <!-- Sidebar -->
-    <aside id="sidebar" class="fixed md:static inset-y-0 left-0 w-64 border-r border-[#27272a] bg-[#09090b] flex flex-col z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out">
+    <aside id="sidebar"
+        class="fixed md:static inset-y-0 left-0 w-64 border-r border-[#27272a] bg-[#09090b] flex flex-col z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out">
         <div class="p-6 flex items-center justify-between">
             <div>
                 <h1 class="text-xl font-bold tracking-tight flex items-center gap-3">
                     {{ env_branding.app_name }}
-                    <div class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20" title="System is actively monitoring slots">
+                    <div class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20"
+                        title="System is actively monitoring slots">
                         <span class="relative flex w-1.5 h-1.5">
-                            <span class="absolute inline-flex w-full h-full bg-emerald-400 rounded-full opacity-75 animate-ping"></span>
+                            <span
+                                class="absolute inline-flex w-full h-full bg-emerald-400 rounded-full opacity-75 animate-ping"></span>
                             <span class="relative inline-flex w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
                         </span>
                         <span class="text-[9px] font-bold tracking-widest uppercase text-emerald-500">Live</span>
@@ -94,7 +147,9 @@
                 <p class="text-sm text-[#a1a1aa] mt-1">
                     {{ branding.brand_subtitle | default('Automating Business Solutions') }}
                     {% if env_branding.badge_text %}
-                    <span class="ml-2 inline-flex items-center rounded-md bg-amber-400/10 px-2 py-1 text-xs font-medium text-amber-500 ring-1 ring-inset ring-amber-400/20">{{ env_branding.badge_text }}</span>
+                    <span
+                        class="ml-2 inline-flex items-center rounded-md bg-amber-400/10 px-2 py-1 text-xs font-medium text-amber-500 ring-1 ring-inset ring-amber-400/20">{{
+                        env_branding.badge_text }}</span>
                     {% endif %}
                 </p>
             </div>
@@ -114,8 +169,10 @@
             <a href="/clients" class="nav-link {% if active_page == 'clients' %}active{% endif %}">
                 <i data-lucide="contact" class="w-4 h-4"></i> Client Directory
             </a>
-            
-            {% if (user.role.value == 'TENANT_ADMIN' and settings.get('nav.admin.show_queue') and settings.get('nav.admin.show_queue').value == 'true') or (user.role.value == 'STAFF' and settings.get('nav.staff.show_queue') and settings.get('nav.staff.show_queue').value == 'true') %}
+
+            {% if (user.role.value == 'TENANT_ADMIN' and settings.get('nav.admin.show_queue') and
+            settings.get('nav.admin.show_queue').value == 'true') or (user.role.value == 'STAFF' and
+            settings.get('nav.staff.show_queue') and settings.get('nav.staff.show_queue').value == 'true') %}
             <a href="/queue" class="nav-link {% if active_page == 'queue' %}active{% endif %}">
                 <i data-lucide="list-ordered" class="w-4 h-4"></i> Queue Management
             </a>
@@ -123,27 +180,28 @@
             {% endif %}
 
             {% if user and user.role.value == 'TENANT_ADMIN' %}
-            
+
             {% if settings.get('nav.admin.show_bookings') and settings.get('nav.admin.show_bookings').value == 'true' %}
             <a href="/booking-tasks" class="nav-link {% if active_page == 'booking_tasks' %}active{% endif %}">
                 <i data-lucide="calendar-check" class="w-4 h-4"></i> Bookings
             </a>
             {% endif %}
-            
+
             {% if settings.get('nav.admin.show_staff') and settings.get('nav.admin.show_staff').value == 'true' %}
             <a href="/staff" class="nav-link {% if active_page == 'staff' %}active{% endif %}">
                 <i data-lucide="users" class="w-4 h-4"></i> Staff Management
             </a>
             {% endif %}
-            
+
             <a href="/notifications" class="nav-link {% if active_page == 'notifications' %}active{% endif %}">
                 <i data-lucide="bell" class="w-4 h-4"></i> Push History
             </a>
             {% endif %}
 
             {% if user and user.role.value == 'SUPER_ADMIN' %}
-            <details class="group" open>
-                <summary class="flex items-center justify-between cursor-pointer px-3 py-2 mt-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors select-none">
+            <details class="group" {% if active_page in ['tenants', 'directory'] %}open{% endif %}>
+                <summary
+                    class="flex items-center justify-between cursor-pointer px-3 py-2 mt-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors select-none">
                     <span>Core Platform</span>
                     <i data-lucide="chevron-down" class="w-3 h-3 transition-transform group-open:rotate-180"></i>
                 </summary>
@@ -159,8 +217,9 @@
                 </div>
             </details>
 
-            <details class="group" open>
-                <summary class="flex items-center justify-between cursor-pointer px-3 py-2 mt-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors select-none">
+            <details class="group" {% if active_page in ['captcha', 'proxies', 'accounts', 'workers'] %}open{% endif %}>
+                <summary
+                    class="flex items-center justify-between cursor-pointer px-3 py-2 mt-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors select-none">
                     <span>Execution Fleet</span>
                     <i data-lucide="chevron-down" class="w-3 h-3 transition-transform group-open:rotate-180"></i>
                 </summary>
@@ -188,8 +247,9 @@
                 </div>
             </details>
 
-            <details class="group" open>
-                <summary class="flex items-center justify-between cursor-pointer px-3 py-2 mt-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors select-none">
+            <details class="group" {% if active_page in ['assignments', 'booking_tasks'] %}open{% endif %}>
+                <summary
+                    class="flex items-center justify-between cursor-pointer px-3 py-2 mt-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors select-none">
                     <span>Workloads</span>
                     <i data-lucide="chevron-down" class="w-3 h-3 transition-transform group-open:rotate-180"></i>
                 </summary>
@@ -200,15 +260,17 @@
                         </a>
                     </nav-guidance>
                     <nav-guidance code="NAV_BOOKING_TASKS">
-                        <a href="/booking-tasks" class="nav-link {% if active_page == 'booking_tasks' %}active{% endif %}">
+                        <a href="/booking-tasks"
+                            class="nav-link {% if active_page == 'booking_tasks' %}active{% endif %}">
                             <i data-lucide="calendar-check" class="w-4 h-4"></i> Booking Tasks
                         </a>
                     </nav-guidance>
                 </div>
             </details>
 
-            <details class="group" open>
-                <summary class="flex items-center justify-between cursor-pointer px-3 py-2 mt-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors select-none">
+            <details class="group" {% if active_page in ['logs', 'notifications', 'diagnostics', 'live_logs'] %}open{% endif %}>
+                <summary
+                    class="flex items-center justify-between cursor-pointer px-3 py-2 mt-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors select-none">
                     <span>Observability</span>
                     <i data-lucide="chevron-down" class="w-3 h-3 transition-transform group-open:rotate-180"></i>
                 </summary>
@@ -230,8 +292,9 @@
                 </div>
             </details>
 
-            <details class="group" open>
-                <summary class="flex items-center justify-between cursor-pointer px-3 py-2 mt-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors select-none">
+            <details class="group" {% if active_page in ['help', 'settings'] %}open{% endif %}>
+                <summary
+                    class="flex items-center justify-between cursor-pointer px-3 py-2 mt-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors select-none">
                     <span>System Admin</span>
                     <i data-lucide="chevron-down" class="w-3 h-3 transition-transform group-open:rotate-180"></i>
                 </summary>
@@ -254,17 +317,22 @@
         <div class="p-4 border-t border-[#27272a]">
             {% if user %}
             <details class="group">
-                <summary class="flex items-center justify-between cursor-pointer px-3 py-2 bg-zinc-900/50 rounded-md border border-zinc-800/50 text-[10px] text-zinc-500 font-medium uppercase tracking-wider hover:text-zinc-300 transition-colors select-none">
+                <summary
+                    class="flex items-center justify-between cursor-pointer px-3 py-2 bg-zinc-900/50 rounded-md border border-zinc-800/50 text-[10px] text-zinc-500 font-medium uppercase tracking-wider hover:text-zinc-300 transition-colors select-none">
                     <span class="flex items-center gap-2"><i data-lucide="user" class="w-3 h-3"></i> Account</span>
                     <i data-lucide="chevron-up" class="w-3 h-3 transition-transform group-open:rotate-180"></i>
                 </summary>
                 <div class="mt-2 space-y-1">
                     <div class="px-3 py-2 bg-black/40 rounded-md border border-zinc-800/50 mb-2">
-                        <p class="text-[10px] text-zinc-500 font-medium uppercase tracking-wider mb-0.5">Logged in as</p>
-                        <p class="text-sm text-zinc-300 truncate font-medium" title="{{ user.email }}">{{ user.email }}</p>
+                        <p class="text-[10px] text-zinc-500 font-medium uppercase tracking-wider mb-0.5">Logged in as
+                        </p>
+                        <p class="text-sm text-zinc-300 truncate font-medium" title="{{ user.email }}">{{ user.email }}
+                        </p>
                     </div>
-                    <button id="globalPushBtn" class="nav-link w-full text-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-300 flex justify-between items-center group">
-                        <span class="flex items-center gap-3"><i data-lucide="bell-ring" class="w-4 h-4"></i> Enable Push Alerts</span>
+                    <button id="globalPushBtn"
+                        class="nav-link w-full text-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-300 flex justify-between items-center group">
+                        <span class="flex items-center gap-3"><i data-lucide="bell-ring" class="w-4 h-4"></i> Enable
+                            Push Alerts</span>
                     </button>
                     <button id="logoutBtn" class="nav-link w-full text-red-500 hover:bg-red-500/10 hover:text-red-400">
                         <i data-lucide="log-out" class="w-4 h-4"></i> Logout
@@ -278,7 +346,7 @@
             {% endif %}
         </div>
     </aside>
-    
+
     <!-- Main Content -->
     <main class="flex-1 flex flex-col relative md:overflow-hidden min-h-[100dvh] md:h-full w-full">
         {% if branding.admin_notice %}
@@ -287,14 +355,18 @@
             <p class="text-sm font-medium text-amber-400">{{ branding.admin_notice }}</p>
         </div>
         {% endif %}
-        
+
         <!-- Mobile Header -->
-        <div class="md:hidden sticky top-0 flex-none flex items-center justify-between px-4 pb-4 border-b border-[#27272a] bg-[#09090b]/90 backdrop-blur-md w-full z-20" style="padding-top: max(1rem, env(safe-area-inset-top));">
+        <div class="md:hidden sticky top-0 flex-none flex items-center justify-between px-4 pb-4 border-b border-[#27272a] bg-[#09090b]/90 backdrop-blur-md w-full z-20"
+            style="padding-top: max(1rem, env(safe-area-inset-top));">
             <div class="flex items-center gap-3">
-                <h1 class="text-lg font-bold tracking-tight">{{ branding.brand_name | default('Alamia Automation') }}</h1>
-                <div class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20" title="System is actively monitoring slots">
+                <h1 class="text-lg font-bold tracking-tight">{{ branding.brand_name | default('Alamia Automation') }}
+                </h1>
+                <div class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20"
+                    title="System is actively monitoring slots">
                     <span class="relative flex w-1.5 h-1.5">
-                        <span class="absolute inline-flex w-full h-full bg-emerald-400 rounded-full opacity-75 animate-ping"></span>
+                        <span
+                            class="absolute inline-flex w-full h-full bg-emerald-400 rounded-full opacity-75 animate-ping"></span>
                         <span class="relative inline-flex w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
                     </span>
                     <span class="text-[9px] font-bold tracking-widest uppercase text-emerald-500">Live</span>
@@ -313,13 +385,16 @@
                 <div class="mb-8 p-6 bg-amber-950/20 border border-amber-500/30 rounded-lg">
                     <div class="flex items-center gap-3 mb-4">
                         <i data-lucide="alert-triangle" class="w-6 h-6 text-amber-500"></i>
-                        <h3 class="text-xl font-bold text-amber-500 tracking-tight">Action Required: System Setup Incomplete</h3>
+                        <h3 class="text-xl font-bold text-amber-500 tracking-tight">Action Required: System Setup
+                            Incomplete</h3>
                     </div>
-                    <p class="text-amber-200/80 text-sm mb-4">The system setup is missing critical configurations. Please resolve the following action items to ensure workers can successfully execute tasks:</p>
-                    
+                    <p class="text-amber-200/80 text-sm mb-4">The system setup is missing critical configurations.
+                        Please resolve the following action items to ensure workers can successfully execute tasks:</p>
+
                     <div class="space-y-3">
                         {% for step in missing_setup_steps %}
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-black/40 border border-amber-500/20 rounded-md">
+                        <div
+                            class="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-black/40 border border-amber-500/20 rounded-md">
                             <div>
                                 <h4 class="font-semibold text-amber-400 mb-1 flex items-center gap-2">
                                     <i data-lucide="x-circle" class="w-4 h-4 text-rose-500"></i>
@@ -327,7 +402,8 @@
                                 </h4>
                                 <p class="text-sm text-zinc-400">{{ step.message }}</p>
                             </div>
-                            <a href="{{ step.link }}" class="mt-3 sm:mt-0 whitespace-nowrap inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 bg-amber-500 text-amber-950 hover:bg-amber-400 transition-colors">
+                            <a href="{{ step.link }}"
+                                class="mt-3 sm:mt-0 whitespace-nowrap inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 bg-amber-500 text-amber-950 hover:bg-amber-400 transition-colors">
                                 {{ step.link_text }} <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
                             </a>
                         </div>
@@ -338,35 +414,44 @@
                 {% block content %}{% endblock %}
             </div>
         </div>
-        
+
         {% if user and user.role.value != 'SUPER_ADMIN' %}
         <!-- Tenant Mobile Bottom Navigation -->
-        <div class="md:hidden fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-md border-t border-[#27272a] z-30" style="padding-bottom: env(safe-area-inset-bottom);">
+        <div class="md:hidden fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-md border-t border-[#27272a] z-30"
+            style="padding-bottom: env(safe-area-inset-bottom);">
             <div class="flex items-center justify-around px-2 py-1">
-                <a href="/" class="flex flex-col items-center p-2 {% if active_page == 'overview' %}text-indigo-400{% else %}text-zinc-500 hover:text-zinc-300{% endif %} transition-colors">
+                <a href="/"
+                    class="flex flex-col items-center p-2 {% if active_page == 'overview' %}text-indigo-400{% else %}text-zinc-500 hover:text-zinc-300{% endif %} transition-colors">
                     <i data-lucide="home" class="w-5 h-5 mb-0.5"></i>
                     <span class="text-[10px] font-medium">Home</span>
                 </a>
-                <a href="/clients" class="flex flex-col items-center p-2 {% if active_page == 'clients' %}text-indigo-400{% else %}text-zinc-500 hover:text-zinc-300{% endif %} transition-colors">
+                <a href="/clients"
+                    class="flex flex-col items-center p-2 {% if active_page == 'clients' %}text-indigo-400{% else %}text-zinc-500 hover:text-zinc-300{% endif %} transition-colors">
                     <i data-lucide="contact" class="w-5 h-5 mb-0.5"></i>
                     <span class="text-[10px] font-medium">Clients</span>
                 </a>
-                
-                {% if (user.role.value == 'TENANT_ADMIN' and settings.get('nav.admin.show_queue') and settings.get('nav.admin.show_queue').value == 'true') or (user.role.value == 'STAFF' and settings.get('nav.staff.show_queue') and settings.get('nav.staff.show_queue').value == 'true') %}
-                <a href="/queue" class="flex flex-col items-center p-2 {% if active_page == 'queue' %}text-indigo-400{% else %}text-zinc-500 hover:text-zinc-300{% endif %} transition-colors">
+
+                {% if (user.role.value == 'TENANT_ADMIN' and settings.get('nav.admin.show_queue') and
+                settings.get('nav.admin.show_queue').value == 'true') or (user.role.value == 'STAFF' and
+                settings.get('nav.staff.show_queue') and settings.get('nav.staff.show_queue').value == 'true') %}
+                <a href="/queue"
+                    class="flex flex-col items-center p-2 {% if active_page == 'queue' %}text-indigo-400{% else %}text-zinc-500 hover:text-zinc-300{% endif %} transition-colors">
                     <i data-lucide="list-ordered" class="w-5 h-5 mb-0.5"></i>
                     <span class="text-[10px] font-medium">Queue</span>
                 </a>
                 {% endif %}
-                
-                {% if user.role.value == 'TENANT_ADMIN' and settings.get('nav.admin.show_bookings') and settings.get('nav.admin.show_bookings').value == 'true' %}
-                <a href="/booking-tasks" class="flex flex-col items-center p-2 {% if active_page == 'booking_tasks' %}text-indigo-400{% else %}text-zinc-500 hover:text-zinc-300{% endif %} transition-colors">
+
+                {% if user.role.value == 'TENANT_ADMIN' and settings.get('nav.admin.show_bookings') and
+                settings.get('nav.admin.show_bookings').value == 'true' %}
+                <a href="/booking-tasks"
+                    class="flex flex-col items-center p-2 {% if active_page == 'booking_tasks' %}text-indigo-400{% else %}text-zinc-500 hover:text-zinc-300{% endif %} transition-colors">
                     <i data-lucide="calendar-check" class="w-5 h-5 mb-0.5"></i>
                     <span class="text-[10px] font-medium">Bookings</span>
                 </a>
                 {% endif %}
-                
-                <a href="/inbox" class="flex flex-col items-center p-2 {% if active_page == 'inbox' %}text-indigo-400{% else %}text-zinc-500 hover:text-zinc-300{% endif %} transition-colors">
+
+                <a href="/inbox"
+                    class="flex flex-col items-center p-2 {% if active_page == 'inbox' %}text-indigo-400{% else %}text-zinc-500 hover:text-zinc-300{% endif %} transition-colors">
                     <i data-lucide="inbox" class="w-5 h-5 mb-0.5"></i>
                     <span class="text-[10px] font-medium">Inbox</span>
                 </a>
@@ -376,20 +461,25 @@
     </main>
 
     <!-- PWA Install Banner -->
-    <div id="pwaInstallBanner" class="hidden fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-zinc-900 border border-zinc-700 p-4 rounded-xl shadow-2xl z-50 flex items-start gap-4 transform transition-all translate-y-full opacity-0">
+    <div id="pwaInstallBanner"
+        class="hidden fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-zinc-900 border border-zinc-700 p-4 rounded-xl shadow-2xl z-50 flex items-start gap-4 transform transition-all translate-y-full opacity-0">
         <div class="flex-1">
-            <h4 class="text-sm font-semibold text-white mb-1">Install Kamal Express</h4>
-            <p class="text-xs text-zinc-400">Add to your home screen for quick access and full-screen mobile experience.</p>
+            <h4 class="text-sm font-semibold text-white mb-1">Install KE Agent</h4>
+            <p class="text-xs text-zinc-400">Add to your home screen for quick access and full-screen mobile experience.
+            </p>
         </div>
         <div class="flex flex-col gap-2">
-            <button id="pwaInstallBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors">Install</button>
-            <button id="pwaDismissBtn" class="text-zinc-500 hover:text-zinc-300 text-xs font-medium px-3 py-1.5 transition-colors">Not now</button>
+            <button id="pwaInstallBtn"
+                class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors">Install</button>
+            <button id="pwaDismissBtn"
+                class="text-zinc-500 hover:text-zinc-300 text-xs font-medium px-3 py-1.5 transition-colors">Not
+                now</button>
         </div>
     </div>
 
     <script>
         lucide.createIcons();
-        
+
         // Mobile Sidebar Toggle
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const closeSidebarBtn = document.getElementById('closeSidebarBtn');
@@ -404,9 +494,9 @@
         if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', toggleSidebar);
         if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', toggleSidebar);
         if (overlay) overlay.addEventListener('click', toggleSidebar);
-        
+
         const logoutBtn = document.getElementById('logoutBtn');
-        if(logoutBtn) {
+        if (logoutBtn) {
             logoutBtn.addEventListener('click', () => {
                 document.cookie = 'token=; Max-Age=-99999999; path=/';
                 localStorage.removeItem('token');
@@ -414,7 +504,7 @@
                 window.location.href = '/login';
             });
         }
-        
+
         // PWA Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -423,7 +513,7 @@
                     .catch(err => console.log('ServiceWorker registration failed:', err));
             });
         }
-        
+
         // PWA Install Logic
         let deferredPrompt;
         const installBanner = document.getElementById('pwaInstallBanner');
@@ -500,11 +590,11 @@
         const globalPushBtn = document.getElementById("globalPushBtn");
         if (globalPushBtn) {
             checkPushState(globalPushBtn);
-            
+
             globalPushBtn.addEventListener("click", async (e) => {
                 const btn = e.currentTarget;
                 const originalContent = btn.innerHTML;
-                
+
                 btn.innerHTML = `<span class="flex items-center gap-3"><i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Subscribing...</span>`;
                 btn.disabled = true;
 
@@ -556,7 +646,7 @@
                         if (window.lucide) window.lucide.createIcons();
                     }, 3000);
                 }
-                
+
                 if (window.lucide) window.lucide.createIcons();
             });
         }
@@ -564,7 +654,7 @@
     <script>
         window.GUIDANCE_METADATA = {{ guidance_dict | tojson }};
         window.NAV_GUIDANCE_METADATA = {{ nav_guidance_dict | tojson }};
-        
+
         class NavGuidance extends HTMLElement {
             constructor() {
                 super();
@@ -581,7 +671,7 @@
                 // Popover element
                 const popover = document.createElement('div');
                 popover.className = 'absolute z-50 hidden bg-[#09090b] border border-[#27272a] p-4 rounded-xl shadow-2xl w-64 text-left text-sm text-[#fafafa] font-sans';
-                
+
                 popover.innerHTML = `
                     <div class="font-bold text-base mb-1 tracking-tight">${this.data.title}</div>
                     <div class="text-zinc-400 text-xs leading-relaxed">${this.data.summary}</div>
@@ -590,7 +680,7 @@
                     <div class="text-zinc-300 text-xs bg-zinc-900/50 p-1.5 rounded-lg border border-zinc-800/50">${this.data.why}</div>
                     ` : ''}
                 `;
-                
+
                 this.appendChild(popover);
 
                 // Setup Floating UI
@@ -602,8 +692,8 @@
                     cleanup = autoUpdate(target, popover, () => {
                         computePosition(target, popover, {
                             placement: 'right',
-                            middleware: [offset(10), flip(), shift({padding: 10})]
-                        }).then(({x, y}) => {
+                            middleware: [offset(10), flip(), shift({ padding: 10 })]
+                        }).then(({ x, y }) => {
                             Object.assign(popover.style, {
                                 left: `${x}px`,
                                 top: `${y}px`,
@@ -648,7 +738,7 @@
             connectedCallback() {
                 // Determine styling based on severity/code
                 let badgeClass = "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold cursor-help transition-colors ";
-                
+
                 if (this.data.severity === "Success" || this.code === "SUCCESS") {
                     badgeClass += "border-emerald-500/20 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20";
                 } else if (this.data.severity === "Error") {
@@ -668,10 +758,10 @@
                 // Popover element
                 const popover = document.createElement('div');
                 popover.className = 'absolute z-50 hidden bg-[#09090b] border border-[#27272a] p-4 rounded-xl shadow-2xl w-80 text-left text-sm text-[#fafafa] font-sans';
-                
+
                 // Build popover content
                 let fixList = this.data.how_to_fix.map(f => `<li class="flex items-start gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5"></i> <span>${f}</span></li>`).join('');
-                
+
                 popover.innerHTML = `
                     <div class="font-bold text-base mb-1 tracking-tight">${this.data.title}</div>
                     <div class="text-zinc-400 mb-4 text-xs">${this.data.summary}</div>
@@ -693,7 +783,7 @@
                         <div class="text-indigo-300 text-xs">${this.data.auto_recovery}</div>
                     </div>
                 `;
-                
+
                 this.appendChild(popover);
 
                 // Setup Floating UI
@@ -705,15 +795,15 @@
                     cleanup = autoUpdate(button, popover, () => {
                         computePosition(button, popover, {
                             placement: 'top',
-                            middleware: [offset(8), flip(), shift({padding: 10})]
-                        }).then(({x, y}) => {
+                            middleware: [offset(8), flip(), shift({ padding: 10 })]
+                        }).then(({ x, y }) => {
                             Object.assign(popover.style, {
                                 left: `${x}px`,
                                 top: `${y}px`,
                             });
                         });
                     });
-                    if(window.lucide) window.lucide.createIcons();
+                    if (window.lucide) window.lucide.createIcons();
                 };
 
                 const hide = () => {
@@ -731,7 +821,7 @@
                 button.addEventListener('blur', hide);
             }
         }
-        
+
         customElements.define('operational-guidance', OperationalGuidance);
     </script>
 
@@ -739,7 +829,8 @@
     <div id="toast-container" class="fixed bottom-4 right-4 z-[9999] flex flex-col gap-2 pointer-events-none"></div>
 
     <!-- Global Confirm Modal -->
-    <div id="global-confirm-modal" class="hidden fixed inset-0 z-[10000] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
+    <div id="global-confirm-modal"
+        class="hidden fixed inset-0 z-[10000] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
         <div class="card w-full max-w-sm bg-background p-6 transform scale-95 transition-transform duration-200">
             <h3 id="global-confirm-title" class="text-xl font-bold mb-2 tracking-tight">Confirm Action</h3>
             <p id="global-confirm-message" class="text-sm text-muted-foreground mb-6"></p>
@@ -752,10 +843,10 @@
 
     <script>
         // Global UI Utilities
-        window.uiToast = function(message, type = 'info') {
+        window.uiToast = function (message, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            
+
             let bgClass, iconHtml;
             if (type === 'success') {
                 bgClass = 'bg-emerald-950/80 border-emerald-800 text-emerald-200';
@@ -776,15 +867,15 @@
                     <i data-lucide="x" class="w-3 h-3"></i>
                 </button>
             `;
-            
+
             container.appendChild(toast);
-            if (window.lucide) window.lucide.createIcons({root: toast});
-            
+            if (window.lucide) window.lucide.createIcons({ root: toast });
+
             // Animate in
             requestAnimationFrame(() => {
                 toast.classList.remove('translate-y-4', 'opacity-0');
             });
-            
+
             // Auto remove
             setTimeout(() => {
                 toast.classList.add('opacity-0', 'translate-y-2');
@@ -792,21 +883,21 @@
             }, 4000);
         };
 
-        window.uiConfirm = function(message, title = 'Confirm Action') {
+        window.uiConfirm = function (message, title = 'Confirm Action') {
             return new Promise((resolve) => {
                 const modal = document.getElementById('global-confirm-modal');
                 const card = modal.querySelector('.card');
-                
+
                 document.getElementById('global-confirm-title').innerText = title;
                 document.getElementById('global-confirm-message').innerText = message;
-                
+
                 // Show modal
                 modal.classList.remove('hidden');
                 requestAnimationFrame(() => {
                     modal.classList.remove('opacity-0');
                     card.classList.remove('scale-95');
                 });
-                
+
                 const cleanup = () => {
                     modal.classList.add('opacity-0');
                     card.classList.add('scale-95');
@@ -814,25 +905,25 @@
                     btnOk.removeEventListener('click', onOk);
                     btnCancel.removeEventListener('click', onCancel);
                 };
-                
+
                 const onOk = () => { cleanup(); resolve(true); };
                 const onCancel = () => { cleanup(); resolve(false); };
-                
+
                 const btnOk = document.getElementById('global-confirm-ok');
                 const btnCancel = document.getElementById('global-confirm-cancel');
-                
+
                 btnOk.addEventListener('click', onOk);
                 btnCancel.addEventListener('click', onCancel);
             });
         };
-        
+
         // Global WebSocket for High-Priority Toasts
         (function initGlobalWs() {
             const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             const wsUrl = `${wsProtocol}//${window.location.host}/ws/live-logs`;
             let ws;
             let reconnectDelay = 2000;
-            
+
             function connect() {
                 ws = new WebSocket(wsUrl);
                 ws.onmessage = (event) => {
@@ -841,8 +932,8 @@
                         if (data.type === 'event_log') {
                             const eType = data.payload.event_type || '';
                             const src = data.payload.source || '';
-                            const workerId = (data.payload.worker_id || '').substring(0,8);
-                            
+                            const workerId = (data.payload.worker_id || '').substring(0, 8);
+
                             // Define which events trigger toasts
                             if (eType === 'WORKER_ONLINE') uiToast(`Worker ${workerId} connected`, 'success');
                             else if (eType === 'WORKER_OFFLINE') uiToast(`Worker ${workerId} disconnected`, 'error');
@@ -856,7 +947,7 @@
                             else if (eType === 'CONFIG_REFRESH') uiToast('SaaS runtime configuration refreshed', 'info');
                             else if (eType === 'PUSH_DEVICE_SUBSCRIBED') uiToast('New device subscribed for push notifications', 'success');
                         }
-                    } catch(e) {}
+                    } catch (e) { }
                 };
                 ws.onclose = () => {
                     setTimeout(connect, reconnectDelay);
@@ -869,4 +960,5 @@
     </script>
     {% block scripts %}{% endblock %}
 </body>
+
 </html>
