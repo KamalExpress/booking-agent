@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
-{% block title %}Platform Guide & Feature Overview - {{ env_branding.title_prefix }}{{ branding.brand_name | default('Alamia Automation') }}{% endblock %}
+{% block title %}Platform Guide & Feature Overview - {{ env_branding.title_prefix }}{{ branding.brand_name |
+default('Alamia Automation') }}{% endblock %}
 
 {% block content %}
 <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -8,7 +9,8 @@
         <h1 class="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
             <i data-lucide="compass" class="w-8 h-8 text-indigo-400"></i> Platform Guide & Features
         </h1>
-        <p class="text-sm text-zinc-400 mt-1">Discover how our in-system Digital Specialists assist your agency in securing visa appointments with high efficiency.</p>
+        <p class="text-sm text-zinc-400 mt-1">Discover how our in-system Digital Specialists assist your agency in
+            securing visa appointments with high efficiency.</p>
     </div>
     <div class="flex items-center gap-2">
         <a href="/legal" class="btn btn-secondary text-xs border-zinc-700 hover:border-zinc-500">
@@ -19,8 +21,10 @@
 
 <!-- Quick Navigation Banner -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-    <a href="#client-directory" class="card p-4 hover:border-indigo-500/50 transition-colors flex items-center gap-3 group">
-        <div class="p-2.5 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 group-hover:bg-indigo-500/20">
+    <a href="#client-directory"
+        class="card p-4 hover:border-indigo-500/50 transition-colors flex items-center gap-3 group">
+        <div
+            class="p-2.5 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 group-hover:bg-indigo-500/20">
             <i data-lucide="contact" class="w-5 h-5"></i>
         </div>
         <div>
@@ -28,8 +32,10 @@
             <p class="text-[11px] text-zinc-400">Client Roster & Profiles</p>
         </div>
     </a>
-    <a href="#queue-management" class="card p-4 hover:border-emerald-500/50 transition-colors flex items-center gap-3 group">
-        <div class="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 group-hover:bg-emerald-500/20">
+    <a href="#queue-management"
+        class="card p-4 hover:border-emerald-500/50 transition-colors flex items-center gap-3 group">
+        <div
+            class="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 group-hover:bg-emerald-500/20">
             <i data-lucide="list-ordered" class="w-5 h-5"></i>
         </div>
         <div>
@@ -38,7 +44,8 @@
         </div>
     </a>
     <a href="#slot-drops" class="card p-4 hover:border-amber-500/50 transition-colors flex items-center gap-3 group">
-        <div class="p-2.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20 group-hover:bg-amber-500/20">
+        <div
+            class="p-2.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20 group-hover:bg-amber-500/20">
             <i data-lucide="bell-ring" class="w-5 h-5"></i>
         </div>
         <div>
@@ -68,33 +75,41 @@
             </div>
             <div>
                 <h2 class="text-xl font-bold text-white">1. Client Directory & Applicant Profiles</h2>
-                <p class="text-xs text-zinc-400">Easily organize applicant records and travel details in one secure place.</p>
+                <p class="text-xs text-zinc-400">Easily organize applicant records and travel details in one secure
+                    place.</p>
             </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-4 text-sm text-zinc-300">
                 <div class="flex items-start gap-3">
-                    <span class="flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 font-bold text-xs shrink-0 mt-0.5">1</span>
+                    <span
+                        class="flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 font-bold text-xs shrink-0 mt-0.5">1</span>
                     <div>
                         <h4 class="font-semibold text-white">Register Client Profiles</h4>
-                        <p class="text-xs text-zinc-400 mt-0.5">Enter applicant information (Name, Date of Birth, Gender, Passport Number, and Expiry Date) into your private Client Directory.</p>
+                        <p class="text-xs text-zinc-400 mt-0.5">Enter applicant information (Name, Date of Birth,
+                            Gender, Passport Number, and Expiry Date) into your private Client Directory.</p>
                     </div>
                 </div>
 
                 <div class="flex items-start gap-3">
-                    <span class="flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 font-bold text-xs shrink-0 mt-0.5">2</span>
+                    <span
+                        class="flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 font-bold text-xs shrink-0 mt-0.5">2</span>
                     <div>
                         <h4 class="font-semibold text-white">Exclusive Agency Privacy</h4>
-                        <p class="text-xs text-zinc-400 mt-0.5">Your agency's client list remains strictly confidential and is accessible only to your authorized staff.</p>
+                        <p class="text-xs text-zinc-400 mt-0.5">Your agency's client list remains strictly confidential
+                            and is accessible only to your authorized staff.</p>
                     </div>
                 </div>
 
                 <div class="flex items-start gap-3">
-                    <span class="flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 font-bold text-xs shrink-0 mt-0.5">3</span>
+                    <span
+                        class="flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 font-bold text-xs shrink-0 mt-0.5">3</span>
                     <div>
                         <h4 class="font-semibold text-white">One-Click Placement</h4>
-                        <p class="text-xs text-zinc-400 mt-0.5">Click the <span class="text-indigo-400 font-medium">Enqueue</span> button beside any applicant to assign them to our Digital Specialists for slot placement.</p>
+                        <p class="text-xs text-zinc-400 mt-0.5">Click the <span
+                                class="text-indigo-400 font-medium">Enqueue</span> button beside any applicant to assign
+                            them to our Digital Specialists for slot placement.</p>
                     </div>
                 </div>
             </div>
@@ -102,11 +117,13 @@
             <div class="bg-zinc-900/60 p-4 rounded-xl border border-zinc-800 space-y-3">
                 <div class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Best Practice Tip</div>
                 <p class="text-xs text-zinc-300 leading-relaxed">
-                    Always verify passport expiration dates before queuing applicants. Keeping client details updated helps our in-system specialists facilitate smooth booking confirmations.
+                    Always verify passport expiration dates before queuing applicants. Keeping client details updated
+                    helps our in-system specialists facilitate smooth booking confirmations.
                 </p>
                 <div class="pt-2 border-t border-zinc-800/60 flex justify-between items-center">
                     <span class="text-[11px] text-zinc-500">Shortcut: View Client Directory</span>
-                    <a href="/clients" class="text-xs text-indigo-400 hover:underline font-medium">Open Directory &rarr;</a>
+                    <a href="/clients" class="text-xs text-indigo-400 hover:underline font-medium">Open Directory
+                        &rarr;</a>
                 </div>
             </div>
         </div>
@@ -123,10 +140,10 @@
                     <div class="flex flex-wrap items-center gap-2">
                         <h2 class="text-xl font-bold text-white">2. Waitlist Queue & Booking Facilitation</h2>
                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                            Under Active Development
+                            Under Review
                         </span>
                     </div>
-                    <p class="text-xs text-zinc-400 mt-0.5">Our Digital Specialists continuously coordinate to match queued clients with open appointment slots.</p>
+                    <p class="text-xs text-zinc-400 mt-1">Our Digital Specialists coordinate client placement workflows. Our compliance team is working actively to address concerns and make the system painless while keeping it profitable for everyone.</p>
                 </div>
             </div>
         </div>
@@ -134,18 +151,23 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-4 text-sm text-zinc-300">
                 <div class="flex items-start gap-3">
-                    <span class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xs shrink-0 mt-0.5">1</span>
+                    <span
+                        class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xs shrink-0 mt-0.5">1</span>
                     <div>
                         <h4 class="font-semibold text-white">Dedicated In-System Specialists</h4>
-                        <p class="text-xs text-zinc-400 mt-0.5">When appointment openings drop at Visa Centers (Lahore, Islamabad, etc.), our dedicated specialists immediately facilitate client bookings on your behalf.</p>
+                        <p class="text-xs text-zinc-400 mt-0.5">When appointment openings drop at Visa Centers (Lahore,
+                            Islamabad, etc.), our dedicated specialists immediately facilitate client bookings on your
+                            behalf.</p>
                     </div>
                 </div>
 
                 <div class="flex items-start gap-3">
-                    <span class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xs shrink-0 mt-0.5">2</span>
+                    <span
+                        class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xs shrink-0 mt-0.5">2</span>
                     <div>
                         <h4 class="font-semibold text-white">Optimized Appointment Processing</h4>
-                        <p class="text-xs text-zinc-400 mt-0.5">The platform targets standard appointment categories (defaulting to Type D Seasonal/Employment) for maximum success.</p>
+                        <p class="text-xs text-zinc-400 mt-0.5">The platform targets standard appointment categories
+                            (defaulting to Type D Seasonal/Employment) for maximum success.</p>
                     </div>
                 </div>
             </div>
@@ -169,7 +191,8 @@
             </div>
             <div>
                 <h2 class="text-xl font-bold text-white">3. Real-Time Slot Drop Tracking & Instant Alerts</h2>
-                <p class="text-xs text-zinc-400">Stay informed with instant push notifications on phone or desktop the moment slots open.</p>
+                <p class="text-xs text-zinc-400">Stay informed with instant push notifications on phone or desktop the
+                    moment slots open.</p>
             </div>
         </div>
 
@@ -187,7 +210,8 @@
                     <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
                     <h4 class="font-semibold text-amber-400 text-sm">VERIFYING Status</h4>
                 </div>
-                <p class="text-xs text-zinc-400">Digital Specialist is actively processing a booking placement for your queued client.</p>
+                <p class="text-xs text-zinc-400">Digital Specialist is actively processing a booking placement for your
+                    queued client.</p>
             </div>
 
             <div class="bg-zinc-900/40 p-4 rounded-xl border border-zinc-800">
@@ -195,7 +219,8 @@
                     <span class="w-2.5 h-2.5 rounded-full bg-zinc-600"></span>
                     <h4 class="font-semibold text-zinc-400 text-sm">UNAVAILABLE Status</h4>
                 </div>
-                <p class="text-xs text-zinc-400">Interval closed. Our specialists continue active monitoring for the next drop.</p>
+                <p class="text-xs text-zinc-400">Interval closed. Our specialists continue active monitoring for the
+                    next drop.</p>
             </div>
         </div>
     </section>
@@ -209,7 +234,8 @@
             <div>
                 <h2 class="text-xl font-bold text-white">4. Agency Data Protection & Security</h2>
                 <p class="text-xs text-zinc-400 mt-1 leading-relaxed">
-                    Bank-grade encryption, exclusive client privacy, and full audit peace of mind for every agency tenant.
+                    Bank-grade encryption, exclusive client privacy, and full audit peace of mind for every agency
+                    tenant.
                 </p>
             </div>
         </div>
@@ -217,7 +243,8 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-4 text-xs text-zinc-300">
                 <p class="leading-relaxed text-zinc-300">
-                    Your agency operates in an exclusive, private environment. All applicant records and placement activities are protected by enterprise-grade security standards.
+                    Your agency operates in an exclusive, private environment. All applicant records and placement
+                    activities are protected by enterprise-grade security standards.
                 </p>
                 <ul class="space-y-2 list-disc list-inside text-zinc-400">
                     <li>Bank-grade data encryption for all dashboard and mobile interactions.</li>
@@ -226,7 +253,8 @@
                 </ul>
 
                 <div class="pt-4 mt-2">
-                    <a href="/legal?tab=privacy" class="btn btn-secondary inline-flex items-center gap-2 text-xs px-4 py-2.5 border-zinc-700 hover:border-zinc-500 font-medium">
+                    <a href="/legal?tab=privacy"
+                        class="btn btn-secondary inline-flex items-center gap-2 text-xs px-4 py-2.5 border-zinc-700 hover:border-zinc-500 font-medium">
                         <i data-lucide="lock" class="w-4 h-4 text-blue-400"></i> Read Full Privacy Policy &rarr;
                     </a>
                 </div>
@@ -238,11 +266,13 @@
                         <i data-lucide="cookie" class="w-4 h-4 text-amber-400"></i> Cookie & Preference Options
                     </h4>
                     <p class="text-xs text-zinc-400 leading-relaxed">
-                        We use essential session cookies and Web Push tokens to deliver real-time slot alerts and secure login. You can manage options anytime in our Legal Center.
+                        We use essential session cookies and Web Push tokens to deliver real-time slot alerts and secure
+                        login. You can manage options anytime in our Legal Center.
                     </p>
                 </div>
                 <div class="pt-4 border-t border-zinc-800/60 flex items-center justify-between flex-wrap gap-3">
-                    <a href="/legal?tab=cookies" class="text-xs text-blue-400 hover:underline font-medium flex items-center gap-1">
+                    <a href="/legal?tab=cookies"
+                        class="text-xs text-blue-400 hover:underline font-medium flex items-center gap-1">
                         Cookie Details &rarr;
                     </a>
                     <a href="/legal?tab=terms" class="text-xs text-zinc-400 hover:underline">
