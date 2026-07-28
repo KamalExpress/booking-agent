@@ -12,6 +12,20 @@
         <div class="flex items-center gap-4">
             <h1 class="text-2xl font-bold tracking-tight text-[#fafafa] font-mono">{{ worker.worker_id }}</h1>
             
+            {% if worker.agent_type_label == 'Booking Agent' %}
+                <span class="px-2.5 py-1 text-xs font-bold bg-indigo-500/10 text-indigo-400 rounded-full border border-indigo-500/30 flex items-center gap-1.5">
+                    <i data-lucide="zap" class="w-3.5 h-3.5 text-indigo-400"></i> Booking Agent
+                </span>
+            {% elif worker.agent_type_label == 'Slot Agent' %}
+                <span class="px-2.5 py-1 text-xs font-bold bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/30 flex items-center gap-1.5">
+                    <i data-lucide="search" class="w-3.5 h-3.5 text-emerald-400"></i> Slot Agent
+                </span>
+            {% elif worker.agent_type_label == 'Dual Agent' %}
+                <span class="px-2.5 py-1 text-xs font-bold bg-sky-500/10 text-sky-400 rounded-full border border-sky-500/30 flex items-center gap-1.5">
+                    <i data-lucide="layers" class="w-3.5 h-3.5 text-sky-400"></i> Dual Agent
+                </span>
+            {% endif %}
+            
             {% if worker.is_online %}
                 <span class="px-2.5 py-1 text-xs bg-emerald-500/10 text-emerald-500 rounded-full border border-emerald-500/20 flex items-center gap-1.5">
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>

@@ -193,7 +193,18 @@ class WorkerNode(Base):
         age = self.heartbeat_age
         if age is None:
             return False
-        return age < self.WORKER_TIMEOUT_SECONDS
+        return age <= self.WORKER_TIMEOUT_SECONDS and self.status == "Online"
+
+    @property
+    def agent_type_label(self):
+        if self.can_book and not self.can_scrape:
+            return "Booking Agent"
+        elif self.can_scrape and not self.can_book:
+            return "Slot Agent"
+        elif self.can_scrape and self.can_book:
+            return "Dual Agent"
+        else:
+            return "Worker"
 
 class PortalAccount(Base):
     __tablename__ = "portal_accounts"

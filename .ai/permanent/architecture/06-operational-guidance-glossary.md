@@ -55,3 +55,11 @@ This document serves as the master dictionary for all operational events, errors
 | `IDLE` | This entity is idle and waiting for work. | It is connected and healthy, but the scheduler hasn't assigned it a task yet. | N/A | N/A |
 | `WORKING` | This entity is currently executing a task. | It received a lease from the scheduler and is actively processing it. | N/A | It will return to IDLE when the task completes. |
 | `OFFLINE` | This entity is disconnected. | It missed its heartbeat check (likely crashed or lost internet connection). | Check the node's process logs, restart the node. | It will automatically recover when it reconnects. |
+
+## Worker Node Terminology (System-Wide Roles)
+
+| Role | Capabilities | Primary Function |
+| --- | --- | --- |
+| **Slot Agent** | `can_scrape=True, can_book=False` | Dedicated polling worker optimizing for continuous visa portal monitoring and low detection. Emits `SLOT_FOUND` events. |
+| **Booking Agent** | `can_scrape=False, can_book=True` | Reactive, high-priority execution worker that acts immediately upon `BookingTask` creation to complete visa bookings. |
+| **Dual Agent** | `can_scrape=True, can_book=True` | Hybrid worker capable of executing both continuous slot monitoring and reactive booking leases. |

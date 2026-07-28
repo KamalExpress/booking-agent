@@ -20,6 +20,7 @@
             <thead class="text-xs text-[#a1a1aa] uppercase bg-[#18181b] border-b border-[#27272a]">
                 <tr>
                     <th scope="col" class="px-6 py-4 font-medium">Worker ID</th>
+                    <th scope="col" class="px-6 py-4 font-medium">Agent Type</th>
                     <th scope="col" class="px-6 py-4 font-medium">Status</th>
                     <th scope="col" class="px-6 py-4 font-medium">Network</th>
                     <th scope="col" class="px-6 py-4 font-medium">Resources</th>
@@ -34,6 +35,25 @@
                         {{ w.worker_id }}
                         {% if w.scheduling_state != 'Accepting Jobs' %}
                             <span class="ml-2 px-2 py-0.5 text-xs bg-yellow-500/10 text-yellow-500 rounded border border-yellow-500/20">{{ w.scheduling_state }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if w.agent_type_label == 'Booking Agent' %}
+                            <span class="px-2.5 py-1 text-xs font-bold bg-indigo-500/10 text-indigo-400 rounded-full border border-indigo-500/30 flex items-center gap-1.5 w-fit">
+                                <i data-lucide="zap" class="w-3.5 h-3.5 text-indigo-400"></i> Booking Agent
+                            </span>
+                        {% elif w.agent_type_label == 'Slot Agent' %}
+                            <span class="px-2.5 py-1 text-xs font-bold bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/30 flex items-center gap-1.5 w-fit">
+                                <i data-lucide="search" class="w-3.5 h-3.5 text-emerald-400"></i> Slot Agent
+                            </span>
+                        {% elif w.agent_type_label == 'Dual Agent' %}
+                            <span class="px-2.5 py-1 text-xs font-bold bg-sky-500/10 text-sky-400 rounded-full border border-sky-500/30 flex items-center gap-1.5 w-fit">
+                                <i data-lucide="layers" class="w-3.5 h-3.5 text-sky-400"></i> Dual Agent
+                            </span>
+                        {% else %}
+                            <span class="px-2.5 py-1 text-xs font-medium bg-zinc-800 text-zinc-400 rounded-full border border-zinc-700 w-fit">
+                                Worker
+                            </span>
                         {% endif %}
                     </td>
                     <td class="px-6 py-4">
