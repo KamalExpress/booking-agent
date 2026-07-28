@@ -114,13 +114,20 @@
 
     <!-- Section 2: Queue Management -->
     <section id="queue-management" class="card p-6 border-zinc-800 bg-zinc-950">
-        <div class="flex items-center gap-3 mb-4 pb-4 border-b border-zinc-800">
-            <div class="p-2 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                <i data-lucide="list-ordered" class="w-6 h-6"></i>
-            </div>
-            <div>
-                <h2 class="text-xl font-bold text-white">2. Waitlist Queue & Booking Facilitation</h2>
-                <p class="text-xs text-zinc-400">Our Digital Specialists continuously coordinate to match queued clients with open appointment slots.</p>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-4 border-b border-zinc-800">
+            <div class="flex items-center gap-3">
+                <div class="p-2 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
+                    <i data-lucide="list-ordered" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h2 class="text-xl font-bold text-white">2. Waitlist Queue & Booking Facilitation</h2>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                            Under Active Development
+                        </span>
+                    </div>
+                    <p class="text-xs text-zinc-400 mt-0.5">Our Digital Specialists continuously coordinate to match queued clients with open appointment slots.</p>
+                </div>
             </div>
         </div>
 
@@ -157,7 +164,7 @@
     <!-- Section 3: Slot Drops & Web Push -->
     <section id="slot-drops" class="card p-6 border-zinc-800 bg-zinc-950">
         <div class="flex items-center gap-3 mb-4 pb-4 border-b border-zinc-800">
-            <div class="p-2 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            <div class="p-2 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20 shrink-0">
                 <i data-lucide="bell-ring" class="w-6 h-6"></i>
             </div>
             <div>
@@ -195,42 +202,52 @@
 
     <!-- Section 4: Data Security -->
     <section id="data-security" class="card p-6 border-zinc-800 bg-zinc-950">
-        <div class="flex items-center justify-between mb-4 pb-4 border-b border-zinc-800">
-            <div class="flex items-center gap-3">
-                <div class="p-2 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                    <i data-lucide="shield-check" class="w-6 h-6"></i>
-                </div>
-                <div>
-                    <h2 class="text-xl font-bold text-white">4. Agency Data Protection & Security</h2>
-                    <p class="text-xs text-zinc-400">Bank-grade encryption, exclusive client privacy, and full audit peace of mind.</p>
-                </div>
+        <div class="flex items-start gap-3 mb-6 pb-4 border-b border-zinc-800">
+            <div class="p-2 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20 shrink-0 mt-1">
+                <i data-lucide="shield-check" class="w-6 h-6"></i>
             </div>
-            <a href="/legal?tab=privacy" class="btn btn-secondary text-xs border-zinc-700 hover:border-zinc-500">
-                Privacy Policy &rarr;
-            </a>
+            <div>
+                <h2 class="text-xl font-bold text-white">4. Agency Data Protection & Security</h2>
+                <p class="text-xs text-zinc-400 mt-1 leading-relaxed">
+                    Bank-grade encryption, exclusive client privacy, and full audit peace of mind for every agency tenant.
+                </p>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-3 text-xs text-zinc-300">
-                <p class="leading-relaxed">
+            <div class="space-y-4 text-xs text-zinc-300">
+                <p class="leading-relaxed text-zinc-300">
                     Your agency operates in an exclusive, private environment. All applicant records and placement activities are protected by enterprise-grade security standards.
                 </p>
-                <ul class="space-y-1.5 list-disc list-inside text-zinc-400">
+                <ul class="space-y-2 list-disc list-inside text-zinc-400">
                     <li>Bank-grade data encryption for all dashboard and mobile interactions.</li>
                     <li>Confidential storage for portal accounts and client information.</li>
                     <li>Complete audit history for staff actions and placement updates.</li>
                 </ul>
+
+                <div class="pt-4 mt-2">
+                    <a href="/legal?tab=privacy" class="btn btn-secondary inline-flex items-center gap-2 text-xs px-4 py-2.5 border-zinc-700 hover:border-zinc-500 font-medium">
+                        <i data-lucide="lock" class="w-4 h-4 text-blue-400"></i> Read Full Privacy Policy &rarr;
+                    </a>
+                </div>
             </div>
-            <div class="bg-zinc-900/60 p-4 rounded-xl border border-zinc-800 flex flex-col justify-between">
+
+            <div class="bg-zinc-900/60 p-5 rounded-xl border border-zinc-800 flex flex-col justify-between space-y-4">
                 <div>
-                    <h4 class="text-xs font-semibold text-white mb-1">Cookie & Preference Options</h4>
+                    <h4 class="text-sm font-semibold text-white mb-2 flex items-center gap-2">
+                        <i data-lucide="cookie" class="w-4 h-4 text-amber-400"></i> Cookie & Preference Options
+                    </h4>
                     <p class="text-xs text-zinc-400 leading-relaxed">
-                        We use essential session cookies and Web Push tokens to deliver real-time slot alerts and secure login. You can manage options anytime.
+                        We use essential session cookies and Web Push tokens to deliver real-time slot alerts and secure login. You can manage options anytime in our Legal Center.
                     </p>
                 </div>
-                <div class="pt-3 mt-3 border-t border-zinc-800/60 flex justify-between items-center">
-                    <a href="/legal?tab=cookies" class="text-xs text-blue-400 hover:underline font-medium">Cookie Details &rarr;</a>
-                    <a href="/legal?tab=terms" class="text-xs text-zinc-400 hover:underline">Terms of Service</a>
+                <div class="pt-4 border-t border-zinc-800/60 flex items-center justify-between flex-wrap gap-3">
+                    <a href="/legal?tab=cookies" class="text-xs text-blue-400 hover:underline font-medium flex items-center gap-1">
+                        Cookie Details &rarr;
+                    </a>
+                    <a href="/legal?tab=terms" class="text-xs text-zinc-400 hover:underline">
+                        Terms of Service
+                    </a>
                 </div>
             </div>
         </div>
