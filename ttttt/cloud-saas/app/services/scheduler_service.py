@@ -91,6 +91,16 @@ class SchedulerService:
         best_account_score = -1
         
         for account in accounts:
+            # Enforce SIM/phone concurrency: if another account shares the same phone_number and is currently LEASED, skip it
+            if account.phone_number:
+                active_sim_lease = self.db.query(PortalAccount).filter(
+                    PortalAccount.phone_number == account.phone_number,
+                    PortalAccount.status == "LEASED",
+                    PortalAccount.id != account.id
+                ).first()
+                if active_sim_lease:
+                    continue
+                    
             score = ScoringPolicy.score_account(account, task.provider)
             if score > best_account_score:
                 best_account_score = score
@@ -121,7 +131,7 @@ class SchedulerService:
         best_proxy_score = -1
         
         for proxy in proxies:
-            score = ScoringPolicy.score_proxy(proxy)
+            score = ScoringPolicy.score_proxy(proxy, task.provider)
             if score > best_proxy_score:
                 best_proxy_score = score
                 best_proxy = proxy
@@ -234,7 +244,7 @@ class SchedulerService:
         best_proxy_score = -1
         
         for proxy in proxies:
-            score = ScoringPolicy.score_proxy(proxy)
+            score = ScoringPolicy.score_proxy(proxy, due_assignment.provider)
             if score > best_proxy_score:
                 best_proxy_score = score
                 best_proxy = proxy
@@ -280,6 +290,8 @@ class SchedulerService:
         return lease
 
     def auto_dispatch_queue(self, visa_center: str, slots: Any = None, assignment_id: int = None, target_date: str = None):
+        import logging
+        logger = logging.getLogger(__name__)
         now = ScoringPolicy.get_utcnow()
         if isinstance(slots, int):
             slots = [{"id": None, "starttime": "00:00"}] * slots
@@ -288,50 +300,79 @@ class SchedulerService:
             
         slot_count = len(slots)
         target_date = target_date or datetime.utcnow().strftime("%Y-%m-%d")
+        logger.info(f"auto_dispatch_queue invoked: visa_center={visa_center}, slot_count={slot_count}, target_date={target_date}")
+        
+        # 0. Expire old uncompleted booking tasks so they don't lock applicants forever
+        stale_tasks = self.db.query(BookingTask).filter(
+            BookingTask.status.in_(["PENDING", "CLAIMED"]),
+            BookingTask.expires_at < now
+        ).all()
+        if stale_tasks:
+            logger.info(f"Expiring {len(stale_tasks)} stale booking tasks that exceeded TTL.")
+            for st in stale_tasks:
+                st.status = "EXPIRED"
+                st.active_status = False
+            self.db.flush()
         
         # 1. Get PENDING waitlist entries for this visa center, ordered by priority
         entries = self.db.query(WaitlistQueue).join(Applicant).filter(
             WaitlistQueue.status == "PENDING",
-            WaitlistQueue.visa_center == visa_center
-        ).order_by(WaitlistQueue.priority.desc(), WaitlistQueue.created_at.asc()).with_for_update(skip_locked=True).all()
+            WaitlistQueue.visa_center == str(visa_center)
+        ).order_by(WaitlistQueue.priority.desc(), WaitlistQueue.created_at.asc()).all()
         
+        logger.info(f"Found {len(entries)} PENDING waitlist queue entries for center {visa_center}")
+        if not entries:
+            return 0
+            
         dispatched_count = 0
+        batch_locked_phones = set()
         for entry in entries:
             if dispatched_count >= slot_count:
                 break
                 
-            # 2. Prevent OTP race condition: check if applicant's phone number is actively locked
+            # 2. Prevent OTP race condition: check if applicant's phone number is actively locked in DB or in current batch
             applicant_phone = entry.applicant.phone_number
+            if applicant_phone in batch_locked_phones:
+                logger.info(f"Skipping applicant #{entry.applicant_id} ({applicant_phone}): already locked in current batch")
+                continue
+                
             active_locks = self.db.query(BookingTask).join(Applicant, BookingTask.applicant_id == Applicant.id).filter(
                 BookingTask.status.in_(["PENDING", "CLAIMED"]),
                 Applicant.phone_number == applicant_phone
             ).first()
             
             if active_locks:
-                # Skip this applicant to avoid OTP race condition
+                logger.info(f"Skipping applicant #{entry.applicant_id} ({applicant_phone}): actively locked by BookingTask #{active_locks.id} (status={active_locks.status})")
                 continue
                 
             # 3. Generate BookingTask
             slot = slots[dispatched_count]
             slot_time = slot.get("starttime", "00:00") if isinstance(slot, dict) else "00:00"
             
-            task = BookingTask(
-                assignment_id=assignment_id,
-                tenant_id=entry.tenant_id,
-                applicant_id=entry.applicant_id,
-                provider=entry.provider,
-                visa_center=entry.visa_center,
-                target_date=target_date, 
-                target_time=slot_time,
-                slot_payload=slot if isinstance(slot, dict) else {},
-                priority=entry.priority,
-                expires_at=now + timedelta(hours=2)
-            )
-            self.db.add(task)
-            
-            entry.status = "BOOKED"
-            self.db.flush() # Flush so subsequent queries in this loop see the new lock
-            dispatched_count += 1
+            try:
+                task = BookingTask(
+                    assignment_id=assignment_id,
+                    tenant_id=entry.tenant_id,
+                    applicant_id=entry.applicant_id,
+                    provider=entry.provider,
+                    visa_center=entry.visa_center,
+                    target_date=target_date, 
+                    target_time=slot_time,
+                    slot_payload=slot if isinstance(slot, dict) else {},
+                    priority=entry.priority,
+                    expires_at=now + timedelta(hours=2)
+                )
+                self.db.add(task)
+                
+                entry.status = "BOOKED"
+                batch_locked_phones.add(applicant_phone)
+                self.db.flush() # Flush so subsequent queries in this loop see the new lock
+                dispatched_count += 1
+                logger.info(f"Successfully created BookingTask #{task.id} for applicant #{entry.applicant_id} ({entry.applicant.firstname} {entry.applicant.surname}) at center {entry.visa_center}")
+            except Exception as task_err:
+                logger.error(f"Failed to create BookingTask for applicant #{entry.applicant_id}: {task_err}")
+                self.db.rollback()
+                break
             
         if dispatched_count > 0:
             self.db.commit()
