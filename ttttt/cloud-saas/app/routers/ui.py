@@ -1364,7 +1364,51 @@ async def booking_tasks_page(request: Request, db: Session = Depends(get_db)):
     elif user.role != RoleEnum.SUPER_ADMIN:
         return RedirectResponse(url="/", status_code=303)
         
-    tasks = query.order_by(BookingTask.id.desc()).all()
+    tasks = query.order_by(BookingTask.id.desc()).limit(150).all()
+    
+    # Enrich tasks with applicant info and leased portal account / phone number
+    from models import Applicant, Lease, PortalAccount
+    
+    applicant_ids = [t.applicant_id for t in tasks if t.applicant_id]
+    applicants_map = {}
+    if applicant_ids:
+        applicants = db.query(Applicant).filter(Applicant.id.in_(applicant_ids)).all()
+        applicants_map = {a.id: a for a in applicants}
+        
+    task_ids = [t.id for t in tasks]
+    leases_map = {}
+    if task_ids:
+        leases = db.query(Lease).filter(Lease.booking_task_id.in_(task_ids)).order_by(Lease.id.desc()).all()
+        account_ids = [l.portal_account_id for l in leases if l.portal_account_id]
+        accounts_map = {}
+        if account_ids:
+            accounts = db.query(PortalAccount).filter(PortalAccount.id.in_(account_ids)).all()
+            accounts_map = {a.id: a for a in accounts}
+            
+        for l in leases:
+            if l.booking_task_id not in leases_map and l.portal_account_id in accounts_map:
+                leases_map[l.booking_task_id] = accounts_map[l.portal_account_id]
+                
+    for t in tasks:
+        app_obj = applicants_map.get(t.applicant_id)
+        if app_obj:
+            setattr(t, 'applicant_name', f"{app_obj.firstname} {app_obj.surname}")
+            setattr(t, 'applicant_phone', f"+{app_obj.phone_prefix or '92'} {app_obj.phone_number}")
+            setattr(t, 'applicant_passport', app_obj.passportnumber)
+        else:
+            setattr(t, 'applicant_name', 'General Queue')
+            setattr(t, 'applicant_phone', '-')
+            setattr(t, 'applicant_passport', '-')
+            
+        portal_acc = leases_map.get(t.id)
+        if portal_acc:
+            setattr(t, 'portal_account_name', portal_acc.display_name)
+            setattr(t, 'portal_account_email', portal_acc.username)
+            setattr(t, 'portal_phone', portal_acc.phone_number or '-')
+        else:
+            setattr(t, 'portal_account_name', 'Not Leased')
+            setattr(t, 'portal_account_email', '-')
+            setattr(t, 'portal_phone', '-')
     
     return render_template("booking_tasks.html", {
         "request": request,

@@ -59,16 +59,47 @@
             </thead>
             <tbody>
                 {% for task in tasks %}
-                <tr class="border-b border-border hover:bg-muted/50 transition-colors">
+                <tr class="border-b border-border hover:bg-muted/50 transition-colors group">
                     <td class="p-4 text-muted-foreground font-mono">
                         #{{ task.id }}
                     </td>
-                    <td class="p-4 text-foreground font-medium">
-                        {{ task.provider }}
+                    <td class="p-4">
+                        <div class="font-medium text-foreground">{{ task.provider }}</div>
+                        <div class="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500/80"></span>
+                            <span class="font-semibold text-foreground/80">{{ task.portal_account_name }}</span>
+                        </div>
                     </td>
                     <td class="p-4 text-muted-foreground">
-                        <span class="text-foreground font-medium">{{ task.target_date }} at {{ task.target_time }}</span><br>
-                        <span class="text-xs">Center {{ task.visa_center }}</span>
+                        <div class="relative inline-block cursor-help">
+                            <span class="text-foreground font-medium underline decoration-dotted decoration-muted-foreground/50">{{ task.target_date }} at {{ task.target_time }}</span><br>
+                            <span class="text-xs">Center {{ task.visa_center }} &bull; {{ task.applicant_name }}</span>
+                            
+                            <!-- Detailed Hover Tooltip -->
+                            <div class="absolute left-0 top-full mt-2 hidden group-hover:block z-40 w-72 p-3 bg-popover text-popover-foreground text-xs rounded-lg shadow-xl border border-border">
+                                <div class="font-bold border-b border-border pb-1 mb-2 text-emerald-400">Task Details & Linked Phone</div>
+                                <div class="grid grid-cols-3 gap-1 mb-1">
+                                    <span class="text-muted-foreground">Applicant:</span>
+                                    <span class="col-span-2 font-medium">{{ task.applicant_name }}</span>
+                                </div>
+                                <div class="grid grid-cols-3 gap-1 mb-1">
+                                    <span class="text-muted-foreground">Passport:</span>
+                                    <span class="col-span-2 font-mono font-medium">{{ task.applicant_passport }}</span>
+                                </div>
+                                <div class="grid grid-cols-3 gap-1 mb-1">
+                                    <span class="text-muted-foreground">App. Phone:</span>
+                                    <span class="col-span-2 font-mono text-amber-300 font-bold">{{ task.applicant_phone }}</span>
+                                </div>
+                                <div class="grid grid-cols-3 gap-1 mb-1 border-t border-border/50 pt-1">
+                                    <span class="text-muted-foreground">Portal Acc:</span>
+                                    <span class="col-span-2 font-medium">{{ task.portal_account_email }}</span>
+                                </div>
+                                <div class="grid grid-cols-3 gap-1">
+                                    <span class="text-muted-foreground">SIM / OTP:</span>
+                                    <span class="col-span-2 font-mono text-emerald-400 font-bold">{{ task.portal_phone }}</span>
+                                </div>
+                            </div>
+                        </div>
                     </td>
                     <td class="p-4 text-muted-foreground font-mono font-bold">
                         {{ task.otp_code if task.otp_code else '<span class="text-xs text-muted-foreground/60">Waiting...</span>' | safe }}
