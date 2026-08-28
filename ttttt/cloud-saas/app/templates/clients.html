@@ -387,8 +387,13 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
                 <div id="aiParseLoading" class="hidden text-center py-2">
                     <div class="inline-flex items-center gap-2 text-xs font-medium text-emerald-400">
                         <svg class="animate-spin h-4 w-4 text-emerald-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                        <span>Extracting fields via BitNet/Phi AI...</span>
+                        <span>Analyzing document with BitNet/Phi Vision AI...</span>
                     </div>
+                </div>
+
+                <div id="aiParseError" class="hidden p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs leading-relaxed"></div>
+                <div id="aiParseSuccess" class="hidden p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs">
+                    <i data-lucide="check-circle" class="w-3.5 h-3.5 inline mr-1"></i> Applicant details extracted! Review on the right.
                 </div>
             </div>
 
@@ -519,7 +524,12 @@ async function runAiDocumentParse() {
     const fileInput = document.getElementById('aiDocFileInput');
     const loading = document.getElementById('aiParseLoading');
     const parseBtn = document.getElementById('aiRunParseBtn');
+    const errorBox = document.getElementById('aiParseError');
+    const successBox = document.getElementById('aiParseSuccess');
     
+    errorBox.classList.add('hidden');
+    errorBox.innerText = '';
+    successBox.classList.add('hidden');
     loading.classList.remove('hidden');
     parseBtn.disabled = true;
     
@@ -534,6 +544,11 @@ async function runAiDocumentParse() {
                 body: formData
             });
         } else {
+            if (!rawText.trim()) {
+                errorBox.innerText = 'Please upload a passport document or paste applicant text.';
+                errorBox.classList.remove('hidden');
+                return;
+            }
             response = await fetch('/api/v1/ocr/parse-client', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -542,7 +557,7 @@ async function runAiDocumentParse() {
         }
         
         const result = await response.json();
-        if (result.status === 'success' && result.data) {
+        if (result.status === 'success' && result.data && !result.data.error) {
             const d = result.data;
             if (d.firstname) document.getElementById('ai_first_name').value = d.firstname;
             if (d.surname) document.getElementById('ai_last_name').value = d.surname;
@@ -554,9 +569,17 @@ async function runAiDocumentParse() {
             if (d.phone_number) document.getElementById('ai_phone_number').value = d.phone_number;
             if (d.email) document.getElementById('ai_email').value = d.email;
             if (d.nationality) document.getElementById('ai_nationality').value = d.nationality;
+            
+            successBox.classList.remove('hidden');
+            if (window.lucide) lucide.createIcons();
+        } else {
+            const msg = (result.data && result.data.error) || result.message || 'AI could not extract fields from this document.';
+            errorBox.innerText = msg;
+            errorBox.classList.remove('hidden');
         }
     } catch (err) {
-        console.error("AI Parse Error:", err);
+        errorBox.innerText = 'Network/Parsing Error: ' + err.message;
+        errorBox.classList.remove('hidden');
     } finally {
         loading.classList.add('hidden');
         parseBtn.disabled = false;

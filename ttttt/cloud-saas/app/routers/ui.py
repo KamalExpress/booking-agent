@@ -1482,7 +1482,7 @@ async def create_client(
 
 @router.post("/api/v1/ocr/parse-client")
 async def api_ocr_parse_client(request: Request, db: Session = Depends(get_db)):
-    """Accepts JSON payload with raw_text, base64 image or form text and runs AiOcrService."""
+    """Accepts JSON payload or multipart file and runs AiOcrService with vision and text support."""
     user = get_ui_user(request, db)
     if not user:
         from fastapi.responses import JSONResponse
@@ -1491,6 +1491,9 @@ async def api_ocr_parse_client(request: Request, db: Session = Depends(get_db)):
     try:
         content_type = request.headers.get("content-type", "")
         raw_text = ""
+        file_bytes = None
+        filename = ""
+        mime_type = ""
         
         if "application/json" in content_type:
             body = await request.json()
@@ -1499,22 +1502,28 @@ async def api_ocr_parse_client(request: Request, db: Session = Depends(get_db)):
             form = await request.form()
             raw_text = form.get("raw_text", "")
             
-            # Check if file was uploaded
             uploaded_file = form.get("file")
-            if uploaded_file and hasattr(uploaded_file, "filename"):
+            if uploaded_file and hasattr(uploaded_file, "filename") and uploaded_file.filename:
+                filename = uploaded_file.filename
+                mime_type = getattr(uploaded_file, "content_type", "") or ""
                 file_bytes = await uploaded_file.read()
-                # Basic text extraction from file if text/pdf
-                try:
-                    raw_text = file_bytes.decode("utf-8", errors="ignore")
-                except Exception:
-                    pass
 
         from services.ai_ocr_service import AiOcrService
         service = AiOcrService()
-        parsed_data = service.extract_from_text(raw_text)
+        parsed_data = service.extract_from_document(
+            raw_text=raw_text,
+            file_bytes=file_bytes,
+            filename=filename,
+            mime_type=mime_type
+        )
         
+        if parsed_data.get("error"):
+            return {"status": "error", "message": parsed_data.get("error")}
+            
         return {"status": "success", "data": parsed_data}
     except Exception as e:
+        import traceback
+        logging.error(f"[OCR Route Error] {e}\n{traceback.format_exc()}")
         return {"status": "error", "message": str(e)}
 
 @router.post("/clients/save-ai-parsed")

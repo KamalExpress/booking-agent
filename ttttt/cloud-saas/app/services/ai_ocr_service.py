@@ -22,15 +22,41 @@ class AiOcrService:
         self.api_key = api_key or os.getenv("BITNET_API_KEY") or ""
         self.model = model or os.getenv("BITNET_MODEL_NAME") or self.DEFAULT_MODEL
 
-    def extract_from_text(self, raw_text: str) -> Dict[str, Any]:
+    def extract_from_document(self, raw_text: str = "", file_bytes: bytes = None, filename: str = "", mime_type: str = "") -> Dict[str, Any]:
         """
-        Parses raw text (from OCR, WhatsApp forward, PDF extraction, or paste)
-        using the Tiny LLM endpoint into GVC-compliant schema.
+        Parses document (image, PDF, or raw text) using Vision / Multimodal or Text LLM.
         """
-        if not raw_text or not raw_text.strip():
-            return {"error": "Empty text provided"}
+        if file_bytes and len(file_bytes) > 0:
+            is_image = mime_type.startswith("image/") or any(filename.lower().endswith(ext) for ext in [".jpg", ".jpeg", ".png", ".webp", ".bmp"])
+            
+            # If it's an image and AI endpoint is configured, call Vision AI completion
+            if is_image:
+                import base64
+                b64_img = base64.b64encode(file_bytes).decode("utf-8")
+                actual_mime = mime_type or ("image/png" if filename.lower().endswith(".png") else "image/jpeg")
+                
+                if self.api_key:
+                    try:
+                        ai_result = self._call_ai_vision_completion(b64_img, actual_mime)
+                        if ai_result and not ai_result.get("error"):
+                            return self._normalize_extracted_data(ai_result, f"[Image Document: {filename}]")
+                    except Exception as e:
+                        logging.error(f"[AiOcrService] Vision AI API failed: {e}")
+                        
+            # If PDF or text file, attempt text decode
+            if not raw_text:
+                try:
+                    raw_text = file_bytes.decode("utf-8", errors="ignore")
+                except Exception:
+                    pass
 
-        # If API key is available, call the AI endpoint
+        if not raw_text or not raw_text.strip():
+            # If we reached here without text or vision result
+            if file_bytes and len(file_bytes) > 0:
+                return {"error": "Could not extract text from document. Please ensure the AI endpoint supports Vision or paste the details."}
+            return {"error": "Empty document provided"}
+
+        # Text LLM fallback
         if self.api_key:
             try:
                 ai_result = self._call_ai_completion(raw_text)
@@ -39,12 +65,75 @@ class AiOcrService:
             except Exception as e:
                 logging.error(f"[AiOcrService] AI API call failed: {e}. Falling back to heuristic extraction.")
 
-        # Fallback to robust regex / heuristic extraction if AI is unavailable or offline
         return self._heuristic_extract(raw_text)
+
+    def extract_from_text(self, raw_text: str) -> Dict[str, Any]:
+        return self.extract_from_document(raw_text=raw_text)
+
+    def _call_ai_vision_completion(self, b64_img: str, mime_type: str) -> Dict[str, Any]:
+        """
+        Invokes multimodal / vision completion using OpenAI-compatible payload.
+        """
+        endpoint = f"{self.api_url}/v1/chat/completions"
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}"
+        }
+
+        system_prompt = (
+            "You are a specialized visa applicant passport and document OCR reader. "
+            "Extract the following fields from the passport or ID document image into a valid JSON object:\n"
+            "- firstname: string (Given names in uppercase, e.g. 'MUHAMMAD USMAN')\n"
+            "- surname: string (Surname in uppercase, e.g. 'KHAN')\n"
+            "- dateofbirth: string strictly in DD/MM/YYYY format\n"
+            "- gender: string ('1' for Male, '2' for Female)\n"
+            "- nationality: string ('197' for Pakistan, or standard country ID)\n"
+            "- passportnumber: string uppercase alphanumeric (e.g. 'PK1234567')\n"
+            "- passport_expiry: string strictly in DD/MM/YYYY format\n"
+            "- email: string or empty string\n"
+            "- phone_prefix: string without plus sign (e.g. '92')\n"
+            "- phone_number: string without leading zero (e.g. '3345112969')\n\n"
+            "Return ONLY valid raw JSON without markdown formatting or code blocks."
+        )
+
+        payload = {
+            "model": self.model,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": "Extract all applicant details from this passport document into strict JSON format."},
+                        {"type": "image_url", "image_url": {"url": f"data:{mime_type};base64,{b64_img}"}}
+                    ]
+                }
+            ],
+            "temperature": 0.1,
+            "max_tokens": 512
+        }
+
+        response = requests.post(endpoint, json=payload, headers=headers, timeout=45)
+        if response.status_code == 200:
+            data = response.json()
+            content = data["choices"][0]["message"]["content"].strip()
+            content = re.sub(r"^```json\s*", "", content, flags=re.IGNORECASE)
+            content = re.sub(r"^```\s*", "", content)
+            content = re.sub(r"```$", "", content)
+            
+            try:
+                return json.loads(content.strip())
+            except json.JSONDecodeError:
+                match = re.search(r'\{.*\}', content, re.DOTALL)
+                if match:
+                    return json.loads(match.group(0))
+                return {"error": "Invalid JSON returned by Vision AI"}
+        else:
+            logging.error(f"[AiOcrService] Vision HTTP {response.status_code}: {response.text}")
+            return {"error": f"HTTP {response.status_code}: {response.text[:200]}"}
 
     def _call_ai_completion(self, document_text: str) -> Dict[str, Any]:
         """
-        Invokes /v1/chat/completions on the internal AI server.
+        Invokes text /v1/chat/completions on the internal AI server.
         """
         endpoint = f"{self.api_url}/v1/chat/completions"
         headers = {
@@ -82,7 +171,6 @@ class AiOcrService:
         if response.status_code == 200:
             data = response.json()
             content = data["choices"][0]["message"]["content"].strip()
-            # Clean possible markdown ```json ... ``` tags
             content = re.sub(r"^```json\s*", "", content, flags=re.IGNORECASE)
             content = re.sub(r"^```\s*", "", content)
             content = re.sub(r"```$", "", content)
@@ -90,14 +178,13 @@ class AiOcrService:
             try:
                 return json.loads(content.strip())
             except json.JSONDecodeError:
-                # Try regex matching json object
                 match = re.search(r'\{.*\}', content, re.DOTALL)
                 if match:
                     return json.loads(match.group(0))
                 return {"error": "Invalid JSON returned by AI"}
         else:
             logging.error(f"[AiOcrService] HTTP {response.status_code}: {response.text}")
-            return {"error": f"HTTP {response.status_code}"}
+            return {"error": f"HTTP {response.status_code}: {response.text[:200]}"}
 
     def _normalize_extracted_data(self, data: Dict[str, Any], original_text: str = "") -> Dict[str, Any]:
         """
