@@ -67,17 +67,32 @@ class GVCAdapter(BasePortalAdapter):
         if os.path.exists(self.cookie_file):
             try:
                 with open(self.cookie_file, 'r', encoding='utf-8') as f:
-                    cookies_dict = json.load(f)
-                    self.session.cookies.update(cookies_dict)
-                logging.info("GVCAdapter: Loaded previous session cookies.")
+                    saved_data = json.load(f)
+                    if isinstance(saved_data, dict):
+                        if "cookies" in saved_data:
+                            self.session.cookies.update(saved_data.get("cookies", {}))
+                            token = saved_data.get("token")
+                            if token:
+                                self.token = token
+                                self.session.headers["Authorization"] = f"Bearer {token}"
+                                logging.info("GVCAdapter: Loaded previous session cookies and JWT Bearer token.")
+                            else:
+                                logging.info("GVCAdapter: Loaded previous session cookies.")
+                        else:
+                            self.session.cookies.update(saved_data)
+                            logging.info("GVCAdapter: Loaded previous session cookies.")
             except Exception as e:
                 logging.warning(f"GVCAdapter: Could not load previous session: {e}")
 
     def save_session(self):
         try:
             with open(self.cookie_file, 'w', encoding='utf-8') as f:
-                json.dump(self.session.cookies.get_dict(), f)
-            logging.info("GVCAdapter: Saved session cookies.")
+                data = {
+                    "cookies": self.session.cookies.get_dict(),
+                    "token": getattr(self, "token", None)
+                }
+                json.dump(data, f)
+            logging.info("GVCAdapter: Saved session cookies and JWT Bearer token.")
         except Exception as e:
             logging.warning(f"GVCAdapter: Could not save session: {e}")
 
@@ -238,6 +253,15 @@ class GVCAdapter(BasePortalAdapter):
                 response = self.session.post(url, json=payload, timeout=30)
                 if response.status_code == 200:
                     logging.info("GVCAdapter: Login successful!")
+                    try:
+                        login_json = response.json()
+                        token = login_json.get("token")
+                        if token:
+                            self.token = token
+                            self.session.headers["Authorization"] = f"Bearer {token}"
+                            logging.info("GVCAdapter: Configured JWT Bearer Authorization header in session.")
+                    except Exception as e:
+                        logging.warning(f"GVCAdapter: Could not parse token: {e}")
                     self.save_session()
                     return True
                 elif response.status_code in [403, 502, 503, 504, 522]:

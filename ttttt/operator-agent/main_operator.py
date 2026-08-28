@@ -142,9 +142,21 @@ class OperatorAgent:
         if os.path.exists(self.cookie_file):
             try:
                 with open(self.cookie_file, 'r', encoding='utf-8') as f:
-                    cookies_dict = json.load(f)
-                    self.session.cookies.update(cookies_dict)
-                logging.info("Loaded previous session cookies from file.")
+                    saved_data = json.load(f)
+                    if isinstance(saved_data, dict):
+                        if "cookies" in saved_data:
+                            self.session.cookies.update(saved_data.get("cookies", {}))
+                            token = saved_data.get("token")
+                            if token:
+                                self.token = token
+                                self.session.headers["Authorization"] = f"Bearer {token}"
+                                logging.info("Loaded previous session cookies and JWT Bearer token from file.")
+                            else:
+                                logging.info("Loaded previous session cookies from file.")
+                        else:
+                            # Backward compatibility for flat cookies dictionary
+                            self.session.cookies.update(saved_data)
+                            logging.info("Loaded previous session cookies from file.")
             except Exception as e:
                 logging.warning(f"Could not load previous session: {e}")
 
@@ -152,13 +164,19 @@ class OperatorAgent:
         import json
         try:
             with open(self.cookie_file, 'w', encoding='utf-8') as f:
-                json.dump(self.session.cookies.get_dict(), f)
-            logging.info("Saved session cookies to file for future runs.")
+                data = {
+                    "cookies": self.session.cookies.get_dict(),
+                    "token": getattr(self, "token", None)
+                }
+                json.dump(data, f)
+            logging.info("Saved session cookies and JWT Bearer token to file for future runs.")
         except Exception as e:
             logging.warning(f"Could not save session: {e}")
 
     def clear_session(self):
         self.session.cookies.clear()
+        self.token = None
+        self.session.headers.pop("Authorization", None)
         if os.path.exists(self.cookie_file):
             try:
                 os.remove(self.cookie_file)
@@ -247,6 +265,10 @@ class OperatorAgent:
         Lightweight check to see if the loaded session cookies are still valid.
         This prevents burning CapSolver credits if we already have a valid session.
         """
+        if not getattr(self, "token", None):
+            logging.info("No JWT Bearer token present. Must login to authenticate.")
+            return False
+
         logging.info("Validating existing session...")
         url = f"{self.base_url}/api/v1/periodslot/slots"
         # Dummy payload just to check authentication state
@@ -369,6 +391,15 @@ class OperatorAgent:
                 
                 if response.status_code == 200:
                     logging.info("Login successful!")
+                    try:
+                        login_json = response.json()
+                        token = login_json.get("token")
+                        if token:
+                            self.token = token
+                            self.session.headers["Authorization"] = f"Bearer {token}"
+                            logging.info("Successfully configured JWT Bearer token in session headers.")
+                    except Exception as parse_err:
+                        logging.warning(f"Could not extract token from login response: {parse_err}")
                     self.save_session()
                     return True
                 elif response.status_code in [403, 502, 503, 504, 522]:
@@ -426,6 +457,7 @@ class OperatorAgent:
         logging.debug(f"Search slots payload: {payload}")
         
         max_retries = 3
+        login_retried = False
         for attempt in range(max_retries):
             try:
                 response = self.session.put(url, json=payload, timeout=30)
@@ -434,10 +466,16 @@ class OperatorAgent:
                 
                 # Check for redirects to login or portal home
                 if response.history or "login" in resp_url.lower():
-                    logging.warning(f"Search slots redirected to {resp_url}. Session expired, re-authenticating...")
-                    self.login()
-                    time.sleep(2)
-                    continue
+                    if not login_retried:
+                        logging.warning(f"Search slots redirected to {resp_url}. Session expired, re-authenticating once...")
+                        login_retried = True
+                        self.clear_session()
+                        self.login()
+                        time.sleep(2)
+                        continue
+                    else:
+                        logging.error("Already re-authenticated once; aborting search_slots retry.")
+                        return {"error": True, "status_code": 401, "text": "Redirected to login"}
                     
                 if response.status_code == 200:
                     try:
@@ -447,39 +485,43 @@ class OperatorAgent:
                     except Exception as json_err:
                         snippet = response.text[:200] if response.text else "<empty>"
                         logging.warning(f"Failed to parse slots JSON (status 200, length {len(response.text or '')}, start: {snippet!r}): {json_err}")
+                        if "_incapsula_resource" in snippet.lower():
+                            logging.error("Imperva WAF JavaScript challenge detected on slot search.")
+                            return {"error": True, "status_code": 403, "text": "Imperva WAF challenge"}
                         if "<html" in snippet.lower() or "login" in snippet.lower() or not response.text:
-                            logging.info("HTML/empty response received on 200 OK. Session expired or WAF challenge, refreshing and re-authenticating...")
-                            self.refresh_waf_cookies()
-                            self.login()
-                            time.sleep(3)
-                            continue
+                            if not login_retried:
+                                logging.info("HTML/empty response received on 200 OK. Re-authenticating once...")
+                                login_retried = True
+                                self.clear_session()
+                                self.login()
+                                time.sleep(2)
+                                continue
+                            else:
+                                logging.error("Already re-authenticated once; aborting search_slots retry.")
+                                return {"error": True, "status_code": 401, "text": "Session invalid"}
                         return {"error": True, "status_code": 200, "text": snippet}
                         
                 elif response.status_code in [403, 502, 503, 504, 522]:
                     logging.warning(f"Received {response.status_code} during search_slots. Retrying... ({attempt+1}/{max_retries})")
-                    if response.status_code == 403:
-                        self.refresh_waf_cookies()
                     time.sleep(3)
                     continue
                 elif response.status_code == 401:
-                    logging.warning(f"Received 401 Unauthorized during search_slots. Re-authenticating... ({attempt+1}/{max_retries})")
-                    self.login()
-                    time.sleep(2)
-                    continue
+                    if not login_retried:
+                        logging.warning(f"Received 401 Unauthorized during search_slots. Re-authenticating once... ({attempt+1}/{max_retries})")
+                        login_retried = True
+                        self.clear_session()
+                        self.login()
+                        time.sleep(2)
+                        continue
+                    else:
+                        logging.error("Already re-authenticated once; aborting search_slots retry.")
+                        return {"error": True, "status_code": 401, "text": "Unauthorized"}
                 else:
                     logging.error(f"Failed to search slots. Status Code: {response.status_code}")
                     logging.error(f"Response: {response.text[:500] if response.text else ''}")
                     return {"error": True, "status_code": response.status_code, "text": response.text}
             except Exception as e:
                 logging.error(f"Network or WAF Error during search_slots (Attempt {attempt+1}/{max_retries}): {e}")
-                
-                if "28" in str(e) or "timeout" in str(e).lower():
-                    self.refresh_waf_cookies()
-                elif "expecting value" in str(e).lower() or "json" in str(e).lower():
-                    logging.info("JSON decode error encountered during search_slots, refreshing WAF cookies and re-authenticating...")
-                    self.refresh_waf_cookies()
-                    self.login()
-                    
                 if attempt < max_retries - 1:
                     time.sleep(3)
                     continue
