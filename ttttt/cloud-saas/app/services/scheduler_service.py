@@ -3,11 +3,20 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from fastapi import Depends
 
-from app.models import (
-    WorkerNode, PortalAccount, Proxy, Assignment, BookingTask, 
-    Lease, SchedulerDecision, EventLog, get_db
-)
-from app.services.scoring_policy import ScoringPolicy
+from typing import Any, Optional
+
+try:
+    from models import (
+        WorkerNode, PortalAccount, Proxy, Assignment, BookingTask, 
+        Lease, SchedulerDecision, EventLog, WaitlistQueue, Applicant, get_db
+    )
+    from services.scoring_policy import ScoringPolicy
+except ImportError:
+    from app.models import (
+        WorkerNode, PortalAccount, Proxy, Assignment, BookingTask, 
+        Lease, SchedulerDecision, EventLog, WaitlistQueue, Applicant, get_db
+    )
+    from app.services.scoring_policy import ScoringPolicy
 
 class SchedulerService:
     def __init__(self, db: Session):
@@ -270,10 +279,15 @@ class SchedulerService:
         self.db.commit()
         return lease
 
-    def auto_dispatch_queue(self, visa_center: str, slots: list, assignment_id: int, target_date: str):
-        from app.models import WaitlistQueue, Applicant
+    def auto_dispatch_queue(self, visa_center: str, slots: Any = None, assignment_id: int = None, target_date: str = None):
         now = ScoringPolicy.get_utcnow()
+        if isinstance(slots, int):
+            slots = [{"id": None, "starttime": "00:00"}] * slots
+        elif not slots or not isinstance(slots, list):
+            slots = [{"id": None, "starttime": "00:00"}]
+            
         slot_count = len(slots)
+        target_date = target_date or datetime.utcnow().strftime("%Y-%m-%d")
         
         # 1. Get PENDING waitlist entries for this visa center, ordered by priority
         entries = self.db.query(WaitlistQueue).join(Applicant).filter(
@@ -299,7 +313,7 @@ class SchedulerService:
                 
             # 3. Generate BookingTask
             slot = slots[dispatched_count]
-            slot_time = slot.get("starttime", "00:00")
+            slot_time = slot.get("starttime", "00:00") if isinstance(slot, dict) else "00:00"
             
             task = BookingTask(
                 assignment_id=assignment_id,
@@ -309,7 +323,7 @@ class SchedulerService:
                 visa_center=entry.visa_center,
                 target_date=target_date, 
                 target_time=slot_time,
-                slot_payload=slot,
+                slot_payload=slot if isinstance(slot, dict) else {},
                 priority=entry.priority,
                 expires_at=now + timedelta(hours=2)
             )
@@ -327,18 +341,16 @@ class SchedulerService:
     def handle_event(self, event_type: str, lease: Lease, details: dict = None):
         """Translates technical events into account/proxy cooldowns."""
         now = ScoringPolicy.get_utcnow()
-        account = self.db.query(PortalAccount).filter_by(id=lease.portal_account_id).first()
-        proxy = self.db.query(Proxy).filter_by(id=lease.proxy_id).first()
+        account = self.db.query(PortalAccount).filter_by(id=lease.portal_account_id).first() if lease.portal_account_id else None
+        proxy = self.db.query(Proxy).filter_by(id=lease.proxy_id).first() if lease.proxy_id else None
         
         if event_type == "SLOT_FOUND":
-            visa_center = details.get("visa_center") if details else None
-            slot_count = details.get("slot_count", 1) if details else 1
-            if not visa_center and lease.assignment_id:
-                assignment = self.db.query(Assignment).filter_by(id=lease.assignment_id).first()
-                if assignment:
-                    visa_center = assignment.visa_center
-            if visa_center:
-                self.auto_dispatch_queue(visa_center, slot_count)
+            if account:
+                account.last_success = now
+                account.failure_count = 0
+            if proxy:
+                proxy.last_used = now
+                proxy.failure_count = 0
                 
         elif event_type == "LOGIN_FAILED":
             if account:
