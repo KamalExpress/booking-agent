@@ -353,12 +353,16 @@ class OperatorAgent:
         # 1. PRE-FLIGHT NAVIGATION: Establish Incapsula TLS Fingerprint & Session Cookies
         logging.info("Executing pre-flight navigation to establish WAF trust...")
         try:
-            # We explicitly override the API fetch headers to standard document navigation headers for this single request
             preflight_headers = {
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
                 "Sec-Fetch-Dest": "document",
                 "Sec-Fetch-Mode": "navigate",
-                "Sec-Fetch-Site": "same-origin",
-                "X-Requested-With": None # Remove X-Requested-With for the document request
+                "Sec-Fetch-Site": "none",
+                "Sec-Fetch-User": "?1",
+                "Upgrade-Insecure-Requests": "1",
+                "Referer": None,
+                "Origin": None,
+                "X-Requested-With": None
             }
             res = self.session.get(f"{self.base_url}/?lang=en_US", headers=preflight_headers, timeout=15)
             logging.info(f"Pre-flight status: {res.status_code}, cookies received: {list(self.session.cookies.keys())}")
@@ -384,10 +388,21 @@ class OperatorAgent:
         
         logging.debug(f"Login payload: {payload}")
         
+        login_headers = {
+            "Accept": "application/json, text/plain, */*",
+            "Content-Type": "application/json; charset=UTF-8",
+            "Origin": self.base_url,
+            "Referer": f"{self.base_url}/login",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin",
+            "X-Requested-With": "XMLHttpRequest"
+        }
+        
         max_retries = 3
         for attempt in range(max_retries):
             try:
-                response = self.session.post(url, json=payload, timeout=30)
+                response = self.session.post(url, json=payload, headers=login_headers, timeout=30)
                 logging.debug(f"Login response status: {response.status_code}, text: {response.text}")
                 
                 if response.status_code == 200:
@@ -424,10 +439,6 @@ class OperatorAgent:
                     logging.warning(f"Received {response.status_code} during login. Retrying... ({attempt+1}/{max_retries})")
                     if response.status_code == 403:
                         self.refresh_waf_cookies()
-                        try:
-                            self.session.get(f"{self.base_url}/favicon.ico", timeout=3)
-                        except Exception:
-                            pass
                     time.sleep(3)
                     continue
                 else:
@@ -441,10 +452,6 @@ class OperatorAgent:
                 # If it's a timeout (28), it usually means WAF tarpitting due to expired cookies
                 if "28" in str(e) or "timeout" in str(e).lower():
                     self.refresh_waf_cookies()
-                    try:
-                        self.session.get(f"{self.base_url}/favicon.ico", timeout=3)
-                    except Exception:
-                        pass
                     
                 if attempt < max_retries - 1:
                     time.sleep(3)
@@ -472,13 +479,22 @@ class OperatorAgent:
         
         logging.info(f"Form Data (Payload) sent: {payload}")
         
-        logging.debug(f"Search slots payload: {payload}")
+        slot_headers = {
+            "Accept": "*/*",
+            "Content-Type": "application/json; charset=UTF-8",
+            "Origin": self.base_url,
+            "Referer": f"{self.base_url}/appointments/add",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin",
+            "X-Requested-With": "XMLHttpRequest"
+        }
         
         max_retries = 3
         login_retried = False
         for attempt in range(max_retries):
             try:
-                response = self.session.put(url, json=payload, timeout=30)
+                response = self.session.put(url, json=payload, headers=slot_headers, timeout=30)
                 resp_url = getattr(response, "url", "")
                 logging.debug(f"Search slots response status: {response.status_code}, url: {resp_url}")
                 
