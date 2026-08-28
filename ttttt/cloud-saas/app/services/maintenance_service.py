@@ -3,7 +3,10 @@ from datetime import datetime, timedelta
 from typing import Optional
 from fastapi import Depends
 
-from models import Lease, LeaseArchive, WorkerNode, EventLog, get_db
+try:
+    from models import Lease, LeaseArchive, WorkerNode, EventLog, PortalAccount, Proxy, Assignment, get_db
+except ImportError:
+    from app.models import Lease, LeaseArchive, WorkerNode, EventLog, PortalAccount, Proxy, Assignment, get_db
 
 class MaintenanceService:
     def __init__(self, db: Session):
@@ -16,6 +19,7 @@ class MaintenanceService:
         """
         self._worker_cleanup()
         self._lease_cleanup()
+        self._reconcile_orphan_resources()
         self._notification_cleanup()
         
     def _worker_cleanup(self):
@@ -75,6 +79,51 @@ class MaintenanceService:
             
         if old_leases:
             self.db.commit()
+
+    def _reconcile_orphan_resources(self):
+        # 1. Reconcile Portal Accounts that are LEASED but have no active lease
+        active_acc_query = self.db.query(Lease.portal_account_id).filter(
+            Lease.status.in_(["Leased", "Running"]),
+            Lease.portal_account_id.isnot(None)
+        ).all()
+        active_acc_ids = {a[0] for a in active_acc_query if a[0]}
+        
+        orphan_accounts = self.db.query(PortalAccount).filter(
+            PortalAccount.status == "LEASED"
+        ).all()
+        for acc in orphan_accounts:
+            if acc.id not in active_acc_ids:
+                acc.status = "READY"
+                
+        # 2. Reconcile Proxies that are LEASED but have no active lease
+        active_proxy_query = self.db.query(Lease.proxy_id).filter(
+            Lease.status.in_(["Leased", "Running"]),
+            Lease.proxy_id.isnot(None)
+        ).all()
+        active_proxy_ids = {p[0] for p in active_proxy_query if p[0]}
+        
+        orphan_proxies = self.db.query(Proxy).filter(
+            Proxy.status == "LEASED"
+        ).all()
+        for prx in orphan_proxies:
+            if prx.id not in active_proxy_ids:
+                prx.status = "READY"
+                
+        # 3. Reconcile Assignments that are Leased but have no active lease
+        active_asm_query = self.db.query(Lease.assignment_id).filter(
+            Lease.status.in_(["Leased", "Running"]),
+            Lease.assignment_id.isnot(None)
+        ).all()
+        active_asm_ids = {m[0] for m in active_asm_query if m[0]}
+        
+        orphan_assignments = self.db.query(Assignment).filter(
+            Assignment.status == "Leased"
+        ).all()
+        for asm in orphan_assignments:
+            if asm.id not in active_asm_ids:
+                asm.status = "Active"
+                
+        self.db.commit()
 
     def _notification_cleanup(self):
         # Delete EventLogs older than 30 days
