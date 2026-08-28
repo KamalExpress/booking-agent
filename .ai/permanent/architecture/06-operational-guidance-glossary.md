@@ -63,3 +63,12 @@ This document serves as the master dictionary for all operational events, errors
 | **Slot Agent** | `can_scrape=True, can_book=False` | Dedicated polling worker optimizing for continuous visa portal monitoring and low detection. Emits `SLOT_FOUND` events. |
 | **Booking Agent** | `can_scrape=False, can_book=True` | Reactive, high-priority execution worker that acts immediately upon `BookingTask` creation to complete visa bookings. |
 | **Dual Agent** | `can_scrape=True, can_book=True` | Hybrid worker capable of executing both continuous slot monitoring and reactive booking leases. |
+
+## Production Incident & Hotfix Dictionary (August 28, 2026)
+
+| Error Signature | What Happened | Why did it happen? | How to fix it | Auto-Recovery |
+| --- | --- | --- | --- | --- |
+| `UnboundLocalError: cannot access local variable 'Lease'` in `submit_logs` | Worker `/api/v1/worker/logs` failed with HTTP 500 on `SLOT_FOUND` or any log with `assignment_id`. Notifications and waitlist dispatches were blocked. | An inner import `from models import ... Lease` inside a conditional block caused Python to treat `Lease` as an unassigned local variable at the top of the function. | Promoted `Lease`, `SlotAvailability`, `BookingTask`, and all models to module-level imports. Initialized `lease = None` at function entry. | Fixed via commit `6de7ff8` (`prod`) and `c3a6289` (`staging`). |
+| `AttributeError: 'dict' object has no attribute 'portal_account_id'` in `get_next_assignment` | Worker `/api/v1/worker/assignments/next` failed with HTTP 500 when recovering an existing active lease. | `get_existing_lease_for_worker` was returning a serialized dictionary while the router expected a SQLAlchemy `Lease` model instance. | Updated `get_existing_lease_for_worker` to return the `Lease` model instance directly. Guarded attribute queries. | Fixed via commit `810529d` (`prod`) and `4524f6e` (`staging`). |
+| `TypeError: SchedulerService.auto_dispatch_queue() missing 2 required positional arguments` | Worker `/api/v1/worker/logs` failed with HTTP 500 inside `scheduler.handle_event`. | Legacy call in `handle_event` invoked `self.auto_dispatch_queue(visa_center, slot_count)`, but the method required `(visa_center, slots, assignment_id, target_date)`. | Made `auto_dispatch_queue` arguments flexible (`slots=None, assignment_id=None, target_date=None`) and removed the duplicate broken call in `handle_event`. | Fixed via commit `2ea89be` (`prod`). |
+
