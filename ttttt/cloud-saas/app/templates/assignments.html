@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Assignments - Kamal Express{% endblock %}
+{% block title %}Assignments - KE Agent{% endblock %}
 
 {% block content %}
 <header class="mb-8 flex justify-between items-center">
@@ -8,7 +8,8 @@
         <h2 class="text-3xl font-bold tracking-tight">Portal Tasks (Slot Agents)</h2>
         <p class="text-muted-foreground mt-1">Manage long-running slot monitoring tasks for worker nodes</p>
     </div>
-    <button class="btn btn-primary" onclick="document.getElementById('createAssignmentModal').classList.remove('hidden')">
+    <button class="btn btn-primary"
+        onclick="document.getElementById('createAssignmentModal').classList.remove('hidden')">
         <i data-lucide="plus" class="w-4 h-4 mr-2"></i> New Assignment
     </button>
 </header>
@@ -29,43 +30,54 @@
             </div>
             <div>
                 <label class="block text-sm font-medium mb-1">Target Start Date</label>
-                <input type="text" name="target_start_date" class="input" placeholder="DD/MM/YYYY" pattern="\d{2}/\d{2}/\d{4}" title="Format: DD/MM/YYYY" required>
+                <input type="text" name="target_start_date" class="input" placeholder="DD/MM/YYYY"
+                    pattern="\d{2}/\d{2}/\d{4}" title="Format: DD/MM/YYYY" required>
             </div>
             <div>
                 <label class="block text-sm font-medium mb-1">Target End Date</label>
-                <input type="text" name="target_end_date" class="input" placeholder="DD/MM/YYYY" pattern="\d{2}/\d{2}/\d{4}" title="Format: DD/MM/YYYY" required>
+                <input type="text" name="target_end_date" class="input" placeholder="DD/MM/YYYY"
+                    pattern="\d{2}/\d{2}/\d{4}" title="Format: DD/MM/YYYY" required>
             </div>
             <div>
                 <label class="block text-sm font-medium mb-1">Visa Centers to Monitor</label>
                 <div class="space-y-2 p-3 border border-border bg-muted/30 rounded-md">
                     {% for vc in available_centers %}
                     <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" name="visa_center" value="{{ vc.value }}" class="rounded border-zinc-700 bg-black text-indigo-500 focus:ring-indigo-500/20" checked>
+                        <input type="checkbox" name="visa_center" value="{{ vc.value }}"
+                            class="rounded border-zinc-700 bg-black text-indigo-500 focus:ring-indigo-500/20" checked>
                         <span class="text-sm text-zinc-300">{{ vc.name }}</span>
                     </label>
                     {% endfor %}
                 </div>
             </div>
-            
+
             <!-- Required Labels -->
             <div>
                 <label class="block text-sm font-medium mb-1">Required Worker Labels</label>
                 <input type="hidden" name="required_labels" id="hidden-req-labels-input" value=''>
-                <div id="req-labels-container" class="flex flex-wrap gap-2 mb-2 min-h-[38px] p-2 border border-border rounded-md bg-muted/30 items-center">
-                    <span class="text-xs text-muted-foreground italic px-1">No requirements (any worker can run this)</span>
+                <div id="req-labels-container"
+                    class="flex flex-wrap gap-2 mb-2 min-h-[38px] p-2 border border-border rounded-md bg-muted/30 items-center">
+                    <span class="text-xs text-muted-foreground italic px-1">No requirements (any worker can run
+                        this)</span>
                 </div>
                 <div class="flex gap-2">
-                    <input type="text" id="req-key-input" placeholder="Key (e.g. location)" class="input flex-1 text-sm py-1.5 h-9">
-                    <input type="text" id="req-value-input" placeholder="Value (e.g. PK)" class="input flex-1 text-sm py-1.5 h-9" onkeypress="if(event.key === 'Enter'){ event.preventDefault(); addReqLabel(); }">
-                    <button type="button" onclick="addReqLabel()" class="btn btn-secondary px-3 w-10 flex justify-center h-9">
+                    <input type="text" id="req-key-input" placeholder="Key (e.g. location)"
+                        class="input flex-1 text-sm py-1.5 h-9">
+                    <input type="text" id="req-value-input" placeholder="Value (e.g. PK)"
+                        class="input flex-1 text-sm py-1.5 h-9"
+                        onkeypress="if(event.key === 'Enter'){ event.preventDefault(); addReqLabel(); }">
+                    <button type="button" onclick="addReqLabel()"
+                        class="btn btn-secondary px-3 w-10 flex justify-center h-9">
                         <i data-lucide="plus" class="w-4 h-4"></i>
                     </button>
                 </div>
-                <p class="text-xs text-muted-foreground mt-1">If set, only workers matching ALL these labels will be assigned this task.</p>
+                <p class="text-xs text-muted-foreground mt-1">If set, only workers matching ALL these labels will be
+                    assigned this task.</p>
             </div>
-            
+
             <div class="flex justify-end gap-2 mt-6">
-                <button type="button" class="btn btn-secondary border border-border" onclick="document.getElementById('createAssignmentModal').classList.add('hidden')">Cancel</button>
+                <button type="button" class="btn btn-secondary border border-border"
+                    onclick="document.getElementById('createAssignmentModal').classList.add('hidden')">Cancel</button>
                 <button type="submit" class="btn btn-primary" onclick="prepareReqLabelsSubmit()">Create</button>
             </div>
         </form>
@@ -87,44 +99,56 @@
             </div>
             <div>
                 <label class="block text-sm font-medium mb-1">Target Start Date</label>
-                <input type="text" name="target_start_date" id="edit-target-start-date" class="input" placeholder="DD/MM/YYYY" pattern="\d{2}/\d{2}/\d{4}" title="Format: DD/MM/YYYY" required>
+                <input type="text" name="target_start_date" id="edit-target-start-date" class="input"
+                    placeholder="DD/MM/YYYY" pattern="\d{2}/\d{2}/\d{4}" title="Format: DD/MM/YYYY" required>
             </div>
             <div>
                 <label class="block text-sm font-medium mb-1">Target End Date</label>
-                <input type="text" name="target_end_date" id="edit-target-end-date" class="input" placeholder="DD/MM/YYYY" pattern="\d{2}/\d{2}/\d{4}" title="Format: DD/MM/YYYY" required>
+                <input type="text" name="target_end_date" id="edit-target-end-date" class="input"
+                    placeholder="DD/MM/YYYY" pattern="\d{2}/\d{2}/\d{4}" title="Format: DD/MM/YYYY" required>
             </div>
             <div>
                 <label class="block text-sm font-medium mb-1">Visa Centers to Monitor</label>
                 <div class="space-y-2 p-3 border border-border bg-muted/30 rounded-md">
                     {% for vc in available_centers %}
                     <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" name="visa_center" value="{{ vc.value }}" class="edit-visa-center-checkbox rounded border-zinc-700 bg-black text-indigo-500 focus:ring-indigo-500/20">
+                        <input type="checkbox" name="visa_center" value="{{ vc.value }}"
+                            class="edit-visa-center-checkbox rounded border-zinc-700 bg-black text-indigo-500 focus:ring-indigo-500/20">
                         <span class="text-sm text-zinc-300">{{ vc.name }}</span>
                     </label>
                     {% endfor %}
                 </div>
             </div>
-            
+
             <!-- Required Labels -->
             <div>
                 <label class="block text-sm font-medium mb-1">Required Worker Labels</label>
                 <input type="hidden" name="required_labels" id="edit-hidden-req-labels-input" value=''>
-                <div id="edit-req-labels-container" class="flex flex-wrap gap-2 mb-2 min-h-[38px] p-2 border border-border rounded-md bg-muted/30 items-center">
-                    <span class="text-xs text-muted-foreground italic px-1">No requirements (any worker can run this)</span>
+                <div id="edit-req-labels-container"
+                    class="flex flex-wrap gap-2 mb-2 min-h-[38px] p-2 border border-border rounded-md bg-muted/30 items-center">
+                    <span class="text-xs text-muted-foreground italic px-1">No requirements (any worker can run
+                        this)</span>
                 </div>
                 <div class="flex gap-2">
-                    <input type="text" id="edit-req-key-input" placeholder="Key (e.g. location)" class="input flex-1 text-sm py-1.5 h-9">
-                    <input type="text" id="edit-req-value-input" placeholder="Value (e.g. PK)" class="input flex-1 text-sm py-1.5 h-9" onkeypress="if(event.key === 'Enter'){ event.preventDefault(); addEditReqLabel(); }">
-                    <button type="button" onclick="addEditReqLabel()" class="btn btn-secondary px-3 w-10 flex justify-center h-9">
+                    <input type="text" id="edit-req-key-input" placeholder="Key (e.g. location)"
+                        class="input flex-1 text-sm py-1.5 h-9">
+                    <input type="text" id="edit-req-value-input" placeholder="Value (e.g. PK)"
+                        class="input flex-1 text-sm py-1.5 h-9"
+                        onkeypress="if(event.key === 'Enter'){ event.preventDefault(); addEditReqLabel(); }">
+                    <button type="button" onclick="addEditReqLabel()"
+                        class="btn btn-secondary px-3 w-10 flex justify-center h-9">
                         <i data-lucide="plus" class="w-4 h-4"></i>
                     </button>
                 </div>
-                <p class="text-xs text-muted-foreground mt-1">If set, only workers matching ALL these labels will be assigned this task.</p>
+                <p class="text-xs text-muted-foreground mt-1">If set, only workers matching ALL these labels will be
+                    assigned this task.</p>
             </div>
-            
+
             <div class="flex justify-end gap-2 mt-6">
-                <button type="button" class="btn btn-secondary border border-border" onclick="document.getElementById('editAssignmentModal').classList.add('hidden')">Cancel</button>
-                <button type="submit" class="btn btn-primary" onclick="prepareEditReqLabelsSubmit()">Save Changes</button>
+                <button type="button" class="btn btn-secondary border border-border"
+                    onclick="document.getElementById('editAssignmentModal').classList.add('hidden')">Cancel</button>
+                <button type="submit" class="btn btn-primary" onclick="prepareEditReqLabelsSubmit()">Save
+                    Changes</button>
             </div>
         </form>
     </div>
@@ -134,85 +158,105 @@
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse text-sm">
             <thead>
-            <tr class="border-b border-border bg-muted/50">
-                <th class="p-4 font-medium text-muted-foreground">ID</th>
-                <th class="p-4 font-medium text-muted-foreground">Provider</th>
-                <th class="p-4 font-medium text-muted-foreground">Target Date Range</th>
-                <th class="p-4 font-medium text-muted-foreground">Visa Center</th>
-                <th class="p-4 font-medium text-muted-foreground">Status</th>
-                <th class="p-4 font-medium text-muted-foreground">Lease Status</th>
-                <th class="p-4 font-medium text-muted-foreground">Leased To</th>
-                <th class="p-4 font-medium text-muted-foreground">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for asm in assignments %}
-            <tr class="border-b border-border hover:bg-muted/50 transition-colors">
-                <td class="p-4 text-muted-foreground font-mono">
-                    <a href="/assignments/{{ asm.id }}" class="text-blue-500 hover:underline">#{{ asm.id }}</a>
-                </td>
-                <td class="p-4 font-mono">
-                    <span class="px-2 py-0.5 rounded text-xs font-semibold bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">{{ asm.provider }}</span>
-                </td>
-                <td class="p-4 text-foreground font-medium">
-                    {{ asm.date_from }} to {{ asm.date_to }}
-                </td>
-                <td class="p-4 text-muted-foreground">{{ asm.visa_center }}</td>
-                <td class="p-4">
-                    {% if asm.status == 'Leased' %}
-                        <span class="inline-flex items-center rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-500">Leased</span>
-                    {% elif asm.status == 'Active' %}
-                        <span class="inline-flex items-center rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">Idle</span>
-                    {% else %}
-                        <span class="inline-flex items-center rounded-full border border-destructive/20 bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive">{{ asm.status }}</span>
-                    {% endif %}
-                </td>
-                <td class="p-4 text-muted-foreground">
-                    {% if asm.required_labels %}
+                <tr class="border-b border-border bg-muted/50">
+                    <th class="p-4 font-medium text-muted-foreground">ID</th>
+                    <th class="p-4 font-medium text-muted-foreground">Provider</th>
+                    <th class="p-4 font-medium text-muted-foreground">Target Date Range</th>
+                    <th class="p-4 font-medium text-muted-foreground">Visa Center</th>
+                    <th class="p-4 font-medium text-muted-foreground">Status</th>
+                    <th class="p-4 font-medium text-muted-foreground">Lease Status</th>
+                    <th class="p-4 font-medium text-muted-foreground">Leased To</th>
+                    <th class="p-4 font-medium text-muted-foreground">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for asm in assignments %}
+                <tr class="border-b border-border hover:bg-muted/50 transition-colors">
+                    <td class="p-4 text-muted-foreground font-mono">
+                        <a href="/assignments/{{ asm.id }}" class="text-blue-500 hover:underline">#{{ asm.id }}</a>
+                    </td>
+                    <td class="p-4 font-mono">
+                        <span
+                            class="px-2 py-0.5 rounded text-xs font-semibold bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">{{
+                            asm.provider }}</span>
+                    </td>
+                    <td class="p-4 text-foreground font-medium">
+                        {{ asm.date_from }} to {{ asm.date_to }}
+                    </td>
+                    <td class="p-4 text-muted-foreground">{{ asm.visa_center }}</td>
+                    <td class="p-4">
+                        {% if asm.status == 'Leased' %}
+                        <span
+                            class="inline-flex items-center rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-500">Leased</span>
+                        {% elif asm.status == 'Active' %}
+                        <span
+                            class="inline-flex items-center rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">Idle</span>
+                        {% else %}
+                        <span
+                            class="inline-flex items-center rounded-full border border-destructive/20 bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive">{{
+                            asm.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="p-4 text-muted-foreground">
+                        {% if asm.required_labels %}
                         <div class="flex flex-wrap gap-1">
-                        {% for k, v in asm.required_labels.items() %}
-                            <span class="px-1.5 py-0.5 bg-muted border border-border rounded text-[10px] text-foreground">{{ k }}:{{ v }}</span>
-                        {% endfor %}
+                            {% for k, v in asm.required_labels.items() %}
+                            <span
+                                class="px-1.5 py-0.5 bg-muted border border-border rounded text-[10px] text-foreground">{{
+                                k }}:{{ v }}</span>
+                            {% endfor %}
                         </div>
-                    {% else %}
+                        {% else %}
                         <span class="text-xs italic text-muted-foreground">-</span>
-                    {% endif %}
-                </td>
-                <td class="p-4 text-muted-foreground">{{ asm.date_from }} to {{ asm.date_to }}</td>
-                <td class="p-4">
-                    {% if asm.status == 'Leased' %}
-                        <span class="inline-flex items-center rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-500">Leased</span>
-                    {% elif asm.status == 'Active' %}
-                        <span class="inline-flex items-center rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">Idle</span>
-                    {% else %}
-                        <span class="inline-flex items-center rounded-full border border-destructive/20 bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive">{{ asm.status }}</span>
-                    {% endif %}
-                </td>
-                <td class="p-4 font-mono text-xs text-muted-foreground">{{ asm.leased_to_worker[:8] if asm.leased_to_worker else '-' }}</td>
-                <td class="p-4">
-                    <div class="flex items-center gap-2">
-                        <button onclick='openEditAssignmentModal({{ asm.id }}, "{{ asm.provider }}", "{{ asm.date_from }}", "{{ asm.date_to }}", "{{ asm.visa_center }}", {{ asm.required_labels | tojson }})' class="btn btn-secondary text-xs px-2 py-1 flex items-center" title="Edit Assignment">
-                            <i data-lucide="edit-2" class="w-3 h-3 mr-1"></i> Edit
-                        </button>
-                        <form action="/assignments/{{ asm.id }}/reset" method="POST" class="inline" onsubmit="event.preventDefault(); const f = this; uiConfirm('Are you sure you want to reschedule this assignment? This will abort any current active worker lease immediately.').then(c => { if(c) HTMLFormElement.prototype.submit.call(f); });">
-                            <button type="submit" class="btn btn-secondary text-xs px-2 py-1 flex items-center" title="Reset / Reschedule Assignment">
-                                <i data-lucide="refresh-cw" class="w-3 h-3 mr-1"></i> Reschedule
+                        {% endif %}
+                    </td>
+                    <td class="p-4 text-muted-foreground">{{ asm.date_from }} to {{ asm.date_to }}</td>
+                    <td class="p-4">
+                        {% if asm.status == 'Leased' %}
+                        <span
+                            class="inline-flex items-center rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-500">Leased</span>
+                        {% elif asm.status == 'Active' %}
+                        <span
+                            class="inline-flex items-center rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">Idle</span>
+                        {% else %}
+                        <span
+                            class="inline-flex items-center rounded-full border border-destructive/20 bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive">{{
+                            asm.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="p-4 font-mono text-xs text-muted-foreground">{{ asm.leased_to_worker[:8] if
+                        asm.leased_to_worker else '-' }}</td>
+                    <td class="p-4">
+                        <div class="flex items-center gap-2">
+                            <button
+                                onclick='openEditAssignmentModal({{ asm.id }}, "{{ asm.provider }}", "{{ asm.date_from }}", "{{ asm.date_to }}", "{{ asm.visa_center }}", {{ asm.required_labels | tojson }})'
+                                class="btn btn-secondary text-xs px-2 py-1 flex items-center" title="Edit Assignment">
+                                <i data-lucide="edit-2" class="w-3 h-3 mr-1"></i> Edit
                             </button>
-                        </form>
-                        <form action="/assignments/{{ asm.id }}/delete" method="POST" class="inline" onsubmit="event.preventDefault(); const f = this; uiConfirm('Are you sure you want to delete this assignment?').then(c => { if(c) HTMLFormElement.prototype.submit.call(f); });">
-                            <button type="submit" class="btn btn-secondary text-xs px-2 py-1 flex items-center text-destructive hover:bg-destructive/10 border-destructive/20" title="Delete Assignment">
-                                <i data-lucide="trash-2" class="w-3 h-3 mr-1"></i> Delete
-                            </button>
-                        </form>
-                    </div>
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="8" class="p-8 text-center text-muted-foreground">No assignments configured.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
+                            <form action="/assignments/{{ asm.id }}/reset" method="POST" class="inline"
+                                onsubmit="event.preventDefault(); const f = this; uiConfirm('Are you sure you want to reschedule this assignment? This will abort any current active worker lease immediately.').then(c => { if(c) HTMLFormElement.prototype.submit.call(f); });">
+                                <button type="submit" class="btn btn-secondary text-xs px-2 py-1 flex items-center"
+                                    title="Reset / Reschedule Assignment">
+                                    <i data-lucide="refresh-cw" class="w-3 h-3 mr-1"></i> Reschedule
+                                </button>
+                            </form>
+                            <form action="/assignments/{{ asm.id }}/delete" method="POST" class="inline"
+                                onsubmit="event.preventDefault(); const f = this; uiConfirm('Are you sure you want to delete this assignment?').then(c => { if(c) HTMLFormElement.prototype.submit.call(f); });">
+                                <button type="submit"
+                                    class="btn btn-secondary text-xs px-2 py-1 flex items-center text-destructive hover:bg-destructive/10 border-destructive/20"
+                                    title="Delete Assignment">
+                                    <i data-lucide="trash-2" class="w-3 h-3 mr-1"></i> Delete
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="p-8 text-center text-muted-foreground">No assignments configured.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
     </div>
 </div>
@@ -238,7 +282,7 @@
             `;
             container.appendChild(tag);
         }
-        if(window.lucide) window.lucide.createIcons();
+        if (window.lucide) window.lucide.createIcons();
     }
 
     function addReqLabel() {
@@ -282,7 +326,7 @@
             `;
             container.appendChild(tag);
         }
-        if(window.lucide) window.lucide.createIcons();
+        if (window.lucide) window.lucide.createIcons();
     }
 
     function addEditReqLabel() {
@@ -313,12 +357,12 @@
         document.getElementById('edit-provider').value = provider;
         document.getElementById('edit-target-start-date').value = date_from;
         document.getElementById('edit-target-end-date').value = date_to;
-        
+
         // Reset checkboxes
         document.querySelectorAll('.edit-visa-center-checkbox').forEach(cb => {
             cb.checked = false;
         });
-        
+
         // Check selected ones
         if (visa_center) {
             const centers = visa_center.split(',');
@@ -328,10 +372,10 @@
                 }
             });
         }
-        
+
         editReqLabels = labels || {};
         renderEditReqLabels();
-        
+
         document.getElementById('editAssignmentModal').classList.remove('hidden');
     }
 </script>

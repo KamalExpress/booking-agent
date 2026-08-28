@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Booking Tasks - Kamal Express{% endblock %}
+{% block title %}Booking Tasks - KE Agent{% endblock %}
 
 {% block content %}
 <header class="mb-8 flex justify-between items-center">
@@ -8,59 +8,160 @@
         <h2 class="text-3xl font-bold tracking-tight">Booking Tasks</h2>
         <p class="text-muted-foreground mt-1">Event-driven tasks for acquiring available slots</p>
     </div>
+    <div>
+        <button onclick="openOtpModal()" class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 transition-colors">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+            Manual OTP Entry
+        </button>
+    </div>
 </header>
+
+<!-- Manual OTP Modal -->
+<div id="otpModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="card w-full max-w-md p-6 shadow-2xl border border-border">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-foreground">Manual OTP Injection</h3>
+            <button onclick="closeOtpModal()" class="text-muted-foreground hover:text-foreground text-xl">&times;</button>
+        </div>
+        <p class="text-xs text-muted-foreground mb-4">Quickly inject SMS OTP to the active Booker Agent in case of SMS gateway delay.</p>
+        
+        <div class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-muted-foreground mb-1">Target Task ID (Optional)</label>
+                <input id="modalTaskId" type="number" placeholder="Leave empty for latest active task" class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-muted-foreground mb-1">SMS OTP Code</label>
+                <input id="modalOtpCode" type="text" placeholder="e.g. 55613" maxlength="8" class="w-full rounded-md border border-input bg-background px-3 py-2 text-lg font-mono tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            </div>
+            <div id="otpStatusMsg" class="text-xs hidden p-2 rounded"></div>
+            <div class="flex justify-end gap-3 pt-2">
+                <button onclick="closeOtpModal()" class="px-4 py-2 text-sm rounded-md border border-input hover:bg-muted">Cancel</button>
+                <button onclick="submitManualOtp()" class="px-4 py-2 text-sm font-semibold rounded-md bg-emerald-600 text-white hover:bg-emerald-500">Inject OTP</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="card overflow-hidden">
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse text-sm">
             <thead>
-            <tr class="border-b border-border bg-muted/50">
-                <th class="p-4 font-medium text-muted-foreground">ID</th>
-                <th class="p-4 font-medium text-muted-foreground">Provider</th>
-                <th class="p-4 font-medium text-muted-foreground">Target</th>
-                <th class="p-4 font-medium text-muted-foreground">Attempts</th>
-                <th class="p-4 font-medium text-muted-foreground">Status</th>
-                <th class="p-4 font-medium text-muted-foreground">Expires At</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for task in tasks %}
-            <tr class="border-b border-border hover:bg-muted/50 transition-colors">
-                <td class="p-4 text-muted-foreground font-mono">
-                    #{{ task.id }}
-                </td>
-                <td class="p-4 text-foreground font-medium">
-                    {{ task.provider }}
-                </td>
-                <td class="p-4 text-muted-foreground">
-                    <span class="text-foreground font-medium">{{ task.target_date }} at {{ task.target_time }}</span><br>
-                    <span class="text-xs">Center {{ task.visa_center }}</span>
-                </td>
-                <td class="p-4 text-muted-foreground">
-                    {{ task.attempts }}
-                </td>
-                <td class="p-4">
-                    {% if task.status == 'PENDING' %}
+                <tr class="border-b border-border bg-muted/50">
+                    <th class="p-4 font-medium text-muted-foreground">ID</th>
+                    <th class="p-4 font-medium text-muted-foreground">Provider</th>
+                    <th class="p-4 font-medium text-muted-foreground">Target</th>
+                    <th class="p-4 font-medium text-muted-foreground">OTP Code</th>
+                    <th class="p-4 font-medium text-muted-foreground">Status</th>
+                    <th class="p-4 font-medium text-muted-foreground">Reference / Details</th>
+                    <th class="p-4 font-medium text-muted-foreground text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                <tr class="border-b border-border hover:bg-muted/50 transition-colors">
+                    <td class="p-4 text-muted-foreground font-mono">
+                        #{{ task.id }}
+                    </td>
+                    <td class="p-4 text-foreground font-medium">
+                        {{ task.provider }}
+                    </td>
+                    <td class="p-4 text-muted-foreground">
+                        <span class="text-foreground font-medium">{{ task.target_date }} at {{ task.target_time }}</span><br>
+                        <span class="text-xs">Center {{ task.visa_center }}</span>
+                    </td>
+                    <td class="p-4 text-muted-foreground font-mono font-bold">
+                        {{ task.otp_code if task.otp_code else '<span class="text-xs text-muted-foreground/60">Waiting...</span>' | safe }}
+                    </td>
+                    <td class="p-4">
+                        {% if task.status == 'PENDING' %}
                         <span class="inline-flex items-center rounded-full border border-amber-500/20 bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-500">Pending</span>
-                    {% elif task.status == 'CLAIMED' %}
-                        <span class="inline-flex items-center rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-500">Claimed</span>
-                    {% elif task.status == 'SUCCESS' %}
+                        {% elif task.status == 'CLAIMED' or task.status == 'PROCESSING' %}
+                        <span class="inline-flex items-center rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-500">In-Progress</span>
+                        {% elif task.status == 'SUCCESS' %}
                         <span class="inline-flex items-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-500">Success</span>
-                    {% else %}
+                        {% else %}
                         <span class="inline-flex items-center rounded-full border border-destructive/20 bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive">{{ task.status }}</span>
-                    {% endif %}
-                </td>
-                <td class="p-4 text-muted-foreground">
-                    {{ task.expires_at | format_time(ui_timezone, '%Y-%m-%d %H:%M:%S') if task.expires_at else '-' }}
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="6" class="p-8 text-center text-muted-foreground">No booking tasks found.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
+                        {% endif %}
+                    </td>
+                    <td class="p-4 text-muted-foreground text-xs">
+                        {% if task.reference_number %}
+                            <span class="font-mono text-emerald-400 font-bold">{{ task.reference_number }}</span>
+                        {% elif task.failure_reason %}
+                            <span class="text-destructive">{{ task.failure_reason }}</span>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td class="p-4 text-right">
+                        {% if task.status in ['PENDING', 'CLAIMED', 'PROCESSING'] %}
+                        <button onclick="openOtpModal('{{ task.id }}')" class="text-xs px-2.5 py-1 rounded bg-muted hover:bg-emerald-600 hover:text-white transition-colors border border-border">
+                            Enter OTP
+                        </button>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="p-8 text-center text-muted-foreground">No booking tasks found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
     </div>
 </div>
+
+<script>
+function openOtpModal(taskId) {
+    document.getElementById('modalTaskId').value = taskId || '';
+    document.getElementById('modalOtpCode').value = '';
+    const statusMsg = document.getElementById('otpStatusMsg');
+    statusMsg.className = 'text-xs hidden p-2 rounded';
+    statusMsg.innerText = '';
+    const modal = document.getElementById('otpModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.getElementById('modalOtpCode').focus();
+}
+
+function closeOtpModal() {
+    const modal = document.getElementById('otpModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+async function submitManualOtp() {
+    const taskId = document.getElementById('modalTaskId').value;
+    const otpCode = document.getElementById('modalOtpCode').value.trim();
+    const statusMsg = document.getElementById('otpStatusMsg');
+    
+    if (!otpCode) {
+        statusMsg.className = 'text-xs block p-2 rounded bg-destructive/10 text-destructive border border-destructive/20';
+        statusMsg.innerText = 'Please enter a valid OTP code';
+        return;
+    }
+    
+    try {
+        const res = await fetch('/api/v1/webhooks/manual-otp', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ task_id: taskId ? parseInt(taskId) : null, otp_code: otpCode })
+        });
+        const data = await res.json();
+        if (data.status === 'ok') {
+            statusMsg.className = 'text-xs block p-2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+            statusMsg.innerText = data.message;
+            setTimeout(() => { closeOtpModal(); window.location.reload(); }, 1200);
+        } else {
+            statusMsg.className = 'text-xs block p-2 rounded bg-destructive/10 text-destructive border border-destructive/20';
+            statusMsg.innerText = data.message || 'Failed to inject OTP';
+        }
+    } catch (err) {
+        statusMsg.className = 'text-xs block p-2 rounded bg-destructive/10 text-destructive border border-destructive/20';
+        statusMsg.innerText = 'Network error: ' + err.message;
+    }
+}
+</script>
 {% endblock %}

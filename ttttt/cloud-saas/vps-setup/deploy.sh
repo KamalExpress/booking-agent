@@ -5,7 +5,7 @@ set -e
 cd "$(dirname "$0")/.."
 
 echo "================================================"
-echo " Kamal Express SaaS - Production Deployment"
+echo " KE Agent SaaS - Production Deployment"
 echo "================================================"
 
 # Zero-config setup: All keys are hardcoded securely in docker-compose.prod.yml

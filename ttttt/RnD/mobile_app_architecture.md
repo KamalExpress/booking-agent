@@ -1,6 +1,6 @@
 # Mobile Application Feasibility & Architecture
 
-Transitioning the "Kamal Express Appointment Monitor" from a Python Desktop Application to a Mobile App (iOS & Android) is a significant architectural shift. Because of the technologies currently used to bypass Cloudflare and interact with the GVC portal, the application **cannot** simply be packaged into a standalone mobile app. 
+Transitioning the "KE Agent Appointment Monitor" from a Python Desktop Application to a Mobile App (iOS & Android) is a significant architectural shift. Because of the technologies currently used to bypass Cloudflare and interact with the GVC portal, the application **cannot** simply be packaged into a standalone mobile app. 
 
 This document outlines the limitations of the current architecture on mobile, and proposes the optimal path forward.
 

@@ -1,10 +1,10 @@
-# Kamal Express SaaS - Project Context
+# KE Agent SaaS - Project Context
 
-This document serves as a persistent context reference for AI agents working on the Kamal Express platform to avoid re-reading extensive logs and files.
+This document serves as a persistent context reference for AI agents working on the KE Agent platform to avoid re-reading extensive logs and files.
 
 ## Project Overview
 
-Kamal Express is a **distributed browser automation platform**, currently tailored for scraping and booking on visa portals. To bypass aggressive anti-bot protections (like Imperva, Cloudflare, DataDome) that flag traditional cloud IPs (e.g., Hetzner, AWS), the architecture is split into two distinct planes:
+KE Agent is a **distributed browser automation platform**, currently tailored for scraping and booking on visa portals. To bypass aggressive anti-bot protections (like Imperva, Cloudflare, DataDome) that flag traditional cloud IPs (e.g., Hetzner, AWS), the architecture is split into two distinct planes:
 
 ### 1. Cloud SaaS (Control Plane)
 - **Location:** `ttttt/cloud-saas/`

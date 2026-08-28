@@ -1,4 +1,4 @@
-# Session Handoff: Kamal Express Cloud SaaS
+# Session Handoff: KE Agent Cloud SaaS
 
 ## Current State & Context
 We are migrating a Windows Desktop Booking Bot to a **Cloud-based SaaS Application** (FastAPI backend + Vanilla JS/HTML frontend). The bot uses a threaded `SlotMonitorEngine` with Playwright (headless) to constantly scrape a target website for booking slots.

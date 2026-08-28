@@ -20,12 +20,16 @@ def init_db():
                 conn.execute(text("ALTER TABLE slot_availability ADD COLUMN IF NOT EXISTS archived_at TIMESTAMP;"))
                 conn.execute(text("ALTER TABLE slot_availability ADD COLUMN IF NOT EXISTS archived_by_id INTEGER;"))
                 conn.execute(text("ALTER TABLE portal_accounts ADD COLUMN IF NOT EXISTS account_name VARCHAR;"))
+                conn.execute(text("ALTER TABLE portal_accounts ADD COLUMN IF NOT EXISTS phone_number VARCHAR;"))
                 conn.execute(text("ALTER TABLE portal_accounts ADD COLUMN IF NOT EXISTS is_archived BOOLEAN DEFAULT FALSE;"))
                 conn.execute(text("ALTER TABLE portal_accounts ADD COLUMN IF NOT EXISTS archived_at TIMESTAMP;"))
                 conn.execute(text("ALTER TABLE portal_accounts ADD COLUMN IF NOT EXISTS archived_by_id INTEGER;"))
                 conn.execute(text("ALTER TABLE worker_nodes ADD COLUMN IF NOT EXISTS is_archived BOOLEAN DEFAULT FALSE;"))
                 conn.execute(text("ALTER TABLE worker_nodes ADD COLUMN IF NOT EXISTS archived_at TIMESTAMP;"))
                 conn.execute(text("ALTER TABLE worker_nodes ADD COLUMN IF NOT EXISTS archived_by_id INTEGER;"))
+                conn.execute(text("ALTER TABLE booking_tasks ADD COLUMN IF NOT EXISTS reference_number VARCHAR;"))
+                conn.execute(text("ALTER TABLE booking_tasks ADD COLUMN IF NOT EXISTS confirmation_payload JSONB;"))
+                conn.execute(text("ALTER TABLE booking_tasks ADD COLUMN IF NOT EXISTS confirmation_screenshot VARCHAR;"))
                 conn.commit()
         except Exception as e:
             print(f"Self-healing column check warning: {e}")
@@ -101,6 +105,13 @@ def init_db():
             db.commit()
         if not db.query(SystemSetting).filter(SystemSetting.key == "testing.enable_mock_slots").first():
             db.add(SystemSetting(key="testing.enable_mock_slots", value="false", updated_by="system"))
+            db.commit()
+        if not db.query(SystemSetting).filter(SystemSetting.key == "otp.regex_pattern").first():
+            db.add(SystemSetting(
+                key="otp.regex_pattern",
+                value=r"The OTP for your GVCW Appointment is:\s*(\d{4,8})|\b\d{5,6}\b",
+                updated_by="system"
+            ))
             db.commit()
 
         print("Database initialization complete.")

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Event Logs - Kamal Express{% endblock %}
+{% block title %}Event Logs - KE Agent{% endblock %}
 
 {% block content %}
 <header class="mb-8">
@@ -12,41 +12,51 @@
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse text-sm">
             <thead>
-            <tr class="border-b border-zinc-800 bg-zinc-900/50">
-                <th class="p-4 font-medium text-zinc-400">Timestamp</th>
-                <th class="p-4 font-medium text-zinc-400">Source</th>
-                <th class="p-4 font-medium text-zinc-400">Event Type</th>
-                <th class="p-4 font-medium text-zinc-400">Details</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for log in logs %}
-            <tr class="border-b border-zinc-800/50 hover:bg-zinc-900/30 transition-colors">
-                <td class="p-4 text-zinc-500 whitespace-nowrap">{{ log.timestamp | format_time(ui_timezone, '%b %d, %H:%M:%S') }}</td>
-                <td class="p-4">
-                    {% if log.source == 'Scheduler' %}
-                        <span class="inline-flex items-center px-2 py-1 rounded bg-indigo-500/10 text-indigo-400 text-xs font-medium border border-indigo-500/20">Scheduler</span>
-                    {% else %}
-                        <span class="inline-flex items-center px-2 py-1 rounded bg-zinc-500/10 text-zinc-400 text-xs font-medium border border-zinc-500/20 font-mono">{{ log.source }}</span>
-                    {% endif %}
-                </td>
-                <td class="p-4">
-                    {% if log.severity == 'error' %}
-                        <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-red-500/10 text-red-500 text-xs font-medium border border-red-500/20"><i data-lucide="alert-circle" class="w-3.5 h-3.5"></i> {{ log.event_type }}</span>
-                    {% elif log.severity == 'warning' %}
-                        <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-amber-500/10 text-amber-500 text-xs font-medium border border-amber-500/20"><i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> {{ log.event_type }}</span>
-                    {% else %}
-                        <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-emerald-500/10 text-emerald-500 text-xs font-medium border border-emerald-500/20"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> {{ log.event_type }}</span>
-                    {% endif %}
-                </td>
-                <td class="p-4 text-zinc-300 font-mono text-xs">{{ log.details }}</td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="5" class="p-8 text-center text-muted-foreground">No events logged yet.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
+                <tr class="border-b border-zinc-800 bg-zinc-900/50">
+                    <th class="p-4 font-medium text-zinc-400">Timestamp</th>
+                    <th class="p-4 font-medium text-zinc-400">Source</th>
+                    <th class="p-4 font-medium text-zinc-400">Event Type</th>
+                    <th class="p-4 font-medium text-zinc-400">Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr class="border-b border-zinc-800/50 hover:bg-zinc-900/30 transition-colors">
+                    <td class="p-4 text-zinc-500 whitespace-nowrap">{{ log.timestamp | format_time(ui_timezone, '%b %d,
+                        %H:%M:%S') }}</td>
+                    <td class="p-4">
+                        {% if log.source == 'Scheduler' %}
+                        <span
+                            class="inline-flex items-center px-2 py-1 rounded bg-indigo-500/10 text-indigo-400 text-xs font-medium border border-indigo-500/20">Scheduler</span>
+                        {% else %}
+                        <span
+                            class="inline-flex items-center px-2 py-1 rounded bg-zinc-500/10 text-zinc-400 text-xs font-medium border border-zinc-500/20 font-mono">{{
+                            log.source }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="p-4">
+                        {% if log.severity == 'error' %}
+                        <span
+                            class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-red-500/10 text-red-500 text-xs font-medium border border-red-500/20"><i
+                                data-lucide="alert-circle" class="w-3.5 h-3.5"></i> {{ log.event_type }}</span>
+                        {% elif log.severity == 'warning' %}
+                        <span
+                            class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-amber-500/10 text-amber-500 text-xs font-medium border border-amber-500/20"><i
+                                data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> {{ log.event_type }}</span>
+                        {% else %}
+                        <span
+                            class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-emerald-500/10 text-emerald-500 text-xs font-medium border border-emerald-500/20"><i
+                                data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> {{ log.event_type }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="p-4 text-zinc-300 font-mono text-xs">{{ log.details }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="p-8 text-center text-muted-foreground">No events logged yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
     </div>
 </div>

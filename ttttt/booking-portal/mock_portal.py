@@ -83,34 +83,49 @@ def search_slots():
         }
     }), 200
 
-@app.route('/appointments/add', methods=['POST'])
-def book_appointment():
-    vac = request.form.get('vac')
-    type_id = request.form.get('type')
-    periodslot_id = request.form.get('periodslot')
-    captcha = request.form.get('g-recaptcha-response')
-    
-    if captcha != "LOCAL_DUMMY_TOKEN":
-         return jsonify({"error": "Invalid captcha"}), 400
+@app.route('/appointments/add', methods=['GET', 'POST'])
+def appointments_add():
+    # Return HTML containing hidden otpuser
+    html = """
+    <div>
+      <h1><span>My Appointments | Add</span></h1>
+      <form id="appointment" class="classic" onsubmit="return false">
+        <input type="hidden" name="otpuser" id="otpuser" value="User{id=931995, username=test@kamal.com, firstname=TEST, vac=Vac{id=138}}"/>
+      </form>
+    </div>
+    """
+    return html, 200
 
-    print(f"\n--- BOOKING RECEIVED ---")
-    print(f"Slot ID: {periodslot_id}")
-    print(f"Applicant: {request.form.get('applicants[][firstname]')} {request.form.get('applicants[][surname]')}")
-    print(f"Phone: {request.form.get('phonenumber')}")
-    print(f"------------------------\n")
+@app.route('/api/v1/onetimepassword/sendOtpBookAppointment/<phone>/<prefix_id>', methods=['POST'])
+def send_otp_book_appointment(phone, prefix_id):
+    print(f"\n[MockPortal] OTP SMS triggered for Phone: +{prefix_id}-{phone}")
+    return jsonify({"message": "OTP code sent by SMS", "returnobject": None, "code": "SUCCESS"}), 200
+
+@app.route('/api/v1/appointments', methods=['POST'])
+def api_appointments():
+    data = request.get_json() or {}
+    print(f"\n--- [MockPortal] BOOKING JSON RECEIVED ---")
+    print(f"VAC: {data.get('vac')}")
+    print(f"OTP: {data.get('onetimepassword')}")
+    print(f"Applicants: {data.get('applicants')}")
+    print(f"Selected Time: {data.get('selectedtime')}")
+    print(f"-----------------------------------------\n")
     
-    # Mark the slot as unavailable
-    found = False
-    for slot in slots_state:
-        if str(slot['id']) == str(periodslot_id):
-            slot['available'] = False
-            found = True
-            break
-            
-    if not found:
-        return "Slot not found or already booked", 400
+    # Check OTP
+    otp = str(data.get('onetimepassword', ''))
+    if len(otp) < 4:
+        return jsonify({"message": "Mismatch OTP. Please, try again", "returnobject": None, "code": "INVALID"}), 200
         
-    return "Booking Confirmed successfully!", 200
+    ref_code = f"GVCW-PK-ISB-{int(time.time())}"
+    return jsonify({
+        "message": "Success",
+        "returnobject": {
+            "reference": ref_code,
+            "appointmentId": 2528256,
+            "status": "CONFIRMED"
+        },
+        "code": "SUCCESS"
+    }), 200
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)

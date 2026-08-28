@@ -1,5 +1,5 @@
 
-For a SaaS dashboard like Kamal Express, I wouldn't think of this as a **tooltip problem**. I'd think of it as a **contextual help system**.
+For a SaaS dashboard like KE Agent, I wouldn't think of this as a **tooltip problem**. I'd think of it as a **contextual help system**.
 
 A simple tooltip library like Tippy.js is excellent for short hints ("Copy to clipboard", "Last checked 5 minutes ago"), but it's not ideal for:
 

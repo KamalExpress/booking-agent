@@ -1,7 +1,7 @@
 # Architecture Scalability Report
 
 ## Overview
-While the immediate development focus is heavily tailored toward **GVC (Greece)**, the core value of the Kamal Express platform relies on its ability to rapidly onboard new providers such as **VFS Global**, **BLS International**, and **TLScontact**.
+While the immediate development focus is heavily tailored toward **GVC (Greece)**, the core value of the KE Agent platform relies on its ability to rapidly onboard new providers such as **VFS Global**, **BLS International**, and **TLScontact**.
 
 This report outlines the scalability gaps in the current architecture and the adjustments required to seamlessly transition to a multi-portal ecosystem without fragmenting the codebase.
 

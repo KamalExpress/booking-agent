@@ -1,6 +1,6 @@
-# Kamal Express Captcha Spoofer
+# KE Agent Captcha Spoofer
 
-This is an internal Chrome extension for Kamal Express staff members. 
+This is an internal Chrome extension for KE Agent staff members. 
 Because the booking website heavily restricts their Google reCAPTCHA widget to their own domain, the widget will normally fail to load on our SaaS dashboard (`keagent.alamiaconnect.com`). 
 
 This lightweight extension intercepts background requests to Google reCAPTCHA originating from the dashboard and silently overrides the `Origin` and `Referer` headers to spoof the target website. This allows the widget to render properly so staff members can solve the Captchas manually.

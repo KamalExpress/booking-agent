@@ -38,6 +38,7 @@ class RegisterRequest(BaseModel):
     python_version: Optional[str] = None
     max_concurrency: Optional[int] = 1
     labels: Dict[str, str] = {} # e.g. {"system.os": "windows"}
+    supported_providers: List[str] = ["GVC"] # Add providers execution plane abstraction
     can_scrape: bool = True
     can_book: bool = False
 
@@ -84,14 +85,19 @@ async def verify_worker_hmac(
         ts = int(x_timestamp)
         now = int(time.time())
         if abs(now - ts) > 300:
+            print(f"401 Request expired: now={now} ts={ts}")
             raise HTTPException(status_code=401, detail="Request expired")
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid timestamp")
 
     # 2. Look up worker by ID
     worker = db.query(WorkerNode).filter(WorkerNode.worker_id == x_worker_id).first()
-    if not worker or worker.scheduling_state == "Disabled":
-        raise HTTPException(status_code=401, detail="Worker not found or disabled")
+    if not worker:
+        print(f"401 Worker not found: {x_worker_id}")
+        raise HTTPException(status_code=401, detail="Worker not found")
+    if worker.scheduling_state == "Disabled":
+        print(f"401 Worker disabled: {x_worker_id}")
+        raise HTTPException(status_code=401, detail="Worker disabled")
         
     # 3. Reconstruct payload
     body = await request.body()
@@ -105,6 +111,8 @@ async def verify_worker_hmac(
     ).hexdigest()
     
     if not hmac.compare_digest(expected_mac, x_signature):
+        print(f"401 Invalid signature! Expected: {expected_mac}, Got: {x_signature}")
+        print(f"Payload used: {payload}")
         raise HTTPException(status_code=401, detail="Invalid signature")
         
     return worker
@@ -372,7 +380,7 @@ def submit_logs(
             assignment = db.query(Assignment).filter(Assignment.id == req.assignment_id).first()
             if assignment:
                 # Save to SlotAvailability database using the vac_id from the worker payload
-                from models import SlotAvailability, BookingTask, Lease, PortalAccount
+                from models import SlotAvailability, BookingTask
                 found_by_label = worker.worker_id
                 active_lease = db.query(Lease).filter(Lease.worker_id == worker.worker_id, Lease.status.in_(["Leased", "Running", "Pending"])).first()
                 if active_lease and active_lease.portal_account_id:
@@ -435,6 +443,29 @@ def submit_logs(
         if active_assignments:
             assignment_ids = [a.id for a in active_assignments]
             lease_service.cancel_active_leases(assignment_ids)
+
+    elif req.event_type == "BOOKING_SUCCESS":
+        from models import BookingTask
+        task_id = req.assignment_id or (req.payload.get("task_id") if req.payload else None)
+        if task_id:
+            task = db.query(BookingTask).filter(BookingTask.id == task_id).first()
+            if task:
+                task.status = "SUCCESS"
+                task.active_status = False
+                if req.payload:
+                    task.reference_number = req.payload.get("reference_number") or task.reference_number
+                    task.confirmation_payload = req.payload.get("confirmation") or req.payload
+                    task.confirmation_screenshot = req.payload.get("screenshot_path") or req.payload.get("screenshot")
+                send_push_notification(db, "Booking Confirmed!", f"Appointment successfully booked for center {task.visa_center}! Ref: {task.reference_number or 'Confirmed'}", visa_center_id=task.visa_center)
+
+    elif req.event_type == "BOOKING_FAILED":
+        from models import BookingTask
+        task_id = req.assignment_id or (req.payload.get("task_id") if req.payload else None)
+        if task_id:
+            task = db.query(BookingTask).filter(BookingTask.id == task_id).first()
+            if task and req.payload:
+                task.failure_reason = req.payload.get("reason", "Booking failed")
+                task.failure_details = json.dumps(req.payload)
 
     db.commit()
     return {"status": "ok"}

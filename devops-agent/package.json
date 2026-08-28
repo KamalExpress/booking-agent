@@ -1,7 +1,7 @@
 {
   "name": "keagent-devops",
   "version": "1.0.0",
-  "description": "DevOps Automation scripts for Kamal Express",
+  "description": "DevOps Automation scripts for KE Agent",
   "main": "deploy.js",
   "scripts": {
     "deploy:staging": "node deploy.js"

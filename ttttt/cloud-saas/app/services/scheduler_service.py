@@ -82,6 +82,16 @@ class SchedulerService:
         best_account_score = -1
         
         for account in accounts:
+            # Enforce SIM/phone concurrency: if another account shares the same phone_number and is currently LEASED, skip it
+            if account.phone_number:
+                active_sim_lease = self.db.query(PortalAccount).filter(
+                    PortalAccount.phone_number == account.phone_number,
+                    PortalAccount.status == "LEASED",
+                    PortalAccount.id != account.id
+                ).first()
+                if active_sim_lease:
+                    continue
+                    
             score = ScoringPolicy.score_account(account, task.provider)
             if score > best_account_score:
                 best_account_score = score
@@ -112,7 +122,7 @@ class SchedulerService:
         best_proxy_score = -1
         
         for proxy in proxies:
-            score = ScoringPolicy.score_proxy(proxy)
+            score = ScoringPolicy.score_proxy(proxy, task.provider)
             if score > best_proxy_score:
                 best_proxy_score = score
                 best_proxy = proxy
@@ -225,7 +235,7 @@ class SchedulerService:
         best_proxy_score = -1
         
         for proxy in proxies:
-            score = ScoringPolicy.score_proxy(proxy)
+            score = ScoringPolicy.score_proxy(proxy, due_assignment.provider)
             if score > best_proxy_score:
                 best_proxy_score = score
                 best_proxy = proxy
@@ -282,19 +292,23 @@ class SchedulerService:
         ).order_by(WaitlistQueue.priority.desc(), WaitlistQueue.created_at.asc()).with_for_update(skip_locked=True).all()
         
         dispatched_count = 0
+        batch_locked_phones = set()
         for entry in entries:
             if dispatched_count >= slot_count:
                 break
                 
-            # 2. Prevent OTP race condition: check if applicant's phone number is actively locked
+            # 2. Prevent OTP race condition: check if applicant's phone number is actively locked in DB or in current batch
             applicant_phone = entry.applicant.phone_number
+            if applicant_phone in batch_locked_phones:
+                continue
+                
             active_locks = self.db.query(BookingTask).join(Applicant, BookingTask.applicant_id == Applicant.id).filter(
                 BookingTask.status.in_(["PENDING", "CLAIMED"]),
                 Applicant.phone_number == applicant_phone
             ).first()
             
             if active_locks:
-                # Skip this applicant to avoid OTP race condition
+                # Skip this applicant to avoid OTP race condition (will be picked in next drop)
                 continue
                 
             # 3. Generate BookingTask
@@ -316,6 +330,7 @@ class SchedulerService:
             self.db.add(task)
             
             entry.status = "BOOKED"
+            batch_locked_phones.add(applicant_phone)
             self.db.flush() # Flush so subsequent queries in this loop see the new lock
             dispatched_count += 1
             
@@ -333,12 +348,15 @@ class SchedulerService:
         if event_type == "SLOT_FOUND":
             visa_center = details.get("visa_center") if details else None
             slot_count = details.get("slot_count", 1) if details else 1
+            slots = details.get("slots", []) if details else []
+            target_date = details.get("date") if details else None
+            
             if not visa_center and lease.assignment_id:
                 assignment = self.db.query(Assignment).filter_by(id=lease.assignment_id).first()
                 if assignment:
                     visa_center = assignment.visa_center
-            if visa_center:
-                self.auto_dispatch_queue(visa_center, slot_count)
+            if visa_center and slots and target_date:
+                self.auto_dispatch_queue(visa_center, slots, lease.assignment_id, target_date)
                 
         elif event_type == "LOGIN_FAILED":
             if account:

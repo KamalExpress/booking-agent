@@ -72,6 +72,8 @@ Whenever a new operational event, technical term, scheduling decision, or error 
 *Always mirror sprint planning artifacts to `.ai/transient/handoffs/` when closing out a sprint.*
 
 ## 8. Deployment & Migrations Constraints
+- **Auto-Booking / Execution Code:** Any changes related to auto-booking (the execution plane) MUST be kept strictly on `staging`. They MUST pass manual verification before pushing to production. NEVER merge or push to production unless 100% confident.
+- **Scalable Architecture Branch:** The `feature/scalable-arch` branch MUST be deployed to a completely separate endpoint on the VPS (`scalearch.alamiaconnect.com`). It MUST remain separate from both `staging` and `production` until the new architecture handles at least two portals successfully. Only after successful verification across multiple portals can it be merged into `staging`, and only after explicit manual approval can it go to `production`.
 - **Machine Awareness:** Agents MUST check the `Device name` in their User Context metadata or via hostname.
 - **High-End Local Dev (`DESKTOP-5E6DM1M`):** On this specific machine, agents are AUTHORIZED and ENCOURAGED to run local Docker Compose stacks, execute `alembic` migrations, and build containers locally.
   - **SaaS Backend:** `ttttt/cloud-saas/docker-compose.yml`

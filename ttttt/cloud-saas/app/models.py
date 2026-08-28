@@ -142,6 +142,7 @@ class MonitorConfig(Base):
     interval_minutes = Column(Integer, default=5)
     app_type = Column(String, default="26")
     vac_id = Column(String, default="138")
+    provider = Column(String, default="GVC") # Global setting for the primary portal
     is_active = Column(Boolean, default=False) # Switch to easily pause entire global scraping
     is_demo = Column(Boolean, default=False)
 
@@ -150,6 +151,7 @@ class WorkerNode(Base):
     worker_id = Column(String, primary_key=True, index=True)
     secret_hash = Column(String, nullable=False)
     labels = Column(JSONB, default=dict) # e.g., {"system.os": "windows"}
+    supported_providers = Column(JSONB, default=list) # e.g., ["GVC", "VFS"]
     version = Column(String, nullable=True)
     git_commit = Column(String, nullable=True)
     
@@ -241,12 +243,14 @@ class PortalAccount(Base):
     account_name = Column(String, nullable=True) # e.g., "Jameel", "Tayyab"
     username = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
+    phone_number = Column(String, nullable=True) # Linked physical SIM / phone for OTP receipt
     provider = Column(String, default="GVC")
     supports_scraping = Column(Boolean, default=True)
     supports_booking = Column(Boolean, default=False)
     
     status = Column(String, default="READY") # READY, LEASED, COOLDOWN, DISABLED
     health_score = Column(Integer, default=100)
+    provider_health = Column(JSONB, default=dict) # e.g., {"GVC": 100, "VFS": 0}
     failure_count = Column(Integer, default=0)
     cooldown_until = Column(DateTime, nullable=True)
     last_login = Column(DateTime, nullable=True)
@@ -282,6 +286,7 @@ class Proxy(Base):
     
     status = Column(String, default="READY") # READY, LEASED, COOLDOWN, DISABLED
     health_score = Column(Integer, default=100)
+    provider_health = Column(JSONB, default=dict) # e.g., {"GVC": 100, "VFS": 0}
     cooldown_until = Column(DateTime, nullable=True)
     failure_count = Column(Integer, default=0)
     last_used = Column(DateTime, nullable=True)
@@ -331,6 +336,9 @@ class BookingTask(Base):
     
     status = Column(String, default="PENDING") # PENDING, CLAIMED, SUCCESS, FAILED, EXPIRED
     active_status = Column(Boolean, default=True) # Used for unique constraint
+    reference_number = Column(String, nullable=True) # Scraped portal confirmation reference
+    confirmation_payload = Column(JSONB, nullable=True) # Scraped confirmation details JSON
+    confirmation_screenshot = Column(String, nullable=True) # File path or URL to confirmation screenshot/receipt
     failure_reason = Column(String, nullable=True)
     failure_details = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)

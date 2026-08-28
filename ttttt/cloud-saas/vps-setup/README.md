@@ -1,4 +1,4 @@
-# Kamal Express SaaS - VPS Setup
+# KE Agent SaaS - VPS Setup
 
 This folder contains all the files needed to deploy the application on a production VPS (like Hetzner, DigitalOcean) using Docker and a Cloudflare Tunnel.
 

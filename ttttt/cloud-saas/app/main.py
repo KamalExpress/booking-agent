@@ -15,7 +15,7 @@ from models import SessionLocal, engine, Base, User, Tenant, RoleEnum, AuditLog,
 from auth import get_current_user, get_current_user_from_cookie, require_super_admin, require_tenant_admin, create_access_token, verify_password, get_password_hash
 # VAPID setup moved to notifications.py
 
-app = FastAPI(title="Kamal Express SaaS Backend")
+app = FastAPI(title="KE Agent SaaS Backend")
 
 app.add_middleware(
     CORSMiddleware,

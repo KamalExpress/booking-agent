@@ -4,7 +4,7 @@ This document outlines the architectural transition from a Local Desktop Windows
 
 ## 1. Architectural Overview
 
-The "Kamal Express Appointment Monitor" will now run continuously on a cloud VPS. The system is divided into two primary containers:
+The "KE Agent Appointment Monitor" will now run continuously on a cloud VPS. The system is divided into two primary containers:
 1. **Cloud Agent Container:** A Python FastAPI server that wraps the existing Playwright scraping engine. It exposes a REST API and serves the PWA frontend.
 2. **Cloudflare Tunnel Container:** An existing `cloudflared` container (part of the `wp-dev-env` stack) securely exposes the internal FastAPI server to the public internet via `https://silver-stable.samwebdevs.dpdns.org`.
 

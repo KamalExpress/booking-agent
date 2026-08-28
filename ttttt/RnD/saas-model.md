@@ -1,6 +1,6 @@
 # Multi-Tenant SaaS Architecture
 
-Transforming the "Kamal Express Appointment Monitor" from an internal tool into a B2B SaaS (Software as a Service) platform is highly feasible and incredibly lucrative. This model allows you to sell the notification service to other travel agencies or visa consultancies on a monthly subscription.
+Transforming the "KE Agent Appointment Monitor" from an internal tool into a B2B SaaS (Software as a Service) platform is highly feasible and incredibly lucrative. This model allows you to sell the notification service to other travel agencies or visa consultancies on a monthly subscription.
 
 This document outlines the architecture, security, and scaling required for this transition.
 
@@ -20,7 +20,7 @@ To prevent abuse, sharing, and under-the-table dealing, the system requires stri
 | Role | Capabilities |
 | :--- | :--- |
 | **Super Admin** | You (System Owners). Full access to create/suspend Tenants, view global audit logs, manage the core scraping bot, and configure global Captcha APIs. |
-| **Tenant Admin** | e.g., Kamal Express Manager. Can add/remove their own staff members, view tenant-specific audit logs, and manage their subscription/billing. |
+| **Tenant Admin** | e.g., KE Agent Manager. Can add/remove their own staff members, view tenant-specific audit logs, and manage their subscription/billing. |
 | **Staff / Clerk** | Can log into the PWA, view the dashboard, and receive push notifications. **Cannot** add users or change core system settings. |
 
 ## 3. Security & Anti-Abuse Measures
@@ -40,7 +40,7 @@ Moving to a SaaS model requires upgrading our data layer:
 - **Database Transition:** We must replace `config_manager.py` (which uses flat JSON files) with a robust relational database like **PostgreSQL**.
 - **Authentication:** We will implement **JWT (JSON Web Tokens)** in FastAPI for secure, stateless user logins.
 - **Data Isolation:** Every database table (`users`, `settings`, `logs`) will have a `tenant_id` column. The FastAPI backend will strictly filter queries so Tenant A can never see Tenant B's data.
-- **The "Seed" Phase:** We will create a database seeding script that automatically creates the "Super Admin" account and the default "Kamal Express" tenant with your staff accounts upon initial deployment.
+- **The "Seed" Phase:** We will create a database seeding script that automatically creates the "Super Admin" account and the default "KE Agent" tenant with your staff accounts upon initial deployment.
 
 ## Conclusion
 Pivoting to a SaaS model is the smartest long-term strategy. It centralizes the bot's workload, prevents Cloudflare bans, and turns an internal utility into a revenue-generating product. We can easily implement this RBAC system inside the FastAPI backend we are about to build.

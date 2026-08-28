@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Staff Management - Kamal Express{% endblock %}
+{% block title %}Staff Management - KE Agent{% endblock %}
 
 {% block content %}
 <header class="mb-8 flex justify-between items-start">
@@ -8,7 +8,8 @@
         <h2 class="text-3xl font-bold tracking-tight">Staff Management</h2>
         <p class="text-muted-foreground mt-1">Manage users and roles for {{ tenant.name }}</p>
     </div>
-    <button onclick="document.getElementById('addUserModal').classList.remove('hidden')" class="btn btn-primary whitespace-nowrap px-5 py-2.5 h-auto">
+    <button onclick="document.getElementById('addUserModal').classList.remove('hidden')"
+        class="btn btn-primary whitespace-nowrap px-5 py-2.5 h-auto">
         <i data-lucide="user-plus" class="w-4 h-4 mr-2"></i> Add Staff Member
     </button>
 </header>
@@ -41,24 +42,33 @@
                     </td>
                     <td class="px-5 py-4">
                         {% if s.role.value == 'SUPER_ADMIN' %}
-                            <span class="inline-flex items-center rounded bg-indigo-500/10 px-2 py-1 text-xs font-medium text-indigo-400 border border-indigo-500/20">Super Admin</span>
+                        <span
+                            class="inline-flex items-center rounded bg-indigo-500/10 px-2 py-1 text-xs font-medium text-indigo-400 border border-indigo-500/20">Super
+                            Admin</span>
                         {% elif s.role.value == 'TENANT_ADMIN' %}
-                            <span class="inline-flex items-center rounded bg-zinc-800 px-2 py-1 text-xs font-medium text-zinc-300 border border-zinc-700">Admin</span>
+                        <span
+                            class="inline-flex items-center rounded bg-zinc-800 px-2 py-1 text-xs font-medium text-zinc-300 border border-zinc-700">Admin</span>
                         {% else %}
-                            <span class="inline-flex items-center rounded bg-zinc-900 px-2 py-1 text-xs font-medium text-zinc-500 border border-zinc-800">Staff</span>
+                        <span
+                            class="inline-flex items-center rounded bg-zinc-900 px-2 py-1 text-xs font-medium text-zinc-500 border border-zinc-800">Staff</span>
                         {% endif %}
                     </td>
                     <td class="px-5 py-4">
                         {% if s.is_active %}
-                            <span class="inline-flex items-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-500">Active</span>
+                        <span
+                            class="inline-flex items-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-500">Active</span>
                         {% else %}
-                            <span class="inline-flex items-center rounded-full border border-red-500/20 bg-red-500/10 px-2.5 py-0.5 text-xs font-semibold text-red-500">Suspended</span>
+                        <span
+                            class="inline-flex items-center rounded-full border border-red-500/20 bg-red-500/10 px-2.5 py-0.5 text-xs font-semibold text-red-500">Suspended</span>
                         {% endif %}
                     </td>
-                    <td class="px-5 py-4 text-zinc-400">{{ s.created_at | format_time(ui_timezone, '%Y-%m-%d') if s.created_at else '-' }}</td>
+                    <td class="px-5 py-4 text-zinc-400">{{ s.created_at | format_time(ui_timezone, '%Y-%m-%d') if
+                        s.created_at else '-' }}</td>
                     <td class="px-5 py-4 text-right">
                         {% if s.role.value != 'SUPER_ADMIN' %}
-                        <button onclick="openEditUserModal('{{ s.id }}', '{{ s.email }}', '{{ s.full_name or '' }}', '{{ s.role.value }}')" class="text-blue-500 hover:text-blue-400 transition-colors">
+                        <button
+                            onclick="openEditUserModal('{{ s.id }}', '{{ s.email }}', '{{ s.full_name or '' }}', '{{ s.role.value }}')"
+                            class="text-blue-500 hover:text-blue-400 transition-colors">
                             <i data-lucide="edit" class="w-4 h-4"></i>
                         </button>
                         {% endif %}
@@ -79,7 +89,8 @@
     <div class="bg-zinc-900 border border-zinc-700 w-full max-w-md rounded-xl shadow-xl overflow-hidden">
         <div class="px-6 py-4 border-b border-zinc-800 flex justify-between items-center bg-zinc-900/50">
             <h3 class="font-semibold text-lg text-white">Add Staff Member</h3>
-            <button class="text-zinc-500 hover:text-zinc-300 transition-colors" onclick="document.getElementById('addUserModal').classList.add('hidden')">
+            <button class="text-zinc-500 hover:text-zinc-300 transition-colors"
+                onclick="document.getElementById('addUserModal').classList.add('hidden')">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
@@ -87,7 +98,8 @@
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium mb-1 text-zinc-300">Full Name</label>
-                    <input type="text" name="full_name" class="input bg-zinc-950 border-zinc-800 text-white" placeholder="John Doe">
+                    <input type="text" name="full_name" class="input bg-zinc-950 border-zinc-800 text-white"
+                        placeholder="John Doe">
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1 text-zinc-300">Email Address</label>
@@ -102,11 +114,13 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1 text-zinc-300">Password</label>
-                    <input type="password" name="password" class="input bg-zinc-950 border-zinc-800 text-white" required minlength="6">
+                    <input type="password" name="password" class="input bg-zinc-950 border-zinc-800 text-white" required
+                        minlength="6">
                 </div>
             </div>
             <div class="flex justify-end gap-2 mt-6">
-                <button type="button" class="btn border border-zinc-700 text-zinc-300 hover:bg-zinc-800" onclick="document.getElementById('addUserModal').classList.add('hidden')">Cancel</button>
+                <button type="button" class="btn border border-zinc-700 text-zinc-300 hover:bg-zinc-800"
+                    onclick="document.getElementById('addUserModal').classList.add('hidden')">Cancel</button>
                 <button type="submit" class="btn bg-indigo-600 hover:bg-indigo-700 text-white">Create User</button>
             </div>
         </form>
@@ -118,7 +132,8 @@
     <div class="bg-zinc-900 border border-zinc-700 w-full max-w-md rounded-xl shadow-xl overflow-hidden">
         <div class="px-6 py-4 border-b border-zinc-800 flex justify-between items-center bg-zinc-900/50">
             <h3 class="font-semibold text-lg text-white">Edit User</h3>
-            <button class="text-zinc-500 hover:text-zinc-300 transition-colors" onclick="document.getElementById('editUserModal').classList.add('hidden')">
+            <button class="text-zinc-500 hover:text-zinc-300 transition-colors"
+                onclick="document.getElementById('editUserModal').classList.add('hidden')">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
@@ -126,11 +141,13 @@
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium mb-1 text-zinc-300">Full Name</label>
-                    <input type="text" id="editFullName" name="full_name" class="input bg-zinc-950 border-zinc-800 text-white" placeholder="John Doe">
+                    <input type="text" id="editFullName" name="full_name"
+                        class="input bg-zinc-950 border-zinc-800 text-white" placeholder="John Doe">
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1 text-zinc-300">Email Address</label>
-                    <input type="email" id="editEmail" name="email" class="input bg-zinc-950 border-zinc-800 text-white" required>
+                    <input type="email" id="editEmail" name="email" class="input bg-zinc-950 border-zinc-800 text-white"
+                        required>
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1 text-zinc-300">Role</label>
@@ -141,11 +158,13 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1 text-zinc-300">New Password (Optional)</label>
-                    <input type="password" name="password" class="input bg-zinc-950 border-zinc-800 text-white" placeholder="Leave blank to keep current" minlength="6">
+                    <input type="password" name="password" class="input bg-zinc-950 border-zinc-800 text-white"
+                        placeholder="Leave blank to keep current" minlength="6">
                 </div>
             </div>
             <div class="flex justify-end gap-2 mt-6">
-                <button type="button" class="btn border border-zinc-700 text-zinc-300 hover:bg-zinc-800" onclick="document.getElementById('editUserModal').classList.add('hidden')">Cancel</button>
+                <button type="button" class="btn border border-zinc-700 text-zinc-300 hover:bg-zinc-800"
+                    onclick="document.getElementById('editUserModal').classList.add('hidden')">Cancel</button>
                 <button type="submit" class="btn bg-indigo-600 hover:bg-indigo-700 text-white">Save Changes</button>
             </div>
         </form>
@@ -155,12 +174,12 @@
 
 {% block scripts %}
 <script>
-function openEditUserModal(userId, email, fullName, role) {
-    document.getElementById('editUserForm').action = `/users/${userId}/edit`;
-    document.getElementById('editEmail').value = email;
-    document.getElementById('editFullName').value = fullName;
-    document.getElementById('editRole').value = role;
-    document.getElementById('editUserModal').classList.remove('hidden');
-}
+    function openEditUserModal(userId, email, fullName, role) {
+        document.getElementById('editUserForm').action = `/users/${userId}/edit`;
+        document.getElementById('editEmail').value = email;
+        document.getElementById('editFullName').value = fullName;
+        document.getElementById('editRole').value = role;
+        document.getElementById('editUserModal').classList.remove('hidden');
+    }
 </script>
 {% endblock %}

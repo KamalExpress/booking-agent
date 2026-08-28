@@ -1,6 +1,19 @@
 version: '3.8'
 
 services:
+  postgres_dev:
+    image: postgres:15
+    container_name: postgres_dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: booking_saas
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - sam-agent-platform_default
+
   cloud-saas:
     image: cloud-saas:latest
     build: .
@@ -56,9 +69,10 @@ services:
 
 networks:
   sam-agent-platform_default:
-    external: true
+    driver: bridge
 
 volumes:
+  postgres_data:
   cloud_saas_data:
   operator_data:
   booker_data:

@@ -25,6 +25,7 @@ class WorkerService:
             worker_id=worker_id,
             secret_hash=secret,
             labels=req.labels,
+            supported_providers=req.supported_providers,
             version=req.version,
             observed_ip=client_host,
             os=req.os,

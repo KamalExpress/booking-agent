@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Overview - Kamal Express{% endblock %}
+{% block title %}Overview - KE Agent{% endblock %}
 
 {% block content %}
 <header class="mb-8">
@@ -162,7 +162,8 @@
 <div class="mb-4">
     <div class="flex items-center justify-between mb-4">
         <h3 class="text-sm font-bold tracking-widest uppercase text-zinc-500">Visa Centers</h3>
-        <a href="/slots" class="text-xs font-medium text-emerald-400 hover:text-emerald-300 flex items-center gap-1 hover:underline">
+        <a href="/slots"
+            class="text-xs font-medium text-emerald-400 hover:text-emerald-300 flex items-center gap-1 hover:underline">
             <i data-lucide="history" class="w-3.5 h-3.5"></i> Slot Drop History &rarr;
         </a>
     </div>
@@ -203,7 +204,8 @@
                         </div>
                         <div class="grid grid-cols-3 gap-1">
                             {% for slot_item in record.slots_data %}
-                            <span class="text-[10px] font-mono font-bold text-emerald-300 bg-emerald-500/20 border border-emerald-500/30 rounded px-1.5 py-0.5 text-center">
+                            <span
+                                class="text-[10px] font-mono font-bold text-emerald-300 bg-emerald-500/20 border border-emerald-500/30 rounded px-1.5 py-0.5 text-center">
                                 {{ slot_item.starttime if slot_item.starttime else slot_item }}
                             </span>
                             {% endfor %}
@@ -216,8 +218,7 @@
             <div
                 class="relative z-10 flex items-center justify-between text-xs font-medium text-emerald-500/80 border-t border-emerald-500/20 pt-2 mt-2">
                 {% if center.last_checked_time %}
-                <span>Last Checked: <span class="local-time"
-                        data-utc="{{ center.last_checked_time.isoformat() }}Z">{{
+                <span>Last Checked: <span class="local-time" data-utc="{{ center.last_checked_time.isoformat() }}Z">{{
                         center.last_checked_time | format_time(ui_timezone, '%H:%M:%S') }}</span></span>
                 {% else %}
                 <span>Last Checked: Never</span>
@@ -346,9 +347,9 @@
                 if (!rawUtc) return;
                 const utcDate = new Date(rawUtc);
                 if (isNaN(utcDate.getTime())) return;
-                
+
                 const diffMs = Date.now() - utcDate.getTime();
-                
+
                 // Future dates (e.g., assignment expiration)
                 if (diffMs < 0) {
                     const absSecs = Math.floor(Math.abs(diffMs) / 1000);
@@ -386,7 +387,7 @@
                 el.title = utcDate.toLocaleString(); // Hover for exact local time
             });
         }
-        
+
         updateTimes();
         setInterval(updateTimes, 30000);
     });

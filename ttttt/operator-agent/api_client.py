@@ -36,11 +36,12 @@ class SaaSClient:
         with open(cred_path, "w") as f:
             f.write(f"{self.worker_id}:{self.secret}")
 
-    def register(self, hostname="worker", location="unknown", labels=None, can_scrape=True, can_book=False):
+    def register(self, hostname="worker", location="unknown", labels=None, supported_providers=None, can_scrape=True, can_book=False):
         if self.worker_id and self.secret:
             return True
             
         labels = labels or {"system.location": location, "network.type": "residential"}
+        supported_providers = supported_providers or ["GVC"]
         
         try:
             import psutil
@@ -57,6 +58,14 @@ class SaaSClient:
             playwright_version = "Unknown"
             
         import platform
+        if not hostname:
+            hostname = platform.node()
+        self._last_hostname = hostname
+        self._last_can_scrape = can_scrape
+        self._last_can_book = can_book
+        self._last_supported_providers = supported_providers
+
+        labels = {"system.os": platform.system()}
             
         payload = {
             "hostname": hostname,
@@ -71,6 +80,7 @@ class SaaSClient:
             "python_version": platform.python_version(),
             "max_concurrency": 1,
             "labels": labels,
+            "supported_providers": supported_providers,
             "can_scrape": can_scrape,
             "can_book": can_book
         }
@@ -135,19 +145,24 @@ class SaaSClient:
                         "local_ip": "127.0.0.1",
                         "runtime_config_version": cfg_ver
                     })
-                    if res and res.status_code == 200:
+                    if res is not None and res.status_code == 200:
                         data = res.json()
                         if data.get("refresh_runtime_config"):
                             logging.info("SaaS requested runtime config refresh")
                             self.get_runtime_config(force=True)
-                    elif res and res.status_code == 401:
+                    elif res is not None and res.status_code == 401:
                         logging.warning("Heartbeat failed with 401 Unauthorized. Worker missing in SaaS. Re-registering...")
                         self.worker_id = None
                         self.secret = None
-                        cred_path = "data/worker_creds.txt" if os.path.exists("data") else "worker_creds.txt"
+                        cred_path = f"data/{self.cred_file}" if os.path.exists("data") else self.cred_file
                         if os.path.exists(cred_path):
                             os.remove(cred_path)
-                        self.register()
+                        self.register(
+                            hostname=getattr(self, '_last_hostname', None),
+                            can_scrape=getattr(self, '_last_can_scrape', True),
+                            can_book=getattr(self, '_last_can_book', True),
+                            supported_providers=getattr(self, '_last_supported_providers', ["GVC"])
+                        )
                     else:
                         logging.warning("Heartbeat failed")
                 except Exception as e:
@@ -165,7 +180,7 @@ class SaaSClient:
             return self._config_cache
             
         res = self._request("GET", "/api/v1/worker/runtime-config")
-        if not res:
+        if res is None:
             return self._config_cache # Fallback to stale cache if network fails
             
         if res.status_code == 200:
@@ -178,7 +193,7 @@ class SaaSClient:
         
     def get_next_lease(self):
         res = self._request("GET", "/api/v1/worker/assignments/next")
-        if not res:
+        if res is None:
             return None, 30
             
         if res.status_code == 204:

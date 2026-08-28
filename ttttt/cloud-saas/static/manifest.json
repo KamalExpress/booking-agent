@@ -1,5 +1,5 @@
 {
-  "name": "Kamal Express Monitor",
+  "name": "KE Agent Monitor",
   "short_name": "Kamal Monitor",
   "start_url": "/",
   "display": "standalone",

@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Kamal Express - Captcha Spoof",
+  "name": "KE Agent - Captcha Spoof",
   "version": "1.0.0",
   "description": "Spoofs Origin and Referer headers for manual Captcha solving on the SaaS Dashboard.",
   "permissions": [

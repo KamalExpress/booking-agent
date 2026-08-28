@@ -31,7 +31,7 @@ class KamalExpressMonitorApp(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        self.title("Kamal Express Worker Node")
+        self.title("KE Agent Worker Node")
         self.geometry("900x600")
 
         # Set up grid layout (1 row, 2 columns)
@@ -43,7 +43,7 @@ class KamalExpressMonitorApp(ctk.CTk):
         self.sidebar_frame.grid(row=0, column=0, sticky="nsew")
         self.sidebar_frame.grid_rowconfigure(4, weight=1)
 
-        self.logo_label = ctk.CTkLabel(self.sidebar_frame, text="Kamal Express\nWorker Node", font=ctk.CTkFont(size=20, weight="bold"))
+        self.logo_label = ctk.CTkLabel(self.sidebar_frame, text="KE Agent\nWorker Node", font=ctk.CTkFont(size=20, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
 
         self.btn_dashboard = ctk.CTkButton(self.sidebar_frame, text="Execution Logs", command=self.show_dashboard)
