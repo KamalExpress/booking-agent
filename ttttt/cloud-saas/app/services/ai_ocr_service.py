@@ -15,7 +15,10 @@ class AiOcrService:
     DEFAULT_MODEL = "bitnet-b1.58-large"
 
     def __init__(self, api_url: Optional[str] = None, api_key: Optional[str] = None, model: Optional[str] = None):
-        self.api_url = (api_url or os.getenv("BITNET_AI_URL") or self.DEFAULT_API_URL).rstrip("/")
+        raw_url = (api_url or os.getenv("BITNET_SERVER_URL") or os.getenv("BITNET_AI_URL") or self.DEFAULT_API_URL).strip()
+        if not raw_url.startswith("http://") and not raw_url.startswith("https://"):
+            raw_url = f"https://{raw_url}"
+        self.api_url = raw_url.rstrip("/")
         self.api_key = api_key or os.getenv("BITNET_API_KEY") or ""
         self.model = model or os.getenv("BITNET_MODEL_NAME") or self.DEFAULT_MODEL
 
