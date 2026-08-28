@@ -10,7 +10,7 @@ from main_operator import OperatorAgent
 from captcha_service import CapSolverService
 from core.mock_slots import MockSlotGenerator
 
-def generate_dates_between(start_str, end_str):
+def generate_dates_between(start_str, end_str, app_type="26", include_exploratory=True):
     formats = ["%d/%m/%Y", "%Y-%m-%d", "%m/%d/%Y"]
     start_date = None
     end_date = None
@@ -32,8 +32,27 @@ def generate_dates_between(start_str, end_str):
         
     delta = end_date - start_date
     if delta.days < 0:
-        return [start_date.strftime("%d/%m/%Y")]
-    return [(start_date + timedelta(days=i)).strftime("%d/%m/%Y") for i in range(delta.days + 1)]
+        raw_dates = [start_date]
+    else:
+        raw_dates = [start_date + timedelta(days=i) for i in range(delta.days + 1)]
+        
+    # Strictly exclude weekends (Saturday=5, Sunday=6) - Visa centers are closed on weekends
+    all_dates = [d for d in raw_dates if d.weekday() < 5]
+    if not all_dates:
+        return []
+        
+    # GVC Greece Type D (Seasonal/Dependent Employment, code 26) operates on Thursday & Friday only
+    if str(app_type).strip() in ["26", "Type D", "TypeD"]:
+        operating_dates = [d.strftime("%d/%m/%Y") for d in all_dates if d.weekday() in [3, 4]]
+        non_operating_dates = [d.strftime("%d/%m/%Y") for d in all_dates if d.weekday() not in [3, 4]] # Other weekdays (Mon-Wed)
+        
+        # Add 1 exploratory canary check on a non-operating weekday to confirm portal policy without wasting tokens
+        if include_exploratory and non_operating_dates and operating_dates:
+            return operating_dates + [non_operating_dates[0]]
+        elif operating_dates:
+            return operating_dates
+            
+    return [d.strftime("%d/%m/%Y") for d in all_dates]
 
 class SlotMonitorEngine(threading.Thread):
     def __init__(self, base_url: str):
@@ -41,6 +60,7 @@ class SlotMonitorEngine(threading.Thread):
         self.api = SaaSClient(base_url)
         self._stop_event = threading.Event()
         self.executor = ThreadPoolExecutor(max_workers=5)
+        self.active_leases = set()
 
     def stop(self):
         self._stop_event.set()
@@ -52,7 +72,7 @@ class SlotMonitorEngine(threading.Thread):
         # 1. Register with SaaS (with retries in case FastAPI is still booting)
         registered = False
         for attempt in range(10):
-            if self.api.register(hostname="worker-01", can_scrape=True, can_book=False):
+            if self.api.register(hostname="worker-01", can_scrape=True, can_book=False, supported_providers=["GVC"]):
                 registered = True
                 break
             logging.info(f"SaaS not ready yet (Attempt {attempt+1}/10). Retrying in 3 seconds...")
@@ -75,15 +95,28 @@ class SlotMonitorEngine(threading.Thread):
                     self._stop_event.wait(retry_after)
                     continue
                 
-                # Dispatch to Thread Pool
-                self.executor.submit(self._process_lease, lease)
+                lease_id = lease.get("id") or lease.get("assignment_context", {}).get("id")
+                if lease_id in self.active_leases:
+                    # Already executing this lease in another thread; do not spawn duplicates
+                    time.sleep(5)
+                    continue
                 
-                # Small delay to prevent hammering the pull endpoint too fast
-                time.sleep(1)
+                # Dispatch to Thread Pool
+                self.active_leases.add(lease_id)
+                self.executor.submit(self._safe_process_lease, lease, lease_id)
+                
+                # Small delay before polling again
+                time.sleep(5)
                 
             except Exception as e:
                 logging.error(f"Worker Engine loop encountered error: {e}", exc_info=True)
                 time.sleep(5)
+
+    def _safe_process_lease(self, lease, lease_id):
+        try:
+            self._process_lease(lease)
+        finally:
+            self.active_leases.discard(lease_id)
 
     def _process_lease(self, lease):
         try:
@@ -119,6 +152,8 @@ class SlotMonitorEngine(threading.Thread):
             
             if "127.0.0.1" in os.getenv("BOOKING_PORTAL_URL", ""):
                 proxy_string = None
+                
+            logging.info(f"Lease using network proxy: {proxy_string if proxy_string else 'Direct IP (No Proxy)'}")
             
             # Initialize MockCaptchaService if enabled, else CapSolverService
             if os.getenv('USE_MOCK_CAPTCHA', 'False').lower() in ['true', '1']:
@@ -164,14 +199,13 @@ class SlotMonitorEngine(threading.Thread):
                 self.api.report_lease_result(assignment_id, "FAILED", "Login failed or proxy blocked")
                 return
                 
-            self.api.log_event(assignment_id, "LOGIN_SUCCESS", "info", {"username": account["username"]})
-            
-            dates_to_check = generate_dates_between(date_from, date_to)
-            
             centers_to_check = [c.strip() for c in visa_center.split(",") if c.strip()]
             if not centers_to_check:
                 centers_to_check = ["138:26"] # Fallback to Lahore Standard
                 
+            primary_app_type = centers_to_check[0].split(":")[1] if ":" in centers_to_check[0] else "26"
+            dates_to_check = generate_dates_between(date_from, date_to, app_type=primary_app_type)
+            
             slots_found = False
             for target_date in dates_to_check:
                 if self._stop_event.is_set():
