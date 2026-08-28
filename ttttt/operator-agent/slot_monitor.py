@@ -199,6 +199,12 @@ class SlotMonitorEngine(threading.Thread):
                 self.api.report_lease_result(assignment_id, "FAILED", "Login failed or proxy blocked")
                 return
                 
+            # Human-like delay after login before navigating and checking the first slot
+            import random
+            initial_delay = random.uniform(4.0, 8.0)
+            logging.info(f"Login complete. Waiting {initial_delay:.2f}s before initiating first slot check (humanized navigation)...")
+            self._stop_event.wait(initial_delay)
+            
             centers_to_check = [c.strip() for c in visa_center.split(",") if c.strip()]
             if not centers_to_check:
                 centers_to_check = ["138:26"] # Fallback to Lahore Standard
@@ -207,8 +213,9 @@ class SlotMonitorEngine(threading.Thread):
             dates_to_check = generate_dates_between(date_from, date_to, app_type=primary_app_type)
             
             slots_found = False
+            consecutive_403s = 0
             for target_date in dates_to_check:
-                if self._stop_event.is_set():
+                if self._stop_event.is_set() or consecutive_403s >= 3:
                     break
                     
                 for center_str in centers_to_check:
@@ -232,6 +239,7 @@ class SlotMonitorEngine(threading.Thread):
                     # --- END MOCK LOGIC ---
                     
                     if slots_response and slots_response.get("code") == "SUCCESS":
+                        consecutive_403s = 0
                         ret_obj = slots_response.get("returnobject")
                         slots = ret_obj.get("slots", []) if isinstance(ret_obj, dict) else (ret_obj if isinstance(ret_obj, list) else [])
                         
@@ -251,14 +259,25 @@ class SlotMonitorEngine(threading.Thread):
                         logging.warning("Hit 429 Rate Limit. Pausing slot checks for this run.")
                         self.api.log_event(assignment_id, "RATE_LIMIT_HIT", "warning", {"date": target_date})
                         break
+                    elif slots_response and (slots_response.get("status_code") == 403 or slots_response.get("error")):
+                        consecutive_403s += 1
+                        cooling_delay = random.uniform(12.0, 20.0)
+                        logging.warning(f"Slot search hit 403/WAF block (Streak: {consecutive_403s}). Applying cooling backoff of {cooling_delay:.2f}s...")
+                        if consecutive_403s >= 3:
+                            logging.error("Hit 3 consecutive 403 blocks. Pausing assignment run to protect proxy reputation.")
+                            self.api.log_event(assignment_id, "WAF_BLOCK_HIT", "warning", {"consecutive_403": consecutive_403s})
+                            break
+                        self._stop_event.wait(cooling_delay)
+                        continue
+                    else:
+                        consecutive_403s = 0
                     
                     # Prevent hammering the API with a human-like randomized delay between checks
-                    import random
                     delay = random.uniform(min_delay, max_delay)
                     logging.info(f"Waiting {delay:.2f}s before next check...")
                     self._stop_event.wait(delay)
                     
-                if slots_response and slots_response.get("status_code") == 429:
+                if (slots_response and slots_response.get("status_code") == 429) or consecutive_403s >= 3:
                     break
             
             if not slots_found:

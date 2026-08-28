@@ -484,6 +484,8 @@ class OperatorAgent:
             "Sec-Fetch-Site": "same-origin",
             "X-Requested-With": "XMLHttpRequest"
         }
+        if getattr(self, "token", None):
+            slot_headers["Authorization"] = f"Bearer {self.token}"
         
         max_retries = 3
         login_retried = False
@@ -533,8 +535,13 @@ class OperatorAgent:
                         return {"error": True, "status_code": 200, "text": snippet}
                         
                 elif response.status_code in [403, 502, 503, 504, 522]:
-                    logging.warning(f"Received {response.status_code} during search_slots. Retrying... ({attempt+1}/{max_retries})")
-                    time.sleep(3)
+                    import random
+                    retry_delay = random.uniform(5.0, 10.0) * (attempt + 1)
+                    logging.warning(f"Received {response.status_code} during search_slots. Backing off {retry_delay:.2f}s before retry ({attempt+1}/{max_retries})...")
+                    if response.status_code == 403 and attempt == 0:
+                        logging.info("Received 403 on slot search: Attempting to refresh WAF cookies via Playwright...")
+                        self.refresh_waf_cookies()
+                    time.sleep(retry_delay)
                     continue
                 elif response.status_code == 401:
                     if not login_retried:

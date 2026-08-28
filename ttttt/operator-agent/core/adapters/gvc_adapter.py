@@ -346,6 +346,8 @@ class GVCAdapter(BasePortalAdapter):
             "Sec-Fetch-Site": "same-origin",
             "X-Requested-With": "XMLHttpRequest"
         }
+        if getattr(self, "token", None):
+            slot_headers["Authorization"] = f"Bearer {self.token}"
         
         try:
             # Using the passed in session, or self.session if None
