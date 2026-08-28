@@ -622,3 +622,12 @@ def get_agent_monitor_logs(db: Session = Depends(get_db)):
 
 static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+try:
+    from mcp_server import mcp
+    # Get the Starlette app configured for SSE
+    mcp_app = mcp.sse_app("/mcp")
+    app.mount("/mcp", mcp_app)
+    print("Mounted FastMCP at /mcp")
+except Exception as e:
+    print(f"Failed to mount FastMCP: {e}")
