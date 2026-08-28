@@ -515,8 +515,10 @@ class OperatorAgent:
                         snippet = response.text[:200] if response.text else "<empty>"
                         logging.warning(f"Failed to parse slots JSON (status 200, length {len(response.text or '')}, start: {snippet!r}): {json_err}")
                         if "_incapsula_resource" in snippet.lower():
-                            logging.error("Imperva WAF JavaScript challenge detected on slot search.")
-                            return {"error": True, "status_code": 403, "text": "Imperva WAF challenge"}
+                            logging.error("Imperva WAF JavaScript challenge detected on slot search. Attempting to solve via Playwright...")
+                            self.refresh_waf_cookies()
+                            time.sleep(2)
+                            continue
                         if "<html" in snippet.lower() or "login" in snippet.lower() or not response.text:
                             if not login_retried:
                                 logging.info("HTML/empty response received on 200 OK. Re-authenticating once...")

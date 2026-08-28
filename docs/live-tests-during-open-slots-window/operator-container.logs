@@ -1,56 +1,100 @@
-Starting Headless Worker Node connecting to http://cloud-saas-prod:8000...
-2026-08-28 19:37:23,359 - INFO - Loaded existing worker credentials: worker_5cc74783
-2026-08-28 19:37:23,360 - root - INFO - Starting Worker Node Scheduler Engine (Parallel Mode)...
-2026-08-28 19:37:23,360 - INFO - Starting Worker Node Scheduler Engine (Parallel Mode)...
-2026-08-28 19:37:23,366 - root - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/heartbeat (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
-2026-08-28 19:37:23,366 - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/heartbeat (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
-2026-08-28 19:37:23,366 - root - WARNING - Heartbeat failed
-2026-08-28 19:37:23,366 - WARNING - Heartbeat failed
-2026-08-28 19:37:23,367 - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/assignments/next (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
-2026-08-28 19:37:23,367 - INFO - No assignments available. Sleeping for 30 seconds.
-2026-08-28 19:37:23,367 - root - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/assignments/next (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
-2026-08-28 19:37:23,367 - root - INFO - No assignments available. Sleeping for 30 seconds.
-2026-08-28 19:37:26,368 - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/stream-logs (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
-2026-08-28 19:37:26,368 - root - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/stream-logs (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
-2026-08-28 19:37:29,376 - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/stream-logs (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
-2026-08-28 19:37:29,376 - root - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/stream-logs (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
-2026-08-28 19:37:53,481 - root - INFO - No assignments available. Sleeping for 30 seconds.
-2026-08-28 19:37:53,481 - INFO - No assignments available. Sleeping for 30 seconds.
-2026-08-28 19:37:53,514 - root - INFO - SaaS requested runtime config refresh
-2026-08-28 19:37:53,514 - INFO - SaaS requested runtime config refresh
-2026-08-28 19:38:23,657 - INFO - [Thread] Received Assignment #13 for center 138:26,137:26.
-2026-08-28 19:38:23,657 - root - INFO - [Thread] Received Assignment #13 for center 138:26,137:26.
-2026-08-28 19:38:23,658 - INFO - Lease using network proxy: http://user-spbisytqkz-asn-17557:GuiSe08Bwcg2~ciC3b@gate.decodo.com:10007
-2026-08-28 19:38:23,658 - root - INFO - Lease using network proxy: http://user-spbisytqkz-asn-17557:GuiSe08Bwcg2~ciC3b@gate.decodo.com:10007
-2026-08-28 19:38:23,734 - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
-2026-08-28 19:38:23,734 - root - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
-2026-08-28 19:38:23,737 - root - INFO - Executing login flow for account mnoon2404@gmail.com...
-2026-08-28 19:38:23,737 - root - INFO - No JWT Bearer token present. Must login to authenticate.
-2026-08-28 19:38:23,737 - INFO - Executing login flow for account mnoon2404@gmail.com...
-2026-08-28 19:38:23,737 - INFO - No JWT Bearer token present. Must login to authenticate.
-2026-08-28 19:38:23,737 - INFO - Attempting login for mnoon2404@gmail.com...
-2026-08-28 19:38:23,737 - INFO - Executing pre-flight navigation to establish WAF trust...
-2026-08-28 19:38:23,737 - root - INFO - Attempting login for mnoon2404@gmail.com...
-2026-08-28 19:38:23,737 - root - INFO - Executing pre-flight navigation to establish WAF trust...
-2026-08-28 19:38:25,623 - INFO - Pre-flight status: 200, cookies received: ['incap_ses_7748_3343172', 'visid_incap_3343172']
-2026-08-28 19:38:25,623 - root - INFO - Pre-flight status: 200, cookies received: ['incap_ses_7748_3343172', 'visid_incap_3343172']
-2026-08-28 19:38:25,624 - root - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
-2026-08-28 19:38:25,624 - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
-2026-08-28 19:38:25,930 - root - INFO - CapSolver job submitted successfully. Task ID: c8873cc5-db43-4185-8d97-822f7a02d8f3
-2026-08-28 19:38:25,930 - INFO - CapSolver job submitted successfully. Task ID: c8873cc5-db43-4185-8d97-822f7a02d8f3
-2026-08-28 19:38:25,931 - INFO - Polling for CapSolver completion... (Max 150 seconds)
-2026-08-28 19:38:25,931 - root - INFO - Polling for CapSolver completion... (Max 150 seconds)
-2026-08-28 19:38:43,288 - root - INFO - CapSolver solved the CAPTCHA successfully!
-2026-08-28 19:38:43,288 - INFO - CapSolver solved the CAPTCHA successfully!
-2026-08-28 19:38:43,829 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
-2026-08-28 19:38:43,829 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
-2026-08-28 19:38:47,307 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
-2026-08-28 19:38:47,307 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
-2026-08-28 19:38:50,881 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
-2026-08-28 19:38:50,881 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
-2026-08-28 19:38:50,882 - root - ERROR - Login failed or blocked. Discarding assignment lease.
-2026-08-28 19:38:50,882 - ERROR - Login failed or blocked. Discarding assignment lease.
-2026-08-28 19:38:51,121 - INFO - Transmitted 4 network logs to SaaS.
-2026-08-28 19:38:51,121 - root - INFO - Transmitted 4 network logs to SaaS.
-2026-08-28 19:38:54,047 - root - INFO - No assignments available. Sleeping for 30 seconds.
-2026-08-28 19:38:54,047 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-08-28 20:28:59,114 - INFO - Form Data (Payload) sent: {'datefrom': '25/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-08-28 20:28:59,114 - root - INFO - Form Data (Payload) sent: {'datefrom': '25/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-08-28 20:29:10,036 - WARNING - Received 403 during search_slots. Retrying... (1/3)
+2026-08-28 20:29:10,036 - root - WARNING - Received 403 during search_slots. Retrying... (1/3)
+2026-08-28 20:29:20,958 - root - WARNING - Failed to parse slots JSON (status 200, length 850, start: '<html style="height:100%"><head><META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW"><meta name="format-detection" content="telephone=no"><meta name="viewport" content="initial-scale=1.0"><meta http-equiv='): Expecting value: line 1 column 1 (char 0)
+2026-08-28 20:29:20,958 - WARNING - Failed to parse slots JSON (status 200, length 850, start: '<html style="height:100%"><head><META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW"><meta name="format-detection" content="telephone=no"><meta name="viewport" content="initial-scale=1.0"><meta http-equiv='): Expecting value: line 1 column 1 (char 0)
+2026-08-28 20:29:20,959 - INFO - HTML/empty response received on 200 OK. Re-authenticating once...
+2026-08-28 20:29:20,959 - root - INFO - HTML/empty response received on 200 OK. Re-authenticating once...
+2026-08-28 20:29:20,960 - root - INFO - Cleared expired session cookies file.
+2026-08-28 20:29:20,960 - INFO - Cleared expired session cookies file.
+2026-08-28 20:29:20,961 - root - INFO - No JWT Bearer token present. Must login to authenticate.
+2026-08-28 20:29:20,961 - INFO - No JWT Bearer token present. Must login to authenticate.
+2026-08-28 20:29:20,961 - root - INFO - Attempting login for mnoon2404@gmail.com...
+2026-08-28 20:29:20,961 - INFO - Attempting login for mnoon2404@gmail.com...
+2026-08-28 20:29:20,961 - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-08-28 20:29:20,961 - root - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-08-28 20:29:28,224 - INFO - Pre-flight status: 200, cookies received: ['incap_ses_796_3343172', 'visid_incap_3343172']
+2026-08-28 20:29:28,224 - root - INFO - Pre-flight status: 200, cookies received: ['incap_ses_796_3343172', 'visid_incap_3343172']
+2026-08-28 20:29:28,224 - root - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-08-28 20:29:28,224 - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-08-28 20:29:28,433 - root - INFO - CapSolver job submitted successfully. Task ID: b68595db-c775-4fa4-88c3-82d89996e212
+2026-08-28 20:29:28,434 - root - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-08-28 20:29:28,433 - INFO - CapSolver job submitted successfully. Task ID: b68595db-c775-4fa4-88c3-82d89996e212
+2026-08-28 20:29:28,434 - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-08-28 20:29:40,318 - INFO - CapSolver solved the CAPTCHA successfully!
+2026-08-28 20:29:40,318 - root - INFO - CapSolver solved the CAPTCHA successfully!
+2026-08-28 20:29:52,225 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html style="height:100%"><head><META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW"><meta name="format-detection" content="telephone=no"><meta name="viewp'
+2026-08-28 20:29:52,225 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html style="height:100%"><head><META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW"><meta name="format-detection" content="telephone=no"><meta name="viewp'
+2026-08-28 20:30:01,916 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html style="height:100%"><head><META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW"><meta name="format-detection" content="telephone=no"><meta name="viewp'
+2026-08-28 20:30:01,916 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html style="height:100%"><head><META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW"><meta name="format-detection" content="telephone=no"><meta name="viewp'
+2026-08-28 20:30:11,205 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html style="height:100%"><head><META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW"><meta name="format-detection" content="telephone=no"><meta name="viewp'
+2026-08-28 20:30:11,205 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html style="height:100%"><head><META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW"><meta name="format-detection" content="telephone=no"><meta name="viewp'
+2026-08-28 20:30:16,847 - WARNING - Failed to parse slots JSON (status 200, length 967, start: '<html style="height:100%"><head><META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW"><meta name="format-detection" content="telephone=no"><meta name="viewport" content="initial-scale=1.0"><meta http-equiv='): Expecting value: line 1 column 1 (char 0)
+2026-08-28 20:30:16,847 - ERROR - Already re-authenticated once; aborting search_slots retry.
+2026-08-28 20:30:16,847 - root - WARNING - Failed to parse slots JSON (status 200, length 967, start: '<html style="height:100%"><head><META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW"><meta name="format-detection" content="telephone=no"><meta name="viewport" content="initial-scale=1.0"><meta http-equiv='): Expecting value: line 1 column 1 (char 0)
+2026-08-28 20:30:16,847 - root - ERROR - Already re-authenticated once; aborting search_slots retry.
+2026-08-28 20:30:16,848 - root - INFO - Waiting 6.89s before next check...
+2026-08-28 20:30:16,848 - INFO - Waiting 6.89s before next check...
+2026-08-28 20:30:23,741 - root - INFO - Checking slots for 25/09/2026 at VAC 137 (Type 26)...
+2026-08-28 20:30:23,742 - root - INFO - Searching for slots from 25/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-08-28 20:30:23,742 - root - INFO - Form Data (Payload) sent: {'datefrom': '25/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-08-28 20:30:23,741 - INFO - Checking slots for 25/09/2026 at VAC 137 (Type 26)...
+2026-08-28 20:30:23,742 - INFO - Searching for slots from 25/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-08-28 20:30:23,742 - INFO - Form Data (Payload) sent: {'datefrom': '25/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-08-28 20:30:25,924 - root - WARNING - Failed to parse slots JSON (status 200, length 963, start: '<html style="height:100%"><head><META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW"><meta name="format-detection" content="telephone=no"><meta name="viewport" content="initial-scale=1.0"><meta http-equiv='): Expecting value: line 1 column 1 (char 0)
+2026-08-28 20:30:25,924 - WARNING - Failed to parse slots JSON (status 200, length 963, start: '<html style="height:100%"><head><META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW"><meta name="format-detection" content="telephone=no"><meta name="viewport" content="initial-scale=1.0"><meta http-equiv='): Expecting value: line 1 column 1 (char 0)
+2026-08-28 20:30:25,925 - INFO - HTML/empty response received on 200 OK. Re-authenticating once...
+2026-08-28 20:30:25,925 - root - INFO - HTML/empty response received on 200 OK. Re-authenticating once...
+2026-08-28 20:30:25,925 - root - INFO - No JWT Bearer token present. Must login to authenticate.
+2026-08-28 20:30:25,925 - INFO - No JWT Bearer token present. Must login to authenticate.
+2026-08-28 20:30:25,926 - INFO - Attempting login for mnoon2404@gmail.com...
+2026-08-28 20:30:25,926 - root - INFO - Attempting login for mnoon2404@gmail.com...
+2026-08-28 20:30:25,926 - root - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-08-28 20:30:25,926 - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-08-28 20:30:26,799 - root - INFO - Pre-flight status: 200, cookies received: ['incap_ses_796_3343172', 'visid_incap_3343172']
+2026-08-28 20:30:26,799 - INFO - Pre-flight status: 200, cookies received: ['incap_ses_796_3343172', 'visid_incap_3343172']
+2026-08-28 20:30:26,800 - root - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-08-28 20:30:26,800 - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-08-28 20:30:27,017 - root - INFO - CapSolver job submitted successfully. Task ID: cfe4c413-c15e-4964-8097-94303facc384
+2026-08-28 20:30:27,018 - root - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-08-28 20:30:27,017 - INFO - CapSolver job submitted successfully. Task ID: cfe4c413-c15e-4964-8097-94303facc384
+2026-08-28 20:30:27,018 - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-08-28 20:30:38,876 - root - INFO - CapSolver solved the CAPTCHA successfully!
+2026-08-28 20:30:38,876 - INFO - CapSolver solved the CAPTCHA successfully!
+2026-08-28 20:30:39,941 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html style="height:100%"><head><META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW"><meta name="format-detection" content="telephone=no"><meta name="viewp'
+2026-08-28 20:30:39,941 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html style="height:100%"><head><META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW"><meta name="format-detection" content="telephone=no"><meta name="viewp'
+2026-08-28 20:30:43,524 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 20:30:43,524 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 20:30:47,105 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 20:30:47,105 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 20:30:49,639 - WARNING - Failed to parse slots JSON (status 200, length 212, start: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31c8e3a6e6fffd425f7e032f3">\r\n</script>\r\n<body>\r\n</bo'): Expecting value: line 1 column 1 (char 0)
+2026-08-28 20:30:49,639 - ERROR - Imperva WAF JavaScript challenge detected on slot search.
+2026-08-28 20:30:49,639 - root - WARNING - Failed to parse slots JSON (status 200, length 212, start: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31c8e3a6e6fffd425f7e032f3">\r\n</script>\r\n<body>\r\n</bo'): Expecting value: line 1 column 1 (char 0)
+2026-08-28 20:30:49,639 - root - ERROR - Imperva WAF JavaScript challenge detected on slot search.
+2026-08-28 20:30:49,639 - root - INFO - Waiting 7.17s before next check...
+2026-08-28 20:30:49,639 - INFO - Waiting 7.17s before next check...
+2026-08-28 20:30:56,811 - root - INFO - Checking slots for 15/09/2026 at VAC 138 (Type 26)...
+2026-08-28 20:30:56,812 - root - INFO - Searching for slots from 15/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-08-28 20:30:56,811 - INFO - Checking slots for 15/09/2026 at VAC 138 (Type 26)...
+2026-08-28 20:30:56,812 - INFO - Searching for slots from 15/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-08-28 20:30:56,812 - INFO - Form Data (Payload) sent: {'datefrom': '15/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-08-28 20:30:56,812 - root - INFO - Form Data (Payload) sent: {'datefrom': '15/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 138}}
+2026-08-28 20:30:58,668 - WARNING - Failed to parse slots JSON (status 200, length 212, start: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31c8e3a6e6fffd425f7e032f3">\r\n</script>\r\n<body>\r\n</bo'): Expecting value: line 1 column 1 (char 0)
+2026-08-28 20:30:58,668 - ERROR - Imperva WAF JavaScript challenge detected on slot search.
+2026-08-28 20:30:58,668 - root - WARNING - Failed to parse slots JSON (status 200, length 212, start: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31c8e3a6e6fffd425f7e032f3">\r\n</script>\r\n<body>\r\n</bo'): Expecting value: line 1 column 1 (char 0)
+2026-08-28 20:30:58,668 - root - ERROR - Imperva WAF JavaScript challenge detected on slot search.
+2026-08-28 20:30:58,669 - INFO - Waiting 4.88s before next check...
+2026-08-28 20:30:58,669 - root - INFO - Waiting 4.88s before next check...
+2026-08-28 20:31:03,547 - INFO - Checking slots for 15/09/2026 at VAC 137 (Type 26)...
+2026-08-28 20:31:03,547 - root - INFO - Checking slots for 15/09/2026 at VAC 137 (Type 26)...
+2026-08-28 20:31:03,548 - INFO - Searching for slots from 15/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-08-28 20:31:03,548 - root - INFO - Searching for slots from 15/09/2026... Endpoint: https://pk-gr-services.gvcworld.eu/api/v1/periodslot/slots
+2026-08-28 20:31:03,548 - INFO - Form Data (Payload) sent: {'datefrom': '15/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-08-28 20:31:03,548 - root - INFO - Form Data (Payload) sent: {'datefrom': '15/09/2026', 'type': 26, 'bookingfor': 0, 'members': 1, 'method': 1, 'travelpurposes': -1, 'howmanyapplicantsareunder12': 0, 'appointmentId': 'undefined', 'id': 0, 'vac': {'id': 137}}
+2026-08-28 20:31:10,832 - WARNING - Failed to parse slots JSON (status 200, length 212, start: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31c8e3a6e6fffd425f7e032f3">\r\n</script>\r\n<body>\r\n</bo'): Expecting value: line 1 column 1 (char 0)
+2026-08-28 20:31:10,832 - root - WARNING - Failed to parse slots JSON (status 200, length 212, start: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31c8e3a6e6fffd425f7e032f3">\r\n</script>\r\n<body>\r\n</bo'): Expecting value: line 1 column 1 (char 0)
+2026-08-28 20:31:10,833 - root - ERROR - Imperva WAF JavaScript challenge detected on slot search.
+2026-08-28 20:31:10,833 - ERROR - Imperva WAF JavaScript challenge detected on slot search.
+2026-08-28 20:31:10,833 - root - INFO - Waiting 7.76s before next check...
+2026-08-28 20:31:10,833 - INFO - Waiting 7.76s before next check...

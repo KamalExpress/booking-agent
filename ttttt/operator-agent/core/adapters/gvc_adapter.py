@@ -366,9 +366,14 @@ class GVCAdapter(BasePortalAdapter):
                     return []
                 except Exception as json_err:
                     logging.warning(f"GVCAdapter: Non-JSON response in search_slots ({json_err}).")
+                    if "_incapsula_resource" in (response.text or "").lower():
+                        logging.error("GVCAdapter: Imperva WAF challenge detected in search_slots. Refreshing WAF cookies via Playwright...")
+                        self.refresh_waf_cookies()
                     return None
             elif response.status_code in [401, 403]:
                 logging.error(f"GVCAdapter: search_slots hit WAF/Auth error ({response.status_code})")
+                if response.status_code == 403:
+                    self.refresh_waf_cookies()
                 return None
             else:
                 logging.warning(f"GVCAdapter: Unexpected status code {response.status_code} in search_slots")
