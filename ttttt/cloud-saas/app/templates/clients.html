@@ -489,6 +489,9 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
     </div>
 </div>
 
+<!-- Tesseract.js for high-speed client-side passport OCR -->
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
 <script>
 function openAiScanModal() {
     document.getElementById('aiScanModal').classList.remove('hidden');
@@ -499,23 +502,55 @@ function closeAiScanModal() {
     document.getElementById('aiScanModal').classList.add('hidden');
 }
 
-function handleAiFileSelected(input) {
+async function handleAiFileSelected(input) {
     if (input.files && input.files[0]) {
         const file = input.files[0];
         document.getElementById('aiUploadPrompt').classList.add('hidden');
         document.getElementById('aiImagePreviewContainer').classList.remove('hidden');
         document.getElementById('aiImageFilename').innerText = file.name;
         
+        const loading = document.getElementById('aiParseLoading');
+        const errorBox = document.getElementById('aiParseError');
+        const successBox = document.getElementById('aiParseSuccess');
+        const rawTextArea = document.getElementById('aiRawTextInput');
+        
+        errorBox.classList.add('hidden');
+        successBox.classList.add('hidden');
+        
         if (file.type.startsWith('image/')) {
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = async function(e) {
                 document.getElementById('aiImagePreview').src = e.target.result;
+                
+                // 1. Run fast client-side OCR on image
+                loading.classList.remove('hidden');
+                loading.querySelector('span').innerText = 'Scanning text from passport image (OCR)...';
+                
+                try {
+                    if (window.Tesseract) {
+                        const { data: { text } } = await Tesseract.recognize(e.target.result, 'eng', {
+                            logger: m => {
+                                if (m.status === 'recognizing text') {
+                                    loading.querySelector('span').innerText = `Scanning document (${Math.round(m.progress * 100)}%)...`;
+                                }
+                            }
+                        });
+                        if (text && text.trim()) {
+                            rawTextArea.value = text.trim();
+                        }
+                    }
+                } catch (ocrErr) {
+                    console.warn("Client OCR warning:", ocrErr);
+                }
+                
+                // 2. Run AI Parsing with extracted text and file
+                loading.querySelector('span').innerText = 'Extracting applicant fields via AI...';
+                runAiDocumentParse();
             };
             reader.readAsDataURL(file);
+        } else {
+            runAiDocumentParse();
         }
-        
-        // Auto trigger extraction
-        runAiDocumentParse();
     }
 }
 

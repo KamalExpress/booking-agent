@@ -12,7 +12,7 @@ class AiOcrService:
     """
     
     DEFAULT_API_URL = "https://ai.alamiaconnect.com"
-    DEFAULT_MODEL = "bitnet-b1.58-large"
+    DEFAULT_MODEL = "llama3.2_3b_instruct"
 
     def __init__(self, api_url: Optional[str] = None, api_key: Optional[str] = None, model: Optional[str] = None):
         raw_url = (api_url or os.getenv("BITNET_SERVER_URL") or os.getenv("BITNET_AI_URL") or self.DEFAULT_API_URL).strip()
