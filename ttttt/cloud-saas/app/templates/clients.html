@@ -569,6 +569,7 @@ async function runAiDocumentParse() {
             if (d.phone_number) document.getElementById('ai_phone_number').value = d.phone_number;
             if (d.email) document.getElementById('ai_email').value = d.email;
             if (d.nationality) document.getElementById('ai_nationality').value = d.nationality;
+            if (d.raw_text_snippet) document.getElementById('aiRawTextInput').value = d.raw_text_snippet;
             
             successBox.classList.remove('hidden');
             if (window.lucide) lucide.createIcons();

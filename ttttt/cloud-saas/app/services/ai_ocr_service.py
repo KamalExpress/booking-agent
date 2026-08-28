@@ -223,6 +223,19 @@ class AiOcrService:
         
         email = str(data.get("email", "")).strip().lower()
         
+        # Generate formatted summary blurb if original_text is short/image tag
+        blurb = original_text
+        if not blurb or blurb.startswith("[Image Document"):
+            blurb = (
+                f"Applicant Name: {firstname} {surname}\n"
+                f"Passport No: {passportnumber}\n"
+                f"DOB: {dob}\n"
+                f"Passport Expiry: {expiry}\n"
+                f"Gender: {'Male' if gender == '1' else 'Female'}\n"
+                f"Mobile: +{prefix_raw} {phone_clean}\n"
+                f"Email: {email if email else 'N/A'}"
+            )
+        
         return {
             "firstname": firstname,
             "surname": surname,
@@ -234,7 +247,7 @@ class AiOcrService:
             "phone_prefix": prefix_raw,
             "phone_number": phone_clean,
             "email": email,
-            "raw_text_snippet": original_text[:300] if original_text else ""
+            "raw_text_snippet": blurb
         }
 
     def _clean_date(self, date_str: str) -> str:
