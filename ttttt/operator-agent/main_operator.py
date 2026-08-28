@@ -354,7 +354,8 @@ class OperatorAgent:
                 "Sec-Fetch-Site": "same-origin",
                 "X-Requested-With": None # Remove X-Requested-With for the document request
             }
-            self.session.get(f"{self.base_url}/?lang=en_US", headers=preflight_headers, timeout=15)
+            res = self.session.get(f"{self.base_url}/?lang=en_US", headers=preflight_headers, timeout=15)
+            logging.info(f"Pre-flight status: {res.status_code}, cookies received: {list(self.session.cookies.keys())}")
         except Exception as e:
             logging.warning(f"Pre-flight navigation failed (WAF might still block us): {e}")
 
@@ -390,16 +391,33 @@ class OperatorAgent:
                 logging.debug(f"Login response status: {response.status_code}, text: {response.text}")
                 
                 if response.status_code == 200:
-                    logging.info("Login successful!")
-                    try:
-                        login_json = response.json()
-                        token = login_json.get("token")
-                        if token:
-                            self.token = token
-                            self.session.headers["Authorization"] = f"Bearer {token}"
-                            logging.info("Successfully configured JWT Bearer token in session headers.")
-                    except Exception as parse_err:
-                        logging.warning(f"Could not extract token from login response: {parse_err}")
+                    resp_text = response.text or ""
+                    if resp_text.strip().lower().startswith("<html"):
+                        logging.warning(f"Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: {resp_text[:150]!r}")
+                        if attempt < max_retries - 1:
+                            time.sleep(3)
+                            continue
+                        return False
+
+                    token = None
+                    auth_hdr = response.headers.get("authorization") or response.headers.get("Authorization")
+                    if auth_hdr and "bearer" in auth_hdr.lower():
+                        token = auth_hdr.split(" ", 1)[1].strip()
+                    elif "auth_token" in self.session.cookies:
+                        token = self.session.cookies.get("auth_token")
+                    elif resp_text.strip():
+                        try:
+                            token = response.json().get("token")
+                        except Exception:
+                            pass
+
+                    if token:
+                        self.token = token
+                        self.session.headers["Authorization"] = f"Bearer {token}"
+                        logging.info("Login successful! Extracted and configured JWT Bearer token.")
+                    else:
+                        logging.info("Login successful (no token in headers/body, relying on session cookies).")
+                    
                     self.save_session()
                     return True
                 elif response.status_code in [403, 502, 503, 504, 522]:
