@@ -134,14 +134,28 @@ class SlotMonitorEngine(threading.Thread):
                     self._wake_event.clear()
                     continue
                     
-                dates_to_check = []
-                current_date = start_date
+                all_valid_dates = []
                 while current_date <= end_date:
+                    # Skip weekends (Saturday=5, Sunday=6) - Visa Application Centers are strictly closed on weekends
+                    if current_date.weekday() >= 5:
+                        current_date += timedelta(days=1)
+                        continue
                     if current_date.strftime("%a").upper() in holidays or current_date.strftime("%A").upper() in holidays:
                         current_date += timedelta(days=1)
                         continue
-                    dates_to_check.append(current_date.strftime("%d/%m/%Y"))
+                    all_valid_dates.append(current_date)
                     current_date += timedelta(days=1)
+                    
+                # GVC Type D (26) operates on Thursday & Friday only
+                if str(getattr(config, "app_type", "26")).strip() in ["26", "Type D", "TypeD"]:
+                    operating_dates = [d.strftime("%d/%m/%Y") for d in all_valid_dates if d.weekday() in [3, 4]]
+                    non_operating_dates = [d.strftime("%d/%m/%Y") for d in all_valid_dates if d.weekday() not in [3, 4]]
+                    if operating_dates:
+                        dates_to_check = operating_dates + ([non_operating_dates[0]] if non_operating_dates else [])
+                    else:
+                        dates_to_check = [d.strftime("%d/%m/%Y") for d in all_valid_dates]
+                else:
+                    dates_to_check = [d.strftime("%d/%m/%Y") for d in all_valid_dates]
                     
                 if not dates_to_check:
                     self._wake_event.wait(60)
