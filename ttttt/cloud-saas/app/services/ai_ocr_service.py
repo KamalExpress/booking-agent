@@ -260,6 +260,19 @@ class AiOcrService:
         if re.match(r'^\d{2}/\d{2}/\d{4}$', date_str):
             return date_str
             
+        # Check textual date with month name (e.g. 29 MAR 2006, 11 JUN 2035)
+        months = {
+            "JAN": "01", "FEB": "02", "MAR": "03", "APR": "04", "MAY": "05", "JUN": "06",
+            "JUL": "07", "AUG": "08", "SEP": "09", "OCT": "10", "NOV": "11", "DEC": "12"
+        }
+        match_mon = re.search(r'(\d{1,2})\s*([A-Za-z]{3})\s*(\d{4})', date_str)
+        if match_mon:
+            d = int(match_mon.group(1))
+            m = months.get(match_mon.group(2).upper())
+            y = match_mon.group(3)
+            if m:
+                return f"{d:02d}/{m}/{y}"
+            
         # Check YYYY/MM/DD
         match_ymd = re.match(r'^(\d{4})/(\d{2})/(\d{2})$', date_str)
         if match_ymd:
@@ -276,7 +289,7 @@ class AiOcrService:
 
     def _heuristic_extract(self, text: str) -> Dict[str, Any]:
         """
-        Pure regex/deterministic extractor for MRZ passports and standard intake sheets.
+        Pure deterministic ICAO-9303 passport MRZ & OCR extractor.
         """
         data = {
             "firstname": "",
@@ -291,58 +304,106 @@ class AiOcrService:
             "email": ""
         }
         
-        # 1. Passport MRZ parsing if available (P<PAK...)
-        mrz_match = re.search(r'P<([A-Z]{3})([A-Z<]+)\n([A-Z0-9<]{9})', text)
-        if mrz_match:
-            country = mrz_match.group(1)
-            name_parts = mrz_match.group(2).split("<<")
-            if len(name_parts) >= 2:
-                data["surname"] = name_parts[0].replace("<", " ").strip()
-                data["firstname"] = name_parts[1].replace("<", " ").strip()
-            data["passportnumber"] = mrz_match.group(3).replace("<", "").strip()
-            if country == "PAK":
-                data["nationality"] = "197"
+        months = {
+            "JAN": "01", "FEB": "02", "MAR": "03", "APR": "04", "MAY": "05", "JUN": "06",
+            "JUL": "07", "AUG": "08", "SEP": "09", "OCT": "10", "NOV": "11", "DEC": "12"
+        }
+
+        # 1. Parse textual dates (e.g. 29 MAR 2006, 11 JUN 2035)
+        for m in re.finditer(r'(\d{1,2})\s*([A-Za-z]{3})\s*(\d{4})', text):
+            day = f"{int(m.group(1)):02d}"
+            mon = months.get(m.group(2).upper())
+            yr = m.group(3)
+            if mon:
+                date_formatted = f"{day}/{mon}/{yr}"
+                yr_int = int(yr)
+                if yr_int <= 2015 and not data["dateofbirth"]:
+                    data["dateofbirth"] = date_formatted
+                elif yr_int >= 2025 and not data["passport_expiry"]:
+                    data["passport_expiry"] = date_formatted
+
+        # 2. Parse ICAO 9303 Passport MRZ Line 2:
+        # e.g. EG99039015PAK0603294M35061123840393583901<60
+        mrz_l2 = re.search(r'([A-Z]{1,2}[0-9]{7,8})[0-9<]([A-Z]{3})([0-9]{6})[0-9<]([MF<])([0-9]{6})', text)
+        if mrz_l2:
+            data["passportnumber"] = mrz_l2.group(1).upper()
+            nat = mrz_l2.group(2)
+            if nat == "PAK": data["nationality"] = "197"
+            
+            dob_mrz = mrz_l2.group(3) # YYMMDD
+            exp_mrz = mrz_l2.group(5) # YYMMDD
+            gender_char = mrz_l2.group(4)
+            
+            if not data["dateofbirth"]:
+                y = int(dob_mrz[0:2])
+                full_y = 2000 + y if y <= 30 else 1900 + y
+                data["dateofbirth"] = f"{dob_mrz[4:6]}/{dob_mrz[2:4]}/{full_y}"
                 
-        # 2. Passport Number Regex
+            if not data["passport_expiry"]:
+                y = int(exp_mrz[0:2])
+                full_y = 2000 + y
+                data["passport_expiry"] = f"{exp_mrz[4:6]}/{exp_mrz[2:4]}/{full_y}"
+                
+            data["gender"] = "1" if gender_char in ["M", "1"] else ("2" if gender_char in ["F", "2"] else "1")
+
+        # 3. Parse ICAO 9303 Passport MRZ Line 1:
+        # e.g. PCPAKRAZASSALICCLCLLL... or P<PAKRAZA<<ALI
+        mrz_l1 = re.search(r'P[<C](?:PAK|([A-Z]{3}))([A-Z<SCLK0-9]+)', text)
+        if mrz_l1:
+            raw_names = mrz_l1.group(2)
+            cleaned = re.sub(r'[SCLK]{2,}', '<<', raw_names)
+            parts = [p.strip('<').strip() for p in cleaned.split('<<') if len(p.strip('<').strip()) >= 2]
+            if len(parts) >= 2:
+                data["surname"] = parts[0].upper()
+                data["firstname"] = parts[1].upper()
+            elif len(parts) == 1:
+                data["firstname"] = parts[0].upper()
+
+        # 4. Fallback visual name (e.g. "TANVEER, MUHAMMAD" or "Muhammad Usman Khan")
+        if not data["firstname"]:
+            visual_comma = re.search(r'([A-Z]{3,})\s*,\s*([A-Z]{3,})', text)
+            if visual_comma:
+                data["surname"] = visual_comma.group(1).upper()
+                data["firstname"] = visual_comma.group(2).upper()
+            else:
+                lines = [l.strip() for l in text.split("\n") if l.strip()]
+                for line in lines:
+                    name_match = re.search(r'^(?:Applicant\s+Name|Name|Full\s+Name|Client\s+Name)[\s:]+([A-Za-z\s]+)$', line, re.IGNORECASE)
+                    if name_match:
+                        full_name = name_match.group(1).strip().split()
+                        if len(full_name) == 1:
+                            data["firstname"] = full_name[0].upper()
+                        elif len(full_name) >= 2:
+                            data["firstname"] = " ".join(full_name[:-1]).upper()
+                            data["surname"] = full_name[-1].upper()
+                        break
+
+        # 5. Fallback Passport Number Regex
         if not data["passportnumber"]:
             pp_match = re.search(r'(?:passport|pp|doc)[\s#:]*([A-Z]{1,2}[0-9]{7,8})', text, re.IGNORECASE)
             if pp_match:
                 data["passportnumber"] = pp_match.group(1).upper()
             else:
-                # Standalone passport format e.g. FS9910272, PK1234567
                 pp_standalone = re.search(r'\b([A-Z]{2}[0-9]{7})\b', text)
                 if pp_standalone:
-                    data["passportnumber"] = pp_standalone.group(1)
-                    
-        # 3. Name Regex (Check line-by-line first)
-        if not data["firstname"]:
-            lines = [l.strip() for l in text.split("\n") if l.strip()]
-            for line in lines:
-                name_match = re.search(r'^(?:Applicant\s+Name|Name|Full\s+Name|Client\s+Name)[\s:]+([A-Za-z\s]+)$', line, re.IGNORECASE)
-                if name_match:
-                    full_name = name_match.group(1).strip().split()
-                    if len(full_name) == 1:
-                        data["firstname"] = full_name[0].upper()
-                    elif len(full_name) >= 2:
-                        data["firstname"] = " ".join(full_name[:-1]).upper()
-                        data["surname"] = full_name[-1].upper()
-                    break
+                    data["passportnumber"] = pp_standalone.group(1).upper()
 
-        # 4. DOB & Expiry Regex
-        dob_match = re.search(r'(?:dob|birth|date of birth)[\s:]*([0-9]{1,4}[-/.][0-9]{1,2}[-/.][0-9]{1,4})', text, re.IGNORECASE)
-        if dob_match:
-            data["dateofbirth"] = self._clean_date(dob_match.group(1))
-            
-        exp_match = re.search(r'(?:expiry|valid until|exp)[\s:]*([0-9]{1,4}[-/.][0-9]{1,2}[-/.][0-9]{1,4})', text, re.IGNORECASE)
-        if exp_match:
-            data["passport_expiry"] = self._clean_date(exp_match.group(1))
-            
-        # 5. Phone Regex
+        # 6. Fallback DOB & Expiry Regex
+        if not data["dateofbirth"]:
+            dob_match = re.search(r'(?:dob|birth|date of birth)[\s:]*([0-9]{1,4}[-/.][0-9]{1,2}[-/.][0-9]{1,4})', text, re.IGNORECASE)
+            if dob_match:
+                data["dateofbirth"] = self._clean_date(dob_match.group(1))
+                
+        if not data["passport_expiry"]:
+            exp_match = re.search(r'(?:expiry|valid until|exp)[\s:]*([0-9]{1,4}[-/.][0-9]{1,2}[-/.][0-9]{1,4})', text, re.IGNORECASE)
+            if exp_match:
+                data["passport_expiry"] = self._clean_date(exp_match.group(1))
+
+        # 7. Phone Regex
         for line in text.split("\n"):
             phone_match = re.search(r'(?:phone|mobile|tel|cell|number)[\s:#]*([+0-9\s-]{10,25})', line, re.IGNORECASE)
             if phone_match:
                 raw_p = phone_match.group(1).strip()
-                # Check if it has digits
                 if re.search(r'\d{7,}', raw_p.replace(" ", "")):
                     data["phone_number"] = raw_p
                     break
@@ -351,7 +412,7 @@ class AiOcrService:
             if raw_phone:
                 data["phone_number"] = raw_phone.group(1)
                 
-        # 6. Email Regex
+        # 8. Email Regex
         email_match = re.search(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', text)
         if email_match:
             data["email"] = email_match.group(0).lower()
