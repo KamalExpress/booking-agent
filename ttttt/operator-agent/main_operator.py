@@ -50,6 +50,7 @@ class OperatorAgent:
             self.session.mount("https://", adapter)
             self.session.mount("http://", adapter)
         
+        self.proxy_string = proxy_string
         if proxy_string:
             self.session.proxies = {
                 "http": proxy_string,
@@ -57,18 +58,10 @@ class OperatorAgent:
             }
         
         target_domain = os.getenv('BOOKING_PORTAL_URL', 'https://pk-gr-services.gvcworld.eu')
-        # Standardize headers to match Playwright context and bypass anti-bot
-        # Do NOT override User-Agent, let curl_cffi match the TLS fingerprint precisely
+        # Standardize session default headers for browser impersonation (clean defaults, no forced Origin/XHR on GETs)
         self.session.headers.update({
-            "Accept": "application/json, text/plain, */*",
             "Accept-Language": "en-US,en;q=0.9",
-            "Connection": "keep-alive",
-            "Origin": target_domain,
-            "Referer": f"{target_domain}/?lang=en_US",
-            "X-Requested-With": "XMLHttpRequest",
-            "Sec-Fetch-Dest": "empty",
-            "Sec-Fetch-Mode": "cors",
-            "Sec-Fetch-Site": "same-origin"
+            "Connection": "keep-alive"
         })
         
         self.username = username or os.getenv('PORTAL_USERNAME')
@@ -209,12 +202,12 @@ class OperatorAgent:
                 )
                 
                 context_kwargs = {
-                    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                     "viewport": {'width': 1280, 'height': 720},
                     "extra_http_headers": {
                         "sec-ch-ua": '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
                         "sec-ch-ua-mobile": "?0",
-                        "sec-ch-ua-platform": '"macOS"'
+                        "sec-ch-ua-platform": '"Windows"'
                     }
                 }
                 
@@ -410,6 +403,8 @@ class OperatorAgent:
                     if resp_text.strip().lower().startswith("<html"):
                         logging.warning(f"Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: {resp_text[:150]!r}")
                         if attempt < max_retries - 1:
+                            logging.info("Attempting to solve Imperva WAF JavaScript challenge via Playwright...")
+                            self.refresh_waf_cookies()
                             time.sleep(3)
                             continue
                         return False

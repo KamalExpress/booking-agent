@@ -1,15 +1,56 @@
 Starting Headless Worker Node connecting to http://cloud-saas-prod:8000...
-2026-08-28 19:32:06,143 - INFO - Loaded existing worker credentials: worker_5cc74783
-2026-08-28 19:32:06,145 - root - INFO - Starting Worker Node Scheduler Engine (Parallel Mode)...
-2026-08-28 19:32:06,145 - INFO - Starting Worker Node Scheduler Engine (Parallel Mode)...
-Exception in thread Thread-1:
-Traceback (most recent call last):
-  File "/usr/lib/python3.10/threading.py", line 1016, in _bootstrap_inner
-    self.run()
-  File "/app/slot_monitor.py", line 75, in run
-    if self.api.register(hostname="worker-01", can_scrape=True, can_book=False, supported_providers=["GVC"]):
-TypeError: SaaSClient.register() got an unexpected keyword argument 'supported_providers'
-2026-08-28 19:32:09,156 - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/stream-logs (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
-2026-08-28 19:32:09,156 - root - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/stream-logs (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
-2026-08-28 19:32:12,164 - root - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/stream-logs (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
-2026-08-28 19:32:12,164 - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/stream-logs (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-08-28 19:37:23,359 - INFO - Loaded existing worker credentials: worker_5cc74783
+2026-08-28 19:37:23,360 - root - INFO - Starting Worker Node Scheduler Engine (Parallel Mode)...
+2026-08-28 19:37:23,360 - INFO - Starting Worker Node Scheduler Engine (Parallel Mode)...
+2026-08-28 19:37:23,366 - root - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/heartbeat (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-08-28 19:37:23,366 - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/heartbeat (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-08-28 19:37:23,366 - root - WARNING - Heartbeat failed
+2026-08-28 19:37:23,366 - WARNING - Heartbeat failed
+2026-08-28 19:37:23,367 - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/assignments/next (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-08-28 19:37:23,367 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-08-28 19:37:23,367 - root - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/assignments/next (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-08-28 19:37:23,367 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-08-28 19:37:26,368 - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/stream-logs (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-08-28 19:37:26,368 - root - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/stream-logs (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-08-28 19:37:29,376 - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/stream-logs (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-08-28 19:37:29,376 - root - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-prod', port=8000): Max retries exceeded with url: /api/v1/worker/stream-logs (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-prod', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-08-28 19:37:53,481 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-08-28 19:37:53,481 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-08-28 19:37:53,514 - root - INFO - SaaS requested runtime config refresh
+2026-08-28 19:37:53,514 - INFO - SaaS requested runtime config refresh
+2026-08-28 19:38:23,657 - INFO - [Thread] Received Assignment #13 for center 138:26,137:26.
+2026-08-28 19:38:23,657 - root - INFO - [Thread] Received Assignment #13 for center 138:26,137:26.
+2026-08-28 19:38:23,658 - INFO - Lease using network proxy: http://user-spbisytqkz-asn-17557:GuiSe08Bwcg2~ciC3b@gate.decodo.com:10007
+2026-08-28 19:38:23,658 - root - INFO - Lease using network proxy: http://user-spbisytqkz-asn-17557:GuiSe08Bwcg2~ciC3b@gate.decodo.com:10007
+2026-08-28 19:38:23,734 - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-08-28 19:38:23,734 - root - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-08-28 19:38:23,737 - root - INFO - Executing login flow for account mnoon2404@gmail.com...
+2026-08-28 19:38:23,737 - root - INFO - No JWT Bearer token present. Must login to authenticate.
+2026-08-28 19:38:23,737 - INFO - Executing login flow for account mnoon2404@gmail.com...
+2026-08-28 19:38:23,737 - INFO - No JWT Bearer token present. Must login to authenticate.
+2026-08-28 19:38:23,737 - INFO - Attempting login for mnoon2404@gmail.com...
+2026-08-28 19:38:23,737 - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-08-28 19:38:23,737 - root - INFO - Attempting login for mnoon2404@gmail.com...
+2026-08-28 19:38:23,737 - root - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-08-28 19:38:25,623 - INFO - Pre-flight status: 200, cookies received: ['incap_ses_7748_3343172', 'visid_incap_3343172']
+2026-08-28 19:38:25,623 - root - INFO - Pre-flight status: 200, cookies received: ['incap_ses_7748_3343172', 'visid_incap_3343172']
+2026-08-28 19:38:25,624 - root - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-08-28 19:38:25,624 - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-08-28 19:38:25,930 - root - INFO - CapSolver job submitted successfully. Task ID: c8873cc5-db43-4185-8d97-822f7a02d8f3
+2026-08-28 19:38:25,930 - INFO - CapSolver job submitted successfully. Task ID: c8873cc5-db43-4185-8d97-822f7a02d8f3
+2026-08-28 19:38:25,931 - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-08-28 19:38:25,931 - root - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-08-28 19:38:43,288 - root - INFO - CapSolver solved the CAPTCHA successfully!
+2026-08-28 19:38:43,288 - INFO - CapSolver solved the CAPTCHA successfully!
+2026-08-28 19:38:43,829 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 19:38:43,829 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 19:38:47,307 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 19:38:47,307 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 19:38:50,881 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 19:38:50,881 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 19:38:50,882 - root - ERROR - Login failed or blocked. Discarding assignment lease.
+2026-08-28 19:38:50,882 - ERROR - Login failed or blocked. Discarding assignment lease.
+2026-08-28 19:38:51,121 - INFO - Transmitted 4 network logs to SaaS.
+2026-08-28 19:38:51,121 - root - INFO - Transmitted 4 network logs to SaaS.
+2026-08-28 19:38:54,047 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-08-28 19:38:54,047 - INFO - No assignments available. Sleeping for 30 seconds.
