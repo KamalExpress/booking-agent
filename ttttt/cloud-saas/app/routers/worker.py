@@ -15,7 +15,7 @@ from notifications import send_push_notification
 from models import (
     WorkerNode, Assignment, Lease, EventLog, PortalAccount, 
     SystemSetting, WorkerVersion, WorkerLog, SlotAvailability, 
-    BookingTask, get_db, SessionLocal
+    BookingTask, Proxy, Applicant, get_db, SessionLocal
 )
 from secrets_manager import secrets_manager
 
@@ -186,10 +186,8 @@ def get_next_assignment(
             return
         
     # Serialize Lease
-    from app.models import Assignment, PortalAccount, BookingTask, Proxy, Applicant
-    
     # Common account info
-    acc = db.query(PortalAccount).filter(PortalAccount.id == next_lease.portal_account_id).first()
+    acc = db.query(PortalAccount).filter(PortalAccount.id == next_lease.portal_account_id).first() if next_lease.portal_account_id else None
     proxy = db.query(Proxy).filter(Proxy.id == next_lease.proxy_id).first() if next_lease.proxy_id else None
     
     # We provide a unified account struct that merging the Proxy model string 
