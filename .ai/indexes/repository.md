@@ -12,12 +12,13 @@ This index maps high-level architectural concepts to their actual source code lo
 
 ### 2. Service Layer (Business Logic & Maintenance)
 - **Implementation:** `ttttt/cloud-saas/app/services/`
+  - `ai_ocr_service.py`: AI Document scanner, ICAO 9303 MRZ parser, and Tiny-LLM client intake.
   - `worker_service.py`: Lifecycle, heartbeat.
   - `scheduler_service.py`: Waitlist auto-dispatch, assignment matching.
   - `scoring_policy.py`: Account and Proxy rating systems.
   - `lease_service.py`: State machine, lease validation.
   - `maintenance_service.py`: Defensive cleanup, archiving.
-- **Documentation:** `.ai/permanent/architecture/04-worker-management.md`
+- **Documentation:** `.ai/permanent/architecture/04-worker-management.md`, `.ai/permanent/workflows/08-ai-ocr-document-intake-workflow.md`
 
 ### 3. Database Models & Telemetry
 - **Implementation:** `ttttt/cloud-saas/app/models.py`

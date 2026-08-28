@@ -13,5 +13,10 @@
 ## 3. UI / Frontend
 - Vanilla CSS and HTML templates via Jinja2 are currently preferred. Keep it lightweight and maintainable.
 
+## 4. Deployment Standards
+- **Feature Branches:** The `feature/scalable-arch` branch must be deployed to an isolated endpoint (`scalearch.alamiaconnect.com`). It must NEVER be pushed to `staging` or `production` until the new architecture has been verified across multiple portals.
+- **Execution Code:** All auto-booking and execution plane modifications must be thoroughly tested manually on the `staging` environment.
+- **Production Commits:** Never merge experimental features or unverified execution changes into the `feature/prod` branch.
+
 ---
-*Last Reviewed: Sprint 09 | Implementation Verified: YES | Owner: Knowledge Manager | Confidence: High*
+*Last Reviewed: July 30, 2026 | Implementation Verified: YES | Owner: Knowledge Manager | Confidence: High*

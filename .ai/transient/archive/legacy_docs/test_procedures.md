@@ -1,4 +1,4 @@
-# Kamal Express - Test Procedures
+# KE Agent - Test Procedures
 
 ## End-to-End Worker Automation Test
 
