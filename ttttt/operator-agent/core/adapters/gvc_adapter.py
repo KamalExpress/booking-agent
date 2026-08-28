@@ -38,20 +38,14 @@ class GVCAdapter(BasePortalAdapter):
             self.session.mount("https://", adapter)
             self.session.mount("http://", adapter)
 
+        self.proxy_string = proxy_string
         if proxy_string:
             self.session.proxies = {"http": proxy_string, "https": proxy_string}
             
         target_domain = os.getenv('BOOKING_PORTAL_URL', "https://pk-gr-services.gvcworld.eu")
         self.session.headers.update({
-            "Accept": "application/json, text/plain, */*",
             "Accept-Language": "en-US,en;q=0.9",
-            "Connection": "keep-alive",
-            "Origin": target_domain,
-            "Referer": f"{target_domain}/?lang=en_US",
-            "X-Requested-With": "XMLHttpRequest",
-            "Sec-Fetch-Dest": "empty",
-            "Sec-Fetch-Mode": "cors",
-            "Sec-Fetch-Site": "same-origin"
+            "Connection": "keep-alive"
         })
         
         self.base_url = target_domain
@@ -66,21 +60,27 @@ class GVCAdapter(BasePortalAdapter):
     def load_session(self):
         if os.path.exists(self.cookie_file):
             try:
-                with open(self.cookie_file, 'r', encoding='utf-8') as f:
-                    saved_data = json.load(f)
-                    if isinstance(saved_data, dict):
-                        if "cookies" in saved_data:
-                            self.session.cookies.update(saved_data.get("cookies", {}))
-                            token = saved_data.get("token")
-                            if token:
-                                self.token = token
-                                self.session.headers["Authorization"] = f"Bearer {token}"
-                                logging.info("GVCAdapter: Loaded previous session cookies and JWT Bearer token.")
-                            else:
-                                logging.info("GVCAdapter: Loaded previous session cookies.")
+                try:
+                    with open(self.cookie_file, 'r', encoding='utf-8') as f:
+                        saved_data = json.load(f)
+                except (UnicodeDecodeError, json.JSONDecodeError):
+                    import pickle
+                    with open(self.cookie_file, 'rb') as f:
+                        saved_data = pickle.load(f)
+
+                if isinstance(saved_data, dict):
+                    if "cookies" in saved_data:
+                        self.session.cookies.update(saved_data.get("cookies", {}))
+                        token = saved_data.get("token")
+                        if token:
+                            self.token = token
+                            self.session.headers["Authorization"] = f"Bearer {token}"
+                            logging.info("GVCAdapter: Loaded previous session cookies and JWT Bearer token.")
                         else:
-                            self.session.cookies.update(saved_data)
                             logging.info("GVCAdapter: Loaded previous session cookies.")
+                    else:
+                        self.session.cookies.update(saved_data)
+                        logging.info("GVCAdapter: Loaded previous session cookies.")
             except Exception as e:
                 logging.warning(f"GVCAdapter: Could not load previous session: {e}")
 
@@ -97,11 +97,12 @@ class GVCAdapter(BasePortalAdapter):
             logging.warning(f"GVCAdapter: Could not save session: {e}")
 
     def refresh_waf_cookies(self):
-        logging.warning("GVCAdapter: Refreshing WAF cookies via Headless Playwright...")
+        """Bypasses Imperva/Incapsula challenge using headless Playwright with stealth."""
+        logging.info("GVCAdapter: Refreshing WAF cookies via Playwright...")
         try:
             from playwright.sync_api import sync_playwright
         except ImportError:
-            logging.error("Playwright is not installed. Cannot refresh WAF cookies.")
+            logging.error("Playwright not installed. Cannot refresh WAF cookies.")
             return False
 
         try:
@@ -112,16 +113,16 @@ class GVCAdapter(BasePortalAdapter):
                 )
                 
                 context_kwargs = {
-                    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                     "viewport": {'width': 1280, 'height': 720},
                     "extra_http_headers": {
                         "sec-ch-ua": '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
                         "sec-ch-ua-mobile": "?0",
-                        "sec-ch-ua-platform": '"macOS"'
+                        "sec-ch-ua-platform": '"Windows"'
                     }
                 }
                 
-                if self.proxy_string:
+                if hasattr(self, 'proxy_string') and self.proxy_string:
                     from urllib.parse import urlparse
                     parsed = urlparse(self.proxy_string)
                     if parsed.hostname:
@@ -225,10 +226,12 @@ class GVCAdapter(BasePortalAdapter):
         logging.info(f"GVCAdapter: Attempting login for {username}...")
         try:
             preflight_headers = {
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
                 "Sec-Fetch-Dest": "document",
                 "Sec-Fetch-Mode": "navigate",
-                "Sec-Fetch-Site": "same-origin",
-                "X-Requested-With": None
+                "Sec-Fetch-Site": "none",
+                "Sec-Fetch-User": "?1",
+                "Upgrade-Insecure-Requests": "1"
             }
             self.session.get(f"{self.base_url}/?lang=en_US", headers=preflight_headers, timeout=15)
         except Exception as e:
@@ -242,49 +245,67 @@ class GVCAdapter(BasePortalAdapter):
         url = f"{self.base_url}/api/v1/auth/login"
         payload = {"username": username, "password": password, "g-recaptcha-response": captcha_token}
         
-        try:
-            self.session.get(f"{self.base_url}/favicon.ico", timeout=3)
-        except:
-            pass
+        login_headers = {
+            "Accept": "application/json, text/plain, */*",
+            "Content-Type": "application/json; charset=UTF-8",
+            "Origin": self.base_url,
+            "Referer": f"{self.base_url}/login",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin",
+            "X-Requested-With": "XMLHttpRequest"
+        }
             
         max_retries = 3
         for attempt in range(max_retries):
             try:
-                response = self.session.post(url, json=payload, timeout=30)
+                response = self.session.post(url, json=payload, headers=login_headers, timeout=30)
                 if response.status_code == 200:
-                    logging.info("GVCAdapter: Login successful!")
-                    try:
-                        login_json = response.json()
-                        token = login_json.get("token")
-                        if token:
-                            self.token = token
-                            self.session.headers["Authorization"] = f"Bearer {token}"
-                            logging.info("GVCAdapter: Configured JWT Bearer Authorization header in session.")
-                    except Exception as e:
-                        logging.warning(f"GVCAdapter: Could not parse token: {e}")
+                    resp_text = response.text or ""
+                    if resp_text.strip().lower().startswith("<html"):
+                        logging.warning(f"GVCAdapter: Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: {resp_text[:150]!r}")
+                        if attempt < max_retries - 1:
+                            logging.info("GVCAdapter: Attempting to solve Imperva WAF challenge via Playwright...")
+                            self.refresh_waf_cookies()
+                            time.sleep(3)
+                            continue
+                        raise WAFBlockedException("Imperva WAF block detected on login.")
+
+                    token = None
+                    auth_hdr = response.headers.get("authorization") or response.headers.get("Authorization")
+                    if auth_hdr and "bearer" in auth_hdr.lower():
+                        token = auth_hdr.split(" ", 1)[1].strip()
+                    elif "auth_token" in self.session.cookies:
+                        token = self.session.cookies.get("auth_token")
+                    elif resp_text.strip():
+                        try:
+                            token = response.json().get("token")
+                        except Exception:
+                            pass
+
+                    if token:
+                        self.token = token
+                        self.session.headers["Authorization"] = f"Bearer {token}"
+                        logging.info("GVCAdapter: Configured JWT Bearer Authorization header in session.")
+                    else:
+                        logging.info("GVCAdapter: Login successful relying on session cookies.")
                     self.save_session()
                     return True
                 elif response.status_code in [403, 502, 503, 504, 522]:
                     logging.warning(f"GVCAdapter: Received {response.status_code} during login. Retrying...")
                     if response.status_code == 403:
                         self.refresh_waf_cookies()
-                        try:
-                            self.session.get(f"{self.base_url}/favicon.ico", timeout=3)
-                        except:
-                            pass
                     time.sleep(3)
                     continue
                 else:
                     logging.error(f"GVCAdapter: Login failed. Status: {response.status_code}")
                     raise LoginFailedException(f"Login failed with status {response.status_code}")
+            except (LoginFailedException, WAFBlockedException):
+                raise
             except Exception as e:
                 logging.error(f"GVCAdapter: Network error during login: {e}")
                 if "28" in str(e) or "timeout" in str(e).lower():
                     self.refresh_waf_cookies()
-                    try:
-                        self.session.get(f"{self.base_url}/favicon.ico", timeout=3)
-                    except:
-                        pass
                 if attempt < max_retries - 1:
                     time.sleep(3)
                     continue
@@ -315,10 +336,21 @@ class GVCAdapter(BasePortalAdapter):
             "vac": {"id": int(vac_id)}
         }
         
+        slot_headers = {
+            "Accept": "*/*",
+            "Content-Type": "application/json; charset=UTF-8",
+            "Origin": self.base_url,
+            "Referer": f"{self.base_url}/appointments/add",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin",
+            "X-Requested-With": "XMLHttpRequest"
+        }
+        
         try:
             # Using the passed in session, or self.session if None
             s = session if session else self.session
-            response = s.put(url, json=payload, timeout=20)
+            response = s.put(url, json=payload, headers=slot_headers, timeout=20)
             resp_url = getattr(response, "url", "")
             if response.history or "login" in resp_url.lower():
                 logging.warning(f"GVCAdapter: search_slots redirected to {resp_url}. Session expired.")
