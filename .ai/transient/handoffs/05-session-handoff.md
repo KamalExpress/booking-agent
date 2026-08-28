@@ -1,4 +1,4 @@
-﻿# Session Handoff - 2026-08-29 (Live Slots Release Window & Production Hardening)
+# Session Handoff - 2026-08-29 (Live Slots Release Window & Production Hardening)
 
 ## 1. Executive Summary & Session Context
 During live production testing during an active GVC slot opening window, the team verified real-world slot detection, web push notifications, and automated booking behavior. Multiple critical edge cases, WAF challenge interception behaviors, PostgreSQL locking anomalies, and proxy hammering dynamics were analyzed, diagnosed, and resolved across both `feature/staging` and `feature/prod`.
@@ -48,6 +48,11 @@ During live production testing during an active GVC slot opening window, the tea
 ### E. Architecture Knowledge & Cross-Regional Routing Documentation
 - Documented cross-regional domain routing (`bd-gr-services.gvcworld.eu` load-shedding strategy) in `.ai/lessons/regional-domain-routing-evasion.md`.
 - Updated `.ai/permanent/architecture/06-operational-guidance-glossary.md` with all recent production incidents, diagnostic signatures, and EDR guidance.
+
+### F. Live Production Verification (Milestone Achieved)
+- **Live Slot Notifications Restored & Confirmed:**
+  - Following the deployment of the schema compatibility fix (`b072184`), the production SaaS server cleanly resolved the `TypeError` and `AttributeError`, allowing `/api/v1/worker/assignments/next` to lease assignments without errors.
+  - Workers executed slot searches with the newly implemented humanized pacing and WAF solver, successfully detected open slots on the portal, and live Web Push notifications resumed delivering reliably to all tenant admins and staff.
 
 ---
 
