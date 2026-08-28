@@ -1480,6 +1480,98 @@ async def create_client(
     db.commit()
     return RedirectResponse(url="/clients", status_code=303)
 
+@router.post("/api/v1/ocr/parse-client")
+async def api_ocr_parse_client(request: Request, db: Session = Depends(get_db)):
+    """Accepts JSON payload with raw_text, base64 image or form text and runs AiOcrService."""
+    user = get_ui_user(request, db)
+    if not user:
+        from fastapi.responses import JSONResponse
+        return JSONResponse({"status": "error", "message": "Unauthorized"}, status_code=401)
+        
+    try:
+        content_type = request.headers.get("content-type", "")
+        raw_text = ""
+        
+        if "application/json" in content_type:
+            body = await request.json()
+            raw_text = body.get("raw_text", "")
+        else:
+            form = await request.form()
+            raw_text = form.get("raw_text", "")
+            
+            # Check if file was uploaded
+            uploaded_file = form.get("file")
+            if uploaded_file and hasattr(uploaded_file, "filename"):
+                file_bytes = await uploaded_file.read()
+                # Basic text extraction from file if text/pdf
+                try:
+                    raw_text = file_bytes.decode("utf-8", errors="ignore")
+                except Exception:
+                    pass
+
+        from services.ai_ocr_service import AiOcrService
+        service = AiOcrService()
+        parsed_data = service.extract_from_text(raw_text)
+        
+        return {"status": "success", "data": parsed_data}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/clients/save-ai-parsed")
+async def save_ai_parsed_client(
+    request: Request,
+    first_name: str = Form(...),
+    last_name: str = Form(...),
+    dateofbirth: str = Form(...),
+    gender: str = Form(...),
+    nationality: str = Form("197"),
+    passport_number: str = Form(...),
+    passport_expiry: str = Form(...),
+    email: str = Form(""),
+    phone_prefix: str = Form("92"),
+    phone_number: str = Form(...),
+    enqueue_now: bool = Form(False),
+    visa_center_id: str = Form("138"),
+    appointment_type: str = Form("26"),
+    db: Session = Depends(get_db)
+):
+    user = get_ui_user(request, db)
+    if not user or user.role not in [RoleEnum.TENANT_ADMIN, RoleEnum.STAFF, RoleEnum.SUPER_ADMIN]:
+        return RedirectResponse(url="/", status_code=303)
+        
+    new_client = Applicant(
+        tenant_id=user.tenant_id,
+        firstname=first_name.strip().upper(),
+        surname=last_name.strip().upper(),
+        dateofbirth=dateofbirth.strip(),
+        gender=gender.strip(),
+        nationality=nationality.strip(),
+        passportnumber=passport_number.strip().upper(),
+        passport_expiry=passport_expiry.strip(),
+        email=email.strip().lower(),
+        phone_prefix=phone_prefix.strip().replace("+", ""),
+        phone_number=phone_number.strip().lstrip("0")
+    )
+    db.add(new_client)
+    db.commit()
+    db.refresh(new_client)
+    
+    if enqueue_now:
+        queue_item = WaitlistQueue(
+            tenant_id=user.tenant_id,
+            applicant_id=new_client.id,
+            provider="GVC",
+            visa_center=visa_center_id,
+            appointment_type=appointment_type,
+            status="PENDING",
+            priority=0
+        )
+        db.add(queue_item)
+        db.commit()
+        
+    return RedirectResponse(url="/clients", status_code=303)
+
+
 @router.post("/clients/{client_id}/edit")
 async def edit_client(
     request: Request,

@@ -9,6 +9,9 @@
         <p class="text-sm text-zinc-400 mt-1">Manage your visa applicants and their details.</p>
     </div>
     <div class="flex items-center gap-3">
+        <button class="btn btn-secondary border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10 shadow-sm flex items-center" onclick="openAiScanModal()">
+            <i data-lucide="scan" class="w-4 h-4 mr-2"></i> AI Document Scanner
+        </button>
         <button class="btn btn-primary" onclick="document.getElementById('createApplicantModal').classList.remove('hidden')">
             <i data-lucide="plus" class="w-4 h-4 mr-2"></i> Add
         </button>
@@ -336,7 +339,230 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
     </div>
 </div>
 
+<!-- AI Document Scanner Modal -->
+<div id="aiScanModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden transform transition-all flex flex-col max-h-[90vh]">
+        <!-- Header -->
+        <div class="flex items-center justify-between px-6 py-4 border-b border-zinc-800 bg-zinc-900/60">
+            <div class="flex items-center gap-3">
+                <div class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <i data-lucide="scan-line" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white">AI Document Scanner & Intake</h3>
+                    <p class="text-xs text-zinc-400">Powered by Internal BitNet / Phi AI (ai.alamiaconnect.com)</p>
+                </div>
+            </div>
+            <button onclick="closeAiScanModal()" class="text-zinc-400 hover:text-white transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <!-- Body: Split Screen -->
+        <div class="p-6 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Left Side: Upload & Input -->
+            <div class="space-y-4">
+                <div class="border-2 border-dashed border-zinc-800 hover:border-emerald-500/50 rounded-xl p-6 text-center cursor-pointer transition-colors bg-zinc-900/20 relative" onclick="document.getElementById('aiDocFileInput').click()">
+                    <input type="file" id="aiDocFileInput" class="hidden" accept="image/*,.pdf,.txt" onchange="handleAiFileSelected(this)">
+                    <div id="aiUploadPrompt">
+                        <i data-lucide="upload-cloud" class="w-10 h-10 text-zinc-500 mx-auto mb-2"></i>
+                        <p class="text-sm font-medium text-white">Click or drag passport / intake photo</p>
+                        <p class="text-xs text-zinc-500 mt-1">Supports PNG, JPG, PDF, Scans</p>
+                    </div>
+                    <div id="aiImagePreviewContainer" class="hidden">
+                        <img id="aiImagePreview" src="" alt="Document Preview" class="max-h-48 rounded-lg mx-auto object-contain border border-zinc-800">
+                        <p id="aiImageFilename" class="text-xs text-zinc-400 mt-2 font-mono truncate"></p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-zinc-400 mb-1.5">Or Paste Forwarded Text (WhatsApp / Telegram)</label>
+                    <textarea id="aiRawTextInput" rows="4" placeholder="Paste applicant details blurb or OCR text here..." class="w-full bg-zinc-900/60 border border-zinc-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500 font-mono"></textarea>
+                </div>
+
+                <button id="aiRunParseBtn" onclick="runAiDocumentParse()" class="w-full py-2.5 px-4 rounded-xl font-semibold text-sm bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2 transition-all">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i> Run AI Extraction
+                </button>
+
+                <div id="aiParseLoading" class="hidden text-center py-2">
+                    <div class="inline-flex items-center gap-2 text-xs font-medium text-emerald-400">
+                        <svg class="animate-spin h-4 w-4 text-emerald-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        <span>Extracting fields via BitNet/Phi AI...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Pre-filled Structured Form -->
+            <div>
+                <form id="aiSaveForm" action="/clients/save-ai-parsed" method="POST" class="space-y-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-zinc-400 mb-1">First Name <span class="text-red-400">*</span></label>
+                            <input type="text" name="first_name" id="ai_first_name" required class="input uppercase font-medium">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-zinc-400 mb-1">Surname / Last Name <span class="text-red-400">*</span></label>
+                            <input type="text" name="last_name" id="ai_last_name" required class="input uppercase font-medium">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-zinc-400 mb-1">Date of Birth (DD/MM/YYYY) <span class="text-red-400">*</span></label>
+                            <input type="text" name="dateofbirth" id="ai_dateofbirth" placeholder="DD/MM/YYYY" required class="input font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-zinc-400 mb-1">Gender <span class="text-red-400">*</span></label>
+                            <select name="gender" id="ai_gender" required class="input">
+                                <option value="1">Male</option>
+                                <option value="2">Female</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-zinc-400 mb-1">Passport Number <span class="text-red-400">*</span></label>
+                            <input type="text" name="passport_number" id="ai_passport_number" required class="input font-mono uppercase font-bold text-amber-300">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-zinc-400 mb-1">Passport Expiry (DD/MM/YYYY) <span class="text-red-400">*</span></label>
+                            <input type="text" name="passport_expiry" id="ai_passport_expiry" placeholder="DD/MM/YYYY" required class="input font-mono">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-zinc-400 mb-1">Prefix</label>
+                            <input type="text" name="phone_prefix" id="ai_phone_prefix" value="92" required class="input font-mono">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-xs font-medium text-zinc-400 mb-1">Mobile Phone (for OTP) <span class="text-red-400">*</span></label>
+                            <input type="text" name="phone_number" id="ai_phone_number" placeholder="3345112969" required class="input font-mono">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-zinc-400 mb-1">Email Address</label>
+                        <input type="email" name="email" id="ai_email" placeholder="applicant@example.com" class="input">
+                    </div>
+
+                    <input type="hidden" name="nationality" id="ai_nationality" value="197">
+
+                    <!-- Enqueue Options -->
+                    <div class="p-3 bg-zinc-900/50 border border-zinc-800 rounded-xl space-y-2 mt-2">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="enqueue_now" id="ai_enqueue_now" value="true" checked class="rounded border-zinc-700 text-emerald-600 focus:ring-emerald-500">
+                            <span class="text-xs font-medium text-emerald-400">Instantly Enqueue to Waitlist</span>
+                        </label>
+                        <div class="grid grid-cols-2 gap-2 pt-1" id="aiQueueOptions">
+                            <div>
+                                <label class="text-[10px] text-zinc-500">Center</label>
+                                <select name="visa_center_id" class="input text-xs h-8 py-0">
+                                    <option value="138" selected>138 (Lahore)</option>
+                                    <option value="137">137 (Islamabad)</option>
+                                    <option value="140">140 (Karachi)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-zinc-500">Type</label>
+                                <select name="appointment_type" class="input text-xs h-8 py-0">
+                                    <option value="26" selected>Type D (26)</option>
+                                    <option value="0">Schengen C (0)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 flex justify-end gap-3">
+                        <button type="button" onclick="closeAiScanModal()" class="btn btn-secondary">Cancel</button>
+                        <button type="submit" class="btn btn-primary bg-emerald-600 hover:bg-emerald-500 border-none">Confirm & Save Client</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+function openAiScanModal() {
+    document.getElementById('aiScanModal').classList.remove('hidden');
+    if (window.lucide) lucide.createIcons();
+}
+
+function closeAiScanModal() {
+    document.getElementById('aiScanModal').classList.add('hidden');
+}
+
+function handleAiFileSelected(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        document.getElementById('aiUploadPrompt').classList.add('hidden');
+        document.getElementById('aiImagePreviewContainer').classList.remove('hidden');
+        document.getElementById('aiImageFilename').innerText = file.name;
+        
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('aiImagePreview').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // Auto trigger extraction
+        runAiDocumentParse();
+    }
+}
+
+async function runAiDocumentParse() {
+    const rawText = document.getElementById('aiRawTextInput').value;
+    const fileInput = document.getElementById('aiDocFileInput');
+    const loading = document.getElementById('aiParseLoading');
+    const parseBtn = document.getElementById('aiRunParseBtn');
+    
+    loading.classList.remove('hidden');
+    parseBtn.disabled = true;
+    
+    try {
+        let response;
+        if (fileInput.files && fileInput.files[0]) {
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('raw_text', rawText);
+            response = await fetch('/api/v1/ocr/parse-client', {
+                method: 'POST',
+                body: formData
+            });
+        } else {
+            response = await fetch('/api/v1/ocr/parse-client', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ raw_text: rawText })
+            });
+        }
+        
+        const result = await response.json();
+        if (result.status === 'success' && result.data) {
+            const d = result.data;
+            if (d.firstname) document.getElementById('ai_first_name').value = d.firstname;
+            if (d.surname) document.getElementById('ai_last_name').value = d.surname;
+            if (d.dateofbirth) document.getElementById('ai_dateofbirth').value = d.dateofbirth;
+            if (d.gender) document.getElementById('ai_gender').value = d.gender;
+            if (d.passportnumber) document.getElementById('ai_passport_number').value = d.passportnumber;
+            if (d.passport_expiry) document.getElementById('ai_passport_expiry').value = d.passport_expiry;
+            if (d.phone_prefix) document.getElementById('ai_phone_prefix').value = d.phone_prefix;
+            if (d.phone_number) document.getElementById('ai_phone_number').value = d.phone_number;
+            if (d.email) document.getElementById('ai_email').value = d.email;
+            if (d.nationality) document.getElementById('ai_nationality').value = d.nationality;
+        }
+    } catch (err) {
+        console.error("AI Parse Error:", err);
+    } finally {
+        loading.classList.add('hidden');
+        parseBtn.disabled = false;
+    }
+}
+
 function openEnqueueModal(applicantId, applicantName) {
     document.getElementById('quick_applicant_id').value = applicantId;
     document.getElementById('quick_applicant_name').innerText = applicantName;
