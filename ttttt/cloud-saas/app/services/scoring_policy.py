@@ -12,7 +12,7 @@ class ScoringPolicy:
         return datetime.now(timezone.utc).replace(tzinfo=None)
 
     @staticmethod
-    def score_account(account: PortalAccount, task_provider: str) -> int:
+    def score_account(account: PortalAccount, task_provider: str = "GVC", *args, **kwargs) -> int:
         """
         Calculates a priority score for a given PortalAccount.
         Returns a score (higher is better) or -1 if ineligible.
@@ -49,7 +49,7 @@ class ScoringPolicy:
         return max(score, 0)
 
     @staticmethod
-    def score_proxy(proxy: Proxy, task_provider: str = "GVC") -> int:
+    def score_proxy(proxy: Proxy, task_provider: str = "GVC", *args, **kwargs) -> int:
         """
         Calculates a priority score for a given Proxy.
         Returns a score (higher is better) or -1 if ineligible.
