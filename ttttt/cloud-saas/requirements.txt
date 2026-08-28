@@ -11,4 +11,5 @@ cryptography
 user-agents
 sqladmin
 itsdangerous
-alembicmcp
+alembic
+mcp
