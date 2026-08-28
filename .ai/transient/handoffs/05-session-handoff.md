@@ -37,8 +37,13 @@ During live production testing during an active GVC slot opening window, the tea
 - **Consecutive 403 Cooling Intervals:**
   - Replaced tight 3-second retries with randomized backoff delays (`random.uniform(5, 10) * (attempt + 1)`).
   - Added a streak counter in `slot_monitor.py`: if 403 is encountered, the worker applies a 12s - 20s cooling backoff, and pauses the run after 3 consecutive 403s to protect proxy reputation.
-- **Strict Weekend Exclusion Filter:**
-  - Filtered date generation across all 365 calendar days with `weekday < 5` (Monday to Friday only), preventing checks on Saturdays and Sundays.
+- **Appointment Type Operating Days Mapping & Weekend Exclusion:**
+  - Strictly filtered out weekends (`weekday < 5`), ensuring workers never check Saturdays or Sundays.
+  - **Code `2` (National Visa Long Term Type D):** Operates on **Thursday & Friday** only (`weekday in [3, 4]`).
+  - **Code `26` (Seasonal/Dependent Employment Type D):** Operates across all weekdays (**Monday through Friday**).
+  - **Code `6` (Prime Time):** Operates across all weekdays (**Monday through Friday**).
+  - **Code `5` (Premium Lounge):** Operates across all weekdays (**Monday through Friday**).
+  - **Code `0` (Submission Schengen Visa Short Term Type C):** Remains an exception and is NOT targeted normally.
 
 ### D. Multi-Provider Schema & Method Signature Compatibility
 - **Resilient Scoring Policy:**
@@ -73,8 +78,9 @@ To satisfy the user requirement of securing production to a known working state 
 
 ## 4. Pending Work / Next Session Objectives
 1. **Live Booking Validation:** Monitor the next live slot opening with the updated `auto_dispatch_queue` to observe automatic creation of `BookingTask` and verify the booker worker executes the end-to-end OTP booking flow.
-2. **Dynamic Regional Domain Failover (Control Plane):** Implement dynamic failover in the SaaS Scheduler to route worker leases to `https://bd-gr-services.gvcworld.eu` during high-traffic Pakistan slot drop windows.
-3. **Passport OCR Orientation Enhancements (Deferred backlog):** Enhance passport preprocessing to handle skewed orientations and low-contrast prints.
+2. **SaaS Admin UI for Appointment Type(s) - Days Mapping:** Implement a dynamic configuration UI in SaaS Admin (under `/settings` or `/assignments`) allowing staff to configure which appointment types (`2`, `26`, `6`, `5`, etc.) map to which active days of the week, replacing hardcoded rules.
+3. **Dynamic Regional Domain Failover (Control Plane):** Implement dynamic failover in the SaaS Scheduler to route worker leases to `https://bd-gr-services.gvcworld.eu` during high-traffic Pakistan slot drop windows.
+4. **Passport OCR Orientation Enhancements (Deferred backlog):** Enhance passport preprocessing to handle skewed orientations and low-contrast prints.
 
 ---
-*Branch State: feature/staging & feature/prod synchronized | Date: 2026-08-29 02:00 PKT*
+*Branch State: feature/staging & feature/prod synchronized | Date: 2026-08-29 02:10 PKT*

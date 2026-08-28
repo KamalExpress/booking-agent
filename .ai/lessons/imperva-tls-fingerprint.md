@@ -59,11 +59,16 @@ The portal employs Imperva (and potentially Cloudflare) Web Application Firewall
 - **Token Delivery:** The JWT token is returned in the `authorization: Bearer <jwt_token>` response header and as a `set-cookie: auth_token=<jwt_token>` cookie.
 - **Worker Configuration:** The worker must extract the token from headers or cookies and attach it as `Authorization: Bearer <jwt_token>` to all subsequent requests. If absent, subsequent API calls will silently fail or redirect.
 
-## 9. Operational Calendar Scheduling (Weekend Exclusion)
-- **Weekend Invariant:** Visa Application Centers (VACs) across Pakistan (Lahore VAC 137, Islamabad VAC 138) are **strictly closed on weekends (Saturday & Sunday)**.
-- **Rule:** Date generation logic (`slot_monitor.py` and `core/slot_monitor.py`) must enforce `weekday < 5` (Monday=0 through Friday=4).
-- **Type D Visa (Code 26):** For Greece Type D Seasonal / Dependent Employment (code `26`), embassy slots operate exclusively on **Thursday (3) and Friday (4)**.
-- **Impact:** Eliminates wasted CAPTCHA tokens, saves proxy egress bandwidth, and avoids triggering rate limits on days when centers are 100% known to be closed.
+## 9. Operational Calendar Scheduling & Appointment Type Mapping
+- **Weekend Invariant:** Visa Application Centers (VACs) across Pakistan (Lahore VAC 137, Islamabad VAC 138) are **strictly closed on weekends (Saturday & Sunday)**. Date generation logic (`slot_monitor.py` and `core/slot_monitor.py`) must enforce `weekday < 5` (Monday=0 through Friday=4).
+- **Appointment Types & Operating Day Invariants:**
+  - **National Visa Long Term Type D (Code `2`):** Embassy slots operate exclusively on **Thursday (3) and Friday (4)**.
+  - **Long Term Type D Seasonal / Dependent Employment (Code `26`):** Operates across all standard business weekdays (**Monday through Friday**).
+  - **Prime Time (Code `6`):** Operates across all standard business weekdays (**Monday through Friday**).
+  - **Premium Lounge (Code `5`):** Operates across all standard business weekdays (**Monday through Friday**).
+  - **Submission Schengen Visa Short Term Type C (Code `0`):** Exception type; NOT targeted normally by staff/applicants.
+- **Operational Staff Targeting:** During active slot drops, staff target securing slot(s) across any of the eligible Type D/premium categories (`2`, `26`, `6`, `5`).
+- **Impact:** Eliminates wasted CAPTCHA tokens, saves proxy egress bandwidth, and avoids triggering rate limits on days when specific visa categories are known to be closed.
 
 ## 10. Future Notes
 - Any external request to the visa portals must be routed through the `curl_cffi` SessionManager. Do not import `requests` in the worker codebase.

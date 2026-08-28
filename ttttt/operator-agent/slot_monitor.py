@@ -41,8 +41,8 @@ def generate_dates_between(start_str, end_str, app_type="26", include_explorator
     if not all_dates:
         return []
         
-    # GVC Greece Type D (Seasonal/Dependent Employment, code 26) operates on Thursday & Friday only
-    if str(app_type).strip() in ["26", "Type D", "TypeD"]:
+    # GVC Code 2 (National Visa Long Term Type D) operates on Thursday & Friday only
+    if str(app_type).strip() in ["2", "National Visa", "NationalVisa"]:
         operating_dates = [d.strftime("%d/%m/%Y") for d in all_dates if d.weekday() in [3, 4]]
         non_operating_dates = [d.strftime("%d/%m/%Y") for d in all_dates if d.weekday() not in [3, 4]] # Other weekdays (Mon-Wed)
         
@@ -52,6 +52,7 @@ def generate_dates_between(start_str, end_str, app_type="26", include_explorator
         elif operating_dates:
             return operating_dates
             
+    # GVC Codes 26 (Seasonal/Dependent Employment), 6 (Prime Time), and 5 (Premium Lounge) operate across all weekdays (Mon-Fri)
     return [d.strftime("%d/%m/%Y") for d in all_dates]
 
 class SlotMonitorEngine(threading.Thread):

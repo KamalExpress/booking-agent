@@ -138,8 +138,8 @@ class SlotMonitorEngine(threading.Thread):
                     all_valid_dates.append(current_date)
                     current_date += timedelta(days=1)
                     
-                # GVC Type D (26) operates on Thursday & Friday only
-                if str(config.app_type).strip() in ["26", "Type D", "TypeD"]:
+                # GVC Code 2 (National Visa Long Term Type D) operates on Thursday & Friday only
+                if str(config.app_type).strip() in ["2", "National Visa", "NationalVisa"]:
                     operating_dates = [d.strftime("%d/%m/%Y") for d in all_valid_dates if d.weekday() in [3, 4]]
                     non_operating_dates = [d.strftime("%d/%m/%Y") for d in all_valid_dates if d.weekday() not in [3, 4] and d.weekday() < 5]
                     if operating_dates:
@@ -147,6 +147,7 @@ class SlotMonitorEngine(threading.Thread):
                     else:
                         dates_to_check = [d.strftime("%d/%m/%Y") for d in all_valid_dates]
                 else:
+                    # GVC Codes 26 (Seasonal/Dependent Employment), 6 (Prime Time), and 5 (Premium Lounge) operate Mon-Fri
                     dates_to_check = [d.strftime("%d/%m/%Y") for d in all_valid_dates]
                     
                 if not dates_to_check:
