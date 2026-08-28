@@ -147,6 +147,8 @@ class SlotMonitorEngine(threading.Thread):
             
             if "127.0.0.1" in os.getenv("BOOKING_PORTAL_URL", ""):
                 proxy_string = None
+                
+            logging.info(f"Lease using network proxy: {proxy_string if proxy_string else 'Direct IP (No Proxy)'}")
             
             # Initialize MockCaptchaService if enabled, else CapSolverService
             if os.getenv('USE_MOCK_CAPTCHA', 'False').lower() in ['true', '1']:
