@@ -157,9 +157,24 @@ class GVCAdapter(BasePortalAdapter):
         for attempt in range(2):
             try:
                 response = self.session.put(url, json=payload, timeout=15)
+                resp_url = getattr(response, "url", "")
+                if response.history or "login" in resp_url.lower():
+                    logging.info("GVCAdapter: Session redirected to login. Must login again.")
+                    return False
+                    
                 if response.status_code == 200:
-                    logging.info("GVCAdapter: Session is fully valid.")
-                    return True
+                    try:
+                        data = response.json()
+                        if isinstance(data, dict) and data.get("code") == "SUCCESS":
+                            logging.info("GVCAdapter: Session is fully valid.")
+                            return True
+                        elif isinstance(data, dict) and data.get("code") in ["ERROR", "UNAUTHORIZED"]:
+                            logging.info(f"GVCAdapter: Session rejected with code {data.get('code')}.")
+                            return False
+                    except Exception:
+                        logging.info("GVCAdapter: Non-JSON response on 200 OK (likely login HTML). Must login again.")
+                        return False
+                        
                 elif response.status_code == 401:
                     logging.info("GVCAdapter: Session has expired (401).")
                     return False
@@ -280,16 +295,26 @@ class GVCAdapter(BasePortalAdapter):
             # Using the passed in session, or self.session if None
             s = session if session else self.session
             response = s.put(url, json=payload, timeout=20)
+            resp_url = getattr(response, "url", "")
+            if response.history or "login" in resp_url.lower():
+                logging.warning(f"GVCAdapter: search_slots redirected to {resp_url}. Session expired.")
+                return None
+                
             if response.status_code == 200:
-                slots_data = response.json()
-                if slots_data and slots_data.get("code") == "SUCCESS":
-                    ret_obj = slots_data.get("returnobject")
-                    slots = ret_obj.get("slots", []) if isinstance(ret_obj, dict) else (ret_obj if isinstance(ret_obj, list) else [])
-                    return slots
-                return []
+                try:
+                    slots_data = response.json()
+                    if slots_data and slots_data.get("code") == "SUCCESS":
+                        ret_obj = slots_data.get("returnobject")
+                        slots = ret_obj.get("slots", []) if isinstance(ret_obj, dict) else (ret_obj if isinstance(ret_obj, list) else [])
+                        return slots
+                    return []
+                except Exception as json_err:
+                    logging.warning(f"GVCAdapter: Non-JSON response in search_slots ({json_err}).")
+                    return None
             elif response.status_code in [401, 403]:
                 logging.error(f"GVCAdapter: search_slots hit WAF/Auth error ({response.status_code})")
                 return None
+            else:
                 logging.warning(f"GVCAdapter: Unexpected status code {response.status_code} in search_slots")
                 return None
         except Exception as e:

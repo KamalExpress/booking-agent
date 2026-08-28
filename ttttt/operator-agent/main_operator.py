@@ -259,9 +259,25 @@ class OperatorAgent:
         for attempt in range(2):
             try:
                 response = self.session.put(url, json=payload, timeout=15)
+                # Check for redirects to login or non-JSON HTML responses
+                resp_url = getattr(response, "url", "")
+                if response.history or "login" in resp_url.lower():
+                    logging.info("Session redirected to login page. Must login again.")
+                    return False
+                    
                 if response.status_code == 200:
-                    logging.info("Session is fully valid. Bypassing login.")
-                    return True
+                    try:
+                        data = response.json()
+                        if isinstance(data, dict) and data.get("code") == "SUCCESS":
+                            logging.info("Session is fully valid. Bypassing login.")
+                            return True
+                        elif isinstance(data, dict) and data.get("code") in ["ERROR", "UNAUTHORIZED"]:
+                            logging.info(f"Session rejected with code: {data.get('code')}. Must login again.")
+                            return False
+                    except Exception:
+                        logging.info("Session validation returned non-JSON response (likely login HTML). Must login again.")
+                        return False
+                        
                 elif response.status_code == 401:
                     logging.info("Session has expired (401). Must login again.")
                     return False
@@ -288,7 +304,9 @@ class OperatorAgent:
                     try:
                         response = self.session.put(url, json=payload, timeout=15)
                         if response.status_code == 200:
-                            return True
+                            data = response.json()
+                            if isinstance(data, dict) and data.get("code") == "SUCCESS":
+                                return True
                     except:
                         pass
                 return False
@@ -411,27 +429,56 @@ class OperatorAgent:
         for attempt in range(max_retries):
             try:
                 response = self.session.put(url, json=payload, timeout=30)
-                logging.debug(f"Search slots response status: {response.status_code}, text: {response.text}")
+                resp_url = getattr(response, "url", "")
+                logging.debug(f"Search slots response status: {response.status_code}, url: {resp_url}")
                 
+                # Check for redirects to login or portal home
+                if response.history or "login" in resp_url.lower():
+                    logging.warning(f"Search slots redirected to {resp_url}. Session expired, re-authenticating...")
+                    self.login()
+                    time.sleep(2)
+                    continue
+                    
                 if response.status_code == 200:
-                    slots = response.json()
-                    logging.info(f"Slots retrieved successfully from {url}: {slots}")
-                    return slots
+                    try:
+                        slots = response.json()
+                        logging.info(f"Slots retrieved successfully from {url}: {slots}")
+                        return slots
+                    except Exception as json_err:
+                        snippet = response.text[:200] if response.text else "<empty>"
+                        logging.warning(f"Failed to parse slots JSON (status 200, length {len(response.text or '')}, start: {snippet!r}): {json_err}")
+                        if "<html" in snippet.lower() or "login" in snippet.lower() or not response.text:
+                            logging.info("HTML/empty response received on 200 OK. Session expired or WAF challenge, refreshing and re-authenticating...")
+                            self.refresh_waf_cookies()
+                            self.login()
+                            time.sleep(3)
+                            continue
+                        return {"error": True, "status_code": 200, "text": snippet}
+                        
                 elif response.status_code in [403, 502, 503, 504, 522]:
                     logging.warning(f"Received {response.status_code} during search_slots. Retrying... ({attempt+1}/{max_retries})")
                     if response.status_code == 403:
                         self.refresh_waf_cookies()
                     time.sleep(3)
                     continue
+                elif response.status_code == 401:
+                    logging.warning(f"Received 401 Unauthorized during search_slots. Re-authenticating... ({attempt+1}/{max_retries})")
+                    self.login()
+                    time.sleep(2)
+                    continue
                 else:
                     logging.error(f"Failed to search slots. Status Code: {response.status_code}")
-                    logging.error(f"Response: {response.text}")
+                    logging.error(f"Response: {response.text[:500] if response.text else ''}")
                     return {"error": True, "status_code": response.status_code, "text": response.text}
             except Exception as e:
                 logging.error(f"Network or WAF Error during search_slots (Attempt {attempt+1}/{max_retries}): {e}")
                 
                 if "28" in str(e) or "timeout" in str(e).lower():
                     self.refresh_waf_cookies()
+                elif "expecting value" in str(e).lower() or "json" in str(e).lower():
+                    logging.info("JSON decode error encountered during search_slots, refreshing WAF cookies and re-authenticating...")
+                    self.refresh_waf_cookies()
+                    self.login()
                     
                 if attempt < max_retries - 1:
                     time.sleep(3)
