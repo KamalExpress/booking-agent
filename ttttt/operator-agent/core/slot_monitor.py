@@ -13,6 +13,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from models import SessionLocal, MonitorConfig, PushSubscription, User, Tenant, ScraperAccount
 from core.session_manager import SessionManager
+from core.adapters.adapter_factory import AdapterFactory
+import core.adapters.gvc_adapter  # Ensure adapters are registered
 
 import tempfile
 
@@ -51,7 +53,7 @@ class SlotMonitorEngine(threading.Thread):
         ).all()
         
         payload = json.dumps({
-            "title": "Kamal Express Slot Alert!",
+            "title": "KE Agent Slot Alert!",
             "body": message,
             "url": "/"
         })
@@ -79,26 +81,14 @@ class SlotMonitorEngine(threading.Thread):
             except Exception as e:
                 logging.error(f"Push error: {e}")
 
-    def search_slots(self, session, date_from: str, app_type: str, vac_id: str):
-        url = f"{self.base_url}/api/v1/periodslot/slots"
-        payload = {
-            "datefrom": date_from,
-            "type": int(app_type),
-            "bookingfor": 0,
-            "members": 1,
-            "method": 1,
-            "travelpurposes": -1,
-            "howmanyapplicantsareunder12": 0,
-            "appointmentId": "undefined",
-            "id": 0,
-            "vac": {"id": int(vac_id)}
-        }
-        
+    def search_slots(self, session, date_from: str, app_type: str, vac_id: str, provider: str = "GVC"):
         try:
-            response = session.put(url, json=payload, timeout=20)
-            return response
+            adapter = AdapterFactory.get_adapter(provider, headless=True)
+            # The adapter takes care of the endpoint and payload specifics
+            slots = adapter.search_slots(session, date_from, app_type, vac_id)
+            return slots
         except Exception as e:
-            logging.error(f"Exception during search_slots: {e}")
+            logging.error(f"Exception during abstract search_slots: {e}")
             return None
 
     def run(self):
@@ -134,9 +124,11 @@ class SlotMonitorEngine(threading.Thread):
                     self._wake_event.clear()
                     continue
                     
+                dates_to_check = []
+                current_date = start_date
                 all_valid_dates = []
                 while current_date <= end_date:
-                    # Skip weekends (Saturday=5, Sunday=6) - Visa Application Centers are strictly closed on weekends
+                    # Skip weekends (Saturday=5, Sunday=6) - Visa centers are closed on weekends
                     if current_date.weekday() >= 5:
                         current_date += timedelta(days=1)
                         continue
@@ -146,15 +138,16 @@ class SlotMonitorEngine(threading.Thread):
                     all_valid_dates.append(current_date)
                     current_date += timedelta(days=1)
                     
-                # GVC Type D (26) operates on Thursday & Friday only
-                if str(getattr(config, "app_type", "26")).strip() in ["26", "Type D", "TypeD"]:
+                # GVC Code 2 (National Visa Long Term Type D) operates on Thursday & Friday only
+                if str(config.app_type).strip() in ["2", "National Visa", "NationalVisa"]:
                     operating_dates = [d.strftime("%d/%m/%Y") for d in all_valid_dates if d.weekday() in [3, 4]]
-                    non_operating_dates = [d.strftime("%d/%m/%Y") for d in all_valid_dates if d.weekday() not in [3, 4]]
+                    non_operating_dates = [d.strftime("%d/%m/%Y") for d in all_valid_dates if d.weekday() not in [3, 4] and d.weekday() < 5]
                     if operating_dates:
                         dates_to_check = operating_dates + ([non_operating_dates[0]] if non_operating_dates else [])
                     else:
                         dates_to_check = [d.strftime("%d/%m/%Y") for d in all_valid_dates]
                 else:
+                    # GVC Codes 26 (Seasonal/Dependent Employment), 6 (Prime Time), and 5 (Premium Lounge) operate Mon-Fri
                     dates_to_check = [d.strftime("%d/%m/%Y") for d in all_valid_dates]
                     
                 if not dates_to_check:
@@ -200,42 +193,22 @@ class SlotMonitorEngine(threading.Thread):
                                 scraper_success = True
                                 break
                             
-                            # 2. Use lightweight curl_cffi session to poll
-                            response = self.search_slots(session, target_date, config.app_type, config.vac_id)
+                            # 2. Use adapter to search slots
+                            # Fallback to "GVC" if provider isn't in config yet (will add to models next)
+                            provider = getattr(config, 'provider', 'GVC')
+                            slots = self.search_slots(session, target_date, config.app_type, config.vac_id, provider)
                             
-                            if response is None:
-                                logging.error(f"Network error during search for {target_date} using {account.username}.")
+                            if slots is None:
+                                logging.error(f"Network or Auth error during search for {target_date} using {account.username}.")
                                 account_failed = True
                                 break
                             
-                            if response.status_code == 429:
-                                # Exponential backoff with jitter
-                                backoff = random.uniform(5.0, 15.0)
-                                logging.warning(f"Rate limited (429). Backing off for {backoff:.2f} seconds.")
-                                time.sleep(backoff)
-                                continue # retry or move to next date
-                                
-                            elif response.status_code in [401, 403]:
-                                logging.error(f"Session expired or WAF block (401/403) for {account.username}.")
-                                self.session_manager.invalidate_session(account.username)
-                                account_failed = True
+                            for slot in slots:
+                                if slot.get('isavailable') and slot.get('isselectable'):
+                                    available_slots.append({"id": slot['id'], "time": slot['starttime'], "date": target_date})
+                                    
+                            if available_slots:
                                 break
-                                
-                            elif response.status_code == 200:
-                                slots_data = response.json()
-                                if slots_data and slots_data.get("code") == "SUCCESS":
-                                    ret_obj = slots_data.get("returnobject")
-                                    slots = ret_obj.get("slots", []) if isinstance(ret_obj, dict) else (ret_obj if isinstance(ret_obj, list) else [])
-                                    for slot in slots:
-                                        if slot.get('isavailable') and slot.get('isselectable'):
-                                            available_slots.append({"id": slot['id'], "time": slot['starttime'], "date": target_date})
-                                            
-                                    if available_slots:
-                                        break
-                                else:
-                                    logging.warning(f"Unexpected JSON format from API: {slots_data}")
-                            else:
-                                logging.error(f"Unexpected status code {response.status_code}: {response.text}")
                                 
                             time.sleep(2)
                             
