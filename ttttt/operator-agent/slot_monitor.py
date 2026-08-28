@@ -32,14 +32,19 @@ def generate_dates_between(start_str, end_str, app_type="26", include_explorator
         
     delta = end_date - start_date
     if delta.days < 0:
-        all_dates = [start_date]
+        raw_dates = [start_date]
     else:
-        all_dates = [start_date + timedelta(days=i) for i in range(delta.days + 1)]
+        raw_dates = [start_date + timedelta(days=i) for i in range(delta.days + 1)]
+        
+    # Strictly exclude weekends (Saturday=5, Sunday=6) - Visa centers are closed on weekends
+    all_dates = [d for d in raw_dates if d.weekday() < 5]
+    if not all_dates:
+        return []
         
     # GVC Greece Type D (Seasonal/Dependent Employment, code 26) operates on Thursday & Friday only
     if str(app_type).strip() in ["26", "Type D", "TypeD"]:
         operating_dates = [d.strftime("%d/%m/%Y") for d in all_dates if d.weekday() in [3, 4]]
-        non_operating_dates = [d.strftime("%d/%m/%Y") for d in all_dates if d.weekday() not in [3, 4] and d.weekday() < 5] # Weekdays only
+        non_operating_dates = [d.strftime("%d/%m/%Y") for d in all_dates if d.weekday() not in [3, 4]] # Other weekdays (Mon-Wed)
         
         # Add 1 exploratory canary check on a non-operating weekday to confirm portal policy without wasting tokens
         if include_exploratory and non_operating_dates and operating_dates:

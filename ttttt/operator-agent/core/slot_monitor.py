@@ -128,6 +128,10 @@ class SlotMonitorEngine(threading.Thread):
                 current_date = start_date
                 all_valid_dates = []
                 while current_date <= end_date:
+                    # Skip weekends (Saturday=5, Sunday=6) - Visa centers are closed on weekends
+                    if current_date.weekday() >= 5:
+                        current_date += timedelta(days=1)
+                        continue
                     if current_date.strftime("%a").upper() in holidays or current_date.strftime("%A").upper() in holidays:
                         current_date += timedelta(days=1)
                         continue

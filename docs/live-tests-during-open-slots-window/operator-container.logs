@@ -1,100 +1,100 @@
-2026-08-28 18:41:37,369 - root - INFO - Pre-flight status: 200, cookies received: ['auth_token', 'incap_ses_798_3343172', 'org.springframework.web.servlet.i18n.CookieLocaleResolver.LOCALE', 'visid_incap_3343172', 'incap_ses_851_3343172', 'auth_token', 'incap_ses_798_3343172', 'org.springframework.web.servlet.i18n.CookieLocaleResolver.LOCALE', 'visid_incap_3343172']
-2026-08-28 18:41:37,369 - root - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
-2026-08-28 18:41:37,668 - root - INFO - CapSolver job submitted successfully. Task ID: dcee1fa5-4078-4c5c-88c0-eab882514404
-2026-08-28 18:41:37,668 - INFO - CapSolver job submitted successfully. Task ID: dcee1fa5-4078-4c5c-88c0-eab882514404
-2026-08-28 18:41:37,670 - INFO - Polling for CapSolver completion... (Max 150 seconds)
-2026-08-28 18:41:37,670 - root - INFO - Polling for CapSolver completion... (Max 150 seconds)
-2026-08-28 18:41:45,699 - root - INFO - CapSolver solved the CAPTCHA successfully!
-2026-08-28 18:41:45,699 - INFO - CapSolver solved the CAPTCHA successfully!
-2026-08-28 18:41:46,652 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
-2026-08-28 18:41:46,652 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
-2026-08-28 18:41:50,181 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
-2026-08-28 18:41:50,181 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
-2026-08-28 18:41:53,720 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
-2026-08-28 18:41:53,721 - root - ERROR - Login failed or blocked. Discarding assignment lease.
-2026-08-28 18:41:53,720 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
-2026-08-28 18:41:53,721 - ERROR - Login failed or blocked. Discarding assignment lease.
-2026-08-28 18:41:53,822 - root - INFO - Transmitted 5 network logs to SaaS.
-2026-08-28 18:41:53,822 - INFO - Transmitted 5 network logs to SaaS.
-2026-08-28 18:41:55,946 - INFO - No assignments available. Sleeping for 30 seconds.
-2026-08-28 18:41:55,946 - root - INFO - No assignments available. Sleeping for 30 seconds.
-2026-08-28 18:42:26,021 - INFO - No assignments available. Sleeping for 30 seconds.
-2026-08-28 18:42:26,021 - root - INFO - No assignments available. Sleeping for 30 seconds.
-2026-08-28 18:42:56,082 - root - INFO - [Thread] Received Assignment #12 for center 138:26,137:26.
-2026-08-28 18:42:56,082 - INFO - [Thread] Received Assignment #12 for center 138:26,137:26.
-2026-08-28 18:42:56,083 - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
-2026-08-28 18:42:56,083 - root - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
-2026-08-28 18:42:56,083 - INFO - Loaded previous session cookies from file.
-2026-08-28 18:42:56,083 - INFO - Executing login flow for account ammarashrafsialkot@gmail.com...
-2026-08-28 18:42:56,083 - root - INFO - Loaded previous session cookies from file.
-2026-08-28 18:42:56,083 - root - INFO - Executing login flow for account ammarashrafsialkot@gmail.com...
-2026-08-28 18:42:56,084 - INFO - No JWT Bearer token present. Must login to authenticate.
-2026-08-28 18:42:56,084 - INFO - Attempting login for ammarashrafsialkot@gmail.com...
-2026-08-28 18:42:56,084 - root - INFO - No JWT Bearer token present. Must login to authenticate.
-2026-08-28 18:42:56,084 - root - INFO - Attempting login for ammarashrafsialkot@gmail.com...
-2026-08-28 18:42:56,084 - INFO - Executing pre-flight navigation to establish WAF trust...
-2026-08-28 18:42:56,084 - root - INFO - Executing pre-flight navigation to establish WAF trust...
-2026-08-28 18:42:57,637 - INFO - Pre-flight status: 200, cookies received: ['auth_token', 'incap_ses_798_3343172', 'org.springframework.web.servlet.i18n.CookieLocaleResolver.LOCALE', 'visid_incap_3343172', 'incap_ses_851_3343172', 'auth_token', 'incap_ses_798_3343172', 'org.springframework.web.servlet.i18n.CookieLocaleResolver.LOCALE', 'visid_incap_3343172']
-2026-08-28 18:42:57,637 - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
-2026-08-28 18:42:57,637 - root - INFO - Pre-flight status: 200, cookies received: ['auth_token', 'incap_ses_798_3343172', 'org.springframework.web.servlet.i18n.CookieLocaleResolver.LOCALE', 'visid_incap_3343172', 'incap_ses_851_3343172', 'auth_token', 'incap_ses_798_3343172', 'org.springframework.web.servlet.i18n.CookieLocaleResolver.LOCALE', 'visid_incap_3343172']
-2026-08-28 18:42:57,637 - root - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
-2026-08-28 18:42:57,999 - root - INFO - CapSolver job submitted successfully. Task ID: 79222653-8128-4db5-b6b2-cf69ae579039
-2026-08-28 18:42:57,999 - INFO - CapSolver job submitted successfully. Task ID: 79222653-8128-4db5-b6b2-cf69ae579039
-2026-08-28 18:42:58,000 - INFO - Polling for CapSolver completion... (Max 150 seconds)
-2026-08-28 18:42:58,000 - root - INFO - Polling for CapSolver completion... (Max 150 seconds)
-2026-08-28 18:43:35,883 - root - INFO - CapSolver solved the CAPTCHA successfully!
-2026-08-28 18:43:35,883 - INFO - CapSolver solved the CAPTCHA successfully!
-2026-08-28 18:43:36,833 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
-2026-08-28 18:43:36,833 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
-2026-08-28 18:43:40,355 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
-2026-08-28 18:43:40,355 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
-2026-08-28 18:43:43,875 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
-2026-08-28 18:43:43,875 - root - ERROR - Login failed or blocked. Discarding assignment lease.
-2026-08-28 18:43:43,875 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
-2026-08-28 18:43:43,875 - ERROR - Login failed or blocked. Discarding assignment lease.
-2026-08-28 18:43:44,010 - INFO - Transmitted 5 network logs to SaaS.
-2026-08-28 18:43:44,010 - root - INFO - Transmitted 5 network logs to SaaS.
-2026-08-28 18:43:46,665 - root - INFO - [Thread] Received Assignment #13 for center 138:26,137:26.
-2026-08-28 18:43:46,665 - INFO - [Thread] Received Assignment #13 for center 138:26,137:26.
-2026-08-28 18:43:46,666 - root - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
-2026-08-28 18:43:46,666 - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
-2026-08-28 18:43:46,667 - WARNING - Could not load previous session: 'utf-8' codec can't decode byte 0x80 in position 0: invalid start byte
-2026-08-28 18:43:46,667 - root - WARNING - Could not load previous session: 'utf-8' codec can't decode byte 0x80 in position 0: invalid start byte
-2026-08-28 18:43:46,668 - INFO - Executing login flow for account mnoon2404@gmail.com...
-2026-08-28 18:43:46,668 - root - INFO - Executing login flow for account mnoon2404@gmail.com...
-2026-08-28 18:43:46,668 - root - INFO - No JWT Bearer token present. Must login to authenticate.
-2026-08-28 18:43:46,668 - INFO - No JWT Bearer token present. Must login to authenticate.
-2026-08-28 18:43:46,668 - INFO - Attempting login for mnoon2404@gmail.com...
-2026-08-28 18:43:46,668 - root - INFO - Attempting login for mnoon2404@gmail.com...
-2026-08-28 18:43:46,669 - INFO - Executing pre-flight navigation to establish WAF trust...
-2026-08-28 18:43:46,669 - root - INFO - Executing pre-flight navigation to establish WAF trust...
-2026-08-28 18:43:48,141 - root - INFO - Pre-flight status: 200, cookies received: ['incap_ses_851_3343172', 'visid_incap_3343172']
-2026-08-28 18:43:48,143 - root - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
-2026-08-28 18:43:48,141 - INFO - Pre-flight status: 200, cookies received: ['incap_ses_851_3343172', 'visid_incap_3343172']
-2026-08-28 18:43:48,143 - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
-2026-08-28 18:43:48,431 - root - INFO - CapSolver job submitted successfully. Task ID: ac7957d7-a197-49ee-8799-e144c5eca16b
-2026-08-28 18:43:48,432 - root - INFO - Polling for CapSolver completion... (Max 150 seconds)
-2026-08-28 18:43:48,431 - INFO - CapSolver job submitted successfully. Task ID: ac7957d7-a197-49ee-8799-e144c5eca16b
-2026-08-28 18:43:48,432 - INFO - Polling for CapSolver completion... (Max 150 seconds)
-2026-08-28 18:43:51,683 - INFO - No assignments available. Sleeping for 30 seconds.
-2026-08-28 18:43:51,683 - root - INFO - No assignments available. Sleeping for 30 seconds.
-2026-08-28 18:43:56,583 - INFO - CapSolver solved the CAPTCHA successfully!
-2026-08-28 18:43:56,583 - root - INFO - CapSolver solved the CAPTCHA successfully!
-2026-08-28 18:43:57,529 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
-2026-08-28 18:43:57,529 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
-2026-08-28 18:44:01,048 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
-2026-08-28 18:44:01,048 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
-2026-08-28 18:44:04,565 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
-2026-08-28 18:44:04,566 - ERROR - Login failed or blocked. Discarding assignment lease.
-2026-08-28 18:44:04,565 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
-2026-08-28 18:44:04,566 - root - ERROR - Login failed or blocked. Discarding assignment lease.
-2026-08-28 18:44:04,600 - INFO - Transmitted 5 network logs to SaaS.
-2026-08-28 18:44:04,600 - root - INFO - Transmitted 5 network logs to SaaS.
-2026-08-28 18:44:05,504 - WARNING - Heartbeat failed with 401 Unauthorized. Worker missing in SaaS. Re-registering...
-2026-08-28 18:44:05,504 - root - WARNING - Heartbeat failed with 401 Unauthorized. Worker missing in SaaS. Re-registering...
-2026-08-28 18:44:05,577 - INFO - Registered new worker: worker_73765413
-2026-08-28 18:44:05,577 - root - INFO - Registered new worker: worker_73765413
-2026-08-28 18:44:21,744 - root - INFO - No assignments available. Sleeping for 30 seconds.
-2026-08-28 18:44:21,744 - INFO - No assignments available. Sleeping for 30 seconds.
-2026-08-28 18:44:51,808 - INFO - No assignments available. Sleeping for 30 seconds.
-2026-08-28 18:44:51,808 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-08-28 18:56:18,877 - INFO - Attempting login for mnoon2404@gmail.com...
+2026-08-28 18:56:18,877 - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-08-28 18:56:20,396 - root - INFO - Pre-flight status: 200, cookies received: ['incap_ses_7744_3343172', 'visid_incap_3343172']
+2026-08-28 18:56:20,396 - root - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-08-28 18:56:20,396 - INFO - Pre-flight status: 200, cookies received: ['incap_ses_7744_3343172', 'visid_incap_3343172']
+2026-08-28 18:56:20,396 - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-08-28 18:56:20,608 - INFO - CapSolver job submitted successfully. Task ID: 17c929ae-8a74-43cd-b6dd-ac401470022f
+2026-08-28 18:56:20,608 - root - INFO - CapSolver job submitted successfully. Task ID: 17c929ae-8a74-43cd-b6dd-ac401470022f
+2026-08-28 18:56:20,609 - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-08-28 18:56:20,609 - root - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-08-28 18:56:23,839 - root - INFO - CapSolver solved the CAPTCHA successfully!
+2026-08-28 18:56:23,839 - INFO - CapSolver solved the CAPTCHA successfully!
+2026-08-28 18:56:24,219 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 18:56:24,219 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 18:56:27,705 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 18:56:27,705 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 18:56:31,189 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 18:56:31,189 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 18:56:31,190 - root - ERROR - Login failed or blocked. Discarding assignment lease.
+2026-08-28 18:56:31,190 - ERROR - Login failed or blocked. Discarding assignment lease.
+2026-08-28 18:56:31,293 - root - INFO - Transmitted 4 network logs to SaaS.
+2026-08-28 18:56:31,293 - INFO - Transmitted 4 network logs to SaaS.
+2026-08-28 18:56:34,041 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-08-28 18:56:34,041 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-08-28 18:57:04,109 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-08-28 18:57:04,109 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-08-28 18:57:34,160 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-08-28 18:57:34,160 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-08-28 18:58:04,203 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-08-28 18:58:04,203 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-08-28 18:58:34,261 - INFO - [Thread] Received Assignment #13 for center 138:26,137:26.
+2026-08-28 18:58:34,261 - root - INFO - [Thread] Received Assignment #13 for center 138:26,137:26.
+2026-08-28 18:58:34,261 - INFO - Lease using network proxy: http://user-spbisytqkz-asn-17557:GuiSe08Bwcg2~ciC3b@gate.decodo.com:10001
+2026-08-28 18:58:34,261 - root - INFO - Lease using network proxy: http://user-spbisytqkz-asn-17557:GuiSe08Bwcg2~ciC3b@gate.decodo.com:10001
+2026-08-28 18:58:34,262 - root - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-08-28 18:58:34,262 - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-08-28 18:58:34,263 - INFO - Executing login flow for account mnoon2404@gmail.com...
+2026-08-28 18:58:34,263 - root - INFO - Executing login flow for account mnoon2404@gmail.com...
+2026-08-28 18:58:34,263 - INFO - No JWT Bearer token present. Must login to authenticate.
+2026-08-28 18:58:34,263 - root - INFO - No JWT Bearer token present. Must login to authenticate.
+2026-08-28 18:58:34,263 - INFO - Attempting login for mnoon2404@gmail.com...
+2026-08-28 18:58:34,263 - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-08-28 18:58:34,263 - root - INFO - Attempting login for mnoon2404@gmail.com...
+2026-08-28 18:58:34,263 - root - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-08-28 18:58:35,906 - INFO - Pre-flight status: 200, cookies received: ['incap_ses_7744_3343172', 'visid_incap_3343172']
+2026-08-28 18:58:35,906 - root - INFO - Pre-flight status: 200, cookies received: ['incap_ses_7744_3343172', 'visid_incap_3343172']
+2026-08-28 18:58:35,909 - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-08-28 18:58:35,909 - root - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-08-28 18:58:36,151 - INFO - CapSolver job submitted successfully. Task ID: 9b8f2c16-8ed8-4e9e-b2be-567334fed49c
+2026-08-28 18:58:36,151 - root - INFO - CapSolver job submitted successfully. Task ID: 9b8f2c16-8ed8-4e9e-b2be-567334fed49c
+2026-08-28 18:58:36,152 - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-08-28 18:58:36,152 - root - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-08-28 18:59:00,540 - INFO - CapSolver solved the CAPTCHA successfully!
+2026-08-28 18:59:00,540 - root - INFO - CapSolver solved the CAPTCHA successfully!
+2026-08-28 18:59:01,011 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 18:59:01,011 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 18:59:04,487 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 18:59:04,487 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 18:59:07,875 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 18:59:07,875 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 18:59:07,875 - ERROR - Login failed or blocked. Discarding assignment lease.
+2026-08-28 18:59:07,875 - root - ERROR - Login failed or blocked. Discarding assignment lease.
+2026-08-28 18:59:07,929 - INFO - Transmitted 4 network logs to SaaS.
+2026-08-28 18:59:07,929 - root - INFO - Transmitted 4 network logs to SaaS.
+2026-08-28 18:59:09,564 - root - INFO - [Thread] Received Assignment #12 for center 138:26,137:26.
+2026-08-28 18:59:09,564 - root - INFO - Lease using network proxy: http://user-spbisytqkz-asn-17557:GuiSe08Bwcg2~ciC3b@gate.decodo.com:10001
+2026-08-28 18:59:09,564 - INFO - [Thread] Received Assignment #12 for center 138:26,137:26.
+2026-08-28 18:59:09,564 - INFO - Lease using network proxy: http://user-spbisytqkz-asn-17557:GuiSe08Bwcg2~ciC3b@gate.decodo.com:10001
+2026-08-28 18:59:09,565 - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-08-28 18:59:09,565 - root - INFO - Using curl_cffi Chrome impersonation to bypass WAF.
+2026-08-28 18:59:09,566 - root - INFO - Executing login flow for account mnoon2404@gmail.com...
+2026-08-28 18:59:09,566 - INFO - Executing login flow for account mnoon2404@gmail.com...
+2026-08-28 18:59:09,566 - INFO - No JWT Bearer token present. Must login to authenticate.
+2026-08-28 18:59:09,566 - root - INFO - No JWT Bearer token present. Must login to authenticate.
+2026-08-28 18:59:09,566 - root - INFO - Attempting login for mnoon2404@gmail.com...
+2026-08-28 18:59:09,566 - INFO - Attempting login for mnoon2404@gmail.com...
+2026-08-28 18:59:09,566 - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-08-28 18:59:09,566 - root - INFO - Executing pre-flight navigation to establish WAF trust...
+2026-08-28 18:59:11,106 - INFO - Pre-flight status: 200, cookies received: ['incap_ses_7744_3343172', 'visid_incap_3343172']
+2026-08-28 18:59:11,106 - root - INFO - Pre-flight status: 200, cookies received: ['incap_ses_7744_3343172', 'visid_incap_3343172']
+2026-08-28 18:59:11,107 - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-08-28 18:59:11,107 - root - INFO - [Attempt 1/2] Submitting CapSolver job for sitekey 6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2 on https://pk-gr-services.gvcworld.eu/login...
+2026-08-28 18:59:11,405 - INFO - CapSolver job submitted successfully. Task ID: a25eaad7-e9e1-4db9-91db-652e9d127ad6
+2026-08-28 18:59:11,405 - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-08-28 18:59:11,405 - root - INFO - CapSolver job submitted successfully. Task ID: a25eaad7-e9e1-4db9-91db-652e9d127ad6
+2026-08-28 18:59:11,405 - root - INFO - Polling for CapSolver completion... (Max 150 seconds)
+2026-08-28 18:59:32,041 - root - INFO - CapSolver solved the CAPTCHA successfully!
+2026-08-28 18:59:32,041 - INFO - CapSolver solved the CAPTCHA successfully!
+2026-08-28 18:59:32,420 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 18:59:32,420 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 18:59:35,935 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 18:59:35,935 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 18:59:39,314 - root - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 18:59:39,314 - root - ERROR - Login failed or blocked. Discarding assignment lease.
+2026-08-28 18:59:39,314 - WARNING - Login returned HTTP 200 with HTML instead of auth response (Imperva WAF block). Snippet: '<html>\r\n<head>\r\n<META NAME="robots" CONTENT="noindex,nofollow">\r\n<script src="/_Incapsula_Resource?SWJIYLWA=5074a744e2e3d891814e9a2dace20bd4,719d34d31'
+2026-08-28 18:59:39,314 - ERROR - Login failed or blocked. Discarding assignment lease.
+2026-08-28 18:59:39,392 - INFO - Transmitted 4 network logs to SaaS.
+2026-08-28 18:59:39,392 - root - INFO - Transmitted 4 network logs to SaaS.
+2026-08-28 18:59:39,843 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-08-28 18:59:39,843 - INFO - No assignments available. Sleeping for 30 seconds.
