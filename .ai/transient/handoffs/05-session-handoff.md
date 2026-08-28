@@ -79,8 +79,9 @@ To satisfy the user requirement of securing production to a known working state 
 ## 4. Pending Work / Next Session Objectives
 1. **Live Booking Validation:** Monitor the next live slot opening with the updated `auto_dispatch_queue` to observe automatic creation of `BookingTask` and verify the booker worker executes the end-to-end OTP booking flow.
 2. **SaaS Admin UI for Appointment Type(s) - Days Mapping:** Implement a dynamic configuration UI in SaaS Admin (under `/settings` or `/assignments`) allowing staff to configure which appointment types (`2`, `26`, `6`, `5`, etc.) map to which active days of the week, replacing hardcoded rules.
-3. **Dynamic Regional Domain Failover (Control Plane):** Implement dynamic failover in the SaaS Scheduler to route worker leases to `https://bd-gr-services.gvcworld.eu` during high-traffic Pakistan slot drop windows.
-4. **Passport OCR Orientation Enhancements (Deferred backlog):** Enhance passport preprocessing to handle skewed orientations and low-contrast prints.
+3. **Live Slot Availability Calendar & Peak-Drop Board:** Implement the real-time calendar heatmap and live ticker dashboard (detailed in `.ai/permanent/workflows/09-live-slot-availability-calendar-board.md`) displaying open dates, times, and capacity during slot drops so staff can target exact slots for manual bookings without blind trial-and-error.
+4. **Dynamic Regional Domain Failover (Control Plane):** Implement dynamic failover in the SaaS Scheduler to route worker leases to `https://bd-gr-services.gvcworld.eu` during high-traffic Pakistan slot drop windows.
+5. **Passport OCR Orientation Enhancements (Deferred backlog):** Enhance passport preprocessing to handle skewed orientations and low-contrast prints.
 
 ---
-*Branch State: feature/staging & feature/prod synchronized | Date: 2026-08-29 02:10 PKT*
+*Branch State: feature/staging & feature/prod synchronized | Date: 2026-08-29 02:15 PKT*
