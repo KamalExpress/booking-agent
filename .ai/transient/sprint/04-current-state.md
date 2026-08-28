@@ -1,33 +1,29 @@
-# Sprint 13: Current State & Handoff
+# Sprint 14: Current State & Handoff
 
 ## Current Sprint
-Sprint 13 (Tenant Experience, Custom Confirmation Modals, Feature Guide & Legal Compliance Center)
+Sprint 14 (HAR Booking Protocol Parity, Telemetry, Manual OTP Entry & AI Document Intake Ingestion)
 
 ## Completed Work & Architectural Upgrades
-- **Custom Dark-Mode Confirmation Modals:**
-  - Replaced native browser `confirm(...)` alerts across all application templates (`workers.html`, `worker_detail.html`, `accounts.html`, `account_detail.html`, `clients.html`, `queue.html`) with glassmorphic modal dialogs (`promptConfirmModal`).
-- **Global Client Directory & SaaS Admin Integration:**
-  - Enabled **Client Directory** link in main navigation sidebar for SaaS Super Admin (`SUPER_ADMIN`).
-  - Updated `/clients` route in `ui.py` to bulk load tenant names for SaaS Super Admin, adding a **Tenant / Agency** column in `clients.html`.
-- **Collapsed Sidebar Navigation Groups:**
-  - Configured sidebar details section groups (**Core Platform**, **Execution Fleet**, **Workloads**, **Observability**, **System Admin**) to be **collapsed by default**, auto-expanding only when navigating active pages within that group.
-- **Tenant Feature Guide & Platform Walkthrough (`/features`):**
-  - Built an interactive feature guide page detailing **Client Directory**, **Waitlist Queue**, **Slot Drop Alerts**, and **Agency Privacy**.
-  - Positioned worker agents as **In-System Digital Booking Specialists**, using warm, user-centric language and adding an **`Under Review`** status badge to Section 2.
-- **Consolidated Legal & Compliance Center (`/legal`):**
-  - Built a tabbed Legal Center covering **Terms of Service**, **Privacy Policy & Data Protection**, **Cookie Usage**, and **Security Standards**.
-  - Integrated a mobile-responsive **Cookie & Privacy Consent Toast** banner across all pages.
-- **Portal-Agnostic Scalability Audit:**
-  - Conducted an empirical audit and generated `scalability_verification.md` comparing the implementation against `.ai/permanent/workflows/02-architecture-scalability.md`.
-  - Identified action items for dynamic adapter factory and worker capabilities to achieve 100% portal-agnostic abstraction.
-- **Branch Synchronization (`feature/staging` & `feature/prod`):**
-  - Synchronized and verified all changes across both `feature/staging` and `feature/prod` branches.
+- **GVC Booking Protocol Alignment & Real HAR Parity:**
+  - Standardized GVC booking payload to exact HAR schema (`POST /api/v1/appointments` with `otpuser`, `periodslotid`, `phonenumberprefix: {"id": "197"}`).
+  - Extracted dynamic `#otpuser` session token from `POST /appointments/add` pre-flight page.
+  - Implemented continuous booking traffic logging to `data/har_logs/booking_traffic_YYYYMMDD.jsonl`.
+  - Added adaptive runtime error handling for `INVALID_OTP`, `SLOT_TAKEN`, and automatic WAF cookie re-negotiation.
+- **Manual OTP Injection & Task Hover Metadata:**
+  - Added `POST /api/v1/webhooks/manual-otp` endpoint for immediate staff OTP fallback.
+  - Added "Manual OTP Entry" quick modal in `booking_tasks.html`.
+  - Added rich interactive hover tooltips in `booking_tasks.html` displaying applicant name, passport number, phone number, and leased portal account SIM phone number.
+- **AI Document Scanner & ICAO 9303 Client Intake Ingestion:**
+  - Built `AiOcrService` connecting to internal Tiny-LLM endpoint (`ai.alamiaconnect.com`, model `llama3.2_3b_instruct`) configured via `BITNET_SERVER_URL` and `BITNET_API_KEY`.
+  - Integrated client-side `Tesseract.js` Web Worker OCR in `clients.html` for instant document photo extraction with live progress.
+  - Integrated deterministic ICAO 9303 MRZ parser for decoding passport numbers, dates (`YYMMDD` -> `DD/MM/YYYY`), gender, and uppercase names with 100% precision.
+  - Added split-screen AI review modal in `clients.html` with instant one-click Save & Enqueue into Waitlist Queue.
+  - Multi-tenant client data successfully verified across Default and Kamal Express tenants.
 
 ## Pending / Next Priorities
-1. **Execute E2E Booking Validation (on `feature/staging`):** Run a complete end-to-end test on the staging environment to verify the entire booking lifecycle: `SLOT_FOUND` -> Web Push -> `BookingTask` -> Booker lease -> `BOOKING_SUCCESS`. **Rule:** Auto-booking changes must be strictly verified manually on staging. DO NOT push or merge to production unless 100% confident.
-2. **Address Architectural Scalability Gaps (on `feature/scalable-arch`):** Implement the missing components to reach 100% portal-agnostic abstraction (Dynamic Adapter Factory, Worker/Proxy scoping, Dynamic Form Intake, and Captcha Refinement). 
-    - **Deployment Rule:** This branch must be deployed to a separate VPS endpoint (`scalearch.alamiaconnect.com`). 
-    - **Merge Rule:** It must remain separate from `staging` and `production` until we add at least one more portal and verify the full workflow. Once verified, it can merge into `staging`. After strict approval, it will merge into `production`.
+1. **Live Slot Drop Execution Verification (on `feature/staging`):** Verify the automated headless booker during upcoming live slot openings with the freshly ingested applicant profiles across tenants.
+2. **Advanced Image Preprocessing (Future):** Add client-side canvas rotation, deskewing, and contrast enhancements for tilted or low-light phone photos.
+3. **Second Portal Adapter (`VFSAdapter`) on `feature/scalable-arch`:** Proceed with multi-portal abstraction once GVC live slot drop verification concludes.
 
 ---
-*Last Reviewed: July 30, 2026 | Production Branch: feature/prod | Owner: Knowledge Manager*
+*Last Reviewed: August 28, 2026 | Production Branch: feature/prod | Staging Branch: feature/staging | Owner: Knowledge Manager*
