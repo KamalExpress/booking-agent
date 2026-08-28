@@ -1,0 +1,54 @@
+Waiting for Postgres to be ready...
+Ensuring Base tables exist before migrations...
+Applying Alembic Migrations...
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+Seeding default database records...
+Database tables should already be created via entrypoint.
+Database initialization complete.
+Starting FastAPI Server...
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+Database tables should already be created via entrypoint.
+Database initialization complete.
+INFO:     172.28.0.4:57010 - "POST /api/v1/worker/stream-logs HTTP/1.1" 200 OK
+INFO:     172.28.0.1:46160 - "WebSocket /ws/live-logs" [accepted]
+INFO:     connection open
+INFO:     172.28.0.1:46168 - "WebSocket /ws/live-logs" [accepted]
+INFO:     connection open
+INFO:     172.28.0.1:46170 - "GET /assignments/12 HTTP/1.1" 200 OK
+INFO:     172.28.0.1:46170 - "GET /manifest.json HTTP/1.1" 200 OK
+INFO:     172.28.0.1:34858 - "WebSocket /ws/live-logs" [accepted]
+INFO:     connection open
+INFO:     172.28.0.4:36476 - "POST /api/v1/worker/heartbeat HTTP/1.1" 200 OK
+INFO:     172.28.0.4:36472 - "GET /api/v1/worker/assignments/next HTTP/1.1" 204 No Content
+INFO:     172.28.0.4:36476 - "GET /api/v1/worker/runtime-config HTTP/1.1" 200 OK
+INFO:     172.28.0.5:49714 - "GET /api/v1/worker/assignments/next HTTP/1.1" 204 No Content
+INFO:     172.28.0.5:49738 - "POST /api/v1/worker/heartbeat HTTP/1.1" 200 OK
+INFO:     172.28.0.5:49728 - "POST /api/v1/worker/heartbeat HTTP/1.1" 200 OK
+INFO:     172.28.0.5:49738 - "GET /api/v1/worker/runtime-config HTTP/1.1" 200 OK
+INFO:     172.28.0.5:49728 - "GET /api/v1/worker/runtime-config HTTP/1.1" 200 OK
+INFO:     172.28.0.4:36476 - "POST /api/v1/worker/stream-logs HTTP/1.1" 200 OK
+INFO:     172.28.0.1:47218 - "POST /assignments/12/edit HTTP/1.1" 303 See Other
+INFO:     172.28.0.1:47218 - "GET /assignments/12 HTTP/1.1" 200 OK
+INFO:     172.28.0.1:47226 - "WebSocket /ws/live-logs" [accepted]
+INFO:     connection open
+INFO:     172.28.0.1:47218 - "GET /manifest.json HTTP/1.1" 200 OK
+INFO:     172.28.0.1:47218 - "GET /booking-tasks HTTP/1.1" 200 OK
+INFO:     172.28.0.1:47218 - "GET /manifest.json HTTP/1.1" 200 OK
+INFO:     172.28.0.1:52026 - "WebSocket /ws/live-logs" [accepted]
+INFO:     connection open
+INFO:     172.28.0.4:38328 - "GET /api/v1/worker/assignments/next HTTP/1.1" 204 No Content
+INFO:     172.28.0.4:38344 - "POST /api/v1/worker/heartbeat HTTP/1.1" 200 OK
+INFO:     172.28.0.5:47770 - "GET /api/v1/worker/assignments/next HTTP/1.1" 204 No Content
+INFO:     172.28.0.5:47770 - "POST /api/v1/worker/heartbeat HTTP/1.1" 200 OK
+INFO:     172.28.0.5:47774 - "POST /api/v1/worker/heartbeat HTTP/1.1" 200 OK
+INFO:     172.28.0.4:38344 - "POST /api/v1/worker/stream-logs HTTP/1.1" 200 OK
+INFO:     172.28.0.4:46730 - "GET /api/v1/worker/assignments/next HTTP/1.1" 204 No Content
+INFO:     172.28.0.4:46732 - "POST /api/v1/worker/heartbeat HTTP/1.1" 200 OK
+INFO:     172.28.0.5:60880 - "GET /api/v1/worker/assignments/next HTTP/1.1" 204 No Content
+INFO:     172.28.0.5:60880 - "POST /api/v1/worker/heartbeat HTTP/1.1" 200 OK
+INFO:     172.28.0.5:60880 - "POST /api/v1/worker/heartbeat HTTP/1.1" 200 OK
+INFO:     172.28.0.4:46732 - "POST /api/v1/worker/stream-logs HTTP/1.1" 200 OK

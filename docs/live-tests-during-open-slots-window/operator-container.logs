@@ -1,0 +1,22 @@
+Starting Headless Worker Node connecting to http://cloud-saas-staging:8000...
+2026-08-28 18:04:22,353 - INFO - Loaded existing worker credentials: worker_db9ef308
+2026-08-28 18:04:22,354 - INFO - Starting Worker Node Scheduler Engine (Parallel Mode)...
+2026-08-28 18:04:22,354 - root - INFO - Starting Worker Node Scheduler Engine (Parallel Mode)...
+2026-08-28 18:04:22,363 - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-staging', port=8000): Max retries exceeded with url: /api/v1/worker/heartbeat (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-staging', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-08-28 18:04:22,363 - WARNING - Heartbeat failed
+2026-08-28 18:04:22,363 - root - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-staging', port=8000): Max retries exceeded with url: /api/v1/worker/heartbeat (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-staging', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-08-28 18:04:22,363 - root - WARNING - Heartbeat failed
+2026-08-28 18:04:22,365 - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-staging', port=8000): Max retries exceeded with url: /api/v1/worker/assignments/next (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-staging', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-08-28 18:04:22,365 - root - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-staging', port=8000): Max retries exceeded with url: /api/v1/worker/assignments/next (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-staging', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-08-28 18:04:22,365 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-08-28 18:04:22,365 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-08-28 18:04:25,360 - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-staging', port=8000): Max retries exceeded with url: /api/v1/worker/stream-logs (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-staging', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-08-28 18:04:25,360 - root - ERROR - API request failed: HTTPConnectionPool(host='cloud-saas-staging', port=8000): Max retries exceeded with url: /api/v1/worker/stream-logs (Caused by NewConnectionError("HTTPConnection(host='cloud-saas-staging', port=8000): Failed to establish a new connection: [Errno 111] Connection refused"))
+2026-08-28 18:04:52,460 - root - INFO - SaaS requested runtime config refresh
+2026-08-28 18:04:52,460 - INFO - SaaS requested runtime config refresh
+2026-08-28 18:04:52,518 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-08-28 18:04:52,518 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-08-28 18:05:22,570 - root - INFO - No assignments available. Sleeping for 30 seconds.
+2026-08-28 18:05:22,570 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-08-28 18:05:52,634 - INFO - No assignments available. Sleeping for 30 seconds.
+2026-08-28 18:05:52,634 - root - INFO - No assignments available. Sleeping for 30 seconds.
