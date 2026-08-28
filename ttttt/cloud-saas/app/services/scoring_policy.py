@@ -12,7 +12,7 @@ class ScoringPolicy:
         return datetime.now(timezone.utc).replace(tzinfo=None)
 
     @staticmethod
-    def score_account(account: PortalAccount, task_provider: str) -> int:
+    def score_account(account: PortalAccount, task_provider: str = "GVC", *args, **kwargs) -> int:
         """
         Calculates a priority score for a given PortalAccount.
         Returns a score (higher is better) or -1 if ineligible.
@@ -30,8 +30,13 @@ class ScoringPolicy:
         if account.cooldown_until and account.cooldown_until > now:
             return -1
 
-        # Base score is the health score
-        score = account.health_score
+        # Base score is the provider-specific health score, falling back to global health_score
+        provider_key = task_provider.strip().upper() if task_provider else "GVC"
+        base_score = account.health_score
+        if account.provider_health and isinstance(account.provider_health, dict):
+            base_score = account.provider_health.get(provider_key, account.health_score)
+            
+        score = base_score
 
         # Penalty for recent failures
         score -= (account.failure_count * 10)
@@ -44,7 +49,7 @@ class ScoringPolicy:
         return max(score, 0)
 
     @staticmethod
-    def score_proxy(proxy: Proxy) -> int:
+    def score_proxy(proxy: Proxy, task_provider: str = "GVC", *args, **kwargs) -> int:
         """
         Calculates a priority score for a given Proxy.
         Returns a score (higher is better) or -1 if ineligible.
@@ -56,8 +61,13 @@ class ScoringPolicy:
         if proxy.cooldown_until and proxy.cooldown_until > now:
             return -1
 
-        # Base score is the health score
-        score = proxy.health_score
+        # Base score is the provider-specific health score, falling back to global health_score
+        provider_key = task_provider.strip().upper() if task_provider else "GVC"
+        base_score = proxy.health_score
+        if proxy.provider_health and isinstance(proxy.provider_health, dict):
+            base_score = proxy.provider_health.get(provider_key, proxy.health_score)
+            
+        score = base_score
 
         # Penalty for failures
         score -= (proxy.failure_count * 5)
