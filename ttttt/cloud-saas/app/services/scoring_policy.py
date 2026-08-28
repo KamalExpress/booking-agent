@@ -32,9 +32,10 @@ class ScoringPolicy:
 
         # Base score is the provider-specific health score, falling back to global health_score
         provider_key = task_provider.strip().upper() if task_provider else "GVC"
-        base_score = account.health_score
-        if account.provider_health and isinstance(account.provider_health, dict):
-            base_score = account.provider_health.get(provider_key, account.health_score)
+        base_score = getattr(account, "health_score", 100)
+        provider_health = getattr(account, "provider_health", None)
+        if provider_health and isinstance(provider_health, dict):
+            base_score = provider_health.get(provider_key, base_score)
             
         score = base_score
 
@@ -63,9 +64,10 @@ class ScoringPolicy:
 
         # Base score is the provider-specific health score, falling back to global health_score
         provider_key = task_provider.strip().upper() if task_provider else "GVC"
-        base_score = proxy.health_score
-        if proxy.provider_health and isinstance(proxy.provider_health, dict):
-            base_score = proxy.provider_health.get(provider_key, proxy.health_score)
+        base_score = getattr(proxy, "health_score", 100)
+        provider_health = getattr(proxy, "provider_health", None)
+        if provider_health and isinstance(provider_health, dict):
+            base_score = provider_health.get(provider_key, base_score)
             
         score = base_score
 
