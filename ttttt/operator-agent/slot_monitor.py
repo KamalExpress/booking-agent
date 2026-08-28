@@ -55,6 +55,7 @@ class SlotMonitorEngine(threading.Thread):
         self.api = SaaSClient(base_url)
         self._stop_event = threading.Event()
         self.executor = ThreadPoolExecutor(max_workers=5)
+        self.active_leases = set()
 
     def stop(self):
         self._stop_event.set()
@@ -89,15 +90,28 @@ class SlotMonitorEngine(threading.Thread):
                     self._stop_event.wait(retry_after)
                     continue
                 
-                # Dispatch to Thread Pool
-                self.executor.submit(self._process_lease, lease)
+                lease_id = lease.get("id") or lease.get("assignment_context", {}).get("id")
+                if lease_id in self.active_leases:
+                    # Already executing this lease in another thread; do not spawn duplicates
+                    time.sleep(5)
+                    continue
                 
-                # Small delay to prevent hammering the pull endpoint too fast
-                time.sleep(1)
+                # Dispatch to Thread Pool
+                self.active_leases.add(lease_id)
+                self.executor.submit(self._safe_process_lease, lease, lease_id)
+                
+                # Small delay before polling again
+                time.sleep(5)
                 
             except Exception as e:
                 logging.error(f"Worker Engine loop encountered error: {e}", exc_info=True)
                 time.sleep(5)
+
+    def _safe_process_lease(self, lease, lease_id):
+        try:
+            self._process_lease(lease)
+        finally:
+            self.active_leases.discard(lease_id)
 
     def _process_lease(self, lease):
         try:
