@@ -12,9 +12,12 @@ import uuid
 import json
 from notifications import send_push_notification
 
-from models import WorkerNode, Assignment, Lease, EventLog, PortalAccount, SystemSetting, WorkerVersion, WorkerLog, get_db
+from models import (
+    WorkerNode, Assignment, Lease, EventLog, PortalAccount, 
+    SystemSetting, WorkerVersion, WorkerLog, SlotAvailability, 
+    BookingTask, get_db, SessionLocal
+)
 from secrets_manager import secrets_manager
-from models import SessionLocal
 
 from services.worker_service import WorkerService, get_worker_service
 from services.lease_service import LeaseService, get_lease_service
@@ -290,6 +293,7 @@ def submit_logs(
     lease_service: LeaseService = Depends(get_lease_service)
 ):
     scheduler = SchedulerService(db)
+    lease = None
     
     if req.assignment_id:
         lease = db.query(Lease).filter(
@@ -322,7 +326,7 @@ def submit_logs(
     
     if req.event_type == "LOGIN_SUCCESS" and req.assignment_id:
         assignment = db.query(Assignment).filter(Assignment.id == req.assignment_id).first()
-        if assignment and 'lease' in locals() and lease:
+        if assignment and lease:
             account = db.query(PortalAccount).filter(PortalAccount.id == lease.portal_account_id).first()
             if account:
                 account.last_login = datetime.utcnow()
@@ -334,7 +338,6 @@ def submit_logs(
         notify_no_slots = db.query(SystemSetting).filter(SystemSetting.key == "notify.no_slots_found").first()
         vac_id = req.payload.get("visa_center") if req.payload else None
         if vac_id:
-            from models import SlotAvailability
             open_slots = db.query(SlotAvailability).filter(
                 SlotAvailability.visa_center == vac_id,
                 SlotAvailability.status == "AVAILABLE"
@@ -372,7 +375,6 @@ def submit_logs(
             assignment = db.query(Assignment).filter(Assignment.id == req.assignment_id).first()
             if assignment:
                 # Save to SlotAvailability database using the vac_id from the worker payload
-                from models import SlotAvailability, BookingTask, Lease, PortalAccount
                 found_by_label = worker.worker_id
                 active_lease = db.query(Lease).filter(Lease.worker_id == worker.worker_id, Lease.status.in_(["Leased", "Running", "Pending"])).first()
                 if active_lease and active_lease.portal_account_id:
