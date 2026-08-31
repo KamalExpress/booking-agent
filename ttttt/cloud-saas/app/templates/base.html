@@ -1097,6 +1097,7 @@
         let isOpen = false;
         let activeChallenge = null;
         let timerInterval = null;
+        let lastNotifiedChallengeId = null;
 
         function toggleDrawer(forceState) {
             isOpen = (forceState !== undefined) ? forceState : !isOpen;
@@ -1140,12 +1141,19 @@
                 if (badge) badge.classList.add('hidden');
                 if (badgeDot) badgeDot.classList.add('hidden');
                 if (timerInterval) clearInterval(timerInterval);
+                lastNotifiedChallengeId = null;
                 return;
             }
 
             if (container) container.classList.remove('hidden');
             if (badge) badge.classList.remove('hidden');
             if (badgeDot) badgeDot.classList.remove('hidden');
+
+            if (lastNotifiedChallengeId !== challenge.challenge_id) {
+                lastNotifiedChallengeId = challenge.challenge_id;
+                appendMessage('copilot', `⚡ Action Required: Booker worker is requesting OTP verification for ${challenge.applicant_name || 'applicant'} at Center ${challenge.visa_center || 'VAC'}. Please enter the 6-digit code in the verification card above.`);
+                toggleDrawer(true);
+            }
 
             document.getElementById('copilotApplicantName').innerText = challenge.applicant_name || 'Applicant';
             document.getElementById('copilotVisaCenter').innerText = `Center ${challenge.visa_center || 'VAC'}`;
