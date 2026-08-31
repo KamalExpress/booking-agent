@@ -20,7 +20,7 @@ If you are an AI Agent entering a fresh conversation, you **must** read the foll
 ## Directory Structure
 
 ### Permanent Knowledge (Lives for Years)
-* **`permanent/architecture/`**: High-level design intent, tradeoffs, and system boundaries.
+* **`permanent/architecture/`**: High-level design intent, tradeoffs, system boundaries, and the **Runtime Incidents & Fixes Register** (`09-runtime-incidents-and-fixes-discovered.md`).
 * **`permanent/adr/`**: Architecture Decision Records. Contains the `README.md` index of all accepted, rejected, and deprecated decisions.
 * **`permanent/glossary/`**: The single source of truth for project terminology.
 * **`permanent/standards/`**: Coding conventions and testing standards.
