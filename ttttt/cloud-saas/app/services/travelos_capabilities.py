@@ -53,7 +53,7 @@ def get_workers(db: Optional[Session] = None) -> str:
             hb_age = (datetime.utcnow() - w.last_heartbeat).total_seconds() if getattr(w, 'last_heartbeat', None) else None
             status = getattr(w, 'status', 'Offline') or 'Offline'
             sched = getattr(w, 'scheduling_state', 'Accepting Jobs') or 'Accepting Jobs'
-            lines.append(f"• {w.worker_id} [{status}] ({sched}) - Scrape: {w.can_scrape}, Book: {w.can_book} - Last Heartbeat: {format_human_age(hb_age)}")
+            lines.append(f"- {w.worker_id} [{status}] ({sched}) - Scrape: {w.can_scrape}, Book: {w.can_book} - Last Heartbeat: {format_human_age(hb_age)}")
         return "\n".join(lines)
     finally:
         if not db: sdb.close()
@@ -152,7 +152,7 @@ def get_available_slots(visa_center: Optional[str] = None, days: Optional[int] =
                     times = [str(x) for x in s.slots_data[:4]]
                 time_str = f" (Times: {', '.join(times)})" if times else ""
                 found_age = (datetime.utcnow() - s.created_at).total_seconds() if s.created_at else None
-                lines.append(f"• Center {s.visa_center} on {s.date}{time_str} - Found by {s.found_by or 'worker'} ({format_human_age(found_age)})")
+                lines.append(f"- Center {s.visa_center} on {s.date}{time_str} - Found by {s.found_by or 'worker'} ({format_human_age(found_age)})")
         else:
             lines.append(f"No currently active appointment slots available{center_msg}.")
             
@@ -178,7 +178,7 @@ def get_available_slots(visa_center: Optional[str] = None, days: Optional[int] =
                     times = [str(x) for x in s.slots_data[:4]]
                 time_str = f" (Times: {', '.join(times)})" if times else ""
                 age_val = (datetime.utcnow() - s.created_at).total_seconds() if s.created_at else None
-                lines.append(f"• Center {s.visa_center} on {s.date}{time_str} - Discovered by {s.found_by or 'worker'} ({format_human_age(age_val)}, status: {s.status})")
+                lines.append(f"- Center {s.visa_center} on {s.date}{time_str} - Discovered by {s.found_by or 'worker'} ({format_human_age(age_val)}, status: {s.status})")
         elif not active_slots:
             lines.append(f"No historical slots were discovered in the last {lookback_days} days{center_msg} either.")
             
@@ -232,7 +232,7 @@ def get_active_leases(limit: int = 15, db: Optional[Session] = None) -> str:
         lines = [f"Active Leases ({len(leases)}):"]
         for l in leases:
             age = (datetime.utcnow() - l.created_at).total_seconds() if l.created_at else 0
-            lines.append(f"• Lease #{l.id} [{l.status}] - Worker: {l.worker_id} - Age: {format_human_duration(age)}")
+            lines.append(f"- Lease #{l.id} [{l.status}] - Worker: {l.worker_id} - Age: {format_human_duration(age)}")
         return "\n".join(lines)
     finally:
         if not db: sdb.close()
@@ -271,12 +271,12 @@ def get_portal_health_summary(db: Optional[Session] = None) -> str:
                 age_str = f"{age_sec} second(s) ago"
                 
             if age_sec > 900: # > 15 minutes
-                lines.append(f"⏱️ Scraping Pipeline: STALE — Last checked {age_str} (Expected: ~5 mins).")
-                recommendations.append("Scraping has stalled. Check worker processes or click [ 🧹 Cleanup ] to reconcile leases.")
+                lines.append(f"[SCRAPING PIPELINE] STALE - Last checked {age_str} (Expected: ~5 mins).")
+                recommendations.append("Scraping has stalled. Check worker processes or click [Cleanup] to reconcile leases.")
             else:
-                lines.append(f"⏱️ Scraping Pipeline: HEALTHY — Last checked {age_str}.")
+                lines.append(f"[SCRAPING PIPELINE] HEALTHY - Last checked {age_str}.")
         else:
-            lines.append("⏱️ Scraping Pipeline: NEVER CHECKED — No slot check events recorded in database.")
+            lines.append("[SCRAPING PIPELINE] NEVER CHECKED - No slot check events recorded in database.")
             recommendations.append("No slot checks recorded. Verify scraping workers are running and accepting jobs.")
 
         # 2. Worker Fleet Status
@@ -284,7 +284,7 @@ def get_portal_health_summary(db: Optional[Session] = None) -> str:
         total_w = len(workers)
         online_w = sum(1 for w in workers if w.is_online)
         err_w = sum(1 for w in workers if w.status == "Error")
-        lines.append(f"🤖 Worker Fleet: {online_w}/{total_w} online ({err_w} in error status).")
+        lines.append(f"[WORKER FLEET] {online_w}/{total_w} online ({err_w} in error status).")
         if online_w == 0:
             recommendations.append("Zero scraping workers are currently online. Check worker host / Docker services.")
 
@@ -297,10 +297,10 @@ def get_portal_health_summary(db: Optional[Session] = None) -> str:
             acc_counts[st] = acc_counts.get(st, 0) + 1
             
         acc_str = ", ".join([f"{k}: {v}" for k, v in acc_counts.items()]) if acc_counts else "0 total"
-        lines.append(f"👥 Portal Accounts: {len(accounts)} total ({acc_str})")
+        lines.append(f"[PORTAL ACCOUNTS] {len(accounts)} total ({acc_str})")
         ready_accs = acc_counts.get('READY', 0)
         active_prx = sum(1 for p in proxies if (getattr(p, 'status', 'READY') or 'READY').upper() in ['READY', 'LEASED', 'ACTIVE'] and not (getattr(p, 'cooldown_until', None) and p.cooldown_until > now))
-        lines.append(f"🌐 Proxies: {active_prx}/{len(proxies)} active.")
+        lines.append(f"[PROXIES] {active_prx}/{len(proxies)} active.")
         if active_prx == 0 and len(proxies) > 0:
             recommendations.append("All proxies are inactive or failing. Verify proxy configurations.")
 
@@ -312,26 +312,26 @@ def get_portal_health_summary(db: Optional[Session] = None) -> str:
         ).order_by(EventLog.created_at.desc()).limit(5).all()
         
         if recent_errors:
-            lines.append(f"⚠️ Recent Worker Errors ({len(recent_errors)} in last 24h):")
+            lines.append(f"[RECENT WORKER ERRORS] ({len(recent_errors)} in last 24h):")
             for ev in recent_errors:
                 msg = ""
                 if ev.payload and isinstance(ev.payload, dict):
                     msg = ev.payload.get("message") or ev.payload.get("error") or str(ev.payload)[:60]
-                lines.append(f" • [{ev.created_at.strftime('%H:%M')}] {ev.worker_id or 'worker'}: {ev.event_type} - {msg}")
+                lines.append(f" - [{ev.created_at.strftime('%H:%M')}] {ev.worker_id or 'worker'}: {ev.event_type} - {msg}")
                 if "PROXY" in ev.event_type:
                     recommendations.append(f"Worker {ev.worker_id} hit proxy timeout. Inspect or rotate proxy pool.")
                 elif "CLOUDFLARE" in ev.event_type:
                     recommendations.append("Cloudflare challenge encountered. Check TLS fingerprint / curl_cffi settings.")
         else:
-            lines.append("✅ Recent Errors: No critical worker errors recorded in the last 24 hours.")
+            lines.append("[RECENT ERRORS] No critical worker errors recorded in the last 24 hours.")
 
         # 5. Push Notifications Health
         sub_count = sdb.query(PushSubscription).count()
         if sub_count == 0:
-            lines.append("🔔 Push Notifications: 0 devices subscribed in database.")
+            lines.append("[PUSH NOTIFICATIONS] 0 devices subscribed in database.")
             recommendations.append("You have not enabled push notifications on this device. Click 'Enable Notifications' in the PWA sidebar.")
         else:
-            lines.append(f"🔔 Push Notifications: {sub_count} active device subscription(s) registered.")
+            lines.append(f"[PUSH NOTIFICATIONS] {sub_count} active device subscription(s) registered.")
 
         # 6. Actionable Guidance / Recommendations
         if recommendations:
@@ -341,11 +341,11 @@ def get_portal_health_summary(db: Optional[Session] = None) -> str:
                 if r not in seen_recs:
                     seen_recs.add(r)
                     dedup_recs.append(r)
-            lines.append("\n💡 Actionable Recommendations:")
+            lines.append("\n[ACTIONABLE RECOMMENDATIONS]")
             for i, rec in enumerate(dedup_recs, 1):
                 lines.append(f" {i}. {rec}")
         else:
-            lines.append("\n💡 System is operating optimally with no action required.")
+            lines.append("\n[SYSTEM STATUS] System is operating optimally with no action required.")
 
         return "\n".join(lines)
     finally:

@@ -143,7 +143,7 @@ class CopilotService:
                 from notifications import send_push_notification
                 sdb = db or SessionLocal()
                 try:
-                    cnt = send_push_notification(sdb, "Test Push Notification", "🔔 This is a live test notification from Alamia Copilot.")
+                    cnt = send_push_notification(sdb, "Test Push Notification", "[TEST] This is a live test notification from Alamia Copilot.")
                     return {"type": "text", "content": f"Test push notification dispatched to {cnt} registered device endpoint(s)."}
                 finally:
                     if not db: sdb.close()
@@ -163,7 +163,7 @@ class CopilotService:
                     lines = [f"Found {len(challenges)} active OTP challenge(s):"]
                     for c in challenges:
                         rem = max(0, int((c.expires_at - datetime.utcnow()).total_seconds()))
-                        lines.append(f" • #{c.challenge_id}: {c.applicant_name} (Center {c.visa_center}) - Status: {c.status} ({format_human_duration(rem)} remaining)")
+                        lines.append(f" - #{c.challenge_id}: {c.applicant_name} (Center {c.visa_center}) - Status: {c.status} ({format_human_duration(rem)} remaining)")
                     return {"type": "text", "content": "\n".join(lines)}
                 finally:
                     if not db: sdb.close()
@@ -314,7 +314,7 @@ class CopilotService:
             tenant = db.query(Tenant).filter(Tenant.id == user.tenant_id).first()
             if tenant and hasattr(tenant, "has_ai_copilot") and not tenant.has_ai_copilot:
                 return {
-                    "reply": "🔒 Alamia Copilot Pro is an enterprise add-on for this agency. Please contact your administrator to upgrade your plan.",
+                    "reply": "[UPGRADE REQUIRED] Alamia Copilot Pro is an enterprise add-on for this agency. Please contact your administrator to upgrade your plan.",
                     "status": "upgrade_required"
                 }
 
@@ -355,18 +355,18 @@ class CopilotService:
                 sub_count = sdb.query(PushSubscription).count()
                 if sub_count == 0:
                     reply = (
-                        "🔔 Push Notification Diagnosis:\n"
-                        "• Subscribed Devices: 0 registered in the database.\n"
-                        "• Root Cause: Browser push permissions have not been granted on this device.\n"
-                        "• Required Action: Click the 'Enable Notifications' toggle in the PWA sidebar or header.\n"
-                        "• Note: Notifications only trigger on successful slot detection or OTP challenges. If scraping is stale, no notification events are emitted."
+                        "[PUSH NOTIFICATION DIAGNOSIS]\n"
+                        "- Subscribed Devices: 0 registered in the database.\n"
+                        "- Root Cause: Browser push permissions have not been granted on this device.\n"
+                        "- Required Action: Click the 'Enable Notifications' toggle in the PWA sidebar or header.\n"
+                        "- Note: Notifications only trigger on successful slot detection or OTP challenges. If scraping is stale, no notification events are emitted."
                     )
                 else:
                     reply = (
-                        f"🔔 Push Notification Diagnosis:\n"
-                        f"• Subscribed Devices: {sub_count} active device endpoint(s) registered.\n"
-                        f"• Reason for silence: Slot notifications are only dispatched when workers complete active checks. If the dashboard shows 'Last Checked 1 day ago', background workers have stalled or encountered proxy/login errors, preventing alert broadcasts.\n"
-                        f"• Action: Click [ 🧹 Cleanup ] or check worker logs to restore active scraping cycles."
+                        f"[PUSH NOTIFICATION DIAGNOSIS]\n"
+                        f"- Subscribed Devices: {sub_count} active device endpoint(s) registered.\n"
+                        f"- Reason for silence: Slot notifications are only dispatched when workers complete active checks. If the dashboard shows 'Last Checked 1 day ago', background workers have stalled or encountered proxy/login errors, preventing alert broadcasts.\n"
+                        f"- Action: Click [Cleanup] or check worker logs to restore active scraping cycles."
                     )
                 return {"reply": reply, "status": "ok", "source": "deterministic_diagnostics"}
             finally:
@@ -400,7 +400,7 @@ class CopilotService:
             return {
                 "reply": (
                     f"{res['content']}\n\n"
-                    "💡 Operational Guidance: To complete verification, enter the OTP code provided by the applicant directly into the [⚡ Pending OTP] challenge modal or via the Admin Dashboard. "
+                    "[OPERATIONAL GUIDANCE] To complete verification, enter the OTP code provided by the applicant directly into the [Pending OTP] challenge card or via the Admin Dashboard. "
                     "For security, OTP codes are processed exclusively through the human-in-the-loop verification pipeline and are never handled by the AI."
                 ),
                 "status": "ok",

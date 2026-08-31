@@ -1106,8 +1106,10 @@
                 if (isOpen) {
                     drawer.classList.remove('translate-x-full');
                     drawer.classList.add('translate-x-0');
+                    if (window.lucide) window.lucide.createIcons();
                     // Focus OTP input if active challenge exists, else chat input
                     setTimeout(() => {
+                        if (window.lucide) window.lucide.createIcons();
                         const otpInput = document.getElementById('copilotOtpInput');
                         if (activeChallenge && otpInput) {
                             otpInput.focus();
@@ -1151,7 +1153,7 @@
 
             if (lastNotifiedChallengeId !== challenge.challenge_id) {
                 lastNotifiedChallengeId = challenge.challenge_id;
-                appendMessage('copilot', `⚡ Action Required: Booker worker is requesting OTP verification for ${challenge.applicant_name || 'applicant'} at Center ${challenge.visa_center || 'VAC'}. Please enter the 6-digit code in the verification card above.`);
+                appendMessage('copilot', `[ACTION REQUIRED] Booker worker is requesting OTP verification for ${challenge.applicant_name || 'applicant'} at Center ${challenge.visa_center || 'VAC'}. Please enter the 6-digit code in the verification card above.`);
                 toggleDrawer(true);
             }
 
@@ -1236,7 +1238,7 @@
                 
                 if (res.ok) {
                     if (statusMsg) {
-                        statusMsg.innerText = '✓ Code accepted! Worker is completing booking.';
+                        statusMsg.innerText = 'Code accepted. Worker is completing booking.';
                         statusMsg.className = 'text-[11px] text-emerald-400 font-semibold mt-1 block';
                     }
                     setTimeout(() => {
