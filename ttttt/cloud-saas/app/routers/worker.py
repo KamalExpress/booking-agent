@@ -175,24 +175,28 @@ def get_next_assignment(
     # 1.5. Check if THIS worker already has an active lease (e.g. it crashed and restarted)
     existing_lease = lease_service.get_existing_lease_for_worker(worker)
     if existing_lease:
-        next_lease = existing_lease
-    else:
-        # 2 & 3 & 4. Find next assignment and create lease
-        scheduler = SchedulerService(db)
-        next_lease = scheduler.get_next_lease(worker.worker_id)
-        if not next_lease:
-            response.status_code = status.HTTP_204_NO_CONTENT
-            response.headers["Retry-After"] = "30"
-            return
+        return existing_lease
+
+    # 2 & 3 & 4. Find next assignment and create lease
+    scheduler = SchedulerService(db)
+    next_lease = scheduler.get_next_lease(worker.worker_id)
+    if not next_lease:
+        response.status_code = status.HTTP_204_NO_CONTENT
+        response.headers["Retry-After"] = "30"
+        return
         
     # Serialize Lease
     from models import Assignment, PortalAccount, BookingTask, Proxy, Applicant
     
-    # Common account info (handling both dict and Lease model instance)
-    acc_id = getattr(next_lease, 'portal_account_id', None) or (next_lease.get('portal_account_id') if isinstance(next_lease, dict) else None)
-    proxy_id = getattr(next_lease, 'proxy_id', None) or (next_lease.get('proxy_id') if isinstance(next_lease, dict) else None)
-    lease_id = getattr(next_lease, 'id', None) or (next_lease.get('id') or next_lease.get('lease_id') if isinstance(next_lease, dict) else 0)
-    expires_at_val = getattr(next_lease, 'expires_at', None) or (next_lease.get('expires_at') or next_lease.get('expiry') if isinstance(next_lease, dict) else None)
+    # If next_lease is already a dictionary returned by a lease service
+    if isinstance(next_lease, dict):
+        return next_lease
+        
+    # Common account info (handling Lease model instance)
+    acc_id = getattr(next_lease, 'portal_account_id', None)
+    proxy_id = getattr(next_lease, 'proxy_id', None)
+    lease_id = getattr(next_lease, 'id', 0)
+    expires_at_val = getattr(next_lease, 'expires_at', None)
     if isinstance(expires_at_val, datetime):
         expiry_str = expires_at_val.isoformat()
     elif isinstance(expires_at_val, str):
@@ -220,8 +224,8 @@ def get_next_assignment(
         "heartbeat_interval": 30 # default
     }
     
-    asm_id = getattr(next_lease, 'assignment_id', None) or (next_lease.get('assignment_id') if isinstance(next_lease, dict) else None)
-    task_id = getattr(next_lease, 'booking_task_id', None) or (next_lease.get('booking_task_id') if isinstance(next_lease, dict) else None)
+    asm_id = getattr(next_lease, 'assignment_id', None)
+    task_id = getattr(next_lease, 'booking_task_id', None)
     if asm_id:
         asm = db.query(Assignment).filter(Assignment.id == asm_id).first()
         if asm:
@@ -231,6 +235,9 @@ def get_next_assignment(
                 "date_from": asm.date_from,
                 "date_to": asm.date_to
             }
+        else:
+            response.status_code = status.HTTP_204_NO_CONTENT
+            return
     elif task_id:
         task = db.query(BookingTask).filter(BookingTask.id == task_id).first()
         applicant = db.query(Applicant).filter(Applicant.id == task.applicant_id).first() if task.applicant_id else None

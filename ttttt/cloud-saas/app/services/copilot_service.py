@@ -130,12 +130,22 @@ class CopilotService:
 
             elif action in ["slots", "slot_availability", "slots_available"]:
                 visa_center = params.get("visa_center", "") if params else ""
-                slots_summary = TravelOSMCPClient.call_tool_sync("get_available_slots", {"visa_center": visa_center, "limit": 10})
+                days = params.get("days", 7) if params else 7
+                slots_summary = TravelOSMCPClient.call_tool_sync("get_available_slots", {"visa_center": visa_center, "days": days, "limit": 10})
                 return {"type": "text", "content": slots_summary}
 
             elif action in ["proxy_health", "proxies"]:
                 proxy_summary = TravelOSMCPClient.call_tool_sync("get_proxy_health", {})
                 return {"type": "text", "content": proxy_summary}
+
+            elif action in ["test_push", "send_test_push"]:
+                from notifications import send_push_notification
+                sdb = db or SessionLocal()
+                try:
+                    cnt = send_push_notification(sdb, "Test Push Notification", "🔔 This is a live test notification from Alamia Copilot.")
+                    return {"type": "text", "content": f"Test push notification dispatched to {cnt} registered device endpoint(s)."}
+                finally:
+                    if not db: sdb.close()
 
             elif action in ["active_challenges", "pending_otp", "challenges"]:
                 sdb = db or SessionLocal()
@@ -303,12 +313,63 @@ class CopilotService:
                 }
 
         lower_msg = message.strip().lower()
-        is_investigative = any(w in lower_msg for w in ["why", "how come", "reason", "explain", "investigate", "what happened"])
+        is_investigative = any(w in lower_msg for w in ["why", "how come", "reason", "explain", "investigate", "what happened", "recommend", "diagnos"])
+        is_historical = any(w in lower_msg for w in ["last", "past", "history", "ago", "previous", "yesterday", "days", "did any", "opened", "was there", "were there", "4-5", "3-4", "few days"])
+
+        # Extract visa center from message if present
+        extracted_center = ""
+        for c in ["islamabad", "lahore", "karachi", "peshawar", "quetta", "mirpur", "faisalabad"]:
+            if c in lower_msg:
+                extracted_center = c.capitalize()
+                break
+
+        # Extract days if mentioned (e.g. "last 4-5 days", "3 days ago")
+        extracted_days = 7
+        days_match = re.search(r"(\d+)\s*(?:-\s*(\d+))?\s*days?", lower_msg)
+        if days_match:
+            try:
+                if days_match.group(2):
+                    extracted_days = int(days_match.group(2))
+                else:
+                    extracted_days = int(days_match.group(1))
+            except Exception:
+                extracted_days = 7
 
         # 2. Tier 1: Deterministic Fast Paths (0 LLM Tokens, 0.01s Latency via MCP)
-        if not is_investigative:
+
+        # Operational Health / Diagnostic Inquiries (Last checked, errors, stale scraping, recommendations)
+        if any(k in lower_msg for k in ["last checked", "1 day ago", "stale", "why not checking", "not checking", "worker error", "errors", "recommend", "health report"]):
+            summary = TravelOSMCPClient.call_tool_sync("get_portal_health_summary", {})
+            return {"reply": summary, "status": "ok", "source": "deterministic_diagnostics"}
+
+        # Push Notification Inquiries
+        if any(k in lower_msg for k in ["push notification", "push notifications", "not receiving push", "why no push", "no notifications", "test push"]):
+            sdb = db or SessionLocal()
+            try:
+                sub_count = sdb.query(PushSubscription).count()
+                if sub_count == 0:
+                    reply = (
+                        "🔔 Push Notification Diagnosis:\n"
+                        "• Subscribed Devices: 0 registered in the database.\n"
+                        "• Root Cause: Browser push permissions have not been granted on this device.\n"
+                        "• Required Action: Click the 'Enable Notifications' toggle in the PWA sidebar or header.\n"
+                        "• Note: Notifications only trigger on successful slot detection or OTP challenges. If scraping is stale, no notification events are emitted."
+                    )
+                else:
+                    reply = (
+                        f"🔔 Push Notification Diagnosis:\n"
+                        f"• Subscribed Devices: {sub_count} active device endpoint(s) registered.\n"
+                        f"• Reason for silence: Slot notifications are only dispatched when workers complete active checks. If the dashboard shows 'Last Checked 1 day ago', background workers have stalled or encountered proxy/login errors, preventing alert broadcasts.\n"
+                        f"• Action: Click [ 🧹 Cleanup ] or check worker logs to restore active scraping cycles."
+                    )
+                return {"reply": reply, "status": "ok", "source": "deterministic_diagnostics"}
+            finally:
+                if not db: sdb.close()
+
+        # Slot inquiries (Fast-path only for simple current availability; historical queries pass to MCP)
+        if not is_investigative and not is_historical:
             if any(k in lower_msg for k in ["any slot", "slots available", "check slot", "show slot", "are there slot", "is there a slot", "slots today", "available today", "open slot"]):
-                res = CopilotService.execute_quick_action("slot_availability", db=db)
+                res = CopilotService.execute_quick_action("slot_availability", params={"visa_center": extracted_center, "days": extracted_days}, db=db)
                 return {"reply": res["content"], "status": "ok", "source": "deterministic"}
 
             if any(k in lower_msg for k in ["proxy", "proxies", "proxy health", "check proxy"]):
@@ -421,6 +482,14 @@ class CopilotService:
             # Execute MCP tools/call
             tool_name = tool_call["tool"]
             tool_args = tool_call["args"]
+            
+            # Contextual parameter enrichment for slots if omitted by model
+            if tool_name == "get_available_slots":
+                if "visa_center" not in tool_args and extracted_center:
+                    tool_args["visa_center"] = extracted_center
+                if "days" not in tool_args and extracted_days:
+                    tool_args["days"] = extracted_days
+
             print(f"[Copilot MCP Client] Hop {iteration + 1}/{CopilotService.MAX_TOOL_ITERATIONS} - tools/call: {tool_name}({tool_args})")
             
             observation = TravelOSMCPClient.call_tool_sync(tool_name, tool_args)

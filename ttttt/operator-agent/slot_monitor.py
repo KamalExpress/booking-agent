@@ -88,11 +88,16 @@ class SlotMonitorEngine(threading.Thread):
     def _process_lease(self, lease):
         try:
             # 4. Parse Lease
-            assignment_id = lease["assignment_context"]["id"]
-            account = lease["scraper_account"]
-            visa_center = lease["assignment_context"]["visa_center"]
-            date_from = lease["assignment_context"]["date_from"]
-            date_to = lease["assignment_context"]["date_to"]
+            assignment_context = lease.get("assignment_context")
+            if not assignment_context:
+                logging.warning(f"Received lease #{lease.get('lease_id')} without assignment_context. Skipping.")
+                return
+                
+            assignment_id = assignment_context.get("id")
+            account = lease.get("scraper_account") or {}
+            visa_center = assignment_context.get("visa_center", "")
+            date_from = assignment_context.get("date_from", "")
+            date_to = assignment_context.get("date_to", "")
             
             logging.info(f"[Thread] Received Assignment #{assignment_id} for center {visa_center}.")
             

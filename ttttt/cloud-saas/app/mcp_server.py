@@ -53,9 +53,9 @@ def get_worker_logs(worker_id: str, limit: int = 10) -> str:
     return caps.get_worker_logs(worker_id=worker_id, limit=limit)
 
 @mcp.tool()
-def get_available_slots(visa_center: str = "", limit: int = 10) -> str:
-    """Retrieve active open appointment slots discovered by scraping workers."""
-    return caps.get_available_slots(visa_center=visa_center, limit=limit)
+def get_available_slots(visa_center: str = "", days: int = 7, limit: int = 10) -> str:
+    """Retrieve active open appointment slots or recent historical slots discovered by scraping workers."""
+    return caps.get_available_slots(visa_center=visa_center, days=days, limit=limit)
 
 @mcp.tool()
 def get_proxy_health() -> str:

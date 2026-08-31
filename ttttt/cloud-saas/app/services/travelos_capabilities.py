@@ -101,31 +101,62 @@ def get_worker_logs(worker_id: str, limit: int = 5, db: Optional[Session] = None
 # 2. Slots Capabilities
 # ---------------------------------------------------------------------------
 
-def get_available_slots(visa_center: Optional[str] = None, limit: int = 10, db: Optional[Session] = None) -> str:
-    """Retrieve active open appointment slots discovered by scraping workers."""
+def get_available_slots(visa_center: Optional[str] = None, days: Optional[int] = 7, limit: int = 10, db: Optional[Session] = None) -> str:
+    """Retrieve active open appointment slots or recent historical slots discovered by scraping workers."""
     sdb = db or SessionLocal()
     try:
-        query = sdb.query(SlotAvailability).filter(
+        from datetime import timedelta
+        # 1. Check active open slots
+        active_query = sdb.query(SlotAvailability).filter(
             SlotAvailability.status == "AVAILABLE",
             SlotAvailability.is_archived == False
         )
         if visa_center and str(visa_center).strip():
-            query = query.filter(SlotAvailability.visa_center == str(visa_center).strip())
+            active_query = active_query.filter(SlotAvailability.visa_center.ilike(f"%{str(visa_center).strip()}%"))
             
-        slots = query.order_by(SlotAvailability.created_at.desc()).limit(limit).all()
+        active_slots = active_query.order_by(SlotAvailability.created_at.desc()).limit(limit).all()
         
-        if not slots:
-            center_msg = f" for center {visa_center}" if visa_center else " across all centers"
-            return f"No open appointment slots currently available in the system{center_msg}."
+        lines = []
+        center_msg = f" for center '{visa_center}'" if visa_center else " across all centers"
+        
+        if active_slots:
+            lines.append(f"Found {len(active_slots)} ACTIVE open slot window(s){center_msg}:")
+            for s in active_slots:
+                times = []
+                if isinstance(s.slots_data, list):
+                    times = [str(x) for x in s.slots_data[:4]]
+                time_str = f" (Times: {', '.join(times)})" if times else ""
+                found_age = int((datetime.utcnow() - s.created_at).total_seconds()) if s.created_at else 0
+                lines.append(f"• Center {s.visa_center} on {s.date}{time_str} - Found by {s.found_by or 'worker'} ({found_age}s ago)")
+        else:
+            lines.append(f"No currently active appointment slots available{center_msg}.")
             
-        lines = [f"Found {len(slots)} open slot window(s):"]
-        for s in slots:
-            times = []
-            if isinstance(s.slots_data, list):
-                times = [str(x) for x in s.slots_data[:4]]
-            time_str = f" (Times: {', '.join(times)})" if times else ""
-            found_age = int((datetime.utcnow() - s.created_at).total_seconds()) if s.created_at else 0
-            lines.append(f"• Center {s.visa_center} on {s.date}{time_str} - Found by {s.found_by or 'worker'} ({found_age}s ago)")
+        # 2. Check historical discoveries in the last N days
+        lookback_days = days if (days and days > 0) else 7
+        cutoff = datetime.utcnow() - timedelta(days=lookback_days)
+        
+        hist_query = sdb.query(SlotAvailability).filter(
+            SlotAvailability.created_at >= cutoff
+        )
+        if visa_center and str(visa_center).strip():
+            hist_query = hist_query.filter(SlotAvailability.visa_center.ilike(f"%{str(visa_center).strip()}%"))
+            
+        hist_slots = hist_query.order_by(SlotAvailability.created_at.desc()).limit(limit).all()
+        active_ids = {s.id for s in active_slots}
+        past_slots = [s for s in hist_slots if s.id not in active_ids]
+        
+        if past_slots:
+            lines.append(f"\nHistorical Slot Discoveries in the last {lookback_days} days{center_msg}:")
+            for s in past_slots:
+                times = []
+                if isinstance(s.slots_data, list):
+                    times = [str(x) for x in s.slots_data[:4]]
+                time_str = f" (Times: {', '.join(times)})" if times else ""
+                days_ago = round((datetime.utcnow() - s.created_at).total_seconds() / 86400, 1) if s.created_at else 0
+                lines.append(f"• Center {s.visa_center} on {s.date}{time_str} - Discovered by {s.found_by or 'worker'} ({days_ago} days ago, status: {s.status})")
+        elif not active_slots:
+            lines.append(f"No historical slots were discovered in the last {lookback_days} days{center_msg} either.")
+            
         return "\n".join(lines)
     finally:
         if not db: sdb.close()
@@ -183,21 +214,116 @@ def get_active_leases(limit: int = 15, db: Optional[Session] = None) -> str:
 
 
 def get_portal_health_summary(db: Optional[Session] = None) -> str:
-    """Get health summary of portal accounts and proxies."""
+    """Comprehensive system health diagnostics, stale scraping checks, worker errors, and actionable recommendations."""
     sdb = db or SessionLocal()
     try:
+        from datetime import timedelta
+        lines = ["=== TRAVELOS OPERATIONAL HEALTH REPORT ==="]
+        recommendations = []
+        
+        # 1. Scraping Freshness & Last Check Inspection
+        last_check_event = sdb.query(EventLog).filter(
+            EventLog.event_type.in_(['SLOT_FOUND', 'NO_SLOTS_FOUND', 'LEASE_COMPLETED', 'LOGIN_SUCCESS'])
+        ).order_by(EventLog.created_at.desc()).first()
+        
+        last_asm = sdb.query(Assignment).filter(
+            Assignment.last_checked.isnot(None)
+        ).order_by(Assignment.last_checked.desc()).first()
+        
+        check_times = [t for t in [last_check_event.created_at if last_check_event else None, last_asm.last_checked if last_asm else None] if t]
+        last_check_time = max(check_times) if check_times else None
+        
+        if last_check_time:
+            age_sec = int((datetime.utcnow() - last_check_time).total_seconds())
+            if age_sec > 86400:
+                age_str = f"{round(age_sec / 86400, 1)} day(s) ago"
+            elif age_sec > 3600:
+                age_str = f"{round(age_sec / 3600, 1)} hour(s) ago"
+            elif age_sec > 60:
+                age_str = f"{int(age_sec / 60)} minute(s) ago"
+            else:
+                age_str = f"{age_sec} second(s) ago"
+                
+            if age_sec > 900: # > 15 minutes
+                lines.append(f"⏱️ Scraping Pipeline: STALE — Last checked {age_str} (Expected: ~5 mins).")
+                recommendations.append("Scraping has stalled. Check worker processes or click [ 🧹 Cleanup ] to reconcile leases.")
+            else:
+                lines.append(f"⏱️ Scraping Pipeline: HEALTHY — Last checked {age_str}.")
+        else:
+            lines.append("⏱️ Scraping Pipeline: NEVER CHECKED — No slot check events recorded in database.")
+            recommendations.append("No slot checks recorded. Verify scraping workers are running and accepting jobs.")
+
+        # 2. Worker Fleet Status
+        workers = sdb.query(WorkerNode).all()
+        total_w = len(workers)
+        online_w = sum(1 for w in workers if w.is_online)
+        err_w = sum(1 for w in workers if w.status == "Error")
+        lines.append(f"🤖 Worker Fleet: {online_w}/{total_w} online ({err_w} in error status).")
+        if online_w == 0:
+            recommendations.append("Zero scraping workers are currently online. Check worker host / Docker services.")
+
+        # 3. Portal Accounts & Proxies
         accounts = sdb.query(PortalAccount).all()
         proxies = sdb.query(Proxy).all()
-        
         acc_counts = {}
         for a in accounts:
             st = getattr(a, 'status', 'READY') or 'READY'
             acc_counts[st] = acc_counts.get(st, 0) + 1
             
-        lines = [
-            f"Portal Accounts: {len(accounts)} total (" + ", ".join([f"{k}: {v}" for k, v in acc_counts.items()]) + ")",
-            f"Proxies: {len(proxies)} total"
-        ]
+        acc_str = ", ".join([f"{k}: {v}" for k, v in acc_counts.items()]) if acc_counts else "0 total"
+        lines.append(f"👥 Portal Accounts: {len(accounts)} total ({acc_str})")
+        ready_accs = acc_counts.get('READY', 0)
+        if ready_accs == 0 and len(accounts) > 0:
+            recommendations.append("All portal accounts are busy or locked. Click [ 🧹 Cleanup ] to reset stuck accounts to READY.")
+
+        active_prx = sum(1 for p in proxies if getattr(p, 'status', 'ACTIVE') == 'ACTIVE')
+        lines.append(f"🌐 Proxies: {active_prx}/{len(proxies)} active.")
+        if active_prx == 0 and len(proxies) > 0:
+            recommendations.append("All proxies are inactive or failing. Verify proxy configurations.")
+
+        # 4. Recent Worker Error Logs (Last 24 hours)
+        cutoff_24h = datetime.utcnow() - timedelta(hours=24)
+        recent_errors = sdb.query(EventLog).filter(
+            EventLog.event_type.in_(['PROXY_TIMEOUT', 'LOGIN_FAILED', 'CLOUDFLARE_BLOCKED', 'ERROR', 'WORKER_ERROR', 'LEASE_TIMEOUT', 'ACCOUNT_LOCKED', 'CAPTCHA_BLOCKED']),
+            EventLog.created_at >= cutoff_24h
+        ).order_by(EventLog.created_at.desc()).limit(5).all()
+        
+        if recent_errors:
+            lines.append(f"⚠️ Recent Worker Errors ({len(recent_errors)} in last 24h):")
+            for ev in recent_errors:
+                msg = ""
+                if ev.payload and isinstance(ev.payload, dict):
+                    msg = ev.payload.get("message") or ev.payload.get("error") or str(ev.payload)[:60]
+                lines.append(f" • [{ev.created_at.strftime('%H:%M')}] {ev.worker_id or 'worker'}: {ev.event_type} - {msg}")
+                if "PROXY" in ev.event_type:
+                    recommendations.append(f"Worker {ev.worker_id} hit proxy timeout. Inspect or rotate proxy pool.")
+                elif "CLOUDFLARE" in ev.event_type:
+                    recommendations.append("Cloudflare challenge encountered. Check TLS fingerprint / curl_cffi settings.")
+        else:
+            lines.append("✅ Recent Errors: No critical worker errors recorded in the last 24 hours.")
+
+        # 5. Push Notifications Health
+        sub_count = sdb.query(PushSubscription).count()
+        if sub_count == 0:
+            lines.append("🔔 Push Notifications: 0 devices subscribed in database.")
+            recommendations.append("You have not enabled push notifications on this device. Click 'Enable Notifications' in the PWA sidebar.")
+        else:
+            lines.append(f"🔔 Push Notifications: {sub_count} active device subscription(s) registered.")
+
+        # 6. Actionable Guidance / Recommendations
+        if recommendations:
+            seen_recs = set()
+            dedup_recs = []
+            for r in recommendations:
+                if r not in seen_recs:
+                    seen_recs.add(r)
+                    dedup_recs.append(r)
+            lines.append("\n💡 Actionable Recommendations:")
+            for i, rec in enumerate(dedup_recs, 1):
+                lines.append(f" {i}. {rec}")
+        else:
+            lines.append("\n💡 System is operating optimally with no action required.")
+
         return "\n".join(lines)
     finally:
         if not db: sdb.close()
