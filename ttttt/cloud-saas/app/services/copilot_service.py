@@ -82,7 +82,12 @@ class TravelOSMCPClient:
                 return getattr(raw_res[0], "text", str(raw_res[0]))
             return str(raw_res)
         except Exception as e:
-            return f"MCP tools/call error on '{name}': {str(e)}"
+            # Resilient fallback to capability engine if FastMCP server encounters an environment error
+            try:
+                import services.travelos_capabilities as caps
+                return caps.execute_capability(name, arguments)
+            except Exception:
+                return f"MCP tools/call error on '{name}': {str(e)}"
 
     @classmethod
     def call_tool_sync(cls, name: str, arguments: Dict[str, Any]) -> str:

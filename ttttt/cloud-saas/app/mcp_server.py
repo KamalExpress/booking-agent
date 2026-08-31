@@ -1,4 +1,30 @@
-from mcp.server.fastmcp import FastMCP
+try:
+    from mcp.server.fastmcp import FastMCP
+except (ImportError, ModuleNotFoundError):
+    try:
+        from mcp.server.mcpserver import MCPServer as FastMCP
+    except Exception:
+        class FastMCP:
+            def __init__(self, name="KESaaSAdmin"):
+                self.name = name
+                self._tools = {}
+            def tool(self, *args, **kwargs):
+                def decorator(fn):
+                    self._tools[fn.__name__] = fn
+                    return fn
+                return decorator
+            async def list_tools(self):
+                from types import SimpleNamespace
+                return [SimpleNamespace(name=k, description=v.__doc__ or "", inputSchema={}) for k, v in self._tools.items()]
+            async def call_tool(self, name, args):
+                if name in self._tools:
+                    fn = self._tools[name]
+                    import inspect
+                    sig = inspect.signature(fn)
+                    cargs = {k: v for k, v in args.items() if k in sig.parameters}
+                    return [fn(**cargs)]
+                return [f"Tool {name} not found"]
+
 from sqlalchemy.orm import Session
 from datetime import datetime
 import os
