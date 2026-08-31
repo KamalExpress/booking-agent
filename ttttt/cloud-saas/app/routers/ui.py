@@ -129,8 +129,8 @@ def render_template(name: str, context: dict, db: Session):
     admin_notice = db.query(SystemSetting).filter(SystemSetting.key == "global.admin_notice").first()
     
     branding = {
-        "brand_name": brand_name.value if brand_name and brand_name.value else "Alamia Automation",
-        "brand_subtitle": brand_subtitle.value if brand_subtitle and brand_subtitle.value else "Automating Business Solutions",
+        "brand_name": brand_name.value if brand_name and brand_name.value else "Alamia Travel OS",
+        "brand_subtitle": brand_subtitle.value if brand_subtitle and brand_subtitle.value else "Intelligent Business Automation for Travel & Visa Agencies",
         "admin_notice": admin_notice.value if admin_notice else ""
     }
     
@@ -225,6 +225,14 @@ async def playbook_page(request: Request, db: Session = Depends(get_db)):
     return render_template("playbook.html", {"request": request, "user": user, "active_page": "playbook"}, db)
 
 @router.get("/", response_class=HTMLResponse)
+async def root_page(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if user:
+        return RedirectResponse(url="/dashboard", status_code=303)
+    return render_template("landing.html", {"request": request, "active_page": "landing"}, db)
+
+@router.get("/dashboard", response_class=HTMLResponse)
+@router.get("/overview", response_class=HTMLResponse)
 async def overview_page(request: Request, db: Session = Depends(get_db)):
     user = get_ui_user(request, db)
     if not user:

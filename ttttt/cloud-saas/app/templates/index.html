@@ -271,13 +271,27 @@
                     '%H:%M:%S') }}</div>
                 <div>
                     {% if log.event_type == 'SLOT_FOUND' %}
-                    <span class="text-emerald-400 font-medium">🎉 Slot found</span>
+                    <span class="text-emerald-400 font-semibold">[SLOT FOUND] Open appointment slot discovered {{ '(' ~ log.payload.get('visa_center') ~ ')' if log.payload and log.payload.get('visa_center') else '' }}</span>
                     {% elif log.event_type == 'NO_SLOTS_FOUND' %}
-                    <span class="text-zinc-400">✓ Checked center</span>
+                    <span class="text-zinc-400 font-medium">[CHECKED] No slots available {{ '(' ~ log.payload.get('visa_center') ~ ')' if log.payload and log.payload.get('visa_center') else '' }}</span>
+                    {% elif log.event_type == 'LEASE_RESULT' %}
+                        {% if log.payload and log.payload.get('status') == 'COMPLETED' %}
+                        <span class="text-emerald-400/90 font-medium">[LEASE COMPLETED] Check cycle finished successfully {{ '(' ~ log.payload.get('reason') ~ ')' if log.payload.get('reason') else '' }}</span>
+                        {% elif log.payload and log.payload.get('status') == 'FAILED' %}
+                        <span class="text-rose-400 font-medium">[LEASE FAILED] {{ log.payload.get('reason', 'Worker check error') }}</span>
+                        {% else %}
+                        <span class="text-cyan-400 font-medium">[LEASE FINISHED] Check cycle completed {{ '(' ~ log.payload.get('status') ~ ')' if log.payload and log.payload.get('status') else '' }}</span>
+                        {% endif %}
+                    {% elif log.event_type == 'WORKER_ERROR' %}
+                    <span class="text-rose-400 font-medium">[WORKER ERROR] {{ log.payload.get('message', log.payload.get('error', 'Execution error')) if log.payload and log.payload is mapping else 'Worker Error' }}</span>
                     {% elif log.event_type == 'PROXY_ROTATED' %}
-                    <span class="text-amber-400">⚠ Proxy rotated</span>
+                    <span class="text-amber-400 font-medium">[PROXY ROTATED] Proxy node rotated</span>
+                    {% elif log.event_type == 'LOGIN_SUCCESS' %}
+                    <span class="text-emerald-400 font-medium">[LOGIN SUCCESS] Authenticated to portal</span>
+                    {% elif log.event_type == 'LOGIN_FAILED' %}
+                    <span class="text-rose-400 font-medium">[LOGIN FAILED] {{ log.payload.get('reason', 'Authentication failed') if log.payload and log.payload is mapping else 'Failed' }}</span>
                     {% else %}
-                    <span class="text-indigo-400">ℹ {{ log.event_type }}</span>
+                    <span class="text-zinc-300 font-medium">[{{ log.event_type }}] {{ log.payload.get('reason', log.payload.get('message', '')) if log.payload and log.payload is mapping else '' }}</span>
                     {% endif %}
                 </div>
             </div>

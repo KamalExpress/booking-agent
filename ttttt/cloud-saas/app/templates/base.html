@@ -158,7 +158,7 @@
             </button>
         </div>
         <nav class="flex-1 px-4 pb-4 space-y-1 overflow-y-auto">
-            <a href="/" class="nav-link {% if active_page == 'overview' %}active{% endif %} mt-2">
+            <a href="/dashboard" class="nav-link {% if active_page == 'overview' %}active{% endif %} mt-2">
                 <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Overview
             </a>
             <a href="/inbox" class="nav-link {% if active_page == 'inbox' %}active{% endif %}">
@@ -429,7 +429,7 @@
         <div class="md:hidden fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-md border-t border-[#27272a] z-30"
             style="padding-bottom: env(safe-area-inset-bottom);">
             <div class="flex items-center justify-around px-2 py-1">
-                <a href="/"
+                <a href="/dashboard"
                     class="flex flex-col items-center p-2 {% if active_page == 'overview' %}text-indigo-400{% else %}text-zinc-500 hover:text-zinc-300{% endif %} transition-colors">
                     <i data-lucide="home" class="w-5 h-5 mb-0.5"></i>
                     <span class="text-[10px] font-medium">Home</span>
@@ -948,12 +948,12 @@
                             else if (eType === 'WORKER_OFFLINE') uiToast(`Worker ${workerId} disconnected`, 'error');
                             else if (eType === 'WAF_BLOCK') uiToast(`WAF Block: Worker ${workerId}`, 'error');
                             else if (eType === 'PROXY_EXHAUSTED') uiToast('Proxy pool exhausted', 'error');
-                            else if (eType === 'SLOT_FOUND') uiToast('🎉 SLOT FOUND!', 'success');
+                            else if (eType === 'SLOT_FOUND') uiToast('[SLOT FOUND] Open slot detected!', 'success');
                             else if (eType === 'BOOKING_STARTED') uiToast(`Worker ${workerId} started booking`, 'info');
                             else if (eType === 'BOOKING_SUCCESS') uiToast('Booking task completed successfully!', 'success');
                             else if (eType === 'OTP_REQUIRED') uiToast('Booking requires an OTP', 'info');
                             else if (eType === 'OTP_CHALLENGE_CREATED' || (data.type === 'OTP_CHALLENGE_CREATED')) {
-                                uiToast('⚠️ Action Required: OTP Verification Code Needed!', 'warning');
+                                uiToast('[ACTION REQUIRED] OTP Verification Code Needed!', 'warning');
                                 if (window.AlamiaCopilot) window.AlamiaCopilot.handleChallengeCreated(data);
                             }
                             else if (eType === 'OTP_CHALLENGE_SUBMITTED' || (data.type === 'OTP_CHALLENGE_SUBMITTED')) {
