@@ -59,7 +59,7 @@
     <!-- Navigation Bar -->
     <header class="sticky top-0 z-50 border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
+            <a href="/" class="flex items-center gap-3 hover:opacity-90 transition-opacity">
                 <div class="w-9 h-9 rounded-lg bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-bold">
                     <i data-lucide="compass" class="w-5 h-5"></i>
                 </div>
@@ -67,7 +67,7 @@
                     <span class="font-bold text-lg tracking-tight text-white">{{ branding.brand_name | default('Alamia Travel OS') }}</span>
                     <span class="text-[10px] text-zinc-400 font-medium tracking-wider uppercase hidden sm:inline">Business Automation Platform</span>
                 </div>
-            </div>
+            </a>
 
             <!-- Desktop Nav Links -->
             <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-300">
@@ -684,12 +684,12 @@
     <!-- Footer -->
     <footer class="border-t border-zinc-800/80 bg-zinc-950 py-12 px-4 sm:px-6 lg:px-8 text-xs text-zinc-400">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-            <div class="flex items-center gap-2.5">
+            <a href="/" class="flex items-center gap-2.5 hover:opacity-90 transition-opacity">
                 <i data-lucide="compass" class="w-4 h-4 text-indigo-400"></i>
                 <span class="font-bold text-white text-sm">{{ branding.brand_name | default('Alamia Travel OS') }}</span>
                 <span class="text-zinc-600">|</span>
                 <span>{{ branding.brand_subtitle | default('Intelligent Business Automation for Travel & Visa Agencies') }}</span>
-            </div>
+            </a>
 
             <div class="flex items-center gap-6">
                 <a href="/login" class="hover:text-zinc-200 transition-colors">Sign In</a>
