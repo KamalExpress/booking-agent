@@ -1,4 +1,4 @@
-﻿# System Architecture: SaaS MCP Server Integration (Alamia TOS)
+# System Architecture: SaaS MCP Server Integration (Alamia TOS)
 
 ## 1. Purpose
 The Model Context Protocol (MCP) Server integration exposes specific, secure control-plane functions directly to external AI Agents (such as Antigravity). By leveraging MCP, AI developers and autonomous agents can query live worker logs, inspect database states, trigger test workflows, and troubleshoot live environments in real time without writing throwaway API scripts or executing raw database queries.
@@ -34,14 +34,35 @@ The Model Context Protocol (MCP) Server integration exposes specific, secure con
 
 ---
 
-## 4. Antigravity Agent Configuration
-To connect Antigravity to the Alamia TOS MCP server, configure the MCP settings (in the agent configuration or MCP config):
+## 4. Bearer Authentication & Antigravity Agent Configuration
+
+The FastMCP server and `/api/admin/agent-monitor-logs` endpoint are protected by **`MCPAuthMiddleware`**:
+- **Environment Variable:** Set `MCP_API_KEY=<secret_key>` in Cloud SaaS `.env` or Portainer stack environment.
+- **Header Authentication:** Pass `Authorization: Bearer <secret_key>` on all requests.
+- **Query Parameter Fallback:** Alternatively, pass `?api_key=<secret_key>` or `?token=<secret_key>` in the SSE connection URL (ideal for web clients or MCP clients without custom header support).
+- **Open Dev Mode:** If `MCP_API_KEY` is unset or empty in the environment, the server operates in open mode for local development.
+
+### Antigravity / MCP Client Configuration Example:
 
 ```json
 {
   "mcpServers": {
     "alamia-tos-saas": {
-      "serverUrl": "https://keagent-staging.alamiaconnect.com/mcp/sse"
+      "serverUrl": "https://keagent-staging.alamiaconnect.com/mcp/sse",
+      "headers": {
+        "Authorization": "Bearer YOUR_MCP_API_KEY"
+      }
+    }
+  }
+}
+```
+
+Or using query parameter URL:
+```json
+{
+  "mcpServers": {
+    "alamia-tos-saas": {
+      "serverUrl": "https://keagent-staging.alamiaconnect.com/mcp/sse?api_key=YOUR_MCP_API_KEY"
     }
   }
 }
@@ -50,6 +71,6 @@ To connect Antigravity to the Alamia TOS MCP server, configure the MCP settings 
 ---
 
 ## 5. Security & Isolation Constraints
-- **Staging Only Baseline:** The MCP server is developed on `feature/alamia-tos-mcp` and tested on Staging.
-- **Authentication:** Before promoting to production, API-Key / Bearer token authentication middleware must be enforced over `/mcp`.
-- **Database Safety:** All MCP tool functions must use transient, scoped `SessionLocal()` sessions wrapped in `try ... finally: db.close()` to prevent database connection leakage.
+- **Staging-First Validation:** The MCP server is developed on `feature/alamia-tos-mcp` and verified on `feature/staging-july2026`.
+- **Protected Endpoints:** Both `/mcp` (`GET /mcp/sse`, `POST /mcp/messages`) and `/api/admin/agent-monitor-logs` enforce `MCPAuthMiddleware`.
+- **Database Safety:** All MCP tool functions use transient, scoped `SessionLocal()` sessions wrapped in `try ... finally: db.close()` with defensive `getattr()` checks for schema-divergence resilience.
