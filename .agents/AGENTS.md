@@ -102,3 +102,9 @@ RepoBrain is an AI context optimization engine that runs via Docker (`scripts\up
 - **Do not run the refresh script at the start of every session.** It is resource intensive.
 - Always check `.ai/repobrain_status.md` to verify the last time it was executed.
 - Only run an incremental refresh (`scripts\update_repobrain.ps1`) if significant architectural changes or documentation updates have occurred since the last logged run.
+
+## 12. Alamia TOS MCP Server (AI Internal Tooling)
+The Cloud SaaS exposes a native FastMCP server (`ttttt/cloud-saas/app/mcp_server.py`) mounted at `/mcp` over SSE on the `feature/alamia-tos-mcp` branch (`https://keagent-staging.alamiaconnect.com/mcp/sse`).
+- **Primary Tools:** `get_workers()`, `create_mock_worker()`, `fetch_agent_monitor_logs()`.
+- **Usage Rule:** Agents should utilize these MCP tools for real-time telemetry inspection, worker capability audits, and end-to-end lease verification during development and debugging sessions.
+- **Architecture Reference:** Consult `.ai/permanent/architecture/10-mcp-server-integration.md` for tool specifications and connection instructions.

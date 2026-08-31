@@ -64,4 +64,15 @@ This index maps high-level architectural concepts to their actual source code lo
 - **Note:** Uses Playwright for tenant workflow testing and background verification.
 
 ---
-*Last Reviewed: Sprint 11 | Implementation Verified: YES | Owner: Knowledge Manager | Confidence: High*
+
+## AI Extensibility & Tooling
+
+### 9. Model Context Protocol (MCP) Server
+- **Implementation:** `ttttt/cloud-saas/app/mcp_server.py`
+- **Mount Point:** `ttttt/cloud-saas/app/main.py` (`/mcp`)
+- **Documentation:** `.ai/permanent/architecture/10-mcp-server-integration.md`
+- **Branch:** `feature/alamia-tos-mcp`
+- **Note:** FastMCP SSE transport exposing worker queries, mock creation, and live log streaming to AI agents.
+
+---
+*Last Reviewed: Sprint 12 | Implementation Verified: YES | Owner: Knowledge Manager | Confidence: High*
