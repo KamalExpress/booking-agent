@@ -46,9 +46,10 @@ To orchestrate distributed headless workers for visa appointment scraping and sl
 - **Machine Awareness:** Agents MUST check the `Device name` in their User Context metadata or via hostname.
 - **High-End Local Dev (`DESKTOP-5E6DM1M`):** On this specific machine, agents are AUTHORIZED and ENCOURAGED to run local Docker Compose stacks, execute `alembic` migrations, and build containers locally.
 - **Low-End/Other Machines:** The system runs exclusively on a cloud VPS managed via Portainer. Agents must NEVER attempt to run Docker containers or Alembic database migrations locally on these machines.
-- **Environment Split:**
-  - `feature/staging` branch deployed as the **Staging Stack** (contains all new booking/waitlist features).
-  - `feature/headless-worker` branch deployed as the **Production Stack** (currently stable and in use).
+- **Environment Split & Canonical Endpoints:**
+  - **Production Stack:** `https://keagent.alamiaconnect.com/` (tracking `feature/prod-july2026`).
+  - **Staging Stack:** `https://keagent-staging.alamiaconnect.com/` (tracking `feature/staging-july2026`).
+  - **Scalable Architecture Stack:** `https://scalearch.alamiaconnect.com/` (isolated multi-portal verification).
 
 ## Related Source Directories
 - `ttttt/cloud-saas/app/services/scheduler_service.py`

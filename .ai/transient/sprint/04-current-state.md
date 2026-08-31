@@ -63,8 +63,8 @@ During live production testing during an active GVC slot opening window, the tea
 
 ## 3. Production & Staging Restoration Milestones (August 31, 2026)
 
-- **Production Restored on VPS:** Deployed target branch `feature/prod-july2026` on production VPS (`keagent.alamiaconnect.com`), cleanly restoring the last known working state observed by client staff (Commit `eaad857`, July 28, 2026).
-- **Staging Restored on VPS:** Deployed target branch `feature/staging-july2026` on staging VPS (`staging.alamiaconnect.com`) at commit `eaad857`.
+- **Production Restored on VPS:** Deployed target branch `feature/prod-july2026` on production VPS (`https://keagent.alamiaconnect.com/`), cleanly restoring the last known working state observed by client staff (Commit `eaad857`, July 28, 2026).
+- **Staging Restored on VPS:** Deployed target branch `feature/staging-july2026` on staging VPS (`https://keagent-staging.alamiaconnect.com/`) at commit `eaad857`.
 - **August Fixes Preserved:** Dedicated branches `feature/prod-aug2026` (Commit `04606ee`) and `feature/staging-aug2026` (Commit `0ad181b`) permanently store all August 28/29 hotfixes.
 - **Architectural Divergence Recorded:** Documented in `.ai/permanent/architecture/08-staging-vs-production-architecture-divergence.md` that Staging contains the refactored **Execution Plane Abstraction**, **Adapter Factory**, **Multi-Provider Architecture**, **AI OCR Service**, and **Client Directory**, which were intentionally not deployed to production.
 
