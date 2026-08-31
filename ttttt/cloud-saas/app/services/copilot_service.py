@@ -18,20 +18,33 @@ class TravelOSMCPClient:
     Authentic MCP In-Process Client for the TravelOS FastMCP Server.
     Discovers capabilities via MCP tools/list and invokes execution via MCP tools/call.
     """
-    @staticmethod
-    async def list_tools() -> List[Dict[str, Any]]:
+    # Strict Zero-SPOF HITL Isolation: Only read-only operational inspection tools are exposed to AI
+    AI_ACCESSIBLE_TOOLS = {
+        "get_workers",
+        "get_worker_status",
+        "get_worker_details",
+        "get_worker_logs",
+        "get_available_slots",
+        "get_proxy_health",
+        "get_active_leases",
+        "get_portal_health_summary"
+    }
+
+    @classmethod
+    async def list_tools(cls) -> List[Dict[str, Any]]:
         """MCP tools/list: discover registered tools and their JSON schemas from FastMCP."""
         try:
             from mcp_server import mcp
             raw_tools = await mcp.list_tools()
-            return [
-                {
-                    "name": t.name,
-                    "description": t.description,
-                    "inputSchema": getattr(t, "inputSchema", {})
-                }
-                for t in raw_tools
-            ]
+            filtered = []
+            for t in raw_tools:
+                if t.name in cls.AI_ACCESSIBLE_TOOLS:
+                    filtered.append({
+                        "name": t.name,
+                        "description": t.description,
+                        "inputSchema": getattr(t, "inputSchema", {})
+                    })
+            return filtered
         except Exception as e:
             print(f"[TravelOSMCPClient] Error in tools/list: {e}")
             return []
@@ -51,9 +64,13 @@ class TravelOSMCPClient:
         else:
             return loop.run_until_complete(cls.list_tools())
 
-    @staticmethod
-    async def call_tool(name: str, arguments: Dict[str, Any]) -> str:
+    @classmethod
+    async def call_tool(cls, name: str, arguments: Dict[str, Any]) -> str:
         """MCP tools/call: execute a tool through the FastMCP server dispatch pipeline."""
+        # Enforce security barrier: AI cannot invoke non-whitelisted tools
+        if name not in cls.AI_ACCESSIBLE_TOOLS:
+            return f"Access Denied: Tool '{name}' is restricted and cannot be invoked by the AI Copilot."
+            
         try:
             from mcp_server import mcp
             raw_res = await mcp.call_tool(name, arguments)
@@ -84,6 +101,9 @@ class TravelOSMCPClient:
 
 
 class CopilotService:
+    # Configurable policy limit for investigation depth
+    MAX_TOOL_ITERATIONS = int(os.getenv("COPILOT_MAX_TOOL_ITERATIONS", "2"))
+
     @staticmethod
     def execute_quick_action(action: str, params: Optional[Dict[str, Any]] = None, db: Optional[Session] = None) -> Dict[str, Any]:
         """Execute deterministic actions with ZERO LLM calls (Fast-Path / 1-Click Chips via MCP)."""
@@ -112,16 +132,6 @@ class CopilotService:
                 proxy_summary = TravelOSMCPClient.call_tool_sync("get_proxy_health", {})
                 return {"type": "text", "content": proxy_summary}
 
-            elif action in ["unfreeze", "unlease"]:
-                rtype = params.get("resource_type", "account") if params else "account"
-                rid = params.get("resource_id", 0) if params else 0
-                res = TravelOSMCPClient.call_tool_sync("unlease_resource", {"resource_type": rtype, "resource_id": rid})
-                return {"type": "text", "content": res}
-                
-            elif action in ["maintenance", "orphan_cleanup"]:
-                res = TravelOSMCPClient.call_tool_sync("trigger_maintenance_cycle", {})
-                return {"type": "text", "content": res}
-                
             elif action in ["active_challenges", "pending_otp", "challenges"]:
                 sdb = db or SessionLocal()
                 try:
@@ -147,7 +157,7 @@ class CopilotService:
 
     @staticmethod
     def _parse_tool_call(llm_output: str) -> Optional[Dict[str, Any]]:
-        """Parses ACTION: tool_name(args) or ACTION: {"tool": ..., "args": ...} from BitNet."""
+        """Parses ACTION: tool_name(args) with strict unambiguous key aliases and NO value mutation."""
         text = llm_output.strip()
         if "ACTION:" not in text and "action:" not in text.lower():
             return None
@@ -189,7 +199,7 @@ class CopilotService:
                         elif "slot" in tool_name:
                             args["visa_center"] = val
                             
-        # Map common aliases to canonical FastMCP tool names
+        # Canonical tool name mapping
         canonical_map = {
             "worker.get_status": "get_worker_status",
             "worker_get_status": "get_worker_status",
@@ -208,17 +218,33 @@ class CopilotService:
         }
         canonical_tool = canonical_map.get(tool_name, tool_name)
         
-        # Heuristic argument normalization
-        if "worker" in canonical_tool and "worker_id" not in args:
-            for k, v in args.items():
-                if "worker" in str(k).lower():
-                    args["worker_id"] = str(k)
-                    break
-                elif "worker" in str(v).lower():
-                    args["worker_id"] = str(v)
+        # Strict Unambiguous Key-Alias Normalization (Rule: Never infer or modify values)
+        KEY_ALIAS_MAP = {
+            "worker": "worker_id",
+            "workerId": "worker_id",
+            "node_id": "worker_id",
+            "center": "visa_center",
+            "vac": "visa_center",
+            "vac_id": "visa_center"
+        }
+        normalized_args = {}
+        for k, v in args.items():
+            canonical_key = KEY_ALIAS_MAP.get(k, k)
+            normalized_args[canonical_key] = v
+
+        # If worker_id is missing and one key is an exact worker identifier (e.g. worker_17):
+        if "worker" in canonical_tool and "worker_id" not in normalized_args:
+            for k in list(normalized_args.keys()):
+                if re.match(r"^worker_\w+", str(k), re.IGNORECASE):
+                    val = normalized_args.pop(k)
+                    normalized_args["worker_id"] = str(k)
+                    if isinstance(val, dict):
+                        normalized_args.update(val)
+                    elif isinstance(val, (int, str)) and "limit" not in normalized_args and str(val).isdigit():
+                        normalized_args["limit"] = int(val)
                     break
                     
-        return {"tool": canonical_tool, "args": args}
+        return {"tool": canonical_tool, "args": normalized_args}
 
     @staticmethod
     def _call_bitnet(messages: List[Dict[str, str]], max_tokens: int = 180, temperature: float = 0.2) -> Dict[str, Any]:
@@ -272,33 +298,44 @@ class CopilotService:
                 }
 
         lower_msg = message.strip().lower()
+        is_investigative = any(w in lower_msg for w in ["why", "how come", "reason", "explain", "investigate", "what happened"])
 
         # 2. Tier 1: Deterministic Fast Paths (0 LLM Tokens, 0.01s Latency via MCP)
-        if any(k in lower_msg for k in ["any slot", "slots available", "check slot", "show slot", "are there slot", "is there a slot", "slots today", "available today", "open slot"]):
-            res = CopilotService.execute_quick_action("slot_availability", db=db)
-            return {"reply": res["content"], "status": "ok", "source": "deterministic"}
+        if not is_investigative:
+            if any(k in lower_msg for k in ["any slot", "slots available", "check slot", "show slot", "are there slot", "is there a slot", "slots today", "available today", "open slot"]):
+                res = CopilotService.execute_quick_action("slot_availability", db=db)
+                return {"reply": res["content"], "status": "ok", "source": "deterministic"}
 
-        if any(k in lower_msg for k in ["proxy", "proxies", "proxy health", "check proxy"]):
-            res = CopilotService.execute_quick_action("proxy_health", db=db)
-            return {"reply": res["content"], "status": "ok", "source": "deterministic"}
+            if any(k in lower_msg for k in ["proxy", "proxies", "proxy health", "check proxy"]):
+                res = CopilotService.execute_quick_action("proxy_health", db=db)
+                return {"reply": res["content"], "status": "ok", "source": "deterministic"}
 
-        if lower_msg in ["health", "status", "system health", "check health"]:
-            res = CopilotService.execute_quick_action("system_health", db=db)
-            return {"reply": res["content"], "status": "ok", "source": "deterministic"}
-            
-        if lower_msg in ["leases", "active leases", "show leases"]:
-            res = CopilotService.execute_quick_action("active_leases", db=db)
-            return {"reply": res["content"], "status": "ok", "source": "deterministic"}
-            
-        if lower_msg in ["workers", "worker list", "show workers", "fleet"]:
-            res = CopilotService.execute_quick_action("workers", db=db)
-            return {"reply": res["content"], "status": "ok", "source": "deterministic"}
+            if lower_msg in ["health", "status", "system health", "check health"]:
+                res = CopilotService.execute_quick_action("system_health", db=db)
+                return {"reply": res["content"], "status": "ok", "source": "deterministic"}
+                
+            if lower_msg in ["leases", "active leases", "show leases"]:
+                res = CopilotService.execute_quick_action("active_leases", db=db)
+                return {"reply": res["content"], "status": "ok", "source": "deterministic"}
+                
+            if lower_msg in ["workers", "worker list", "show workers", "fleet"]:
+                res = CopilotService.execute_quick_action("workers", db=db)
+                return {"reply": res["content"], "status": "ok", "source": "deterministic"}
 
-        if lower_msg in ["otp", "pending otp", "challenges", "show otp"]:
+        # Deterministic HITL Guidance: OTP questions are answered factually without sending secrets to AI
+        if any(k in lower_msg for k in ["otp pending", "pending otp", "what do i need to do", "how to enter otp", "where to enter otp", "pending - what do i need to do"]):
             res = CopilotService.execute_quick_action("active_challenges", db=db)
-            return {"reply": res["content"], "status": "ok", "source": "deterministic"}
+            return {
+                "reply": (
+                    f"{res['content']}\n\n"
+                    "💡 Operational Guidance: To complete verification, enter the OTP code provided by the applicant directly into the [⚡ Pending OTP] challenge modal or via the Admin Dashboard. "
+                    "For security, OTP codes are processed exclusively through the human-in-the-loop verification pipeline and are never handled by the AI."
+                ),
+                "status": "ok",
+                "source": "deterministic_hitl"
+            }
 
-        # 3. Tier 2: MCP Discovery (tools/list) & Structured Agent Loop
+        # 3. Tier 2: MCP Discovery (tools/list) & Structured Multi-Hop Agent Loop
         now_utc = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
         
         # Step 3.1: Stable System Instructions (Owned by TravelOS Copilot)
@@ -307,7 +344,7 @@ class CopilotService:
             "Answer factually and concisely (under 2 sentences).\n"
             "If operational data is needed, reply ONLY with:\n"
             "ACTION: <tool_name>(<arguments>)\n"
-            "When an OBSERVATION is given, base your answer strictly on it."
+            "When an OBSERVATION is given, provide your natural language answer directly. Do not call another action if you already have the answer."
         )
         
         # Step 3.2: MCP Tool Discovery via FastMCP tools/list
@@ -318,9 +355,9 @@ class CopilotService:
         selected_tools = []
         for t in mcp_tools:
             t_name = t["name"].lower()
-            if any(w in q for w in ["worker", "fail", "stuck", "node"]) and "worker" in t_name:
+            if any(w in q for w in ["worker", "fail", "stuck", "node", "online"]) and "worker" in t_name:
                 selected_tools.append(t)
-            elif any(s in q for s in ["slot", "appointment", "date"]) and "slot" in t_name:
+            elif any(s in q for s in ["slot", "appointment", "date", "islamabad", "lahore"]) and "slot" in t_name:
                 selected_tools.append(t)
             elif any(p in q for p in ["proxy", "ip"]) and "proxy" in t_name:
                 selected_tools.append(t)
@@ -328,15 +365,18 @@ class CopilotService:
                 selected_tools.append(t)
                 
         if not selected_tools:
-            # Default core subset from MCP tools/list
             selected_tools = [t for t in mcp_tools if t["name"] in ["get_workers", "get_available_slots", "get_proxy_health", "get_portal_health_summary"]]
             
         selected_tools = selected_tools[:4]
         
         tool_lines = ["Available MCP Operational Tools:"]
         for t in selected_tools:
-            params_str = json.dumps(t["inputSchema"].get("properties", {}))
-            tool_lines.append(f"- {t['name']}({params_str}): {t['description']}")
+            props = t["inputSchema"].get("properties", {})
+            param_examples = {}
+            for p_k, p_v in props.items():
+                p_type = p_v.get("type", "string")
+                param_examples[p_k] = f"<{p_type}>"
+            tool_lines.append(f"- {t['name']}({json.dumps(param_examples)}): {t['description']}")
         tool_sigs = "\n".join(tool_lines)
         
         context_prompt = (
@@ -344,56 +384,67 @@ class CopilotService:
             f"{tool_sigs}"
         )
         
-        messages = [
+        # Step 3.3: Multi-Hop Agent Loop Bounded by Configurable Policy Limit
+        current_messages = [
             {"role": "system", "content": system_rules},
             {"role": "system", "content": context_prompt},
             {"role": "user", "content": message}
         ]
         
-        # Step 3.3: First Inference Hop (Intent & Action Evaluation)
-        call_res = CopilotService._call_bitnet(messages, max_tokens=100, temperature=0.1)
+        tool_invoked = False
+        last_observation = ""
         
-        if call_res["status"] != "ok":
-            return {
-                "reply": f"🤖 Alamia Copilot: AI inference is currently unreachable ({call_res['content'][:80]}). All deterministic operational tools (Slots, Health, OTP Entry) remain 100% operational.",
-                "status": "offline",
-                "source": "fallback"
-            }
+        for iteration in range(CopilotService.MAX_TOOL_ITERATIONS):
+            call_res = CopilotService._call_bitnet(current_messages, max_tokens=100, temperature=0.1)
             
-        first_reply = call_res["content"].strip()
-        tool_call = CopilotService._parse_tool_call(first_reply)
-        
-        # If no tool requested, return BitNet's direct conversational answer
-        if not tool_call:
-            return {"reply": first_reply, "status": "ok", "source": "llm"}
+            if call_res["status"] != "ok":
+                if not tool_invoked:
+                    return {
+                        "reply": f"🤖 Alamia Copilot: AI inference is currently unreachable ({call_res['content'][:80]}). All deterministic operational tools (Slots, Health, OTP Entry) remain 100% operational.",
+                        "status": "offline",
+                        "source": "fallback"
+                    }
+                break # Proceed with observations gathered so far
+                
+            model_reply = call_res["content"].strip()
+            tool_call = CopilotService._parse_tool_call(model_reply)
             
-        # Step 3.4: Invoke MCP tools/call via FastMCP Server
-        tool_name = tool_call["tool"]
-        tool_args = tool_call["args"]
-        print(f"[Copilot MCP Client] Invoking MCP tools/call: {tool_name}({tool_args})")
-        
-        observation = TravelOSMCPClient.call_tool_sync(tool_name, tool_args)
-        print(f"[Copilot MCP Client] FastMCP Observation: {observation[:120]}...")
-        
-        # Step 3.5: Feed Observation Back to BitNet for Final Synthesis
+            # If model produced a final answer without requesting a tool
+            if not tool_call:
+                return {"reply": model_reply, "status": "ok", "source": "agent_loop" if tool_invoked else "llm"}
+                
+            # Execute MCP tools/call
+            tool_name = tool_call["tool"]
+            tool_args = tool_call["args"]
+            print(f"[Copilot MCP Client] Hop {iteration + 1}/{CopilotService.MAX_TOOL_ITERATIONS} - tools/call: {tool_name}({tool_args})")
+            
+            observation = TravelOSMCPClient.call_tool_sync(tool_name, tool_args)
+            tool_invoked = True
+            last_observation = observation
+            print(f"[Copilot MCP Client] FastMCP Observation: {observation[:120]}...")
+            
+            current_messages.append({"role": "assistant", "content": f"ACTION: {tool_name}({json.dumps(tool_args)})"})
+            current_messages.append({"role": "user", "content": f"OBSERVATION: {observation}\n\nContinue investigation or synthesize final answer."})
+
+        # Step 3.4: Final Synthesis Hop
         synthesis_rules = (
             "You are Alamia TravelOS Copilot, the operational assistant for TravelOS.\n"
-            "You have performed the tool investigation. Using the OBSERVATION provided, "
+            "You have completed your operational investigation. Using the OBSERVATIONS provided above, "
             "provide a concise, direct, and factual explanation to the user in 1-2 sentences. "
             "Do NOT output any ACTION commands. Provide your normal natural language answer."
         )
         synthesis_messages = [
             {"role": "system", "content": synthesis_rules},
             {"role": "user", "content": message},
-            {"role": "assistant", "content": f"ACTION: {tool_name}({json.dumps(tool_args)})"},
-            {"role": "user", "content": f"OBSERVATION: {observation}\n\nExplain the observation to answer the user question."}
+            {"role": "assistant", "content": current_messages[-2]["content"]},
+            {"role": "user", "content": f"{current_messages[-1]['content']}\n\nExplain the observation to answer the user question."}
         ]
         
         synth_res = CopilotService._call_bitnet(synthesis_messages, max_tokens=150, temperature=0.2)
         if synth_res["status"] == "ok":
             final_reply = synth_res["content"].strip()
             if final_reply.startswith("ACTION:"):
-                return {"reply": f"Based on live FastMCP telemetry: {observation}", "status": "ok", "source": "mcp_direct"}
+                return {"reply": f"Based on live FastMCP telemetry: {last_observation}", "status": "ok", "source": "mcp_direct"}
             return {"reply": final_reply, "status": "ok", "source": "agent_loop"}
         else:
-            return {"reply": f"{observation}", "status": "ok", "source": "mcp_direct"}
+            return {"reply": f"{last_observation}", "status": "ok", "source": "mcp_direct"}
