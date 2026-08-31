@@ -29,6 +29,11 @@ This index maps high-level architectural concepts to their actual source code lo
 - **Implementation:** `ttttt/cloud-saas/static/` and `ttttt/cloud-saas/app/templates/` (Unified SaaS Admin & Tenant Dashboard)
 - **Note:** The frontend uses Jinja templates embedded directly within the SaaS backend repository. There is no separate frontend repo.
 
+### 5. MCP Server (AI Integration)
+- **Implementation:** `ttttt/cloud-saas/app/mcp_server.py`
+- **Documentation:** `.ai/permanent/architecture/07-mcp-server-integration.md`
+- **Note:** Configured via `fastmcp` to expose SaaS control plane functions dynamically to AI Agents via SSE.
+
 ---
 
 ## Worker Node (Execution Plane)
