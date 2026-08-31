@@ -101,16 +101,31 @@ All changes have been validated with comprehensive automated test suites and pus
 
 ---
 
-## 5. Pending Work / Next Session Objectives
+## 5. Pending Work & Next Session Top Priorities
 
-1. **Deploy Staging Update via Portainer:**
-   - In `devops-agent/`, run `npm run deploy:staging` (or update stack in Portainer) to roll out the latest commits (`5309714`) to `https://keagent-staging.alamiaconnect.com/`.
-2. **SaaS Admin UI for Appointment Type(s) - Days Mapping:**
-   - Implement dynamic configuration UI in SaaS Admin (under `/settings` or `/assignments`) allowing staff to configure which appointment types (`2`, `26`, `6`, `5`, etc.) map to which active days of the week, replacing hardcoded rules.
-3. **Live Slot Availability Calendar & Peak-Drop Board:**
-   - Implement the real-time calendar heatmap and live ticker dashboard (detailed in `.ai/permanent/workflows/09-live-slot-availability-calendar-board.md`) displaying open dates, times, and capacity during slot drops.
-4. **Third-Party Worker / Container Plugin Documentation:**
-   - Write developer guide for third-party worker container developers detailing how to interface with TravelOS execution plane APIs (`/api/v1/worker/...` and FastMCP).
+### 🚨 TOP PRIORITY (Production/Staging Worker Resiliency):
+1. **Decodo Proxy 407 (Bandwidth/Quota Expiry) Handling & Auto-Penalty:**
+   - **Incident Analysis:** Operator logs showed `Failed to perform, curl: (56) CONNECT tunnel failed, response 407`. HTTP 407 (Proxy Authentication Required) typically indicates the Decodo proxy bandwidth/quota has expired or proxy credentials were rejected.
+   - **SaaS Scheduler Fix:** In `lease_service.py:fail_lease()`, failed proxies were previously reset straight to `READY` without penalty, causing the scheduler to re-lease the exact same dead proxy in a tight 50ms loop. Add failure count increments, health penalties, and automatically transition 407-failing proxies to `COOLDOWN` or `DISABLED`.
+   - **Operator Worker Backoff:** In `slot_monitor.py`, add a cooling backoff (15-30s) when `login()` fails with proxy or connection errors, rather than immediately re-polling for leases.
+
+2. **Mobile PWA Alerting for Login / Proxy / Worker Failures:**
+   - **User Feedback:** *"also the mobile PWA didnt give me any notifications about this login failure"*.
+   - **Root Cause:** In `cloud-saas/app/routers/worker.py:submit_logs()`, `send_push_notification()` was only wired to `LOGIN_SUCCESS`, `NO_SLOTS_FOUND`, and `SLOT_FOUND`. Critical failure events (`LOGIN_FAILED`, `PROXY_BANNED`, `WAF_BLOCK`, and `LEASE_RESULT` with `FAILED`) were saved to `EventLog` but never triggered Web Push.
+   - **Resolution:** Add push notification triggers in `submit_logs` and `fail_lease` to instantly alert admins on mobile PWA when worker authentication or proxy tunnels fail.
+
+3. **Safe Dual-Format Session Loader (`load_session`):**
+   - Incorporate the dual JSON/pickle loader from commit `e46ea54` into `main_operator.py` and `core/gvc_adapter.py` to eliminate the `'utf-8' codec can't decode byte 0x80` warning when reading legacy binary cookie files.
+
+### 📋 Feature & Operations Backlog:
+4. **Deploy Staging Update via Portainer:**
+   - In `devops-agent/`, run `npm run deploy:staging` to roll out the latest commits (`5309714`) to `https://keagent-staging.alamiaconnect.com/`.
+5. **SaaS Admin UI for Appointment Type(s) - Days Mapping:**
+   - Implement dynamic configuration UI in SaaS Admin allowing staff to configure which appointment types map to which active days of the week.
+6. **Live Slot Availability Calendar & Peak-Drop Board:**
+   - Implement the real-time calendar heatmap and live ticker dashboard (`.ai/permanent/workflows/09-live-slot-availability-calendar-board.md`).
+7. **Third-Party Worker / Container Plugin Documentation:**
+   - Write developer guide for third-party worker container developers interfacing with TravelOS execution plane APIs.
 
 ---
-*Date: 2026-08-31 21:05 PKT | Lead Architect & Knowledge Manager Handoff*
+*Date: 2026-08-31 21:12 PKT | Lead Architect & Knowledge Manager Handoff*
