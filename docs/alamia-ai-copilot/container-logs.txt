@@ -1,21 +1,20 @@
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/site-packages/anyio/_backends/_asyncio.py", line 2641, in run_sync_in_worker_thread
-    return await future
-           ^^^^^^^^^^^^
   File "/usr/local/lib/python3.11/site-packages/anyio/_backends/_asyncio.py", line 1033, in run
     result = context.run(func, *args)
              ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/app/routers/worker.py", line 192, in get_next_assignment
-    acc = db.query(PortalAccount).filter(PortalAccount.id == next_lease.portal_account_id).first()
-                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-AttributeError: 'dict' object has no attribute 'portal_account_id'
-INFO:     172.28.0.5:51470 - "GET /api/v1/worker/assignments/next HTTP/1.1" 204 No Content
-INFO:     172.28.0.5:51472 - "POST /api/v1/worker/heartbeat HTTP/1.1" 200 OK
-INFO:     172.28.0.4:44202 - "POST /api/v1/worker/heartbeat HTTP/1.1" 200 OK
-INFO:     172.28.0.4:44202 - "POST /api/v1/worker/stream-logs HTTP/1.1" 200 OK
-INFO:     172.28.0.1:53026 - "GET /api/v1/hitl/challenges/active HTTP/1.1" 200 OK
-INFO:     172.28.0.1:52022 - "GET /api/v1/hitl/challenges/active HTTP/1.1" 200 OK
-INFO:     172.28.0.4:51140 - "GET /api/v1/worker/assignments/next HTTP/1.1" 500 Internal Server Error
+  File "/app/app/routers/worker.py", line 234, in get_next_assignment
+    elif next_lease.booking_task_id:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'booking_task_id'
+INFO:     172.28.0.4:49726 - "POST /api/v1/worker/heartbeat HTTP/1.1" 200 OK
+INFO:     172.28.0.4:49726 - "GET /api/v1/worker/runtime-config HTTP/1.1" 200 OK
+INFO:     172.28.0.5:56882 - "POST /api/v1/worker/heartbeat HTTP/1.1" 200 OK
+INFO:     172.28.0.5:56866 - "GET /api/v1/worker/assignments/next HTTP/1.1" 204 No Content
+INFO:     172.28.0.5:56866 - "GET /api/v1/worker/runtime-config HTTP/1.1" 200 OK
+INFO:     172.28.0.4:49726 - "POST /api/v1/worker/stream-logs HTTP/1.1" 200 OK
+INFO:     172.28.0.1:48442 - "GET /api/v1/hitl/challenges/active HTTP/1.1" 200 OK
+INFO:     172.28.0.1:48436 - "POST /api/v1/copilot/chat HTTP/1.1" 200 OK
+INFO:     172.28.0.1:37046 - "GET /api/v1/hitl/challenges/active HTTP/1.1" 200 OK
+INFO:     172.28.0.4:41684 - "GET /api/v1/worker/assignments/next HTTP/1.1" 500 Internal Server Error
 ERROR:    Exception in ASGI application
 Traceback (most recent call last):
   File "/usr/local/lib/python3.11/site-packages/uvicorn/protocols/http/httptools_impl.py", line 422, in run_asgi
@@ -91,10 +90,11 @@ Traceback (most recent call last):
   File "/usr/local/lib/python3.11/site-packages/anyio/_backends/_asyncio.py", line 1033, in run
     result = context.run(func, *args)
              ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/app/routers/worker.py", line 192, in get_next_assignment
-    acc = db.query(PortalAccount).filter(PortalAccount.id == next_lease.portal_account_id).first()
-                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-AttributeError: 'dict' object has no attribute 'portal_account_id'
-INFO:     172.28.0.5:50002 - "GET /api/v1/worker/assignments/next HTTP/1.1" 204 No Content
-INFO:     172.28.0.4:51154 - "POST /api/v1/worker/heartbeat HTTP/1.1" 200 OK
-INFO:     172.28.0.5:50002 - "POST /api/v1/worker/heartbeat HTTP/1.1" 200 OK
+  File "/app/app/routers/worker.py", line 234, in get_next_assignment
+    elif next_lease.booking_task_id:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'booking_task_id'
+INFO:     172.28.0.4:41692 - "POST /api/v1/worker/heartbeat HTTP/1.1" 200 OK
+INFO:     172.28.0.5:45564 - "GET /api/v1/worker/assignments/next HTTP/1.1" 204 No Content
+INFO:     172.28.0.5:45564 - "POST /api/v1/worker/heartbeat HTTP/1.1" 200 OK
+INFO:     172.28.0.4:41692 - "POST /api/v1/worker/stream-logs HTTP/1.1" 200 OK

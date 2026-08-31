@@ -221,18 +221,18 @@ def get_next_assignment(
     }
     
     asm_id = getattr(next_lease, 'assignment_id', None) or (next_lease.get('assignment_id') if isinstance(next_lease, dict) else None)
+    task_id = getattr(next_lease, 'booking_task_id', None) or (next_lease.get('booking_task_id') if isinstance(next_lease, dict) else None)
     if asm_id:
         asm = db.query(Assignment).filter(Assignment.id == asm_id).first()
         if asm:
             res_dict["assignment_context"] = {
-            "id": asm.id,
-            "visa_center": asm.visa_center,
-            "date_from": asm.date_from,
-            "date_to": asm.date_to
-        }
-        
-    elif next_lease.booking_task_id:
-        task = db.query(BookingTask).filter(BookingTask.id == next_lease.booking_task_id).first()
+                "id": asm.id,
+                "visa_center": asm.visa_center,
+                "date_from": asm.date_from,
+                "date_to": asm.date_to
+            }
+    elif task_id:
+        task = db.query(BookingTask).filter(BookingTask.id == task_id).first()
         applicant = db.query(Applicant).filter(Applicant.id == task.applicant_id).first() if task.applicant_id else None
         
         # Serialize applicant data if any
