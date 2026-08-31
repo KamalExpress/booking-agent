@@ -21,10 +21,11 @@ else:
     VAPID_PRIVATE_KEY = os.path.join(os.path.dirname(os.path.dirname(__file__)), "private_key.pem")
 
 
-def send_push_notification(db: Session, title: str, body: str, user_ids: list = None, visa_center_id: str = None):
+def send_push_notification(db: Session, title: str, body: str, user_ids: list = None, visa_center_id: str = None, url: str = "/"):
     from pywebpush import webpush
     from models import SystemSetting, EventLog, User
     from core.branding import get_env_branding
+    import json
     
     env_branding = get_env_branding()
     prefixed_title = f"{env_branding.notification_prefix}{title}"
@@ -58,12 +59,13 @@ def send_push_notification(db: Session, title: str, body: str, user_ids: list = 
             failure_by_tenant[t_id] = 0
             
         try:
+            push_payload = json.dumps({"title": prefixed_title, "body": body, "url": url})
             webpush(
                 subscription_info={
                     "endpoint": sub.endpoint,
                     "keys": {"p256dh": sub.p256dh, "auth": sub.auth}
                 },
-                data=f'{{"title":"{prefixed_title}","body":"{body}","url":"/"}}',
+                data=push_payload,
                 vapid_private_key=VAPID_PRIVATE_KEY,
                 vapid_claims={"sub": "mailto:admin@samwebdevs.dpdns.org"}
             )

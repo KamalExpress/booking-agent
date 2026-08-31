@@ -438,6 +438,33 @@ def submit_logs(
             assignment_ids = [a.id for a in active_assignments]
             lease_service.cancel_active_leases(assignment_ids)
 
+    elif req.event_type == "OTP_REQUIRED":
+        task_id = req.payload.get("booking_task_id") if req.payload else None
+        if not task_id and req.assignment_id:
+            # Fallback lookup active task for assignment
+            task = db.query(BookingTask).filter(BookingTask.assignment_id == req.assignment_id, BookingTask.status == "PENDING").first()
+            if task:
+                task_id = task.id
+                
+        if task_id:
+            expires_in = req.payload.get("expires_in_seconds", 300) if req.payload else 300
+            vac_id = req.payload.get("visa_center", "VAC") if req.payload else "VAC"
+            app_type = req.payload.get("appointment_type", "Long-Term Type D") if req.payload else "Long-Term Type D"
+            applicant_name = req.payload.get("applicant_name", "Applicant") if req.payload else "Applicant"
+            
+            try:
+                from routers.hitl import create_challenge, ChallengeCreateRequest
+                ch_req = ChallengeCreateRequest(
+                    booking_task_id=int(task_id),
+                    visa_center=str(vac_id),
+                    appointment_type=str(app_type),
+                    applicant_name=str(applicant_name),
+                    expires_in_seconds=int(expires_in)
+                )
+                create_challenge(ch_req, db)
+            except Exception as ch_err:
+                print(f"Error creating OTP challenge from log event: {ch_err}")
+
     db.commit()
     return {"status": "ok"}
 
@@ -456,22 +483,15 @@ def get_task_otp(task_id: int, worker: WorkerNode = Depends(verify_worker_hmac),
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
         
-    # Check EventLog if OTP is null on task (temporary workaround until OTP mapping research is done)
-    if not task.otp_code and task.applicant_id:
-        from app.models import Applicant, EventLog
-        applicant = db.query(Applicant).filter(Applicant.id == task.applicant_id).first()
-        if applicant and applicant.phone_number:
-            # Look for recent webhook OTP events matching this phone number (or all for now)
-            # Using EventLog where source='webhook_otp'
-            # Note: in real production we match the sender/text with applicant phone.
-            log = db.query(EventLog).filter(
-                EventLog.event_type == "OTP_RECEIVED",
-                EventLog.source == "webhook_otp"
-            ).order_by(EventLog.id.desc()).first()
-            
-            if log and log.payload and "extracted_otp" in log.payload:
-                return {"otp_code": log.payload["extracted_otp"]}
-                
+    # Check if there is an active SUBMITTED OTPChallenge
+    from models import OTPChallenge
+    challenge = db.query(OTPChallenge).filter(
+        OTPChallenge.booking_task_id == task_id,
+        OTPChallenge.status == "SUBMITTED"
+    ).order_by(OTPChallenge.id.desc()).first()
+    if challenge and challenge.otp_code:
+        return {"otp_code": challenge.otp_code, "challenge_id": challenge.challenge_id}
+
     return {"otp_code": task.otp_code}
 
 @router.post("/worker-logs")

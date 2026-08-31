@@ -24,9 +24,22 @@ self.addEventListener('push', function(event) {
 
 self.addEventListener('notificationclick', function(event) {
     event.notification.close();
-    if (event.notification.data.url) {
-        event.waitUntil(clients.openWindow(event.notification.data.url));
-    }
+    const targetUrl = event.notification.data && event.notification.data.url ? event.notification.data.url : '/';
+    
+    event.waitUntil(
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
+            for (let i = 0; i < clientList.length; i++) {
+                const client = clientList[i];
+                if (client.url && 'focus' in client) {
+                    client.navigate(targetUrl);
+                    return client.focus();
+                }
+            }
+            if (clients.openWindow) {
+                return clients.openWindow(targetUrl);
+            }
+        })
+    );
 });
 
 // A fetch handler is strictly required by Chromium to trigger the PWA install prompt.

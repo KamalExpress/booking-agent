@@ -952,6 +952,13 @@
                             else if (eType === 'BOOKING_STARTED') uiToast(`Worker ${workerId} started booking`, 'info');
                             else if (eType === 'BOOKING_SUCCESS') uiToast('Booking task completed successfully!', 'success');
                             else if (eType === 'OTP_REQUIRED') uiToast('Booking requires an OTP', 'info');
+                            else if (eType === 'OTP_CHALLENGE_CREATED' || (data.type === 'OTP_CHALLENGE_CREATED')) {
+                                uiToast('⚠️ Action Required: OTP Verification Code Needed!', 'warning');
+                                if (window.AlamiaCopilot) window.AlamiaCopilot.handleChallengeCreated(data);
+                            }
+                            else if (eType === 'OTP_CHALLENGE_SUBMITTED' || (data.type === 'OTP_CHALLENGE_SUBMITTED')) {
+                                if (window.AlamiaCopilot) window.AlamiaCopilot.handleChallengeSubmitted(data);
+                            }
                             else if (eType === 'ACCOUNT_LOCKED') uiToast('Portal account was locked', 'error');
                             else if (eType === 'CONFIG_REFRESH') uiToast('SaaS runtime configuration refreshed', 'info');
                             else if (eType === 'PUSH_DEVICE_SUBSCRIBED') uiToast('New device subscribed for push notifications', 'success');
@@ -967,6 +974,427 @@
             connect();
         })();
     </script>
+    
+    <!-- ==================== ALAMIA COPILOT & HITL DRAWER ==================== -->
+    <!-- Floating Trigger Bubble -->
+    <div id="copilotTriggerBtn" onclick="AlamiaCopilot.toggleDrawer()" class="fixed bottom-5 right-5 z-40 flex items-center gap-2 px-3.5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full shadow-2xl cursor-pointer transition-all duration-300 transform hover:scale-105 border border-indigo-400/30 group">
+        <div class="relative flex items-center justify-center">
+            <i data-lucide="bot" class="w-5 h-5"></i>
+            <span id="copilotBadge" class="hidden absolute -top-1.5 -right-1.5 w-3 h-3 bg-amber-400 border-2 border-zinc-950 rounded-full animate-ping"></span>
+            <span id="copilotBadgeDot" class="hidden absolute -top-1.5 -right-1.5 w-3 h-3 bg-amber-400 border-2 border-zinc-950 rounded-full"></span>
+        </div>
+        <span class="text-xs font-semibold tracking-wide pr-1">Copilot</span>
+        <kbd class="hidden md:inline-block text-[10px] px-1.5 py-0.5 bg-indigo-700/60 rounded text-indigo-200 border border-indigo-400/20">⌘K</kbd>
+    </div>
+
+    <!-- Slide-Over Drawer Container -->
+    <div id="copilotDrawer" class="fixed inset-y-0 right-0 z-50 w-full sm:w-[440px] bg-zinc-950/95 backdrop-blur-xl border-l border-zinc-800 shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+        <!-- Drawer Header -->
+        <div class="p-4 border-b border-zinc-800/80 flex items-center justify-between bg-zinc-900/50">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+                    <i data-lucide="bot" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-white flex items-center gap-1.5">
+                        Alamia Copilot
+                        <span class="text-[10px] font-normal px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">HITL Ready</span>
+                    </h3>
+                    <p class="text-[11px] text-zinc-400">Operational AI & Proactive Verification</p>
+                </div>
+            </div>
+            <button onclick="AlamiaCopilot.toggleDrawer(false)" class="p-1.5 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        <!-- Proactive Alert Card Container (OTP Challenge) -->
+        <div id="copilotActiveChallengeContainer" class="p-4 bg-amber-950/20 border-b border-amber-500/20 hidden">
+            <div class="p-3.5 rounded-xl bg-zinc-900 border border-amber-500/30 shadow-lg relative overflow-hidden">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                        <span class="relative flex h-2.5 w-2.5">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
+                        </span>
+                        <span class="text-xs font-semibold text-amber-400 tracking-wide uppercase">Action Required: OTP Verification</span>
+                    </div>
+                    <!-- Dynamic MM:SS Countdown Timer -->
+                    <div id="copilotTimerBadge" class="flex items-center gap-1 text-xs font-mono font-bold px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20">
+                        <i data-lucide="clock" class="w-3 h-3"></i>
+                        <span id="copilotTimerText">05:00</span>
+                    </div>
+                </div>
+                
+                <p class="text-xs text-zinc-300 mb-2 leading-relaxed">
+                    Booker worker is finalizing appointment for <strong id="copilotApplicantName" class="text-white">Applicant</strong> (<span id="copilotVisaCenter" class="text-indigo-300">VAC</span> - <span id="copilotAppType" class="text-zinc-400">Type D</span>).
+                </p>
+
+                <!-- Direct OTP Input & Submit (0 LLM Calls) -->
+                <form id="copilotOtpForm" onsubmit="AlamiaCopilot.submitOtp(event)" class="space-y-2">
+                    <div class="flex gap-2">
+                        <input id="copilotOtpInput" type="text" inputmode="numeric" placeholder="Enter 6-digit OTP code" maxlength="10" autocomplete="one-time-code" required class="flex-1 px-3 py-2 text-sm bg-zinc-950 border border-zinc-700 rounded-lg text-white font-mono placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                        <button type="submit" id="copilotSubmitOtpBtn" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-bold rounded-lg transition-colors shadow-md shadow-amber-500/20 flex items-center gap-1.5 shrink-0">
+                            <span>Submit</span>
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                    <div id="copilotOtpStatusMsg" class="text-[11px] text-zinc-400 hidden"></div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 1-Click Quick Action Chips (Deterministic Fast Path, 0 LLM Calls) -->
+        <div class="px-4 py-2.5 border-b border-zinc-800/80 bg-zinc-900/30 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+            <button onclick="AlamiaCopilot.runQuickAction('system_health')" class="px-2.5 py-1 text-[11px] font-medium bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200 rounded-md border border-zinc-700/60 whitespace-nowrap transition-colors flex items-center gap-1 shrink-0">
+                <i data-lucide="activity" class="w-3 h-3 text-emerald-400"></i> Health
+            </button>
+            <button onclick="AlamiaCopilot.runQuickAction('active_leases')" class="px-2.5 py-1 text-[11px] font-medium bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200 rounded-md border border-zinc-700/60 whitespace-nowrap transition-colors flex items-center gap-1 shrink-0">
+                <i data-lucide="layers" class="w-3 h-3 text-blue-400"></i> Leases
+            </button>
+            <button onclick="AlamiaCopilot.runQuickAction('active_challenges')" class="px-2.5 py-1 text-[11px] font-medium bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200 rounded-md border border-zinc-700/60 whitespace-nowrap transition-colors flex items-center gap-1 shrink-0">
+                <i data-lucide="shield-alert" class="w-3 h-3 text-amber-400"></i> Pending OTP
+            </button>
+            <button onclick="AlamiaCopilot.runQuickAction('maintenance')" class="px-2.5 py-1 text-[11px] font-medium bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200 rounded-md border border-zinc-700/60 whitespace-nowrap transition-colors flex items-center gap-1 shrink-0">
+                <i data-lucide="sparkles" class="w-3 h-3 text-purple-400"></i> Cleanup
+            </button>
+        </div>
+
+        <!-- Chat Conversation Messages -->
+        <div id="copilotMessages" class="flex-1 p-4 overflow-y-auto space-y-3.5 text-xs">
+            <!-- Initial Welcome Message -->
+            <div class="flex items-start gap-2.5">
+                <div class="w-6 h-6 rounded-md bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0 mt-0.5">
+                    <i data-lucide="bot" class="w-3.5 h-3.5"></i>
+                </div>
+                <div class="p-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 leading-relaxed max-w-[85%]">
+                    Hello! I am <strong>Alamia Copilot</strong>. I monitor your scraping nodes, proactively request OTP verification when booking slots, and provide real-time system diagnostics.
+                    <div class="mt-2 text-zinc-400">Try asking: <em>"Check proxy health"</em> or <em>"Are any slots available today?"</em></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Input Footer -->
+        <div class="p-3 border-t border-zinc-800/80 bg-zinc-900/50">
+            <form id="copilotChatForm" onsubmit="AlamiaCopilot.handleChatSubmit(event)" class="flex gap-2">
+                <input id="copilotChatInput" type="text" placeholder="Ask Copilot or type a command..." class="flex-1 px-3 py-2 text-xs bg-zinc-950 border border-zinc-700 rounded-lg text-white placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                <button type="submit" id="copilotSendBtn" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-colors flex items-center justify-center shrink-0">
+                    <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Copilot Client Controller Script -->
+    <script>
+    window.AlamiaCopilot = (function() {
+        let isOpen = false;
+        let activeChallenge = null;
+        let timerInterval = null;
+
+        function toggleDrawer(forceState) {
+            isOpen = (forceState !== undefined) ? forceState : !isOpen;
+            const drawer = document.getElementById('copilotDrawer');
+            if (drawer) {
+                if (isOpen) {
+                    drawer.classList.remove('translate-x-full');
+                    drawer.classList.add('translate-x-0');
+                    // Focus OTP input if active challenge exists, else chat input
+                    setTimeout(() => {
+                        const otpInput = document.getElementById('copilotOtpInput');
+                        if (activeChallenge && otpInput) {
+                            otpInput.focus();
+                        } else {
+                            const chatInput = document.getElementById('copilotChatInput');
+                            if (chatInput) chatInput.focus();
+                        }
+                    }, 300);
+                } else {
+                    drawer.classList.add('translate-x-full');
+                    drawer.classList.remove('translate-x-0');
+                }
+            }
+        }
+
+        // Format seconds into MM:SS
+        function formatTimer(totalSeconds) {
+            const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+            const s = (totalSeconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        function renderActiveChallenge(challenge) {
+            activeChallenge = challenge;
+            const container = document.getElementById('copilotActiveChallengeContainer');
+            const badge = document.getElementById('copilotBadge');
+            const badgeDot = document.getElementById('copilotBadgeDot');
+            
+            if (!challenge) {
+                if (container) container.classList.add('hidden');
+                if (badge) badge.classList.add('hidden');
+                if (badgeDot) badgeDot.classList.add('hidden');
+                if (timerInterval) clearInterval(timerInterval);
+                return;
+            }
+
+            if (container) container.classList.remove('hidden');
+            if (badge) badge.classList.remove('hidden');
+            if (badgeDot) badgeDot.classList.remove('hidden');
+
+            document.getElementById('copilotApplicantName').innerText = challenge.applicant_name || 'Applicant';
+            document.getElementById('copilotVisaCenter').innerText = `Center ${challenge.visa_center || 'VAC'}`;
+            document.getElementById('copilotAppType').innerText = challenge.appointment_type || 'Type D';
+
+            const expiresAt = new Date(challenge.expires_at).getTime();
+            if (timerInterval) clearInterval(timerInterval);
+
+            function updateTimer() {
+                const now = Date.now();
+                const rem = Math.max(0, Math.floor((expiresAt - now) / 1000));
+                const timerText = document.getElementById('copilotTimerText');
+                const timerBadge = document.getElementById('copilotTimerBadge');
+                
+                if (timerText) timerText.innerText = formatTimer(rem);
+                
+                if (timerBadge) {
+                    if (rem < 60) {
+                        timerBadge.className = 'flex items-center gap-1 text-xs font-mono font-bold px-2 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30 animate-pulse';
+                    } else if (rem < 120) {
+                        timerBadge.className = 'flex items-center gap-1 text-xs font-mono font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30';
+                    } else {
+                        timerBadge.className = 'flex items-center gap-1 text-xs font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+                    }
+                }
+
+                if (rem <= 0) {
+                    clearInterval(timerInterval);
+                    const statusMsg = document.getElementById('copilotOtpStatusMsg');
+                    if (statusMsg) {
+                        statusMsg.innerText = 'Challenge expired.';
+                        statusMsg.className = 'text-[11px] text-red-400 mt-1 block';
+                    }
+                }
+            }
+
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
+            if (window.lucide) window.lucide.createIcons();
+        }
+
+        async function pollActiveChallenges() {
+            try {
+                const res = await fetch('/api/v1/hitl/challenges/active');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.length > 0) {
+                        renderActiveChallenge(data[0]);
+                    } else {
+                        renderActiveChallenge(null);
+                    }
+                }
+            } catch (err) {
+                console.error('Error polling active challenges:', err);
+            }
+        }
+
+        async function submitOtp(e) {
+            e.preventDefault();
+            if (!activeChallenge) return;
+
+            const input = document.getElementById('copilotOtpInput');
+            const code = input ? input.value.trim() : '';
+            if (!code) return;
+
+            const btn = document.getElementById('copilotSubmitOtpBtn');
+            const statusMsg = document.getElementById('copilotOtpStatusMsg');
+            if (btn) btn.disabled = true;
+            if (statusMsg) {
+                statusMsg.innerText = 'Submitting code to booking worker...';
+                statusMsg.className = 'text-[11px] text-amber-400 mt-1 block';
+            }
+
+            try {
+                const res = await fetch(`/api/v1/hitl/challenges/${activeChallenge.challenge_id}/submit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ otp_code: code })
+                });
+                
+                if (res.ok) {
+                    if (statusMsg) {
+                        statusMsg.innerText = '✓ Code accepted! Worker is completing booking.';
+                        statusMsg.className = 'text-[11px] text-emerald-400 font-semibold mt-1 block';
+                    }
+                    setTimeout(() => {
+                        renderActiveChallenge(null);
+                        input.value = '';
+                    }, 2500);
+                } else {
+                    const errData = await res.json();
+                    if (statusMsg) {
+                        statusMsg.innerText = `Error: ${errData.detail || 'Failed to submit code'}`;
+                        statusMsg.className = 'text-[11px] text-red-400 mt-1 block';
+                    }
+                }
+            } catch (err) {
+                if (statusMsg) {
+                    statusMsg.innerText = `Network error: ${err.message}`;
+                    statusMsg.className = 'text-[11px] text-red-400 mt-1 block';
+                }
+            } finally {
+                if (btn) btn.disabled = false;
+            }
+        }
+
+        function appendMessage(role, content) {
+            const container = document.getElementById('copilotMessages');
+            if (!container) return;
+
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'flex items-start gap-2.5 ' + (role === 'user' ? 'justify-end' : '');
+
+            if (role === 'copilot') {
+                msgDiv.innerHTML = `
+                    <div class="w-6 h-6 rounded-md bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0 mt-0.5">
+                        <i data-lucide="bot" class="w-3.5 h-3.5"></i>
+                    </div>
+                    <div class="p-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 leading-relaxed max-w-[85%] whitespace-pre-wrap font-sans text-xs">
+                        ${escapeHtml(content)}
+                    </div>
+                `;
+            } else {
+                msgDiv.innerHTML = `
+                    <div class="p-3 rounded-xl bg-indigo-600 text-white leading-relaxed max-w-[85%] whitespace-pre-wrap font-sans text-xs shadow-md">
+                        ${escapeHtml(content)}
+                    </div>
+                `;
+            }
+
+            container.appendChild(msgDiv);
+            container.scrollTop = container.scrollHeight;
+            if (window.lucide) window.lucide.createIcons();
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.innerText = text;
+            return div.innerHTML;
+        }
+
+        async function handleChatSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('copilotChatInput');
+            const msg = input ? input.value.trim() : '';
+            if (!msg) return;
+
+            input.value = '';
+            appendMessage('user', msg);
+
+            // Display thinking placeholder
+            const placeholderId = 'thinking-' + Date.now();
+            const container = document.getElementById('copilotMessages');
+            const placeholderDiv = document.createElement('div');
+            placeholderDiv.id = placeholderId;
+            placeholderDiv.className = 'flex items-start gap-2.5';
+            placeholderDiv.innerHTML = `
+                <div class="w-6 h-6 rounded-md bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0 mt-0.5">
+                    <i data-lucide="bot" class="w-3.5 h-3.5"></i>
+                </div>
+                <div class="p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 italic text-xs animate-pulse">
+                    Alamia Copilot is thinking...
+                </div>
+            `;
+            container.appendChild(placeholderDiv);
+            container.scrollTop = container.scrollHeight;
+            if (window.lucide) window.lucide.createIcons();
+
+            try {
+                const res = await fetch('/api/v1/copilot/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg })
+                });
+                
+                const placeholder = document.getElementById(placeholderId);
+                if (placeholder) placeholder.remove();
+
+                if (res.ok) {
+                    const data = await res.json();
+                    appendMessage('copilot', data.reply || 'No response received.');
+                } else {
+                    appendMessage('copilot', 'Sorry, I encountered an error communicating with the copilot service.');
+                }
+            } catch (err) {
+                const placeholder = document.getElementById(placeholderId);
+                if (placeholder) placeholder.remove();
+                appendMessage('copilot', 'Network error connecting to Copilot service.');
+            }
+        }
+
+        async function runQuickAction(actionName) {
+            appendMessage('user', `[Action: ${actionName}]`);
+            try {
+                const res = await fetch('/api/v1/copilot/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: '', action: actionName })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    appendMessage('copilot', data.reply || 'Action executed successfully.');
+                } else {
+                    appendMessage('copilot', 'Failed to execute quick action.');
+                }
+            } catch (err) {
+                appendMessage('copilot', `Action execution error: ${err.message}`);
+            }
+        }
+
+        // Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            // Keyboard shortcut Ctrl+K or Cmd+K
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                    e.preventDefault();
+                    toggleDrawer();
+                }
+            });
+
+            // Deep-link check: ?open_copilot=true
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('open_copilot') === 'true') {
+                toggleDrawer(true);
+            }
+
+            // Initial poll for active challenges
+            pollActiveChallenges();
+            setInterval(pollActiveChallenges, 15000);
+        });
+
+        return {
+            toggleDrawer,
+            submitOtp,
+            handleChatSubmit,
+            runQuickAction,
+            handleChallengeCreated: function(data) {
+                renderActiveChallenge({
+                    challenge_id: data.challenge_id,
+                    booking_task_id: data.booking_task_id,
+                    applicant_name: data.applicant_name,
+                    visa_center: data.visa_center,
+                    appointment_type: data.appointment_type,
+                    expires_at: data.expires_at,
+                    expires_in_seconds: data.expires_in_seconds
+                });
+                toggleDrawer(true);
+            },
+            handleChallengeSubmitted: function(data) {
+                renderActiveChallenge(null);
+            }
+        };
+    })();
+    </script>
+
     <!-- Cookie & Privacy Consent Banner -->
     <div id="cookieConsentBanner" class="fixed inset-x-4 bottom-4 md:left-auto md:right-4 md:max-w-md z-50 bg-zinc-900/95 border border-zinc-800 rounded-xl p-4 shadow-2xl backdrop-blur-md hidden transition-all duration-300">
         <div class="flex items-start justify-between gap-3 mb-2">

@@ -25,6 +25,7 @@ class Tenant(Base):
     is_active = Column(Boolean, default=True)
     webhook_url = Column(String, nullable=True)
     phone_number = Column(String, nullable=True)
+    has_ai_copilot = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     
     users = relationship("User", back_populates="tenant", cascade="all, delete-orphan")
@@ -433,6 +434,28 @@ class SystemSetting(Base):
     encrypted_value = Column(String, nullable=True) # Used for secrets
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     updated_by = Column(String, nullable=True)
+
+class OTPChallenge(Base):
+    __tablename__ = "otp_challenges"
+    id = Column(Integer, primary_key=True, index=True)
+    challenge_id = Column(String, unique=True, index=True, nullable=False) # UUID
+    booking_task_id = Column(Integer, ForeignKey("booking_tasks.id", ondelete="CASCADE"), nullable=False, index=True)
+    tenant_id = Column(Integer, ForeignKey("tenants.id", ondelete="SET NULL"), nullable=True)
+    
+    applicant_name = Column(String, nullable=True)
+    visa_center = Column(String, nullable=True)
+    appointment_type = Column(String, nullable=True)
+    
+    status = Column(String, default="PENDING", index=True) # PENDING, SUBMITTED, CONSUMED, EXPIRED, CANCELLED
+    otp_code = Column(String, nullable=True) # Ephemeral: wiped upon CONSUMED
+    
+    expires_in_seconds = Column(Integer, default=300)
+    expires_at = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    submitted_at = Column(DateTime, nullable=True)
+    consumed_at = Column(DateTime, nullable=True)
+    submitted_by = Column(String, nullable=True) # User email or 'HUMAN_ENTRY'
+    attempt_count = Column(Integer, default=0)
 
 def get_db():
     db = SessionLocal()
