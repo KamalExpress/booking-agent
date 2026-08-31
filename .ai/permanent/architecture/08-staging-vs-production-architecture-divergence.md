@@ -1,4 +1,4 @@
-﻿# Staging vs. Production Architectural Divergence
+# Staging vs. Production Architectural Divergence
 
 ## 1. Architectural Invariant & Purpose
 This document defines the architectural differences between the **Staging** and **Production** environments of the platform.
@@ -35,11 +35,12 @@ Staging includes advanced database migrations that **have NOT been run on the pr
 
 ---
 
-## 3. Promotion & Synchronization Rules
+## 3. Promotion & Synchronization Rules (Absolute Merge Ban)
 
-1. **Staging Isolation:** Under no circumstances should the Execution Plane Abstraction, multi-provider adapter factory, or unmigrated database models be force-pushed to the production branch without an accompanying production Alembic migration and explicit manual verification.
-2. **VPS Topology:**
+1. **Absolute Merge Ban from Staging to Production:** Staging operates completely separately from Production. Due to fundamental structural divergence (Execution Plane Abstraction, Adapter Factory, Multi-Provider Architecture, and Staging DB migrations `014`, `015`, `e093ad7b8be7`), **NO changes from Staging may EVER be merged into Production** until the entire system architecture work, multi-portal alignment, and end-to-end booking lifecycle have been fully proven and validated on Staging, followed by explicit manual approval from the user.
+2. **Production Hotfix Policy:** Any operational hotfixes needed on Production must be authored and applied surgically directly to the Production branch (`feature/prod-july2026` / `feature/prod`), strictly respecting Production's monolithic schema baseline without pulling in Staging dependencies.
+3. **VPS Topology:**
    - **Production Stack (`alamiaconnect.com`):** Deployed from `feature/prod-july2026`.
    - **Staging Stack (`staging.alamiaconnect.com`):** Deployed from `feature/staging-july2026`.
    - **Scalable Architecture Stack (`scalearch.alamiaconnect.com`):** Dedicated VPS endpoint for verifying multi-portal abstractions.
-3. **Selective Hotfix Backporting:** When cherry-picking bugfixes from August (e.g. WAF preflight headers, 403 backoff, `Lease` import fix) into baseline branches, only extract the targeted logic without bringing in the structural adapter refactor.
+4. **Selective Hotfix Backporting:** When cherry-picking bugfixes from August (e.g. WAF preflight headers, 403 backoff, `Lease` import fix) into baseline branches, only extract the targeted logic without bringing in the structural adapter refactor.

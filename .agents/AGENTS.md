@@ -71,8 +71,10 @@ Whenever a new operational event, technical term, scheduling decision, or error 
 ---
 *Always mirror sprint planning artifacts to `.ai/transient/handoffs/` when closing out a sprint.*
 
-## 8. Deployment & Migrations Constraints
+## 8. Deployment & Architecture Isolation Constraints (Strict Staging / Production Separation)
+- **Architectural Divergence & Merge Ban:** Staging operates completely separately and independently from Production. Due to fundamental structural divergence (Execution Plane Abstraction, Adapter Factory, Multi-Provider Architecture, and Staging DB migrations `014`, `015`, `e093ad7b8be7`), **NO changes from staging may EVER be merged into production** until the entire system architecture work, multi-portal alignment, and end-to-end booking lifecycle have been fully proven and validated on staging, followed by explicit manual approval from the user.
 - **Auto-Booking / Execution Code:** Any changes related to auto-booking (the execution plane) MUST be kept strictly on `staging`. They MUST pass manual verification before pushing to production. NEVER merge or push to production unless 100% confident.
+- **Production Hotfix Policy:** Any emergency hotfixes required for Production must be applied surgically and directly to the Production branch (`feature/prod-july2026` / `feature/prod`), strictly respecting Production's monolithic schema baseline without pulling in Staging dependencies.
 - **Scalable Architecture Branch:** The `feature/scalable-arch` branch MUST be deployed to a completely separate endpoint on the VPS (`scalearch.alamiaconnect.com`). It MUST remain separate from both `staging` and `production` until the new architecture handles at least two portals successfully. Only after successful verification across multiple portals can it be merged into `staging`, and only after explicit manual approval can it go to `production`.
 - **Machine Awareness:** Agents MUST check the `Device name` in their User Context metadata or via hostname.
 - **High-End Local Dev (`DESKTOP-5E6DM1M`):** On this specific machine, agents are AUTHORIZED and ENCOURAGED to run local Docker Compose stacks, execute `alembic` migrations, and build containers locally.
