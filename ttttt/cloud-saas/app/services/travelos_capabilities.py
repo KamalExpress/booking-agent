@@ -96,24 +96,52 @@ def get_worker_details(worker_id: str, db: Optional[Session] = None) -> str:
         if not db: sdb.close()
 
 
-def get_worker_logs(worker_id: str, limit: int = 5, db: Optional[Session] = None) -> str:
-    """Fetch recent log events, errors, and actions for a specific worker."""
+def get_worker_logs(
+    worker_id: str,
+    limit: int = 5,
+    since_minutes: Optional[int] = None,
+    until_minutes: Optional[int] = None,
+    db: Optional[Session] = None
+) -> str:
+    """Fetch recent log events, errors, and actions for a specific worker within optional time boundaries."""
     sdb = db or SessionLocal()
     try:
+        from datetime import timedelta
         w_id = str(worker_id).strip()
-        events = sdb.query(EventLog).filter(EventLog.worker_id == w_id).order_by(EventLog.created_at.desc()).limit(limit).all()
+        now = datetime.utcnow()
+        
+        # Build query
+        ev_query = sdb.query(EventLog).filter(EventLog.worker_id == w_id)
+        wlog_query = sdb.query(WorkerLog).filter(WorkerLog.worker_id == w_id)
+        
+        window_desc = ""
+        if since_minutes is not None and int(since_minutes) > 0:
+            cutoff_since = now - timedelta(minutes=int(since_minutes))
+            ev_query = ev_query.filter(EventLog.created_at >= cutoff_since)
+            wlog_query = wlog_query.filter(WorkerLog.created_at >= cutoff_since)
+            window_desc = f"in the last {since_minutes} minutes"
+            
+        if until_minutes is not None and int(until_minutes) > 0:
+            cutoff_until = now - timedelta(minutes=int(until_minutes))
+            ev_query = ev_query.filter(EventLog.created_at <= cutoff_until)
+            wlog_query = wlog_query.filter(WorkerLog.created_at <= cutoff_until)
+            window_desc = f"between {since_minutes}m and {until_minutes}m ago" if since_minutes else f"older than {until_minutes}m ago"
+            
+        events = ev_query.order_by(EventLog.created_at.desc()).limit(limit).all()
         
         if not events:
             # Fallback to WorkerLog table
-            wlogs = sdb.query(WorkerLog).filter(WorkerLog.worker_id == w_id).order_by(WorkerLog.created_at.desc()).limit(limit).all()
+            wlogs = wlog_query.order_by(WorkerLog.created_at.desc()).limit(limit).all()
             if not wlogs:
-                return f"No recent logs found for worker '{w_id}'."
-            lines = [f"Recent logs for {w_id}:"]
+                if window_desc:
+                    return f"[NO_ERRORS_RECORDED] No worker errors or log events recorded for worker '{w_id}' {window_desc}."
+                return f"[NO_ERRORS_RECORDED] No recent logs found for worker '{w_id}'."
+            lines = [f"Recent logs for {w_id} ({window_desc or 'latest'}):"]
             for l in wlogs:
                 lines.append(f"[{l.created_at.strftime('%H:%M:%S')}] {l.message}")
             return "\n".join(lines)
             
-        lines = [f"Recent events for {w_id}:"]
+        lines = [f"Recent events for {w_id} ({window_desc or 'latest'}):"]
         for ev in events:
             payload_str = str(ev.payload)[:100] if ev.payload else ""
             lines.append(f"[{ev.created_at.strftime('%H:%M:%S')}] {ev.event_type} - {payload_str}")
@@ -270,23 +298,11 @@ def get_portal_health_summary(db: Optional[Session] = None) -> str:
             else:
                 age_str = f"{age_sec} second(s) ago"
                 
-            if age_sec > 900: # > 15 minutes
-                lines.append(f"[SCRAPING PIPELINE] STALE - Last checked {age_str} (Expected: ~5 mins).")
-                recommendations.append("Scraping has stalled. Check worker processes or click [Cleanup] to reconcile leases.")
-            else:
-                lines.append(f"[SCRAPING PIPELINE] HEALTHY - Last checked {age_str}.")
-        else:
-            lines.append("[SCRAPING PIPELINE] NEVER CHECKED - No slot check events recorded in database.")
-            recommendations.append("No slot checks recorded. Verify scraping workers are running and accepting jobs.")
-
         # 2. Worker Fleet Status
         workers = sdb.query(WorkerNode).all()
         total_w = len(workers)
         online_w = sum(1 for w in workers if w.is_online)
         err_w = sum(1 for w in workers if w.status == "Error")
-        lines.append(f"[WORKER FLEET] {online_w}/{total_w} online ({err_w} in error status).")
-        if online_w == 0:
-            recommendations.append("Zero scraping workers are currently online. Check worker host / Docker services.")
 
         # 3. Portal Accounts & Proxies
         accounts = sdb.query(PortalAccount).all()
@@ -297,12 +313,7 @@ def get_portal_health_summary(db: Optional[Session] = None) -> str:
             acc_counts[st] = acc_counts.get(st, 0) + 1
             
         acc_str = ", ".join([f"{k}: {v}" for k, v in acc_counts.items()]) if acc_counts else "0 total"
-        lines.append(f"[PORTAL ACCOUNTS] {len(accounts)} total ({acc_str})")
-        ready_accs = acc_counts.get('READY', 0)
         active_prx = sum(1 for p in proxies if (getattr(p, 'status', 'READY') or 'READY').upper() in ['READY', 'LEASED', 'ACTIVE'] and not (getattr(p, 'cooldown_until', None) and p.cooldown_until > now))
-        lines.append(f"[PROXIES] {active_prx}/{len(proxies)} active.")
-        if active_prx == 0 and len(proxies) > 0:
-            recommendations.append("All proxies are inactive or failing. Verify proxy configurations.")
 
         # 4. Recent Worker Error Logs (Last 24 hours)
         cutoff_24h = datetime.utcnow() - timedelta(hours=24)
@@ -310,7 +321,61 @@ def get_portal_health_summary(db: Optional[Session] = None) -> str:
             EventLog.event_type.in_(['PROXY_TIMEOUT', 'LOGIN_FAILED', 'CLOUDFLARE_BLOCKED', 'ERROR', 'WORKER_ERROR', 'LEASE_TIMEOUT', 'ACCOUNT_LOCKED', 'CAPTCHA_BLOCKED']),
             EventLog.created_at >= cutoff_24h
         ).order_by(EventLog.created_at.desc()).limit(5).all()
+
+        # 5. Push Notifications Health
+        sub_count = sdb.query(PushSubscription).count()
+
+        # Determine overall system health state
+        status_reasons = []
+        overall_status = "HEALTHY"
         
+        if not last_check_time:
+            overall_status = "STALE"
+            status_reasons.append("No slot checks recorded in database.")
+        elif age_sec > 900:
+            overall_status = "STALE"
+            status_reasons.append(f"Scraping pipeline is stale (last checked {age_str}).")
+            
+        if online_w == 0:
+            overall_status = "STALE"
+            status_reasons.append("Zero scraping workers are currently online.")
+            
+        if recent_errors:
+            if overall_status != "STALE":
+                overall_status = "DEGRADED"
+            err_types = set(e.event_type for e in recent_errors)
+            status_reasons.append(f"{len(recent_errors)} worker error(s) in last 24h ({', '.join(err_types)}).")
+            
+        if active_prx == 0 and len(proxies) > 0:
+            if overall_status != "STALE":
+                overall_status = "DEGRADED"
+            status_reasons.append("Zero active proxies available in proxy pool.")
+
+        # Build clean, structured output
+        lines = [
+            "=== TRAVELOS OPERATIONAL HEALTH REPORT ===",
+            f"[SYSTEM STATUS] {overall_status}"
+        ]
+        if status_reasons:
+            lines.append("[REASONS]")
+            for r in status_reasons:
+                lines.append(f"- {r}")
+
+        lines.append("\n[TELEMETRY DETAILS]")
+        if last_check_time:
+            if age_sec > 900:
+                lines.append(f"[SCRAPING PIPELINE] STALE - Last checked {age_str} (Expected: ~5 mins).")
+                recommendations.append("Scraping has stalled. Check worker processes or click [Cleanup] to reconcile leases.")
+            else:
+                lines.append(f"[SCRAPING PIPELINE] HEALTHY - Last checked {age_str}.")
+        else:
+            lines.append("[SCRAPING PIPELINE] NEVER CHECKED - No slot check events recorded in database.")
+            recommendations.append("No slot checks recorded. Verify scraping workers are running and accepting jobs.")
+
+        lines.append(f"[WORKER FLEET] {online_w}/{total_w} online ({err_w} in error status).")
+        lines.append(f"[PORTAL ACCOUNTS] {len(accounts)} total ({acc_str})")
+        lines.append(f"[PROXIES] {active_prx}/{len(proxies)} active.")
+
         if recent_errors:
             lines.append(f"[RECENT WORKER ERRORS] ({len(recent_errors)} in last 24h):")
             for ev in recent_errors:
@@ -325,15 +390,9 @@ def get_portal_health_summary(db: Optional[Session] = None) -> str:
         else:
             lines.append("[RECENT ERRORS] No critical worker errors recorded in the last 24 hours.")
 
-        # 5. Push Notifications Health
-        sub_count = sdb.query(PushSubscription).count()
-        if sub_count == 0:
-            lines.append("[PUSH NOTIFICATIONS] 0 devices subscribed in database.")
-            recommendations.append("You have not enabled push notifications on this device. Click 'Enable Notifications' in the PWA sidebar.")
-        else:
-            lines.append(f"[PUSH NOTIFICATIONS] {sub_count} active device subscription(s) registered.")
+        lines.append(f"[PUSH NOTIFICATIONS] {sub_count} active device subscription(s) registered.")
 
-        # 6. Actionable Guidance / Recommendations
+        # Actionable Guidance / Recommendations
         if recommendations:
             seen_recs = set()
             dedup_recs = []
@@ -344,8 +403,11 @@ def get_portal_health_summary(db: Optional[Session] = None) -> str:
             lines.append("\n[ACTIONABLE RECOMMENDATIONS]")
             for i, rec in enumerate(dedup_recs, 1):
                 lines.append(f" {i}. {rec}")
+
+        if overall_status == "HEALTHY":
+            lines.append("\n[STATUS SUMMARY] TravelOS core services, workers, and scraping pipelines are fully operational.")
         else:
-            lines.append("\n[SYSTEM STATUS] System is operating optimally with no action required.")
+            lines.append(f"\n[STATUS SUMMARY] TravelOS is currently {overall_status} due to the issues listed above.")
 
         return "\n".join(lines)
     finally:
@@ -414,8 +476,8 @@ CAPABILITY_DEFINITIONS = {
     },
     "worker.get_recent_logs": {
         "fn": get_worker_logs,
-        "description": "Retrieve recent log events and error traces for a worker.",
-        "params": '{"worker_id": "string", "limit": 5}',
+        "description": "Retrieve recent log events and error traces for a worker with optional time windows.",
+        "params": '{"worker_id": "string", "limit": 5, "since_minutes": 15, "until_minutes": 0}',
         "tags": ["worker", "log", "logs", "error", "failing", "crash", "trace"]
     },
     "worker.list_all": {

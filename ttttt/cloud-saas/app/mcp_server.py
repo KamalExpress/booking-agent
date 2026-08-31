@@ -48,9 +48,9 @@ def get_worker_status(worker_id: str) -> str:
     return caps.get_worker_details(worker_id=worker_id)
 
 @mcp.tool()
-def get_worker_logs(worker_id: str, limit: int = 10) -> str:
-    """Fetch recent log events, errors, and actions for a specific worker."""
-    return caps.get_worker_logs(worker_id=worker_id, limit=limit)
+def get_worker_logs(worker_id: str, limit: int = 10, since_minutes: int = 15, until_minutes: int = 0) -> str:
+    """Fetch recent log events, errors, and actions for a specific worker within optional time boundaries."""
+    return caps.get_worker_logs(worker_id=worker_id, limit=limit, since_minutes=since_minutes, until_minutes=until_minutes)
 
 @mcp.tool()
 def get_available_slots(visa_center: str = "", days: int = 7, limit: int = 10) -> str:

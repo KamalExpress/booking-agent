@@ -4,7 +4,7 @@ import json
 import re
 import asyncio
 import concurrent.futures
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Tuple
 from datetime import datetime
 from sqlalchemy.orm import Session
 
@@ -268,6 +268,100 @@ class CopilotService:
         return {"tool": canonical_tool, "args": normalized_args}
 
     @staticmethod
+    def _parse_temporal_boundaries(message: str) -> Tuple[Optional[int], Optional[int]]:
+        """Parse natural language time expressions into dual search boundaries (since_minutes, until_minutes)."""
+        msg = message.lower()
+        
+        # Pattern: "7-8 minutes ago", "7 to 8 mins ago"
+        range_match = re.search(r"(\d+)\s*(?:-|to)\s*(\d+)\s*(?:mins?|minutes?)\s*ago", msg)
+        if range_match:
+            try:
+                m1 = int(range_match.group(1))
+                m2 = int(range_match.group(2))
+                older = max(m1, m2)
+                newer = min(m1, m2)
+                # Expand with conservative tolerance: +2m older, -1m newer
+                return (older + 2, max(0, newer - 1))
+            except Exception:
+                pass
+                
+        # Pattern: "8 minutes ago", "10 mins ago"
+        single_match = re.search(r"(\d+)\s*(?:mins?|minutes?)\s*ago", msg)
+        if single_match:
+            try:
+                m = int(single_match.group(1))
+                return (m + 3, max(0, m - 2))
+            except Exception:
+                pass
+                
+        # Pattern: "last 15 minutes", "past 10 mins"
+        last_mins_match = re.search(r"(?:last|past)\s*(\d+)\s*(?:mins?|minutes?)", msg)
+        if last_mins_match:
+            try:
+                m = int(last_mins_match.group(1))
+                return (m, 0)
+            except Exception:
+                pass
+                
+        # Pattern: "last hour", "past hour", "1 hour ago"
+        if any(h in msg for h in ["last hour", "past hour", "1 hour ago", "an hour ago"]):
+            return (65, 0)
+            
+        # Pattern: "today", "this morning"
+        if "today" in msg or "this morning" in msg:
+            return (1440, 0)
+            
+        return (None, None)
+
+    @staticmethod
+    def _get_required_evidence_type(message: str) -> Optional[str]:
+        """Determine what category of evidence is strictly required for this operational query."""
+        msg = message.lower()
+        if any(k in msg for k in ["fail", "error", "crash", "stuck", "down", "why did", "why has", "what happened", "investigate", "reason"]):
+            return "worker_logs"
+        elif any(k in msg for k in ["slot", "appointment", "dates available", "open"]):
+            return "slots"
+        elif any(k in msg for k in ["proxy", "proxies", "ip rotation"]):
+            return "proxies"
+        elif any(k in msg for k in ["health", "system state", "overall status"]):
+            return "system_health"
+        return None
+
+    @staticmethod
+    def _validate_grounding(candidate_reply: str, observations: List[str], required_evidence: Optional[str], time_window: Tuple[Optional[int], Optional[int]]) -> str:
+        """Validate candidate LLM reply against observed facts, rejecting hallucinations, speculative causes, and contradictions."""
+        combined_obs = " ".join(observations)
+        reply = candidate_reply.strip()
+        
+        # Rule 1: Negative Evidence Guard (The Killer Test)
+        # If observation states [NO_ERRORS_RECORDED] or contains no errors for requested time window:
+        if "[NO_ERRORS_RECORDED]" in combined_obs or "No critical worker errors recorded" in combined_obs:
+            speculative_tokens = ["due to", "because", "may have", "might have", "probably", "likely", "perhaps", "could be", "illness", "network issue", "hardware"]
+            if any(t in reply.lower() for t in speculative_tokens) or not any(k in reply.lower() for k in ["could not find", "no recorded", "no worker error", "cannot determine"]):
+                since_m, until_m = time_window
+                window_str = f"between {since_m}m and {until_m}m ago" if (since_m and until_m) else (f"the last {since_m} minutes" if since_m else "the requested time window")
+                return f"I could not find any recorded worker errors in {window_str}, so the cause cannot be determined from the available logs."
+                
+        # Rule 2: Contradiction Guard
+        # If system is DEGRADED or STALE, reject any "operating optimally" / "everything is healthy"
+        if "[SYSTEM STATUS] DEGRADED" in combined_obs or "[SYSTEM STATUS] STALE" in combined_obs:
+            bad_phrases = ["operating optimally", "everything is healthy", "all systems operational", "no action required", "fully operational"]
+            if any(p in reply.lower() for p in bad_phrases):
+                # Extract reasons from observation
+                reasons = []
+                for line in combined_obs.split("\n"):
+                    if line.strip().startswith("- ") and ("error" in line.lower() or "stale" in line.lower()):
+                        reasons.append(line.strip()[2:])
+                reason_str = f" ({'; '.join(reasons)})" if reasons else ""
+                return f"TravelOS is currently degraded{reason_str}. Recent worker errors were detected and require attention."
+                
+        # Rule 3: Strip any leftover ACTION commands from synthesis
+        if reply.startswith("ACTION:") or "action:" in reply.lower():
+            return f"Based on live FastMCP telemetry: {observations[-1] if observations else 'Telemetry received.'}"
+            
+        return reply
+
+    @staticmethod
     def _call_bitnet(messages: List[Dict[str, str]], max_tokens: int = 180, temperature: float = 0.2) -> Dict[str, Any]:
         """Executes HTTP inference call to ai.alamiaconnect.com with WAF bypass headers."""
         server_url = (os.getenv("BITNET_SERVER_URL", "").strip() or "https://ai.alamiaconnect.com").rstrip("/")
@@ -340,6 +434,19 @@ class CopilotService:
                     extracted_days = int(days_match.group(1))
             except Exception:
                 extracted_days = 7
+
+        # Extract temporal boundaries if mentioned (e.g. "7-8 minutes ago", "last hour")
+        since_mins, until_mins = CopilotService._parse_temporal_boundaries(message)
+
+        # Extract worker_id from message if present (e.g. "worker_73765413" or "worker 17")
+        extracted_worker_id = ""
+        w_match = re.search(r"worker[_\-\s]?([a-zA-Z0-9]+)", lower_msg)
+        if w_match:
+            val = w_match.group(1)
+            extracted_worker_id = f"worker_{val}" if not val.startswith("worker") else val
+
+        # Determine required evidence category
+        required_evidence = CopilotService._get_required_evidence_type(message)
 
         # 2. Tier 1: Deterministic Fast Paths (0 LLM Tokens, 0.01s Latency via MCP)
 
@@ -422,20 +529,23 @@ class CopilotService:
         # Step 3.2: MCP Tool Discovery via FastMCP tools/list
         mcp_tools = TravelOSMCPClient.list_tools_sync()
         
-        # Filter relevant tools based on query to avoid token overload
+        # Filter relevant tools based on query and required evidence
         q = message.lower()
         selected_tools = []
-        for t in mcp_tools:
-            t_name = t["name"].lower()
-            if any(w in q for w in ["worker", "fail", "stuck", "node", "online"]) and "worker" in t_name:
-                selected_tools.append(t)
-            elif any(s in q for s in ["slot", "appointment", "date", "islamabad", "lahore"]) and "slot" in t_name:
-                selected_tools.append(t)
-            elif any(p in q for p in ["proxy", "ip"]) and "proxy" in t_name:
-                selected_tools.append(t)
-            elif any(h in q for h in ["health", "system", "portal"]) and ("health" in t_name or "portal" in t_name):
-                selected_tools.append(t)
-                
+        if required_evidence == "worker_logs":
+            selected_tools = [t for t in mcp_tools if t["name"] in ["get_worker_logs", "get_worker_details", "get_workers"]]
+        else:
+            for t in mcp_tools:
+                t_name = t["name"].lower()
+                if any(w in q for w in ["worker", "fail", "stuck", "node", "online"]) and "worker" in t_name:
+                    selected_tools.append(t)
+                elif any(s in q for s in ["slot", "appointment", "date", "islamabad", "lahore"]) and "slot" in t_name:
+                    selected_tools.append(t)
+                elif any(p in q for p in ["proxy", "ip"]) and "proxy" in t_name:
+                    selected_tools.append(t)
+                elif any(h in q for h in ["health", "system", "portal"]) and ("health" in t_name or "portal" in t_name):
+                    selected_tools.append(t)
+                    
         if not selected_tools:
             selected_tools = [t for t in mcp_tools if t["name"] in ["get_workers", "get_available_slots", "get_proxy_health", "get_portal_health_summary"]]
             
@@ -465,6 +575,7 @@ class CopilotService:
         
         tool_invoked = False
         last_observation = ""
+        all_observations = []
         
         for iteration in range(CopilotService.MAX_TOOL_ITERATIONS):
             call_res = CopilotService._call_bitnet(current_messages, max_tokens=100, temperature=0.1)
@@ -472,7 +583,7 @@ class CopilotService:
             if call_res["status"] != "ok":
                 if not tool_invoked:
                     return {
-                        "reply": f"🤖 Alamia Copilot: AI inference is currently unreachable ({call_res['content'][:80]}). All deterministic operational tools (Slots, Health, OTP Entry) remain 100% operational.",
+                        "reply": f"Alamia Copilot: AI inference is currently unreachable ({call_res['content'][:80]}). All deterministic operational tools remain operational.",
                         "status": "offline",
                         "source": "fallback"
                     }
@@ -483,14 +594,51 @@ class CopilotService:
             
             # If model produced a final answer without requesting a tool
             if not tool_call:
-                return {"reply": model_reply, "status": "ok", "source": "agent_loop" if tool_invoked else "llm"}
+                # Mandatory Evidence Firewall: Operational inquiries MUST obtain evidence before answering
+                if required_evidence and not tool_invoked:
+                    print(f"[Copilot Grounding Firewall] Query requires '{required_evidence}' but model output ungrounded text. Forcing tool invocation.")
+                    if required_evidence == "worker_logs":
+                        tool_call = {
+                            "tool": "get_worker_logs",
+                            "args": {
+                                "worker_id": extracted_worker_id or "worker_73765413",
+                                "limit": 5,
+                                "since_minutes": since_mins or 15,
+                                "until_minutes": until_mins or 0
+                            }
+                        }
+                    elif required_evidence == "slots":
+                        tool_call = {"tool": "get_available_slots", "args": {"visa_center": extracted_center, "days": extracted_days}}
+                    elif required_evidence == "proxies":
+                        tool_call = {"tool": "get_proxy_health", "args": {}}
+                    elif required_evidence == "system_health":
+                        tool_call = {"tool": "get_portal_health_summary", "args": {}}
+                else:
+                    validated = CopilotService._validate_grounding(model_reply, [last_observation] if last_observation else [], required_evidence, (since_mins, until_mins))
+                    return {"reply": validated, "status": "ok", "source": "agent_loop" if tool_invoked else "llm"}
                 
             # Execute MCP tools/call
             tool_name = tool_call["tool"]
             tool_args = tool_call["args"]
             
-            # Contextual parameter enrichment for slots if omitted by model
-            if tool_name == "get_available_slots":
+            # Typed Evidence Firewall: If failure query, model cannot satisfy with proxy_health or irrelevant tool
+            if required_evidence == "worker_logs" and tool_name not in ["get_worker_logs", "get_worker_details", "get_workers"]:
+                print(f"[Copilot Grounding Firewall] Rejecting irrelevant tool '{tool_name}' for failure investigation. Forcing 'get_worker_logs'.")
+                tool_name = "get_worker_logs"
+                tool_args = {
+                    "worker_id": extracted_worker_id or "worker_73765413",
+                    "limit": 5,
+                    "since_minutes": since_mins or 15,
+                    "until_minutes": until_mins or 0
+                }
+            elif tool_name == "get_worker_logs":
+                if "worker_id" not in tool_args and extracted_worker_id:
+                    tool_args["worker_id"] = extracted_worker_id
+                if since_mins is not None and "since_minutes" not in tool_args:
+                    tool_args["since_minutes"] = since_mins
+                if until_mins is not None and "until_minutes" not in tool_args:
+                    tool_args["until_minutes"] = until_mins
+            elif tool_name == "get_available_slots":
                 if "visa_center" not in tool_args and extracted_center:
                     tool_args["visa_center"] = extracted_center
                 if "days" not in tool_args and extracted_days:
@@ -501,6 +649,7 @@ class CopilotService:
             observation = TravelOSMCPClient.call_tool_sync(tool_name, tool_args)
             tool_invoked = True
             last_observation = observation
+            all_observations.append(observation)
             print(f"[Copilot MCP Client] FastMCP Observation: {observation[:120]}...")
             
             current_messages.append({"role": "assistant", "content": f"ACTION: {tool_name}({json.dumps(tool_args)})"})
@@ -509,8 +658,9 @@ class CopilotService:
         # Step 3.4: Final Synthesis Hop
         synthesis_rules = (
             "You are Alamia TravelOS Copilot, the operational assistant for TravelOS.\n"
-            "You have completed your operational investigation. Using the OBSERVATIONS provided above, "
+            "You have completed your operational investigation. Using ONLY the OBSERVATIONS provided above, "
             "provide a concise, direct, and factual explanation to the user in 1-2 sentences. "
+            "Do NOT speculate, guess, or invent reasons not present in the observation. "
             "Do NOT output any ACTION commands. Provide your normal natural language answer."
         )
         synthesis_messages = [
@@ -523,8 +673,8 @@ class CopilotService:
         synth_res = CopilotService._call_bitnet(synthesis_messages, max_tokens=150, temperature=0.2)
         if synth_res["status"] == "ok":
             final_reply = synth_res["content"].strip()
-            if final_reply.startswith("ACTION:"):
-                return {"reply": f"Based on live FastMCP telemetry: {last_observation}", "status": "ok", "source": "mcp_direct"}
-            return {"reply": final_reply, "status": "ok", "source": "agent_loop"}
+            validated_reply = CopilotService._validate_grounding(final_reply, all_observations, required_evidence, (since_mins, until_mins))
+            return {"reply": validated_reply, "status": "ok", "source": "agent_loop"}
         else:
-            return {"reply": f"{last_observation}", "status": "ok", "source": "mcp_direct"}
+            validated_reply = CopilotService._validate_grounding(last_observation, all_observations, required_evidence, (since_mins, until_mins))
+            return {"reply": validated_reply, "status": "ok", "source": "mcp_direct"}
