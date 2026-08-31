@@ -61,27 +61,21 @@ During live production testing during an active GVC slot opening window, the tea
 
 ---
 
-## 3. Production Checkpoint & Rollback Pointers
+## 3. Production & Staging Restoration Milestones (August 31, 2026)
 
-To satisfy the user requirement of securing production to a known working state while preserving all fixes, two Git tags have been pushed to `origin`:
-
-1. **`checkpoint-prod-notifications-6de7ff8`**:
-   - **Commit:** `6de7ff8`
-   - **State:** The earlier point where push notifications were first successfully received on production (`Aug 29, 00:14:56 PUSH_SENT`).
-   - **Rollback Command (if desired):** `git checkout checkpoint-prod-notifications-6de7ff8`
-2. **`checkpoint-prod-waf-fixes-b072184` (Current Head of `feature/prod`):**
-   - **Commit:** `b072184`
-   - **State:** Contains all WAF challenge bypasses (Playwright WAF solver), queue auto-dispatch fixes, weekend exclusion, post-login pacing delay, 403 backoff, and schema attribute safety.
-   - **Deployment Command:** `git checkout feature/prod && git pull origin feature/prod`
+- **Production Restored on VPS:** Deployed target branch `feature/prod-july2026` on production VPS (`alamiaconnect.com`), cleanly restoring the last known working state observed by client staff (Commit `eaad857`, July 28, 2026).
+- **Staging Restored on VPS:** Deployed target branch `feature/staging-july2026` on staging VPS (`staging.alamiaconnect.com`) at commit `eaad857`.
+- **August Fixes Preserved:** Dedicated branches `feature/prod-aug2026` (Commit `04606ee`) and `feature/staging-aug2026` (Commit `0ad181b`) permanently store all August 28/29 hotfixes.
+- **Architectural Divergence Recorded:** Documented in `.ai/permanent/architecture/08-staging-vs-production-architecture-divergence.md` that Staging contains the refactored **Execution Plane Abstraction**, **Adapter Factory**, **Multi-Provider Architecture**, **AI OCR Service**, and **Client Directory**, which were intentionally not deployed to production.
 
 ---
 
 ## 4. Pending Work / Next Session Objectives
-1. **Live Booking Validation:** Monitor the next live slot opening with the updated `auto_dispatch_queue` to observe automatic creation of `BookingTask` and verify the booker worker executes the end-to-end OTP booking flow.
+1. **Phased Integration of August 28/29 Fixes:** Review `.ai/permanent/architecture/07-august-2026-hotfixes-audit.md` and plan the phased integration of essential SaaS bug fixes and WAF evasion into staging first.
 2. **SaaS Admin UI for Appointment Type(s) - Days Mapping:** Implement a dynamic configuration UI in SaaS Admin (under `/settings` or `/assignments`) allowing staff to configure which appointment types (`2`, `26`, `6`, `5`, etc.) map to which active days of the week, replacing hardcoded rules.
 3. **Live Slot Availability Calendar & Peak-Drop Board:** Implement the real-time calendar heatmap and live ticker dashboard (detailed in `.ai/permanent/workflows/09-live-slot-availability-calendar-board.md`) displaying open dates, times, and capacity during slot drops so staff can target exact slots for manual bookings without blind trial-and-error.
 4. **Dynamic Regional Domain Failover (Control Plane):** Implement dynamic failover in the SaaS Scheduler to route worker leases to `https://bd-gr-services.gvcworld.eu` during high-traffic Pakistan slot drop windows.
 5. **Passport OCR Orientation Enhancements (Deferred backlog):** Enhance passport preprocessing to handle skewed orientations and low-contrast prints.
 
 ---
-*Branch State: feature/staging & feature/prod synchronized | Date: 2026-08-29 02:15 PKT*
+*Branch State: VPS tracking feature/prod-july2026 & feature/staging-july2026 (eaad857) | August heads preserved on *-aug2026 | Date: 2026-08-31 14:15 PKT*
