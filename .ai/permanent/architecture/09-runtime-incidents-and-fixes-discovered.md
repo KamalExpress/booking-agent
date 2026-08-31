@@ -1,4 +1,4 @@
-﻿# Runtime Incidents & Fixes Discovered (Live Runtime Register)
+# Runtime Incidents & Fixes Discovered (Live Runtime Register)
 
 ## 1. Overview & Purpose
 This document registers all **Runtime Incidents & Fixes Discovered** during live production operations and high-traffic slot release windows.
@@ -137,6 +137,22 @@ Each incident captures:
 - **Fix Discovered & Applied:**
   Removed `supported_providers` from registration payload and added `**kwargs` resilience in `api_client.py`.
 - **Commit:** [`563cac2`](https://github.com/KamalExpress/booking-agent/commit/563cac2).
+### INC-20260831-01: Alembic Revision Lookup Failure on Staging Branch Downgrade
+- **Severity:** `SEV-1 (Critical Outage)`
+- **Discovered At:** August 31, 2026 — 16:08 PKT
+- **Observed Runtime Symptom:**
+  Deploying `feature/staging-july2026` caused the Staging `cloud-saas` container to enter an infinite restart crash loop with error:
+  ```text
+  ERROR [alembic.util.messaging] Can't locate revision identified by '015_booking_confirmation_fields'
+  FAILED: Can't locate revision identified by '015_booking_confirmation_fields'
+  ```
+- **Root Cause:**
+  The persistent Staging PostgreSQL database volume had previously executed migrations up to `015_booking_confirmation_fields` during August development. When Staging was checked out to `feature/staging-july2026` (branched from July 28 baseline `eaad857`), the local `alembic/versions/` directory only contained revisions up to `012`. When `alembic upgrade head` executed on container startup, it queried `alembic_version` in the database, found `'015_booking_confirmation_fields'`, but could not locate the corresponding revision file on disk.
+- **Fix Discovered & Applied:**
+  1. Backported the 3 missing revision files (`014_portal_account_phone.py`, `015_booking_confirmation_fields.py`, and `e093ad7b8be7_execution_plane_abstraction.py`) into `app/alembic/versions/` on `feature/staging-july2026`.
+  2. Enhanced `ttttt/cloud-saas/entrypoint.sh` with a self-healing fallback that detects migration lookup failures and automatically runs `python -m alembic stamp head` instead of crashing.
+- **Commit:** [`cbbec8f`](https://github.com/KamalExpress/booking-agent/commit/cbbec8f) on `feature/staging-july2026`.
+- **Status:** **Resolved**.
 
 ---
 
