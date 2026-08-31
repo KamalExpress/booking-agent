@@ -591,7 +591,16 @@ def test_push_alert(request: Request, current_user: User = Depends(get_current_u
 
 # Mount Static Files (PWA)
 @app.get("/api/admin/agent-monitor-logs")
-def get_agent_monitor_logs(db: Session = Depends(get_db)):
+def get_agent_monitor_logs(request: Request, db: Session = Depends(get_db)):
+    mcp_key = os.environ.get("MCP_API_KEY", "").strip()
+    if mcp_key:
+        auth_header = request.headers.get("authorization", "")
+        token = auth_header[7:].strip() if auth_header.lower().startswith("bearer ") else ""
+        if not token:
+            token = request.query_params.get("api_key") or request.query_params.get("token") or ""
+        if token != mcp_key:
+            raise HTTPException(status_code=401, detail="Unauthorized: Invalid or missing MCP API key")
+            
     from models import EventLog
     import os
     logs_dir = os.path.join(os.path.dirname(__file__), "..", "worker_logs")
@@ -623,11 +632,30 @@ def get_agent_monitor_logs(db: Session = Depends(get_db)):
 static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import JSONResponse
+
+class MCPAuthMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        mcp_key = os.environ.get("MCP_API_KEY", "").strip()
+        if mcp_key:
+            auth_header = request.headers.get("authorization", "")
+            token = auth_header[7:].strip() if auth_header.lower().startswith("bearer ") else ""
+            if not token:
+                token = request.query_params.get("api_key") or request.query_params.get("token") or ""
+            if token != mcp_key:
+                return JSONResponse(
+                    {"error": "Unauthorized: Invalid or missing MCP API key. Provide 'Authorization: Bearer <key>' or '?api_key=<key>'"},
+                    status_code=401
+                )
+        return await call_next(request)
+
 try:
     from mcp_server import mcp
     # Get the Starlette app configured for SSE
     mcp_app = mcp.sse_app("/mcp")
+    mcp_app.add_middleware(MCPAuthMiddleware)
     app.mount("/mcp", mcp_app)
-    print("Mounted FastMCP at /mcp")
+    print("Mounted FastMCP at /mcp with MCPAuthMiddleware")
 except Exception as e:
     print(f"Failed to mount FastMCP: {e}")
