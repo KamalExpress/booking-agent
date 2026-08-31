@@ -27,7 +27,8 @@ class TravelOSMCPClient:
         "get_available_slots",
         "get_proxy_health",
         "get_active_leases",
-        "get_portal_health_summary"
+        "get_portal_health_summary",
+        "trigger_maintenance_cycle"
     }
 
     @classmethod
@@ -148,6 +149,7 @@ class CopilotService:
                     if not db: sdb.close()
 
             elif action in ["active_challenges", "pending_otp", "challenges"]:
+                from services.travelos_capabilities import format_human_duration
                 sdb = db or SessionLocal()
                 try:
                     challenges = sdb.query(OTPChallenge).filter(
@@ -161,10 +163,14 @@ class CopilotService:
                     lines = [f"Found {len(challenges)} active OTP challenge(s):"]
                     for c in challenges:
                         rem = max(0, int((c.expires_at - datetime.utcnow()).total_seconds()))
-                        lines.append(f" • #{c.challenge_id}: {c.applicant_name} (Center {c.visa_center}) - Status: {c.status} ({rem}s remaining)")
+                        lines.append(f" • #{c.challenge_id}: {c.applicant_name} (Center {c.visa_center}) - Status: {c.status} ({format_human_duration(rem)} remaining)")
                     return {"type": "text", "content": "\n".join(lines)}
                 finally:
                     if not db: sdb.close()
+
+            elif action in ["maintenance", "cleanup", "reconcile"]:
+                res = TravelOSMCPClient.call_tool_sync("trigger_maintenance_cycle", {})
+                return {"type": "text", "content": res}
             else:
                 return {"type": "error", "content": f"Unknown quick action '{action}'."}
         except Exception as e:

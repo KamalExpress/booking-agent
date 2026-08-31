@@ -9,7 +9,32 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 import json
 
-from models import SessionLocal, WorkerNode, SlotAvailability, Proxy, PortalAccount, Lease, Assignment, EventLog, WorkerLog
+from models import SessionLocal, WorkerNode, SlotAvailability, Proxy, PortalAccount, Lease, Assignment, EventLog, WorkerLog, PushSubscription
+
+def format_human_duration(seconds: Optional[float]) -> str:
+    """Format duration in seconds into clean human-readable relative time."""
+    if seconds is None:
+        return "N/A"
+    sec = int(max(0, seconds))
+    if sec < 60:
+        return f"{sec}s"
+    elif sec < 3600:
+        m = sec // 60
+        s = sec % 60
+        return f"{m}m {s}s" if s > 0 else f"{m}m"
+    elif sec < 86400:
+        h = sec // 3600
+        m = (sec % 3600) // 60
+        return f"{h}h {m}m" if m > 0 else f"{h}h"
+    else:
+        d = sec // 86400
+        h = (sec % 86400) // 3600
+        return f"{d}d {h}h" if h > 0 else f"{d}d"
+
+def format_human_age(seconds: Optional[float]) -> str:
+    """Format age into clean relative string."""
+    d = format_human_duration(seconds)
+    return "N/A" if d == "N/A" else f"{d} ago"
 
 # ---------------------------------------------------------------------------
 # 1. Worker Capabilities
@@ -25,10 +50,10 @@ def get_workers(db: Optional[Session] = None) -> str:
         
         lines = [f"Total Workers: {len(workers)}"]
         for w in workers:
-            hb_age = int((datetime.utcnow() - w.last_heartbeat).total_seconds()) if getattr(w, 'last_heartbeat', None) else "N/A"
+            hb_age = (datetime.utcnow() - w.last_heartbeat).total_seconds() if getattr(w, 'last_heartbeat', None) else None
             status = getattr(w, 'status', 'Offline') or 'Offline'
             sched = getattr(w, 'scheduling_state', 'Accepting Jobs') or 'Accepting Jobs'
-            lines.append(f"• {w.worker_id} [{status}] ({sched}) - Scrape: {w.can_scrape}, Book: {w.can_book} - Last Heartbeat: {hb_age}s ago")
+            lines.append(f"• {w.worker_id} [{status}] ({sched}) - Scrape: {w.can_scrape}, Book: {w.can_book} - Last Heartbeat: {format_human_age(hb_age)}")
         return "\n".join(lines)
     finally:
         if not db: sdb.close()
@@ -42,12 +67,12 @@ def get_worker_details(worker_id: str, db: Optional[Session] = None) -> str:
         if not worker:
             return f"Worker '{worker_id}' not found."
         
-        hb_age = int((datetime.utcnow() - worker.last_heartbeat).total_seconds()) if getattr(worker, 'last_heartbeat', None) else "N/A"
+        hb_age = (datetime.utcnow() - worker.last_heartbeat).total_seconds() if getattr(worker, 'last_heartbeat', None) else None
         lines = [
             f"Worker: {worker.worker_id}",
             f"Status: {getattr(worker, 'status', 'Offline')}",
             f"Scheduling State: {getattr(worker, 'scheduling_state', 'Accepting Jobs')}",
-            f"Last Heartbeat: {hb_age}s ago ({worker.last_heartbeat})",
+            f"Last Heartbeat: {format_human_age(hb_age)} ({worker.last_heartbeat})",
             f"Concurrency: {worker.current_concurrency}/{worker.max_concurrency}",
             f"Capabilities: Scrape={worker.can_scrape}, Book={worker.can_book}",
             f"Observed IP: {worker.observed_ip or 'Unknown'}"
@@ -126,8 +151,8 @@ def get_available_slots(visa_center: Optional[str] = None, days: Optional[int] =
                 if isinstance(s.slots_data, list):
                     times = [str(x) for x in s.slots_data[:4]]
                 time_str = f" (Times: {', '.join(times)})" if times else ""
-                found_age = int((datetime.utcnow() - s.created_at).total_seconds()) if s.created_at else 0
-                lines.append(f"• Center {s.visa_center} on {s.date}{time_str} - Found by {s.found_by or 'worker'} ({found_age}s ago)")
+                found_age = (datetime.utcnow() - s.created_at).total_seconds() if s.created_at else None
+                lines.append(f"• Center {s.visa_center} on {s.date}{time_str} - Found by {s.found_by or 'worker'} ({format_human_age(found_age)})")
         else:
             lines.append(f"No currently active appointment slots available{center_msg}.")
             
@@ -152,8 +177,8 @@ def get_available_slots(visa_center: Optional[str] = None, days: Optional[int] =
                 if isinstance(s.slots_data, list):
                     times = [str(x) for x in s.slots_data[:4]]
                 time_str = f" (Times: {', '.join(times)})" if times else ""
-                days_ago = round((datetime.utcnow() - s.created_at).total_seconds() / 86400, 1) if s.created_at else 0
-                lines.append(f"• Center {s.visa_center} on {s.date}{time_str} - Discovered by {s.found_by or 'worker'} ({days_ago} days ago, status: {s.status})")
+                age_val = (datetime.utcnow() - s.created_at).total_seconds() if s.created_at else None
+                lines.append(f"• Center {s.visa_center} on {s.date}{time_str} - Discovered by {s.found_by or 'worker'} ({format_human_age(age_val)}, status: {s.status})")
         elif not active_slots:
             lines.append(f"No historical slots were discovered in the last {lookback_days} days{center_msg} either.")
             
@@ -175,9 +200,9 @@ def get_proxy_health(db: Optional[Session] = None) -> str:
             return "No proxies configured in the system."
             
         total = len(proxies)
-        active = sum(1 for p in proxies if getattr(p, 'status', 'ACTIVE') == 'ACTIVE')
         now = datetime.utcnow()
         cooldown = sum(1 for p in proxies if getattr(p, 'cooldown_until', None) and p.cooldown_until > now)
+        active = sum(1 for p in proxies if (getattr(p, 'status', 'READY') or 'READY').upper() in ['READY', 'LEASED', 'ACTIVE'] and not (getattr(p, 'cooldown_until', None) and p.cooldown_until > now))
         failed = total - active
         
         lines = [
@@ -206,8 +231,8 @@ def get_active_leases(limit: int = 15, db: Optional[Session] = None) -> str:
             
         lines = [f"Active Leases ({len(leases)}):"]
         for l in leases:
-            age = int((datetime.utcnow() - l.created_at).total_seconds()) if l.created_at else 0
-            lines.append(f"• Lease #{l.id} [{l.status}] - Worker: {l.worker_id} - Age: {age}s")
+            age = (datetime.utcnow() - l.created_at).total_seconds() if l.created_at else 0
+            lines.append(f"• Lease #{l.id} [{l.status}] - Worker: {l.worker_id} - Age: {format_human_duration(age)}")
         return "\n".join(lines)
     finally:
         if not db: sdb.close()
@@ -218,6 +243,7 @@ def get_portal_health_summary(db: Optional[Session] = None) -> str:
     sdb = db or SessionLocal()
     try:
         from datetime import timedelta
+        now = datetime.utcnow()
         lines = ["=== TRAVELOS OPERATIONAL HEALTH REPORT ==="]
         recommendations = []
         
@@ -273,10 +299,7 @@ def get_portal_health_summary(db: Optional[Session] = None) -> str:
         acc_str = ", ".join([f"{k}: {v}" for k, v in acc_counts.items()]) if acc_counts else "0 total"
         lines.append(f"👥 Portal Accounts: {len(accounts)} total ({acc_str})")
         ready_accs = acc_counts.get('READY', 0)
-        if ready_accs == 0 and len(accounts) > 0:
-            recommendations.append("All portal accounts are busy or locked. Click [ 🧹 Cleanup ] to reset stuck accounts to READY.")
-
-        active_prx = sum(1 for p in proxies if getattr(p, 'status', 'ACTIVE') == 'ACTIVE')
+        active_prx = sum(1 for p in proxies if (getattr(p, 'status', 'READY') or 'READY').upper() in ['READY', 'LEASED', 'ACTIVE'] and not (getattr(p, 'cooldown_until', None) and p.cooldown_until > now))
         lines.append(f"🌐 Proxies: {active_prx}/{len(proxies)} active.")
         if active_prx == 0 and len(proxies) > 0:
             recommendations.append("All proxies are inactive or failing. Verify proxy configurations.")
@@ -424,6 +447,12 @@ CAPABILITY_DEFINITIONS = {
         "description": "List active scraping and booking worker leases.",
         "params": '{"limit": 15}',
         "tags": ["lease", "leases", "active", "running"]
+    },
+    "system.maintenance": {
+        "fn": trigger_maintenance_cycle,
+        "description": "Reconcile orphaned accounts/proxies and clean expired leases.",
+        "params": '{}',
+        "tags": ["maintenance", "cleanup", "reconcile"]
     }
 }
 
@@ -457,16 +486,49 @@ def format_tool_declarations(tools: List[Dict[str, Any]]) -> str:
 def execute_capability(tool_name: str, args: Dict[str, Any], db: Optional[Session] = None) -> str:
     """Safely executes a registered capability with validated arguments."""
     t_name = tool_name.strip()
-    if "_" in t_name and "." not in t_name:
-        parts = t_name.split("_", 1)
-        t_name = f"{parts[0]}.{parts[1]}"
-        
-    meta = CAPABILITY_DEFINITIONS.get(t_name)
-    if not meta:
-        return f"Unknown tool '{tool_name}'."
+    
+    canonical_map = {
+        "get_portal_health_summary": "system.get_health",
+        "portal_health_summary": "system.get_health",
+        "system_health": "system.get_health",
+        "get_workers": "worker.list_all",
+        "get_worker_details": "worker.get_status",
+        "get_worker_status": "worker.get_status",
+        "get_worker_logs": "worker.get_recent_logs",
+        "get_available_slots": "slots.get_available",
+        "get_proxy_health": "proxy.get_health",
+        "proxy_health": "proxy.get_health",
+        "get_active_leases": "system.get_active_leases",
+        "active_leases": "system.get_active_leases",
+        "trigger_maintenance_cycle": "system.maintenance",
+        "maintenance": "system.maintenance",
+        "cleanup": "system.maintenance",
+        "unlease_resource": "system.unlease"
+    }
+    
+    mapped_name = canonical_map.get(t_name, t_name)
+    meta = CAPABILITY_DEFINITIONS.get(mapped_name)
+    
+    if meta:
+        fn = meta["fn"]
+    else:
+        direct_fns = {
+            "get_portal_health_summary": get_portal_health_summary,
+            "get_workers": get_workers,
+            "get_worker_details": get_worker_details,
+            "get_worker_status": get_worker_details,
+            "get_worker_logs": get_worker_logs,
+            "get_available_slots": get_available_slots,
+            "get_proxy_health": get_proxy_health,
+            "get_active_leases": get_active_leases,
+            "trigger_maintenance_cycle": trigger_maintenance_cycle,
+            "unlease_resource": unlease_resource
+        }
+        fn = direct_fns.get(t_name)
+        if not fn:
+            return f"Unknown tool '{tool_name}'."
         
     try:
-        fn = meta["fn"]
         import inspect
         sig = inspect.signature(fn)
         call_args = {}
@@ -476,7 +538,6 @@ def execute_capability(tool_name: str, args: Dict[str, Any], db: Optional[Sessio
             elif p_name in args:
                 call_args[p_name] = args[p_name]
             elif p_name == "worker_id":
-                # Smart heuristic: find worker id from keys or values
                 found = None
                 for k, v in args.items():
                     if "worker" in str(k).lower():
