@@ -2,27 +2,54 @@ from mcp.server.fastmcp import FastMCP
 from sqlalchemy.orm import Session
 from datetime import datetime
 import os
+import services.travelos_capabilities as caps
 
 mcp = FastMCP("KESaaSAdmin")
 
 @mcp.tool()
 def get_workers() -> str:
     """Get a list of all registered workers and their status."""
-    from models import SessionLocal, WorkerNode
-    db: Session = SessionLocal()
-    try:
-        workers = db.query(WorkerNode).all()
-        if not workers:
-            return "No workers found."
-        out = []
-        for w in workers:
-            hb_age = int((datetime.utcnow() - w.last_heartbeat).total_seconds()) if getattr(w, 'last_heartbeat', None) else "N/A"
-            out.append(f"ID: {w.worker_id} | Host: {w.hostname} | Status: {getattr(w, 'status', 'READY')} | Scrape: {w.can_scrape} | Book: {w.can_book} | HB: {hb_age}s ago")
-        return "\n".join(out)
-    except Exception as e:
-        return f"Error fetching workers: {str(e)}"
-    finally:
-        db.close()
+    return caps.get_workers()
+
+@mcp.tool()
+def get_worker_details(worker_id: str) -> str:
+    """Inspect detailed status, active lease, and assignment context for a specific worker."""
+    return caps.get_worker_details(worker_id=worker_id)
+
+@mcp.tool()
+def get_worker_logs(worker_id: str, limit: int = 10) -> str:
+    """Fetch recent log events, errors, and actions for a specific worker."""
+    return caps.get_worker_logs(worker_id=worker_id, limit=limit)
+
+@mcp.tool()
+def get_available_slots(visa_center: str = "", limit: int = 10) -> str:
+    """Retrieve active open appointment slots discovered by scraping workers."""
+    return caps.get_available_slots(visa_center=visa_center, limit=limit)
+
+@mcp.tool()
+def get_proxy_health() -> str:
+    """Inspect proxy pool health, active connections, and cooldown states."""
+    return caps.get_proxy_health()
+
+@mcp.tool()
+def get_active_leases(limit: int = 20) -> str:
+    """List all currently active or pending worker leases with associated accounts and proxies."""
+    return caps.get_active_leases(limit=limit)
+
+@mcp.tool()
+def unlease_resource(resource_type: str, resource_id: int) -> str:
+    """Forcefully unlock a stuck resource (resource_type: 'account', 'proxy', or 'lease') back to READY."""
+    return caps.unlease_resource(resource_type=resource_type, resource_id=resource_id)
+
+@mcp.tool()
+def get_portal_health_summary() -> str:
+    """Get health scores, statuses, and cooldowns for all accounts and proxies with schema-safe lookups."""
+    return caps.get_portal_health_summary()
+
+@mcp.tool()
+def trigger_maintenance_cycle() -> str:
+    """Trigger the orphan resource reconciliation and lease cleanup routine immediately."""
+    return caps.trigger_maintenance_cycle()
 
 @mcp.tool()
 def create_mock_worker(worker_id: str = "mock-worker-1", can_scrape: bool = True, can_book: bool = True) -> str:
@@ -52,142 +79,6 @@ def create_mock_worker(worker_id: str = "mock-worker-1", can_scrape: bool = True
     except Exception as e:
         db.rollback()
         return f"Failed: {str(e)}"
-    finally:
-        db.close()
-
-@mcp.tool()
-def get_active_leases(limit: int = 20) -> str:
-    """List all currently active or pending worker leases with associated accounts and proxies."""
-    from models import SessionLocal, Lease, PortalAccount, Proxy, Assignment
-    db: Session = SessionLocal()
-    try:
-        leases = db.query(Lease).filter(Lease.status.in_(["Leased", "Running", "Pending"])).order_by(Lease.created_at.desc()).limit(limit).all()
-        if not leases:
-            return "No active or pending leases found."
-        out = []
-        for l in leases:
-            acc = db.query(PortalAccount).filter(PortalAccount.id == l.portal_account_id).first() if l.portal_account_id else None
-            prx = db.query(Proxy).filter(Proxy.id == l.proxy_id).first() if l.proxy_id else None
-            asg = db.query(Assignment).filter(Assignment.id == l.assignment_id).first() if l.assignment_id else None
-            
-            acc_label = acc.username if acc else "None"
-            prx_label = f"{prx.host}:{prx.port}" if prx else "None"
-            vac_label = asg.visa_center if asg else "None"
-            
-            age_seconds = int((datetime.utcnow() - l.created_at).total_seconds()) if l.created_at else 0
-            out.append(f"Lease #{l.id} | Worker: {l.worker_id} | Status: {l.status} | VAC: {vac_label} | Account: {acc_label} | Proxy: {prx_label} | Age: {age_seconds}s")
-        return "\n".join(out)
-    except Exception as e:
-        return f"Error fetching active leases: {str(e)}"
-    finally:
-        db.close()
-
-@mcp.tool()
-def unlease_resource(resource_type: str, resource_id: int) -> str:
-    """Forcefully unlock a stuck resource (resource_type: 'account', 'proxy', or 'lease') back to READY."""
-    from models import SessionLocal, PortalAccount, Proxy, Lease
-    db: Session = SessionLocal()
-    try:
-        rtype = resource_type.strip().lower()
-        if rtype == "account":
-            acc = db.query(PortalAccount).filter(PortalAccount.id == resource_id).first()
-            if not acc:
-                return f"PortalAccount ID {resource_id} not found."
-            acc.status = "READY"
-            acc.is_locked = False
-            db.commit()
-            return f"PortalAccount {acc.username} (ID {resource_id}) unleased and reset to READY."
-        elif rtype == "proxy":
-            prx = db.query(Proxy).filter(Proxy.id == resource_id).first()
-            if not prx:
-                return f"Proxy ID {resource_id} not found."
-            prx.status = "READY"
-            db.commit()
-            return f"Proxy {prx.host}:{prx.port} (ID {resource_id}) unleased and reset to READY."
-        elif rtype == "lease":
-            l = db.query(Lease).filter(Lease.id == resource_id).first()
-            if not l:
-                return f"Lease ID {resource_id} not found."
-            l.status = "Abandoned"
-            if l.portal_account_id:
-                acc = db.query(PortalAccount).filter(PortalAccount.id == l.portal_account_id).first()
-                if acc:
-                    acc.status = "READY"
-                    acc.is_locked = False
-            if l.proxy_id:
-                prx = db.query(Proxy).filter(Proxy.id == l.proxy_id).first()
-                if prx:
-                    prx.status = "READY"
-            db.commit()
-            return f"Lease #{resource_id} marked as Abandoned and associated resources freed to READY."
-        else:
-            return f"Invalid resource_type '{resource_type}'. Use 'account', 'proxy', or 'lease'."
-    except Exception as e:
-        db.rollback()
-        return f"Error unleasing resource: {str(e)}"
-    finally:
-        db.close()
-
-@mcp.tool()
-def get_portal_health_summary() -> str:
-    """Get health scores, statuses, and cooldowns for all accounts and proxies with schema-safe lookups."""
-    from models import SessionLocal, PortalAccount, Proxy
-    db: Session = SessionLocal()
-    try:
-        accounts = db.query(PortalAccount).all()
-        proxies = db.query(Proxy).all()
-        
-        acc_counts = {}
-        for a in accounts:
-            st = getattr(a, 'status', 'UNKNOWN') or 'UNKNOWN'
-            acc_counts[st] = acc_counts.get(st, 0) + 1
-            
-        prx_counts = {}
-        for p in proxies:
-            st = getattr(p, 'status', 'UNKNOWN') or 'UNKNOWN'
-            prx_counts[st] = prx_counts.get(st, 0) + 1
-            
-        lines = ["=== Portal Accounts Summary ==="]
-        lines.append(f"Total: {len(accounts)} | " + " | ".join([f"{k}: {v}" for k, v in acc_counts.items()]))
-        
-        cooldown_accounts = [a for a in accounts if getattr(a, 'cooldown_until', None) and a.cooldown_until > datetime.utcnow()]
-        if cooldown_accounts:
-            lines.append("Accounts in Cooldown:")
-            for a in cooldown_accounts:
-                remaining = int((a.cooldown_until - datetime.utcnow()).total_seconds())
-                lines.append(f"  - {a.username} (ID {a.id}): cooldown for {remaining}s remaining")
-        
-        lines.append("\n=== Proxies Summary ===")
-        lines.append(f"Total: {len(proxies)} | " + " | ".join([f"{k}: {v}" for k, v in prx_counts.items()]))
-        
-        cooldown_proxies = [p for p in proxies if getattr(p, 'cooldown_until', None) and p.cooldown_until > datetime.utcnow()]
-        if cooldown_proxies:
-            lines.append("Proxies in Cooldown:")
-            for p in cooldown_proxies:
-                remaining = int((p.cooldown_until - datetime.utcnow()).total_seconds())
-                lines.append(f"  - {p.host}:{p.port} (ID {p.id}): cooldown for {remaining}s remaining")
-                
-        return "\n".join(lines)
-    except Exception as e:
-        return f"Error fetching portal health: {str(e)}"
-    finally:
-        db.close()
-
-@mcp.tool()
-def trigger_maintenance_cycle() -> str:
-    """Trigger the orphan resource reconciliation and lease cleanup routine immediately."""
-    from models import SessionLocal
-    from services.maintenance_service import MaintenanceService
-    db: Session = SessionLocal()
-    try:
-        service = MaintenanceService(db)
-        if hasattr(service, '_reconcile_orphan_resources'):
-            service._reconcile_orphan_resources()
-        if hasattr(service, 'cleanup_expired_leases'):
-            service.cleanup_expired_leases()
-        return "Maintenance cycle executed successfully. Orphaned accounts/proxies reconciled and expired leases cleaned up."
-    except Exception as e:
-        return f"Error running maintenance cycle: {str(e)}"
     finally:
         db.close()
 
@@ -300,4 +191,3 @@ def fetch_agent_monitor_logs() -> str:
         return res
     finally:
         db.close()
-
