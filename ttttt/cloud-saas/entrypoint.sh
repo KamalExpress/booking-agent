@@ -4,9 +4,11 @@ set -e
 # Change to the application directory
 cd /app/app
 
-echo "Waiting for Postgres to be ready..."
-# Since Alembic will crash if the DB is completely unreachable, we rely on docker-compose depends_on,
-# but adding a small delay or retry logic here is helpful if needed. 
+echo "Verifying Python dependencies..."
+if ! python -c "import mcp" 2>/dev/null; then
+    echo "MCP library missing from container. Installing requirements..."
+    pip install --no-cache-dir -r /app/requirements.txt || pip install --no-cache-dir mcp || true
+fi
 
 echo "Ensuring Base tables exist before migrations..."
 python -c "

@@ -592,42 +592,54 @@ def test_push_alert(request: Request, current_user: User = Depends(get_current_u
 # Mount Static Files (PWA)
 @app.get("/api/admin/agent-monitor-logs")
 def get_agent_monitor_logs(request: Request, db: Session = Depends(get_db)):
-    mcp_key = os.environ.get("MCP_API_KEY", "").strip()
-    if mcp_key:
-        auth_header = request.headers.get("authorization", "")
-        token = auth_header[7:].strip() if auth_header.lower().startswith("bearer ") else ""
-        if not token:
-            token = request.query_params.get("api_key") or request.query_params.get("token") or ""
-        if token != mcp_key:
-            raise HTTPException(status_code=401, detail="Unauthorized: Invalid or missing MCP API key")
-            
-    from models import EventLog
-    import os
-    logs_dir = os.path.join(os.path.dirname(__file__), "..", "worker_logs")
-    
-    terminal_logs = {}
-    if os.path.exists(logs_dir):
-        for f in os.listdir(logs_dir):
-            if f.endswith(".log"):
-                filepath = os.path.join(logs_dir, f)
-                with open(filepath, "r", encoding="utf-8", errors="replace") as lf:
-                    lines = lf.readlines()
-                    terminal_logs[f] = "".join(lines[-150:])
-    
-    recent_db_logs = db.query(EventLog).order_by(EventLog.created_at.desc()).limit(100).all()
-    db_logs_out = []
-    for log in recent_db_logs:
-        db_logs_out.append({
-            "worker_id": log.worker_id,
-            "event_type": log.event_type,
-            "payload": log.payload,
-            "created_at": str(log.created_at)
-        })
+    try:
+        mcp_key = os.environ.get("MCP_API_KEY", "").strip()
+        if mcp_key:
+            auth_header = request.headers.get("authorization", "")
+            token = auth_header[7:].strip() if auth_header.lower().startswith("bearer ") else ""
+            if not token:
+                token = request.query_params.get("api_key") or request.query_params.get("token") or ""
+            if token != mcp_key:
+                raise HTTPException(status_code=401, detail="Unauthorized: Invalid or missing MCP API key")
+                
+        from models import EventLog
+        import os
+        logs_dir = os.path.join(os.path.dirname(__file__), "..", "worker_logs")
         
-    return {
-        "terminal_logs": terminal_logs,
-        "db_logs": db_logs_out
-    }
+        terminal_logs = {}
+        if os.path.exists(logs_dir) and os.path.isdir(logs_dir):
+            for f in os.listdir(logs_dir):
+                filepath = os.path.join(logs_dir, f)
+                if f.endswith(".log") and os.path.isfile(filepath):
+                    try:
+                        with open(filepath, "r", encoding="utf-8", errors="replace") as lf:
+                            lines = lf.readlines()
+                            terminal_logs[f] = "".join(lines[-150:])
+                    except Exception as err:
+                        terminal_logs[f] = f"[Error reading log: {err}]"
+        
+        recent_db_logs = db.query(EventLog).order_by(EventLog.created_at.desc()).limit(100).all()
+        db_logs_out = []
+        for log in recent_db_logs:
+            db_logs_out.append({
+                "worker_id": str(getattr(log, 'worker_id', '')),
+                "event_type": str(getattr(log, 'event_type', '')),
+                "payload": getattr(log, 'payload', None),
+                "created_at": str(getattr(log, 'created_at', ''))
+            })
+            
+        return {
+            "terminal_logs": terminal_logs,
+            "db_logs": db_logs_out
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        return {
+            "error": str(e),
+            "trace": traceback.format_exc()
+        }
 
 static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
@@ -652,10 +664,16 @@ class MCPAuthMiddleware(BaseHTTPMiddleware):
 
 try:
     from mcp_server import mcp
-    # Get the Starlette app configured for SSE
-    mcp_app = mcp.sse_app("/mcp")
+    # Get the Starlette app configured for SSE (handling version differences)
+    try:
+        mcp_app = mcp.sse_app()
+    except Exception:
+        mcp_app = mcp.sse_app("/mcp")
+        
     mcp_app.add_middleware(MCPAuthMiddleware)
     app.mount("/mcp", mcp_app)
     print("Mounted FastMCP at /mcp with MCPAuthMiddleware")
 except Exception as e:
+    import traceback
     print(f"Failed to mount FastMCP: {e}")
+    traceback.print_exc()
