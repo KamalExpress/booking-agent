@@ -17,6 +17,11 @@ def get_worker_details(worker_id: str) -> str:
     return caps.get_worker_details(worker_id=worker_id)
 
 @mcp.tool()
+def get_worker_status(worker_id: str) -> str:
+    """Inspect detailed status, active lease, and assignment context for a specific worker."""
+    return caps.get_worker_details(worker_id=worker_id)
+
+@mcp.tool()
 def get_worker_logs(worker_id: str, limit: int = 10) -> str:
     """Fetch recent log events, errors, and actions for a specific worker."""
     return caps.get_worker_logs(worker_id=worker_id, limit=limit)

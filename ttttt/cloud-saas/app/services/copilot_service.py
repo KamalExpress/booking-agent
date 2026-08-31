@@ -2,53 +2,124 @@ import os
 import requests
 import json
 import re
+import asyncio
+import concurrent.futures
 from typing import Dict, Any, Optional, List
 from datetime import datetime
 from sqlalchemy.orm import Session
 
 from models import SessionLocal, Tenant, User, OTPChallenge, SlotAvailability, WorkerNode, Proxy, PortalAccount
-import services.travelos_capabilities as caps
 
 BITNET_SERVER_URL = os.getenv("BITNET_SERVER_URL", "https://ai.alamiaconnect.com").rstrip("/")
 BITNET_API_KEY = os.getenv("BITNET_API_KEY", "51129693340")
 
+class TravelOSMCPClient:
+    """
+    Authentic MCP In-Process Client for the TravelOS FastMCP Server.
+    Discovers capabilities via MCP tools/list and invokes execution via MCP tools/call.
+    """
+    @staticmethod
+    async def list_tools() -> List[Dict[str, Any]]:
+        """MCP tools/list: discover registered tools and their JSON schemas from FastMCP."""
+        try:
+            from mcp_server import mcp
+            raw_tools = await mcp.list_tools()
+            return [
+                {
+                    "name": t.name,
+                    "description": t.description,
+                    "inputSchema": getattr(t, "inputSchema", {})
+                }
+                for t in raw_tools
+            ]
+        except Exception as e:
+            print(f"[TravelOSMCPClient] Error in tools/list: {e}")
+            return []
+
+    @classmethod
+    def list_tools_sync(cls) -> List[Dict[str, Any]]:
+        """Synchronous wrapper for MCP tools/list."""
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            
+        if loop.is_running():
+            with concurrent.futures.ThreadPoolExecutor() as pool:
+                return pool.submit(asyncio.run, cls.list_tools()).result()
+        else:
+            return loop.run_until_complete(cls.list_tools())
+
+    @staticmethod
+    async def call_tool(name: str, arguments: Dict[str, Any]) -> str:
+        """MCP tools/call: execute a tool through the FastMCP server dispatch pipeline."""
+        try:
+            from mcp_server import mcp
+            raw_res = await mcp.call_tool(name, arguments)
+            if isinstance(raw_res, tuple) and len(raw_res) > 0:
+                contents = raw_res[0]
+                if isinstance(contents, list) and len(contents) > 0:
+                    return getattr(contents[0], "text", str(contents[0]))
+            elif isinstance(raw_res, list) and len(raw_res) > 0:
+                return getattr(raw_res[0], "text", str(raw_res[0]))
+            return str(raw_res)
+        except Exception as e:
+            return f"MCP tools/call error on '{name}': {str(e)}"
+
+    @classmethod
+    def call_tool_sync(cls, name: str, arguments: Dict[str, Any]) -> str:
+        """Synchronous wrapper for MCP tools/call."""
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            
+        if loop.is_running():
+            with concurrent.futures.ThreadPoolExecutor() as pool:
+                return pool.submit(asyncio.run, cls.call_tool(name, arguments)).result()
+        else:
+            return loop.run_until_complete(cls.call_tool(name, arguments))
+
+
 class CopilotService:
     @staticmethod
     def execute_quick_action(action: str, params: Optional[Dict[str, Any]] = None, db: Optional[Session] = None) -> Dict[str, Any]:
-        """Execute deterministic actions with ZERO LLM calls (Fast-Path / 1-Click Chips)."""
+        """Execute deterministic actions with ZERO LLM calls (Fast-Path / 1-Click Chips via MCP)."""
         action = action.strip().lower()
         
         try:
             if action in ["system_health", "health"]:
-                summary = caps.get_portal_health_summary(db=db)
+                summary = TravelOSMCPClient.call_tool_sync("get_portal_health_summary", {})
                 return {"type": "text", "content": summary}
                 
             elif action in ["active_leases", "leases"]:
                 limit = params.get("limit", 15) if params else 15
-                leases = caps.get_active_leases(limit=limit, db=db)
+                leases = TravelOSMCPClient.call_tool_sync("get_active_leases", {"limit": limit})
                 return {"type": "text", "content": leases}
                 
             elif action in ["workers", "worker_list", "fleet"]:
-                workers_summary = caps.get_workers(db=db)
+                workers_summary = TravelOSMCPClient.call_tool_sync("get_workers", {})
                 return {"type": "text", "content": workers_summary}
 
             elif action in ["slots", "slot_availability", "slots_available"]:
-                visa_center = params.get("visa_center") if params else None
-                slots_summary = caps.get_available_slots(visa_center=visa_center, db=db)
+                visa_center = params.get("visa_center", "") if params else ""
+                slots_summary = TravelOSMCPClient.call_tool_sync("get_available_slots", {"visa_center": visa_center, "limit": 10})
                 return {"type": "text", "content": slots_summary}
 
             elif action in ["proxy_health", "proxies"]:
-                proxy_summary = caps.get_proxy_health(db=db)
+                proxy_summary = TravelOSMCPClient.call_tool_sync("get_proxy_health", {})
                 return {"type": "text", "content": proxy_summary}
 
             elif action in ["unfreeze", "unlease"]:
                 rtype = params.get("resource_type", "account") if params else "account"
                 rid = params.get("resource_id", 0) if params else 0
-                res = caps.unlease_resource(resource_type=rtype, resource_id=rid, db=db)
+                res = TravelOSMCPClient.call_tool_sync("unlease_resource", {"resource_type": rtype, "resource_id": rid})
                 return {"type": "text", "content": res}
                 
             elif action in ["maintenance", "orphan_cleanup"]:
-                res = caps.trigger_maintenance_cycle(db=db)
+                res = TravelOSMCPClient.call_tool_sync("trigger_maintenance_cycle", {})
                 return {"type": "text", "content": res}
                 
             elif action in ["active_challenges", "pending_otp", "challenges"]:
@@ -100,14 +171,12 @@ class CopilotService:
         if args_str:
             args_clean = args_str.strip("()")
             if args_clean:
-                # Check for json object in parenthesis
                 if args_clean.startswith("{") and args_clean.endswith("}"):
                     try:
                         args = json.loads(args_clean)
                     except Exception:
                         pass
                 else:
-                    # Parse simple positional/named argument e.g. ("worker_17") or (worker_id="worker_17")
                     if "=" in args_clean:
                         for part in args_clean.split(","):
                             if "=" in part:
@@ -120,7 +189,36 @@ class CopilotService:
                         elif "slot" in tool_name:
                             args["visa_center"] = val
                             
-        return {"tool": tool_name, "args": args}
+        # Map common aliases to canonical FastMCP tool names
+        canonical_map = {
+            "worker.get_status": "get_worker_status",
+            "worker_get_status": "get_worker_status",
+            "worker.get_details": "get_worker_details",
+            "worker_get_details": "get_worker_details",
+            "worker.get_recent_logs": "get_worker_logs",
+            "worker.get_logs": "get_worker_logs",
+            "worker_get_recent_logs": "get_worker_logs",
+            "worker.list_all": "get_workers",
+            "slots.get_available": "get_available_slots",
+            "slots_get_available": "get_available_slots",
+            "proxy.get_health": "get_proxy_health",
+            "proxy_get_health": "get_proxy_health",
+            "system.get_health": "get_portal_health_summary",
+            "system.get_active_leases": "get_active_leases"
+        }
+        canonical_tool = canonical_map.get(tool_name, tool_name)
+        
+        # Heuristic argument normalization
+        if "worker" in canonical_tool and "worker_id" not in args:
+            for k, v in args.items():
+                if "worker" in str(k).lower():
+                    args["worker_id"] = str(k)
+                    break
+                elif "worker" in str(v).lower():
+                    args["worker_id"] = str(v)
+                    break
+                    
+        return {"tool": canonical_tool, "args": args}
 
     @staticmethod
     def _call_bitnet(messages: List[Dict[str, str]], max_tokens: int = 180, temperature: float = 0.2) -> Dict[str, Any]:
@@ -163,7 +261,7 @@ class CopilotService:
 
     @staticmethod
     def chat(message: str, user: Optional[User] = None, db: Optional[Session] = None) -> Dict[str, Any]:
-        """Conversational endpoint bridging TravelOS Copilot with BitNet and TravelOS MCP Capabilities."""
+        """Conversational endpoint bridging TravelOS Copilot with BitNet and TravelOS FastMCP Server."""
         # 1. Feature Gate / Enterprise Monetization Check
         if user and user.tenant_id and db:
             tenant = db.query(Tenant).filter(Tenant.id == user.tenant_id).first()
@@ -175,7 +273,7 @@ class CopilotService:
 
         lower_msg = message.strip().lower()
 
-        # 2. Tier 1: Deterministic Fast Paths (0 LLM Tokens, 0.01s Latency)
+        # 2. Tier 1: Deterministic Fast Paths (0 LLM Tokens, 0.01s Latency via MCP)
         if any(k in lower_msg for k in ["any slot", "slots available", "check slot", "show slot", "are there slot", "is there a slot", "slots today", "available today", "open slot"]):
             res = CopilotService.execute_quick_action("slot_availability", db=db)
             return {"reply": res["content"], "status": "ok", "source": "deterministic"}
@@ -200,7 +298,7 @@ class CopilotService:
             res = CopilotService.execute_quick_action("active_challenges", db=db)
             return {"reply": res["content"], "status": "ok", "source": "deterministic"}
 
-        # 3. Tier 2: Structured Agent Loop with TravelOS Capabilities
+        # 3. Tier 2: MCP Discovery (tools/list) & Structured Agent Loop
         now_utc = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
         
         # Step 3.1: Stable System Instructions (Owned by TravelOS Copilot)
@@ -212,9 +310,34 @@ class CopilotService:
             "When an OBSERVATION is given, base your answer strictly on it."
         )
         
-        # Step 3.2: Dynamic Context & Targeted Tool Declarations
-        relevant_tools = caps.filter_relevant_tools(message)
-        tool_sigs = caps.format_tool_declarations(relevant_tools)
+        # Step 3.2: MCP Tool Discovery via FastMCP tools/list
+        mcp_tools = TravelOSMCPClient.list_tools_sync()
+        
+        # Filter relevant tools based on query to avoid token overload
+        q = message.lower()
+        selected_tools = []
+        for t in mcp_tools:
+            t_name = t["name"].lower()
+            if any(w in q for w in ["worker", "fail", "stuck", "node"]) and "worker" in t_name:
+                selected_tools.append(t)
+            elif any(s in q for s in ["slot", "appointment", "date"]) and "slot" in t_name:
+                selected_tools.append(t)
+            elif any(p in q for p in ["proxy", "ip"]) and "proxy" in t_name:
+                selected_tools.append(t)
+            elif any(h in q for h in ["health", "system", "portal"]) and ("health" in t_name or "portal" in t_name):
+                selected_tools.append(t)
+                
+        if not selected_tools:
+            # Default core subset from MCP tools/list
+            selected_tools = [t for t in mcp_tools if t["name"] in ["get_workers", "get_available_slots", "get_proxy_health", "get_portal_health_summary"]]
+            
+        selected_tools = selected_tools[:4]
+        
+        tool_lines = ["Available MCP Operational Tools:"]
+        for t in selected_tools:
+            params_str = json.dumps(t["inputSchema"].get("properties", {}))
+            tool_lines.append(f"- {t['name']}({params_str}): {t['description']}")
+        tool_sigs = "\n".join(tool_lines)
         
         context_prompt = (
             f"Current Time: {now_utc}\n"
@@ -244,13 +367,13 @@ class CopilotService:
         if not tool_call:
             return {"reply": first_reply, "status": "ok", "source": "llm"}
             
-        # Step 3.4: Execute TravelOS Capability in Cloud SaaS Runtime
+        # Step 3.4: Invoke MCP tools/call via FastMCP Server
         tool_name = tool_call["tool"]
         tool_args = tool_call["args"]
-        print(f"[Copilot Agent Loop] BitNet requested tool: {tool_name}({tool_args})")
+        print(f"[Copilot MCP Client] Invoking MCP tools/call: {tool_name}({tool_args})")
         
-        observation = caps.execute_capability(tool_name, tool_args, db=db)
-        print(f"[Copilot Agent Loop] Tool observation: {observation[:120]}...")
+        observation = TravelOSMCPClient.call_tool_sync(tool_name, tool_args)
+        print(f"[Copilot MCP Client] FastMCP Observation: {observation[:120]}...")
         
         # Step 3.5: Feed Observation Back to BitNet for Final Synthesis
         synthesis_rules = (
@@ -269,10 +392,8 @@ class CopilotService:
         synth_res = CopilotService._call_bitnet(synthesis_messages, max_tokens=150, temperature=0.2)
         if synth_res["status"] == "ok":
             final_reply = synth_res["content"].strip()
-            # Safety filter in case model still outputs an ACTION prefix
             if final_reply.startswith("ACTION:"):
-                return {"reply": f"Based on live logs: {observation}", "status": "ok", "source": "tool_direct"}
+                return {"reply": f"Based on live FastMCP telemetry: {observation}", "status": "ok", "source": "mcp_direct"}
             return {"reply": final_reply, "status": "ok", "source": "agent_loop"}
         else:
-            # If second hop failed, return the raw observation
-            return {"reply": f"{observation}", "status": "ok", "source": "tool_direct"}
+            return {"reply": f"{observation}", "status": "ok", "source": "mcp_direct"}
