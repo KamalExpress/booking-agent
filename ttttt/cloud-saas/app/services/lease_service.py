@@ -229,7 +229,7 @@ class LeaseService:
             self.db.add(log)
             self.db.commit()
 
-    def fail_lease(self, worker_id: str, assignment_id: int):
+    def fail_lease(self, worker_id: str, assignment_id: int, reason: Optional[str] = None):
         lease = self.db.query(Lease).filter(
             Lease.worker_id == worker_id,
             Lease.status.in_(["Leased", "Running"])
@@ -246,23 +246,62 @@ class LeaseService:
                 if account and account.status == "LEASED":
                     account.status = "READY"
             
-            # Reset Proxy status
+            # Penalize and Cooldown Proxy on failure
             if lease.proxy_id:
                 proxy = self.db.query(Proxy).filter(Proxy.id == lease.proxy_id).first()
-                if proxy and proxy.status == "LEASED":
-                    proxy.status = "READY"
+                if proxy:
+                    proxy.failure_count = (proxy.failure_count or 0) + 1
+                    proxy.health_score = max(0, (proxy.health_score or 100) - 25)
+                    
+                    is_proxy_407 = reason and ("407" in str(reason) or "tunnel" in str(reason).lower())
+                    if is_proxy_407 or proxy.failure_count >= 3:
+                        proxy.status = "COOLDOWN"
+                        proxy.cooldown_until = datetime.utcnow() + timedelta(minutes=30)
+                    elif proxy.status == "LEASED":
+                        proxy.status = "READY"
                     
             # Decrement worker concurrency
             worker = self.db.query(WorkerNode).filter(WorkerNode.worker_id == worker_id).first()
             if worker and worker.current_concurrency > 0:
                 worker.current_concurrency -= 1
 
-            # Handle assignment resetting if scraping lease
+            # Handle assignment resetting or auto-pausing (Circuit Breaker)
             if lease.assignment_id:
                 assignment = self.db.query(Assignment).filter(Assignment.id == lease.assignment_id).first()
-                if assignment:
-                    assignment.status = "Active"
-                    assignment.last_checked = datetime.utcnow()
+                if assignment and assignment.status == "Active":
+                    # Check recent failures for this assignment in the last 15 minutes
+                    recent_fails = self.db.query(EventLog).filter(
+                        EventLog.assignment_id == lease.assignment_id,
+                        EventLog.event_type.in_(["LEASE_FAILED", "LOGIN_FAILED", "PROXY_BANNED", "LOGIN_EXCEPTION", "LEASE_RESULT"]),
+                        EventLog.created_at >= datetime.utcnow() - timedelta(minutes=15)
+                    ).count()
+                    
+                    if recent_fails >= 2:  # This failure marks the 3rd+ failure
+                        assignment.status = "Paused"
+                        self.cancel_active_leases([assignment.id])
+                        
+                        # Send actionable push notification to admins
+                        try:
+                            from notifications import send_push_notification
+                            is_proxy_407 = reason and ("407" in str(reason) or "tunnel" in str(reason).lower())
+                            if is_proxy_407:
+                                push_title = "[OPERATIONAL ALERT] Scraping Paused: Proxy Quota/Auth Failure"
+                                push_body = (
+                                    f"Scraping halted for Center {assignment.visa_center} due to repeated proxy tunnel failures (HTTP 407). "
+                                    f"Likely Cause: Decodo/proxy data quota exhausted or credentials changed. "
+                                    f"Action Required: Top up proxy data, update proxy in Settings > Proxies, then unpause the assignment."
+                                )
+                            else:
+                                push_title = "[OPERATIONAL ALERT] Scraping Paused: Repeated Failures"
+                                push_body = (
+                                    f"Scraping halted for Center {assignment.visa_center} after repeated failures ({reason or 'Worker login blocked'}). "
+                                    f"Action Required: Check account credentials and unpause assignment in Dashboard."
+                                )
+                            send_push_notification(self.db, push_title, push_body, visa_center_id=assignment.visa_center)
+                        except Exception:
+                            pass
+                    else:
+                        assignment.last_checked = datetime.utcnow()
                     
             # Handle booking task retry/failure if booking lease
             if lease.booking_task_id:
@@ -274,13 +313,17 @@ class LeaseService:
                         task.status = "FAILED"
                         task.active_status = False
             
+            payload_data = {"booking_task_id": lease.booking_task_id} if lease.booking_task_id else {}
+            if reason:
+                payload_data["reason"] = reason
+                
             log = EventLog(
                 source="lease_service",
                 worker_id=worker_id,
                 assignment_id=lease.assignment_id,
                 severity="error",
                 event_type="LEASE_FAILED",
-                payload={"booking_task_id": lease.booking_task_id} if lease.booking_task_id else {}
+                payload=payload_data
             )
             self.db.add(log)
             self.db.commit()
