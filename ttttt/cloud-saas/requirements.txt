@@ -12,3 +12,4 @@ user-agents
 sqladmin
 itsdangerous
 alembic
+mcp>=1.0.0

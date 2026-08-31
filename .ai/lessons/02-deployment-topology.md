@@ -1,7 +1,7 @@
 # Deployment & Compose Topology (Lesson 02)
 
 ## Context
-During the Staging environment setup, an architectural drift was discovered regarding how Docker Compose stacks are structured for the Kamal Express platform.
+During the Staging environment setup, an architectural drift was discovered regarding how Docker Compose stacks are structured for the KE Agent platform.
 
 The root `docker-compose.yml` file is barebones and only defines the SaaS container. Future agents might incorrectly assume that the workers are manually deployed elsewhere or that the system operates without them.
 

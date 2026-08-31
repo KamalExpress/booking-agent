@@ -43,13 +43,20 @@ To process 4-6 applicants simultaneously during a slot drop while avoiding WAF (
 3. **TOS & Pre-OTP Check:** 
    - The worker checks the TOS agreement.
    - It checks for any secondary Captcha challenge (resolving via CapSolver if present) and clicks the button to trigger the SMS OTP.
-4. **OTP Relay Pipeline & Race Conditions:**
-   - The SMS OTP is sent to a physical or virtual phone. 
-   - *OTP Race Condition Note:* For highly parallel booking (e.g., booking 5 applicants at once), sharing a single phone number creates a bottleneck or race condition where multiple OTPs arrive simultaneously. For maximum success rates, ideally there should be a 1:1 mapping of phone numbers to applicants (potentially using virtual number APIs). The exact solution for this is pending further research.
-   - The phone/gateway POSTs the incoming SMS to a dedicated SaaS webhook.
-   - The SaaS maps the incoming OTP to the active `BookingTask` and stores the `otp_code` directly as a field on the `BookingTask` record.
-   - The Booker worker (via `otp_service.py`) polls the SaaS for its specific `BookingTask`'s OTP.
-5. **Final Confirmation:** The worker parses the success response, marks the `BookingTask` as `SUCCESS` (using the standardized system Enums), and alerts the Scheduler.
+4. **OTP Relay Pipeline & Tiered Concurrency Locking:**
+   - **Gerry's GVCW SMS Format:** The SMS OTP received from the portal follows a standardized template:
+     `GERRYS - This OTP number is valid for 5 mins. Please do not share this with anyone. The OTP for your GVCW Appointment is: 55613`
+   - **Configurable Dynamic Regex:** The Control Plane stores the extraction pattern in `SystemSetting` (`key="otp.regex_pattern"`), defaulting to `r'The OTP for your GVCW Appointment is:\s*(\d{4,8})|\b\d{5,6}\b'`. Admins can update this pattern dynamically from the UI if the portal SMS wording shifts.
+   - **Tiered Concurrency Strategy (Handling Shared vs. Unique SIMs):**
+     - **Level 1 (Sequential Mutex per PortalAccount / SIM):** In agency operations, each `PortalAccount` is linked to a physical SIM (`phone_number`). If multiple queue applicants are scheduled under the same account or share the same phone number, the Scheduler strictly enforces **sequential execution** (1 active booking lease at a time) to prevent simultaneous OTP collisions on the same device.
+     - **Level 2 (Parallel Execution across Unique SIMs):** If an agency maintains multiple `PortalAccount`s on distinct physical SIMs, the Scheduler dispatches and leases multiple `BookingTask`s simultaneously to be fulfilled in **parallel** by dedicated Booker containers.
+   - **OTP Delivery:** The SMS gateway forwards incoming messages to `POST /api/v1/webhooks/otp`. The Control Plane maps the OTP to the active `BookingTask` via recipient phone number, and the Booker worker retrieves it via `GET /api/v1/worker/booking-tasks/{task_id}/otp`.
+5. **Final Confirmation:** The worker parses the success response, marks the `BookingTask` as `SUCCESS` (using standardized system Enums), and alerts the Scheduler.
+
+### Domain Operating Constraints
+- **GVC Greece Type D (Code 26 - Seasonal/Dependent Employment):**
+  - **Operating Window:** Type D appointment slots on the Greek portal are exclusively available for **Thursday and Friday only**.
+  - **Scraper Optimization:** Workers filter target monitoring dates to Thursdays and Fridays, while maintaining 1 periodic canary check on non-operating weekdays to confirm portal policy hasn't changed.
 
 ---
 

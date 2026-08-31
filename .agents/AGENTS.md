@@ -71,7 +71,11 @@ Whenever a new operational event, technical term, scheduling decision, or error 
 ---
 *Always mirror sprint planning artifacts to `.ai/transient/handoffs/` when closing out a sprint.*
 
-## 8. Deployment & Migrations Constraints
+## 8. Deployment & Architecture Isolation Constraints (Strict Staging / Production Separation)
+- **Architectural Divergence & Merge Ban:** Staging operates completely separately and independently from Production. Due to fundamental structural divergence (Execution Plane Abstraction, Adapter Factory, Multi-Provider Architecture, and Staging DB migrations `014`, `015`, `e093ad7b8be7`), **NO changes from staging may EVER be merged into production** until the entire system architecture work, multi-portal alignment, and end-to-end booking lifecycle have been fully proven and validated on staging, followed by explicit manual approval from the user.
+- **Auto-Booking / Execution Code:** Any changes related to auto-booking (the execution plane) MUST be kept strictly on `staging`. They MUST pass manual verification before pushing to production. NEVER merge or push to production unless 100% confident.
+- **Production Hotfix Policy:** Any emergency hotfixes required for Production must be applied surgically and directly to the Production branch (`feature/prod-july2026` / `feature/prod`), strictly respecting Production's monolithic schema baseline without pulling in Staging dependencies.
+- **Scalable Architecture Branch:** The `feature/scalable-arch` branch MUST be deployed to a completely separate endpoint on the VPS (`scalearch.alamiaconnect.com`). It MUST remain separate from both `staging` and `production` until the new architecture handles at least two portals successfully. Only after successful verification across multiple portals can it be merged into `staging`, and only after explicit manual approval can it go to `production`.
 - **Machine Awareness:** Agents MUST check the `Device name` in their User Context metadata or via hostname.
 - **High-End Local Dev (`DESKTOP-5E6DM1M`):** On this specific machine, agents are AUTHORIZED and ENCOURAGED to run local Docker Compose stacks, execute `alembic` migrations, and build containers locally.
   - **SaaS Backend:** `ttttt/cloud-saas/docker-compose.yml`
@@ -98,3 +102,9 @@ RepoBrain is an AI context optimization engine that runs via Docker (`scripts\up
 - **Do not run the refresh script at the start of every session.** It is resource intensive.
 - Always check `.ai/repobrain_status.md` to verify the last time it was executed.
 - Only run an incremental refresh (`scripts\update_repobrain.ps1`) if significant architectural changes or documentation updates have occurred since the last logged run.
+
+## 12. Alamia TOS MCP Server (AI Internal Tooling)
+The Cloud SaaS exposes a native FastMCP server (`ttttt/cloud-saas/app/mcp_server.py`) mounted at `/mcp` over SSE on the `feature/alamia-tos-mcp` branch (`https://keagent-staging.alamiaconnect.com/mcp/sse`).
+- **Primary Tools:** `get_workers()`, `create_mock_worker()`, `fetch_agent_monitor_logs()`.
+- **Usage Rule:** Agents should utilize these MCP tools for real-time telemetry inspection, worker capability audits, and end-to-end lease verification during development and debugging sessions.
+- **Architecture Reference:** Consult `.ai/permanent/architecture/10-mcp-server-integration.md` for tool specifications and connection instructions.

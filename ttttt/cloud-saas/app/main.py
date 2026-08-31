@@ -590,5 +590,44 @@ def test_push_alert(request: Request, current_user: User = Depends(get_current_u
     return {"status": "ok", "delivered": success_count}
 
 # Mount Static Files (PWA)
+@app.get("/api/admin/agent-monitor-logs")
+def get_agent_monitor_logs(db: Session = Depends(get_db)):
+    from models import EventLog
+    import os
+    logs_dir = os.path.join(os.path.dirname(__file__), "..", "worker_logs")
+    
+    terminal_logs = {}
+    if os.path.exists(logs_dir):
+        for f in os.listdir(logs_dir):
+            if f.endswith(".log"):
+                filepath = os.path.join(logs_dir, f)
+                with open(filepath, "r", encoding="utf-8", errors="replace") as lf:
+                    lines = lf.readlines()
+                    terminal_logs[f] = "".join(lines[-150:])
+    
+    recent_db_logs = db.query(EventLog).order_by(EventLog.created_at.desc()).limit(100).all()
+    db_logs_out = []
+    for log in recent_db_logs:
+        db_logs_out.append({
+            "worker_id": log.worker_id,
+            "event_type": log.event_type,
+            "payload": log.payload,
+            "created_at": str(log.created_at)
+        })
+        
+    return {
+        "terminal_logs": terminal_logs,
+        "db_logs": db_logs_out
+    }
+
 static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+try:
+    from mcp_server import mcp
+    # Get the Starlette app configured for SSE
+    mcp_app = mcp.sse_app("/mcp")
+    app.mount("/mcp", mcp_app)
+    print("Mounted FastMCP at /mcp")
+except Exception as e:
+    print(f"Failed to mount FastMCP: {e}")
