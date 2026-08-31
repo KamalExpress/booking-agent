@@ -138,13 +138,30 @@ class OperatorAgent:
         return self.network_logs
 
     def load_session(self):
-        import json
+        import json, pickle
         if os.path.exists(self.cookie_file):
             try:
-                with open(self.cookie_file, 'r', encoding='utf-8') as f:
-                    cookies_dict = json.load(f)
-                    self.session.cookies.update(cookies_dict)
-                logging.info("Loaded previous session cookies from file.")
+                saved_data = None
+                try:
+                    with open(self.cookie_file, 'r', encoding='utf-8') as f:
+                        saved_data = json.load(f)
+                except (UnicodeDecodeError, json.JSONDecodeError):
+                    with open(self.cookie_file, 'rb') as f:
+                        saved_data = pickle.load(f)
+
+                if isinstance(saved_data, dict):
+                    if "cookies" in saved_data:
+                        self.session.cookies.update(saved_data.get("cookies", {}))
+                        token = saved_data.get("token")
+                        if token:
+                            self.token = token
+                            self.session.headers["Authorization"] = f"Bearer {token}"
+                            logging.info("Loaded previous session cookies and JWT Bearer token from file.")
+                        else:
+                            logging.info("Loaded previous session cookies from file.")
+                    else:
+                        self.session.cookies.update(saved_data)
+                        logging.info("Loaded previous session cookies from file.")
             except Exception as e:
                 logging.warning(f"Could not load previous session: {e}")
 

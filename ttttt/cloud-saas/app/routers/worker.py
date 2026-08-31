@@ -283,10 +283,14 @@ def complete_assignment(
 @router.post("/assignments/{assignment_id}/fail")
 def fail_assignment(
     assignment_id: int,
+    req: Optional[dict] = None,
     worker: WorkerNode = Depends(verify_worker_hmac),
     lease_service: LeaseService = Depends(get_lease_service)
 ):
-    lease_service.fail_lease(worker.worker_id, assignment_id)
+    reason = None
+    if req and isinstance(req, dict):
+        reason = req.get("reason")
+    lease_service.fail_lease(worker.worker_id, assignment_id, reason=reason)
     return {"status": "ok"}
 
 @router.post("/stream-logs")
@@ -484,6 +488,40 @@ def submit_logs(
                 create_challenge(ch_req, db)
             except Exception as ch_err:
                 print(f"Error creating OTP challenge from log event: {ch_err}")
+
+    elif req.event_type in ["LOGIN_FAILED", "PROXY_BANNED", "LOGIN_EXCEPTION"] or (req.event_type == "LEASE_RESULT" and req.payload and req.payload.get("status") == "FAILED"):
+        reason = ""
+        if req.payload and isinstance(req.payload, dict):
+            reason = req.payload.get("reason") or req.payload.get("error") or ""
+            
+        if req.assignment_id:
+            asm = db.query(Assignment).filter(Assignment.id == req.assignment_id).first()
+            if asm and asm.status == "Active":
+                recent_fails = db.query(EventLog).filter(
+                    EventLog.assignment_id == req.assignment_id,
+                    EventLog.event_type.in_(["LEASE_FAILED", "LOGIN_FAILED", "PROXY_BANNED", "LOGIN_EXCEPTION", "LEASE_RESULT"]),
+                    EventLog.created_at >= datetime.utcnow() - timedelta(minutes=15)
+                ).count()
+                
+                if recent_fails >= 2:
+                    asm.status = "Paused"
+                    lease_service.cancel_active_leases([asm.id])
+                    
+                    is_proxy_407 = "407" in str(reason) or "tunnel" in str(reason).lower() or "proxy" in str(reason).lower()
+                    if is_proxy_407:
+                        push_title = "[OPERATIONAL ALERT] Scraping Paused: Proxy Quota/Auth Failure"
+                        push_body = (
+                            f"Scraping halted for Center {asm.visa_center} due to repeated proxy tunnel failures (HTTP 407). "
+                            f"Likely Cause: Decodo/proxy data quota exhausted or credentials changed. "
+                            f"Action Required: Top up proxy data, update proxy in Settings > Proxies, then unpause the assignment."
+                        )
+                    else:
+                        push_title = "[OPERATIONAL ALERT] Scraping Paused: Repeated Failures"
+                        push_body = (
+                            f"Scraping halted for Center {asm.visa_center} after repeated worker failures ({reason or 'Login failed'}). "
+                            f"Action Required: Check portal account credentials and unpause the assignment."
+                        )
+                    send_push_notification(db, push_title, push_body, visa_center_id=asm.visa_center)
 
     db.commit()
     return {"status": "ok"}

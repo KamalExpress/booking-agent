@@ -165,8 +165,10 @@ class SlotMonitorEngine(threading.Thread):
                 self.api.log_event(assignment_id, "LOGIN_EXCEPTION", "error", {"username": account["username"], "error": str(e)})
             
             if not login_success:
-                logging.error("Login failed or blocked. Discarding assignment lease.")
-                self.api.report_lease_result(assignment_id, "FAILED", "Login failed or proxy blocked")
+                logging.error("Login failed or blocked. Backing off for 30s before next lease attempt...")
+                self.api.report_lease_result(assignment_id, "FAILED", "Proxy tunnel error (HTTP 407) or login failed")
+                import time
+                time.sleep(30)
                 return
                 
             self.api.log_event(assignment_id, "LOGIN_SUCCESS", "info", {"username": account["username"]})

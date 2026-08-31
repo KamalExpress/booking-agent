@@ -204,7 +204,7 @@ class SaaSClient:
     def report_lease_result(self, assignment_id: int, status: str, reason: str = ""):
         self.log_event(assignment_id, "LEASE_RESULT", "info" if status == "COMPLETED" else "error", {"status": status, "reason": reason})
         if status == "FAILED":
-            self._request("POST", f"/api/v1/worker/assignments/{assignment_id}/fail")
+            self._request("POST", f"/api/v1/worker/assignments/{assignment_id}/fail", {"reason": reason})
         else:
             self.complete_assignment(assignment_id)
 
