@@ -53,9 +53,9 @@ def get_worker_logs(worker_id: str, limit: int = 10, since_minutes: int = 15, un
     return caps.get_worker_logs(worker_id=worker_id, limit=limit, since_minutes=since_minutes, until_minutes=until_minutes)
 
 @mcp.tool()
-def get_available_slots(visa_center: str = "", days: int = 7, limit: int = 10) -> str:
+def get_available_slots(visa_center: str = "", portal: str = "", days: int = 7, limit: int = 10) -> str:
     """Retrieve active open appointment slots or recent historical slots discovered by scraping workers."""
-    return caps.get_available_slots(visa_center=visa_center, days=days, limit=limit)
+    return caps.get_available_slots(visa_center=visa_center, portal=portal, days=days, limit=limit)
 
 @mcp.tool()
 def get_proxy_health() -> str:
@@ -73,9 +73,9 @@ def unlease_resource(resource_type: str, resource_id: int) -> str:
     return caps.unlease_resource(resource_type=resource_type, resource_id=resource_id)
 
 @mcp.tool()
-def get_portal_health_summary() -> str:
-    """Get health scores, statuses, and cooldowns for all accounts and proxies with schema-safe lookups."""
-    return caps.get_portal_health_summary()
+def get_portal_health_summary(portal: str = "") -> str:
+    """Get comprehensive system and portal health diagnostics, worker errors, and actionable recommendations."""
+    return caps.get_portal_health_summary(portal=portal)
 
 @mcp.tool()
 def trigger_maintenance_cycle() -> str:

@@ -154,7 +154,13 @@ def get_worker_logs(
 # 2. Slots Capabilities
 # ---------------------------------------------------------------------------
 
-def get_available_slots(visa_center: Optional[str] = None, days: Optional[int] = 7, limit: int = 10, db: Optional[Session] = None) -> str:
+def get_available_slots(
+    visa_center: Optional[str] = None,
+    portal: Optional[str] = None,
+    days: Optional[int] = 7,
+    limit: int = 10,
+    db: Optional[Session] = None
+) -> str:
     """Retrieve active open appointment slots or recent historical slots discovered by scraping workers."""
     sdb = db or SessionLocal()
     try:
@@ -166,14 +172,20 @@ def get_available_slots(visa_center: Optional[str] = None, days: Optional[int] =
         )
         if visa_center and str(visa_center).strip():
             active_query = active_query.filter(SlotAvailability.visa_center.ilike(f"%{str(visa_center).strip()}%"))
+        if portal and str(portal).strip():
+            active_query = active_query.join(Assignment, SlotAvailability.assignment_id == Assignment.id, isouter=True).filter(
+                Assignment.provider.ilike(f"%{str(portal).strip()}%")
+            )
             
         active_slots = active_query.order_by(SlotAvailability.created_at.desc()).limit(limit).all()
         
         lines = []
+        portal_msg = f" for portal '{portal}'" if portal else ""
         center_msg = f" for center '{visa_center}'" if visa_center else " across all centers"
+        qualifier = f"{portal_msg}{center_msg}" if portal_msg else center_msg
         
         if active_slots:
-            lines.append(f"Found {len(active_slots)} ACTIVE open slot window(s){center_msg}:")
+            lines.append(f"Found {len(active_slots)} ACTIVE open slot window(s){qualifier}:")
             for s in active_slots:
                 times = []
                 if isinstance(s.slots_data, list):
@@ -182,7 +194,7 @@ def get_available_slots(visa_center: Optional[str] = None, days: Optional[int] =
                 found_age = (datetime.utcnow() - s.created_at).total_seconds() if s.created_at else None
                 lines.append(f"- Center {s.visa_center} on {s.date}{time_str} - Found by {s.found_by or 'worker'} ({format_human_age(found_age)})")
         else:
-            lines.append(f"No currently active appointment slots available{center_msg}.")
+            lines.append(f"No currently active appointment slots available{qualifier}.")
             
         # 2. Check historical discoveries in the last N days
         lookback_days = days if (days and days > 0) else 7
@@ -193,13 +205,17 @@ def get_available_slots(visa_center: Optional[str] = None, days: Optional[int] =
         )
         if visa_center and str(visa_center).strip():
             hist_query = hist_query.filter(SlotAvailability.visa_center.ilike(f"%{str(visa_center).strip()}%"))
+        if portal and str(portal).strip():
+            hist_query = hist_query.join(Assignment, SlotAvailability.assignment_id == Assignment.id, isouter=True).filter(
+                Assignment.provider.ilike(f"%{str(portal).strip()}%")
+            )
             
         hist_slots = hist_query.order_by(SlotAvailability.created_at.desc()).limit(limit).all()
         active_ids = {s.id for s in active_slots}
         past_slots = [s for s in hist_slots if s.id not in active_ids]
         
         if past_slots:
-            lines.append(f"\nHistorical Slot Discoveries in the last {lookback_days} days{center_msg}:")
+            lines.append(f"\nHistorical Slot Discoveries in the last {lookback_days} days{qualifier}:")
             for s in past_slots:
                 times = []
                 if isinstance(s.slots_data, list):
@@ -208,7 +224,7 @@ def get_available_slots(visa_center: Optional[str] = None, days: Optional[int] =
                 age_val = (datetime.utcnow() - s.created_at).total_seconds() if s.created_at else None
                 lines.append(f"- Center {s.visa_center} on {s.date}{time_str} - Discovered by {s.found_by or 'worker'} ({format_human_age(age_val)}, status: {s.status})")
         elif not active_slots:
-            lines.append(f"No historical slots were discovered in the last {lookback_days} days{center_msg} either.")
+            lines.append(f"No historical slots were discovered in the last {lookback_days} days{qualifier} either.")
             
         return "\n".join(lines)
     finally:
@@ -266,13 +282,14 @@ def get_active_leases(limit: int = 15, db: Optional[Session] = None) -> str:
         if not db: sdb.close()
 
 
-def get_portal_health_summary(db: Optional[Session] = None) -> str:
+def get_portal_health_summary(portal: Optional[str] = None, db: Optional[Session] = None) -> str:
     """Comprehensive system health diagnostics, stale scraping checks, worker errors, and actionable recommendations."""
     sdb = db or SessionLocal()
     try:
         from datetime import timedelta
         now = datetime.utcnow()
-        lines = ["=== TRAVELOS OPERATIONAL HEALTH REPORT ==="]
+        title = f"=== TRAVELOS OPERATIONAL HEALTH REPORT (PORTAL: {portal.upper()}) ===" if portal else "=== TRAVELOS OPERATIONAL HEALTH REPORT ==="
+        lines = [title]
         recommendations = []
         
         # 1. Scraping Freshness & Last Check Inspection
@@ -280,9 +297,10 @@ def get_portal_health_summary(db: Optional[Session] = None) -> str:
             EventLog.event_type.in_(['SLOT_FOUND', 'NO_SLOTS_FOUND', 'LEASE_COMPLETED', 'LOGIN_SUCCESS'])
         ).order_by(EventLog.created_at.desc()).first()
         
-        last_asm = sdb.query(Assignment).filter(
-            Assignment.last_checked.isnot(None)
-        ).order_by(Assignment.last_checked.desc()).first()
+        asm_query = sdb.query(Assignment).filter(Assignment.last_checked.isnot(None))
+        if portal and str(portal).strip():
+            asm_query = asm_query.filter(Assignment.provider.ilike(f"%{str(portal).strip()}%"))
+        last_asm = asm_query.order_by(Assignment.last_checked.desc()).first()
         
         check_times = [t for t in [last_check_event.created_at if last_check_event else None, last_asm.last_checked if last_asm else None] if t]
         last_check_time = max(check_times) if check_times else None
@@ -305,7 +323,10 @@ def get_portal_health_summary(db: Optional[Session] = None) -> str:
         err_w = sum(1 for w in workers if w.status == "Error")
 
         # 3. Portal Accounts & Proxies
-        accounts = sdb.query(PortalAccount).all()
+        acc_query = sdb.query(PortalAccount)
+        if portal and str(portal).strip():
+            acc_query = acc_query.filter(PortalAccount.provider.ilike(f"%{str(portal).strip()}%"))
+        accounts = acc_query.all()
         proxies = sdb.query(Proxy).all()
         acc_counts = {}
         for a in accounts:
@@ -614,6 +635,11 @@ def execute_capability(tool_name: str, args: Dict[str, Any], db: Optional[Sessio
                 for k, v in args.items():
                     if any(c in str(k).lower() for c in ["center", "vac"]):
                         call_args["visa_center"] = str(v)
+                        break
+            elif p_name == "portal":
+                for k, v in args.items():
+                    if any(c in str(k).lower() for c in ["portal", "provider", "country"]):
+                        call_args["portal"] = str(v)
                         break
                 
         return str(fn(**call_args))

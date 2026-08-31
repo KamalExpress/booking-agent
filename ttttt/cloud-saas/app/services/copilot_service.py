@@ -68,9 +68,47 @@ class TravelOSMCPClient:
     @classmethod
     async def call_tool(cls, name: str, arguments: Dict[str, Any]) -> str:
         """MCP tools/call: execute a tool through the FastMCP server dispatch pipeline."""
-        # Enforce security barrier: AI cannot invoke non-whitelisted tools
-        if name not in cls.AI_ACCESSIBLE_TOOLS:
-            return f"Access Denied: Tool '{name}' is restricted and cannot be invoked by the AI Copilot."
+        # 1. Resolve common hallucinated / invented tool aliases to actual MCP tools
+        TOOL_ALIAS_MAP = {
+            "get_worker_healthy": "get_portal_health_summary",
+            "get_worker_health": "get_portal_health_summary",
+            "check_worker_healthy": "get_portal_health_summary",
+            "check_worker_health": "get_portal_health_summary",
+            "worker_health": "get_portal_health_summary",
+            "worker_healthy": "get_portal_health_summary",
+            "worker_status": "get_workers",
+            "check_workers": "get_workers",
+            "list_workers": "get_workers",
+            "get_all_workers": "get_workers",
+            "check_proxies": "get_proxy_health",
+            "proxy_status": "get_proxy_health",
+            "get_proxy_status": "get_proxy_health",
+            "check_slots": "get_available_slots",
+            "get_slots": "get_available_slots",
+            "check_health": "get_portal_health_summary",
+            "system_health": "get_portal_health_summary",
+            "get_health": "get_portal_health_summary",
+            "get_system_health": "get_portal_health_summary",
+            "portal_status": "get_portal_health_summary",
+            "get_portal_status": "get_portal_health_summary"
+        }
+        canonical_name = TOOL_ALIAS_MAP.get(name.lower(), name)
+        
+        # 2. If still not exact match, fall back to closest matching category
+        if canonical_name not in cls.AI_ACCESSIBLE_TOOLS:
+            n_lower = name.lower()
+            if "worker" in n_lower:
+                canonical_name = "get_workers" if "log" not in n_lower else "get_worker_logs"
+            elif "slot" in n_lower:
+                canonical_name = "get_available_slots"
+            elif "proxy" in n_lower:
+                canonical_name = "get_proxy_health"
+            elif "health" in n_lower or "portal" in n_lower:
+                canonical_name = "get_portal_health_summary"
+            else:
+                return f"Access Denied: Tool '{name}' is unknown or restricted. Please choose from available operational tools."
+                
+        name = canonical_name
             
         try:
             from mcp_server import mcp
@@ -328,10 +366,11 @@ class CopilotService:
         return None
 
     @staticmethod
-    def _validate_grounding(candidate_reply: str, observations: List[str], required_evidence: Optional[str], time_window: Tuple[Optional[int], Optional[int]]) -> str:
+    def _validate_grounding(candidate_reply: str, observations: List[str], required_evidence: Optional[str], time_window: Tuple[Optional[int], Optional[int]], user_query: str = "") -> str:
         """Validate candidate LLM reply against observed facts, rejecting hallucinations, speculative causes, and contradictions."""
         combined_obs = " ".join(observations)
         reply = candidate_reply.strip()
+        user_lower = user_query.lower() if user_query else ""
         
         # Rule 1: Negative Evidence Guard (The Killer Test)
         # If observation states [NO_ERRORS_RECORDED] or contains no errors for requested time window:
@@ -354,8 +393,45 @@ class CopilotService:
                         reasons.append(line.strip()[2:])
                 reason_str = f" ({'; '.join(reasons)})" if reasons else ""
                 return f"TravelOS is currently degraded{reason_str}. Recent worker errors were detected and require attention."
+
+        # Rule 3: Precise Quantified Answers for Binary Worker Fleet Inquiries
+        # Catch questions like "all workers healthy?", "any worker unhealthy?", "are workers online?"
+        fleet_match = re.search(r"\[WORKER FLEET\]\s*(\d+)/(\d+)\s*online\s*(?:\((\d+)\s*in error status\))?", combined_obs)
+        if not fleet_match:
+            total_match = re.search(r"Total Workers:\s*(\d+)", combined_obs)
+            if total_match:
+                t_count = int(total_match.group(1))
+                on_count = combined_obs.count("[Online]")
+                err_count = combined_obs.count("[Error]")
+                online_w, total_w, err_w = on_count, t_count, err_count
+                fleet_match = True
+            else:
+                fleet_match = False
+        else:
+            online_w = int(fleet_match.group(1))
+            total_w = int(fleet_match.group(2))
+            err_w = int(fleet_match.group(3) or 0)
+            
+        if fleet_match:
+            offline_w = max(0, total_w - online_w)
+            # Scenario A: "all workers healthy?" / "are all workers online?" / "are workers healthy?"
+            if any(k in user_lower for k in ["all worker", "all workers", "every worker", "are workers healthy", "are the workers healthy"]):
+                if online_w < total_w or err_w > 0:
+                    err_clause = f"{err_w} are in error status" if err_w > 0 else "None are currently reporting an error"
+                    return f"No. {online_w} of {total_w} workers are online; {offline_w} are offline. {err_clause}."
+                else:
+                    return f"Yes. All {total_w} workers are online and healthy with 0 errors."
+
+            # Scenario B: "any worker unhealthy?" / "is any worker down?" / "any worker in error?" / "any worker failed?"
+            if any(k in user_lower for k in ["any worker unhealthy", "any worker down", "any worker in error", "any worker failed", "is any worker unhealthy", "is any worker down"]):
+                if err_w > 0:
+                    return f"Yes. {err_w} worker(s) are currently in error status ({online_w}/{total_w} online)."
+                elif offline_w > 0:
+                    return f"No workers are currently reporting an error, but {offline_w} of {total_w} workers are offline ({online_w}/{total_w} online)."
+                else:
+                    return f"No. All {total_w} workers are online and healthy with 0 errors."
                 
-        # Rule 3: Strip any leftover ACTION commands from synthesis
+        # Rule 4: Strip any leftover ACTION commands from synthesis
         if reply.startswith("ACTION:") or "action:" in reply.lower():
             return f"Based on live FastMCP telemetry: {observations[-1] if observations else 'Telemetry received.'}"
             
@@ -514,16 +590,29 @@ class CopilotService:
                 "source": "deterministic_hitl"
             }
 
+        # Extract portal/provider from message if present (e.g. "BLS", "GVC", "Italy", "Spain", "TLS", "VFS")
+        extracted_portal = ""
+        for p in ["bls", "gvc", "italy", "spain", "tls", "vfs", "schengen"]:
+            if p in lower_msg:
+                extracted_portal = p.upper()
+                break
+
         # 3. Tier 2: MCP Discovery (tools/list) & Structured Multi-Hop Agent Loop
         now_utc = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
         
         # Step 3.1: Stable System Instructions (Owned by TravelOS Copilot)
         system_rules = (
             "You are Alamia TravelOS Copilot, the operational assistant for TravelOS.\n"
-            "Answer factually and concisely (under 2 sentences).\n"
-            "If operational data is needed, reply ONLY with:\n"
-            "ACTION: <tool_name>(<arguments>)\n"
-            "When an OBSERVATION is given, provide your natural language answer directly. Do not call another action if you already have the answer."
+            "Answer factually, directly, and concisely (under 2 sentences).\n"
+            "You MUST select tools ONLY from the Available MCP Operational Tools list.\n"
+            "Never invent or hallucinate new tool names (e.g. do NOT invent 'get_worker_healthy').\n"
+            "- To check worker health or fleet status: call 'get_portal_health_summary' or 'get_workers'.\n"
+            "- To inspect worker errors/crashes: call 'get_worker_logs'.\n"
+            "- To check appointment slots: call 'get_available_slots'.\n"
+            "- To check proxies: call 'get_proxy_health'.\n"
+            "If no exact matching tool exists, select the closest available tool.\n"
+            "When an OBSERVATION is given, provide your natural language answer directly.\n"
+            "For yes/no questions (e.g. 'all workers healthy?'), start directly with 'Yes' or 'No' followed by exact numbers from the observation."
         )
         
         # Step 3.2: MCP Tool Discovery via FastMCP tools/list
@@ -537,9 +626,9 @@ class CopilotService:
         else:
             for t in mcp_tools:
                 t_name = t["name"].lower()
-                if any(w in q for w in ["worker", "fail", "stuck", "node", "online"]) and "worker" in t_name:
+                if any(w in q for w in ["worker", "fail", "stuck", "node", "online", "healthy", "unhealthy"]) and "worker" in t_name:
                     selected_tools.append(t)
-                elif any(s in q for s in ["slot", "appointment", "date", "islamabad", "lahore"]) and "slot" in t_name:
+                elif any(s in q for s in ["slot", "appointment", "date", "islamabad", "lahore", "spain", "italy", "bls"]) and "slot" in t_name:
                     selected_tools.append(t)
                 elif any(p in q for p in ["proxy", "ip"]) and "proxy" in t_name:
                     selected_tools.append(t)
@@ -608,13 +697,13 @@ class CopilotService:
                             }
                         }
                     elif required_evidence == "slots":
-                        tool_call = {"tool": "get_available_slots", "args": {"visa_center": extracted_center, "days": extracted_days}}
+                        tool_call = {"tool": "get_available_slots", "args": {"visa_center": extracted_center, "portal": extracted_portal, "days": extracted_days}}
                     elif required_evidence == "proxies":
                         tool_call = {"tool": "get_proxy_health", "args": {}}
                     elif required_evidence == "system_health":
-                        tool_call = {"tool": "get_portal_health_summary", "args": {}}
+                        tool_call = {"tool": "get_portal_health_summary", "args": {"portal": extracted_portal}}
                 else:
-                    validated = CopilotService._validate_grounding(model_reply, [last_observation] if last_observation else [], required_evidence, (since_mins, until_mins))
+                    validated = CopilotService._validate_grounding(model_reply, [last_observation] if last_observation else [], required_evidence, (since_mins, until_mins), user_query=message)
                     return {"reply": validated, "status": "ok", "source": "agent_loop" if tool_invoked else "llm"}
                 
             # Execute MCP tools/call
@@ -641,8 +730,13 @@ class CopilotService:
             elif tool_name == "get_available_slots":
                 if "visa_center" not in tool_args and extracted_center:
                     tool_args["visa_center"] = extracted_center
+                if "portal" not in tool_args and extracted_portal:
+                    tool_args["portal"] = extracted_portal
                 if "days" not in tool_args and extracted_days:
                     tool_args["days"] = extracted_days
+            elif tool_name == "get_portal_health_summary":
+                if "portal" not in tool_args and extracted_portal:
+                    tool_args["portal"] = extracted_portal
 
             print(f"[Copilot MCP Client] Hop {iteration + 1}/{CopilotService.MAX_TOOL_ITERATIONS} - tools/call: {tool_name}({tool_args})")
             
@@ -660,6 +754,7 @@ class CopilotService:
             "You are Alamia TravelOS Copilot, the operational assistant for TravelOS.\n"
             "You have completed your operational investigation. Using ONLY the OBSERVATIONS provided above, "
             "provide a concise, direct, and factual explanation to the user in 1-2 sentences. "
+            "For yes/no questions (e.g. 'all workers healthy?'), start directly with 'Yes' or 'No' followed by exact numbers from the observation. "
             "Do NOT speculate, guess, or invent reasons not present in the observation. "
             "Do NOT output any ACTION commands. Provide your normal natural language answer."
         )
@@ -673,8 +768,8 @@ class CopilotService:
         synth_res = CopilotService._call_bitnet(synthesis_messages, max_tokens=150, temperature=0.2)
         if synth_res["status"] == "ok":
             final_reply = synth_res["content"].strip()
-            validated_reply = CopilotService._validate_grounding(final_reply, all_observations, required_evidence, (since_mins, until_mins))
+            validated_reply = CopilotService._validate_grounding(final_reply, all_observations, required_evidence, (since_mins, until_mins), user_query=message)
             return {"reply": validated_reply, "status": "ok", "source": "agent_loop"}
         else:
-            validated_reply = CopilotService._validate_grounding(last_observation, all_observations, required_evidence, (since_mins, until_mins))
+            validated_reply = CopilotService._validate_grounding(last_observation, all_observations, required_evidence, (since_mins, until_mins), user_query=message)
             return {"reply": validated_reply, "status": "ok", "source": "mcp_direct"}
