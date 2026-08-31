@@ -186,11 +186,22 @@ def get_next_assignment(
             return
         
     # Serialize Lease
-    from app.models import Assignment, PortalAccount, BookingTask, Proxy, Applicant
+    from models import Assignment, PortalAccount, BookingTask, Proxy, Applicant
     
-    # Common account info
-    acc = db.query(PortalAccount).filter(PortalAccount.id == next_lease.portal_account_id).first()
-    proxy = db.query(Proxy).filter(Proxy.id == next_lease.proxy_id).first() if next_lease.proxy_id else None
+    # Common account info (handling both dict and Lease model instance)
+    acc_id = getattr(next_lease, 'portal_account_id', None) or (next_lease.get('portal_account_id') if isinstance(next_lease, dict) else None)
+    proxy_id = getattr(next_lease, 'proxy_id', None) or (next_lease.get('proxy_id') if isinstance(next_lease, dict) else None)
+    lease_id = getattr(next_lease, 'id', None) or (next_lease.get('id') or next_lease.get('lease_id') if isinstance(next_lease, dict) else 0)
+    expires_at_val = getattr(next_lease, 'expires_at', None) or (next_lease.get('expires_at') or next_lease.get('expiry') if isinstance(next_lease, dict) else None)
+    if isinstance(expires_at_val, datetime):
+        expiry_str = expires_at_val.isoformat()
+    elif isinstance(expires_at_val, str):
+        expiry_str = expires_at_val
+    else:
+        expiry_str = (datetime.utcnow() + timedelta(minutes=10)).isoformat()
+
+    acc = db.query(PortalAccount).filter(PortalAccount.id == acc_id).first() if acc_id else None
+    proxy = db.query(Proxy).filter(Proxy.id == proxy_id).first() if proxy_id else None
     
     # We provide a unified account struct that merging the Proxy model string 
     proxy_string = proxy.proxy_string if proxy else None
@@ -203,15 +214,17 @@ def get_next_assignment(
     }
     
     res_dict = {
-        "lease_id": next_lease.id,
+        "lease_id": lease_id,
         "scraper_account": account_info,
-        "expiry": next_lease.expires_at.isoformat(),
+        "expiry": expiry_str,
         "heartbeat_interval": 30 # default
     }
     
-    if next_lease.assignment_id:
-        asm = db.query(Assignment).filter(Assignment.id == next_lease.assignment_id).first()
-        res_dict["assignment_context"] = {
+    asm_id = getattr(next_lease, 'assignment_id', None) or (next_lease.get('assignment_id') if isinstance(next_lease, dict) else None)
+    if asm_id:
+        asm = db.query(Assignment).filter(Assignment.id == asm_id).first()
+        if asm:
+            res_dict["assignment_context"] = {
             "id": asm.id,
             "visa_center": asm.visa_center,
             "date_from": asm.date_from,
