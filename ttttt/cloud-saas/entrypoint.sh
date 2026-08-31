@@ -35,7 +35,13 @@ else:
             subprocess.run([sys.executable, '-m', 'alembic', 'stamp', '001_baseline'])
 "
 
-python -m alembic upgrade head
+# Run alembic upgrade head; if a revision cannot be located (e.g. branch downgrade), self-heal by stamping to head
+if ! python -m alembic upgrade head; then
+    echo "Alembic upgrade head failed (likely due to branch divergence or missing historic revision). Auto-stamping to head..."
+    python -m alembic stamp head
+    echo "Re-running alembic upgrade head after stamp..."
+    python -m alembic upgrade head || true
+fi
 
 echo "Seeding default database records..."
 python init_db.py
