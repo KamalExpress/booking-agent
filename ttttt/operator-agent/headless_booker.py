@@ -1,4 +1,4 @@
-import time
+﻿import time
 import logging
 import sys
 import os
@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from api_client import SaaSClient
 from captcha_service import CapSolverService
 from core.gvc_adapter import GVCAdapter
+from core.browser_persona import BrowserPersonaManager
 
 load_dotenv()
 
@@ -15,7 +16,6 @@ class SaaSStreamHandler(logging.Handler):
     def __init__(self, api_client):
         super().__init__()
         self.api_client = api_client
-        # Simple buffer to avoid threading issues in this demo
         self.buffer = []
 
     def emit(self, record):
@@ -29,28 +29,34 @@ class SaaSStreamHandler(logging.Handler):
             pass
 
 class BookerEngine(threading.Thread):
-    def __init__(self, base_url: str):
+    def __init__(self, base_url: str, worker_id: str = None):
         super().__init__(daemon=True)
-        self.api = SaaSClient(base_url, cred_file="booker_creds.txt")
+        self.worker_id = worker_id or os.getenv("WORKER_HOSTNAME", f"booker-{os.getpid()}")
+        self.api = SaaSClient(base_url, cred_file=f"booker_{self.worker_id}_creds.txt")
         self._stop_event = threading.Event()
+        self.persona = BrowserPersonaManager.get_persona_for_worker(self.worker_id)
+        logging.info(f"BookerEngine [{self.worker_id}]: Assigned Browser Persona '{self.persona.persona_id}' (TLS: {self.persona.tls_target})")
 
     def stop(self):
         self._stop_event.set()
 
     def run(self):
-        logging.info("Starting Headless Booker Engine...")
+        logging.info(f"Starting Headless Booker Engine for worker '{self.worker_id}'...")
+        
+        # Initial jitter delay to stagger worker registration
+        self.persona.apply_jitter(multiplier=0.5)
         
         # 1. Register with SaaS as a Booking-capable worker
         registered = False
         for attempt in range(10):
-            if self.api.register(hostname="booker-01", can_scrape=False, can_book=True):
+            if self.api.register(hostname=self.worker_id, can_scrape=False, can_book=True):
                 registered = True
                 break
-            logging.info(f"SaaS not ready yet (Attempt {attempt+1}/10). Retrying in 3 seconds...")
+            logging.info(f"[{self.worker_id}] SaaS not ready yet (Attempt {attempt+1}/10). Retrying in 3 seconds...")
             time.sleep(3)
             
         if not registered:
-            logging.error("Failed to register with SaaS after 10 attempts. Cannot start booker.")
+            logging.error(f"[{self.worker_id}] Failed to register with SaaS after 10 attempts. Cannot start booker.")
             return
             
         # 2. Start Heartbeat thread
@@ -62,13 +68,13 @@ class BookerEngine(threading.Thread):
                 lease, retry_after = self.api.get_next_lease()
                 
                 if not lease:
-                    logging.info(f"No booking tasks available. Sleeping for {retry_after} seconds.")
+                    logging.info(f"[{self.worker_id}] No booking tasks available. Sleeping for {retry_after} seconds.")
                     self._stop_event.wait(retry_after)
                     continue
                     
                 if "booking_task_context" not in lease:
-                    logging.warning("Received a non-booking lease. Completing it immediately to avoid blocking.")
-                    self.api.complete_assignment(lease["lease_id"]) # Assuming lease_id maps to assignment_id for scraper
+                    logging.warning(f"[{self.worker_id}] Received a non-booking lease. Completing it immediately to avoid blocking.")
+                    self.api.complete_assignment(lease["lease_id"])
                     continue
                     
                 # 4. Parse Booking Lease
@@ -78,7 +84,14 @@ class BookerEngine(threading.Thread):
                 visa_center = task["visa_center"]
                 applicant_data = task["applicant_data"]
                 
-                logging.info(f"Received Booking Task #{task_id} for applicant {applicant_data.get('email')} at center {visa_center}.")
+                # Merge slot payload details (periodslotid, time, date) into applicant data
+                slot_payload = task.get("slot_payload") or {}
+                if isinstance(slot_payload, dict):
+                    applicant_data["periodslotid"] = slot_payload.get("periodslotid") or slot_payload.get("id") or applicant_data.get("periodslotid")
+                    applicant_data["target_time"] = slot_payload.get("starttime") or task.get("target_time") or "12:00"
+                    applicant_data["target_date"] = task.get("target_date") or slot_payload.get("date") or "12/08/2026"
+                
+                logging.info(f"[{self.worker_id}] Received Booking Task #{task_id} for applicant {applicant_data.get('email')} (Slot ID: {applicant_data.get('periodslotid')}) at center {visa_center}.")
                 
                 runtime_config = self.api.get_runtime_config() or {}
                 captcha_config = runtime_config.get("captcha", {})
@@ -100,15 +113,15 @@ class BookerEngine(threading.Thread):
                 else:
                     captcha_svc = CapSolverService(api_key=captcha_config.get("api_key", ""), proxy_string=proxy_string)
                 
-                # Instantiate our new unified GVCAdapter!
-                adapter = GVCAdapter(captcha_service=captcha_svc, headless=True, proxy_string=proxy_string)
+                # Instantiate polymorphic GVCAdapter
+                adapter = GVCAdapter(captcha_service=captcha_svc, headless=True, proxy_string=proxy_string, persona=self.persona)
                 
                 # Setup session specific to this account
                 adapter.cookie_file = f"cookies_{account['id']}.pkl"
                 adapter.load_session()
                 
                 # 5. Execute Booking Flow
-                logging.info(f"Logging in to portal for account {account['username']}...")
+                logging.info(f"[{self.worker_id}] Logging in to portal for account {account['username']}...")
                 try:
                     from core.gvc_adapter import WAFBlockedException, LoginFailedException
                 except ImportError:
@@ -119,29 +132,28 @@ class BookerEngine(threading.Thread):
                 try:
                     agent_login_success = adapter.login(account["username"], account["password"])
                 except WAFBlockedException as e:
-                    logging.warning(f"Worker Engine hit WAF block during login: {e}")
+                    logging.warning(f"[{self.worker_id}] Worker Engine hit WAF block during login: {e}")
                     self.api.log_event(task_id, "PROXY_BANNED", "error", {"reason": str(e)})
                 except LoginFailedException as e:
-                    logging.error(f"Worker Engine login failed due to invalid credentials: {e}")
+                    logging.error(f"[{self.worker_id}] Worker Engine login failed due to invalid credentials: {e}")
                     self.api.log_event(task_id, "LOGIN_FAILED", "error", {"reason": str(e)})
                 except Exception as e:
-                    logging.error(f"Worker Engine encountered error during booking: {e}")
+                    logging.error(f"[{self.worker_id}] Worker Engine encountered error during booking: {e}")
                     self.api.log_event(task_id, "BOOKING_EXCEPTION", "error", {"error": str(e)})
 
                 try:
                     if agent_login_success:
-                        
-                        logging.info("Injecting applicant data...")
+                        logging.info(f"[{self.worker_id}] Injecting applicant data...")
                         adapter.inject_applicant_data(applicant_data, visa_center)
                         
-                        logging.info("Solving Pre-OTP booking captcha...")
+                        logging.info(f"[{self.worker_id}] Solving Pre-OTP booking captcha...")
                         if adapter.pass_pre_otp_captcha():
                         
-                            logging.info("Triggering OTP generation...")
+                            logging.info(f"[{self.worker_id}] Triggering OTP generation...")
                             adapter.request_otp()
                             
-                            # Polling the SaaS for the OTP code via our new endpoint
-                            logging.info("Polling SaaS for intercepted OTP...")
+                            # Polling the SaaS for the OTP code via our endpoint
+                            logging.info(f"[{self.worker_id}] Polling SaaS for intercepted OTP...")
                             otp_code = None
                             for _ in range(24): # 2 minutes max
                                 otp_code = self.api.get_booking_task_otp(task_id)
@@ -150,43 +162,36 @@ class BookerEngine(threading.Thread):
                                 time.sleep(5)
                                 
                             if otp_code:
-                                logging.info(f"OTP retrieved: {otp_code}. Finalizing booking...")
+                                logging.info(f"[{self.worker_id}] OTP retrieved: {otp_code}. Finalizing booking...")
                                 success = adapter.submit_otp_and_book(otp_code)
                                 
                                 if success:
+                                    logging.info(f"[{self.worker_id}] Booking SUCCESS for Task #{task_id}!")
                                     self.api.log_event(task_id, "BOOKING_SUCCESS", "info", {"task_id": task_id, "status": "Success"})
-                                    # Complete lease
                                     self.api.complete_assignment(task_id)
                                 else:
                                     self.api.log_event(task_id, "BOOKING_FAILED", "error", {"reason": "Final submission failed"})
                             else:
-                                logging.error("Failed to retrieve OTP from SaaS within timeout.")
+                                logging.error(f"[{self.worker_id}] Failed to retrieve OTP from SaaS within timeout.")
                                 self.api.log_event(task_id, "BOOKING_FAILED", "error", {"reason": "OTP timeout"})
                         else:
                             self.api.log_event(task_id, "BOOKING_FAILED", "error", {"reason": "Pre-OTP Captcha failed"})
-                    else:
-                        if not agent_login_success:
-                            # event already logged in the except block above, but just in case
-                            pass
                 except Exception as e:
-                    logging.error(f"Worker Engine encountered error during post-login booking flow: {e}")
+                    logging.error(f"[{self.worker_id}] Error during post-login booking flow: {e}")
                     self.api.log_event(task_id, "BOOKING_EXCEPTION", "error", {"error": str(e)})
-                finally:
-                    # Don't complete the assignment if it failed so it can be retried by another worker
-                    pass
                     
-                # Short delay before picking up next lease
-                time.sleep(5)
+                time.sleep(3)
                 
             except Exception as e:
-                logging.error(f"Worker Engine encountered fatal error: {e}")
-                time.sleep(10)
+                logging.error(f"[{self.worker_id}] Fatal error: {e}")
+                time.sleep(5)
 
 if __name__ == '__main__':
     base_url = os.getenv("SAAS_BASE_URL", "http://localhost:8000")
-    print(f"Starting Headless Booker Node connecting to {base_url}...")
+    worker_id = os.getenv("WORKER_HOSTNAME", f"booker-{os.getpid()}")
+    print(f"Starting Headless Booker Node [{worker_id}] connecting to {base_url}...")
     
-    engine = BookerEngine(base_url)
+    engine = BookerEngine(base_url, worker_id=worker_id)
     
     log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     formatter = logging.Formatter(log_format)

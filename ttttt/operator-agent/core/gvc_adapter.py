@@ -1,8 +1,10 @@
-import logging
+﻿import logging
 import time
 import os
 import json
+from typing import Optional
 from core.portal_adapter import BasePortalAdapter
+from core.browser_persona import BrowserPersona, BrowserPersonaManager
 from captcha_service import CaptchaService
 
 class WAFBlockedException(Exception):
@@ -13,13 +15,16 @@ class LoginFailedException(Exception):
 
 
 class GVCAdapter(BasePortalAdapter):
-    def __init__(self, captcha_service: CaptchaService, headless: bool = True, proxy_string: str = None):
+    def __init__(self, captcha_service: CaptchaService, headless: bool = True, proxy_string: str = None, persona: Optional[BrowserPersona] = None):
         super().__init__(headless)
         self.proxy_string = proxy_string
+        self.persona = persona or BrowserPersonaManager.get_random_persona()
+        self.logged_in_user = None
+        
         try:
             from curl_cffi import requests as c_requests
-            self.session = c_requests.Session(impersonate="chrome120")
-            logging.info("GVCAdapter: Using curl_cffi Chrome impersonation.")
+            self.session = c_requests.Session(impersonate=self.persona.tls_target)
+            logging.info(f"GVCAdapter: Initialized polymorphic curl_cffi session with persona '{self.persona.persona_id}' (TLS: {self.persona.tls_target}).")
         except ImportError:
             import requests
             from requests.adapters import HTTPAdapter
@@ -40,23 +45,15 @@ class GVCAdapter(BasePortalAdapter):
             self.session.proxies = {"http": proxy_string, "https": proxy_string}
             
         target_domain = os.getenv('BOOKING_PORTAL_URL', "https://pk-gr-services.gvcworld.eu")
-        self.session.headers.update({
-            "Accept": "application/json, text/plain, */*",
-            "Accept-Language": "en-US,en;q=0.9",
-            "Connection": "keep-alive",
-            "Origin": target_domain,
-            "Referer": f"{target_domain}/?lang=en_US",
-            "X-Requested-With": "XMLHttpRequest",
-            "Sec-Fetch-Dest": "empty",
-            "Sec-Fetch-Mode": "cors",
-            "Sec-Fetch-Site": "same-origin"
-        })
-        
         self.base_url = target_domain
         self.sitekey = os.getenv('TARGET_SITEKEY', '6LcnlCoUAAAAAJLjWXXaByTFyuOLf4K0gGu5r3d2')
         self.captcha_service = captcha_service
         self.applicant_data_cache = {}
         self.visa_center_cache = None
+        self.booking_captcha_token = ""
+        
+        # Apply polymorphic default headers
+        self.session.headers.update(self.persona.get_default_headers())
         
         self.cookie_file = "gvc-booker-session.pkl"
         self.load_session()
@@ -95,12 +92,12 @@ class GVCAdapter(BasePortalAdapter):
                 )
                 
                 context_kwargs = {
-                    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                    "viewport": {'width': 1280, 'height': 720},
+                    "user_agent": self.persona.user_agent,
+                    "viewport": {'width': self.persona.viewport_width, 'height': self.persona.viewport_height},
                     "extra_http_headers": {
-                        "sec-ch-ua": '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
-                        "sec-ch-ua-mobile": "?0",
-                        "sec-ch-ua-platform": '"macOS"'
+                        "sec-ch-ua": self.persona.sec_ch_ua,
+                        "sec-ch-ua-mobile": self.persona.sec_ch_ua_mobile,
+                        "sec-ch-ua-platform": f'"{self.persona.sec_ch_ua_platform}"'
                     }
                 }
                 
@@ -190,13 +187,18 @@ class GVCAdapter(BasePortalAdapter):
         if self.is_authenticated():
             return True
             
-        logging.info(f"GVCAdapter: Attempting login for {username}...")
+        logging.info(f"GVCAdapter: Attempting login for {username} with persona '{self.persona.persona_id}'...")
+        
+        # Staggered pre-flight jitter
+        self.persona.apply_jitter(multiplier=0.5)
+        
         try:
             preflight_headers = {
                 "Sec-Fetch-Dest": "document",
                 "Sec-Fetch-Mode": "navigate",
-                "Sec-Fetch-Site": "same-origin",
-                "X-Requested-With": None
+                "Sec-Fetch-Site": "none",
+                "Sec-Fetch-User": "?1",
+                "Upgrade-Insecure-Requests": "1"
             }
             self.session.get(f"{self.base_url}/?lang=en_US", headers=preflight_headers, timeout=15)
         except Exception as e:
@@ -221,6 +223,14 @@ class GVCAdapter(BasePortalAdapter):
                 response = self.session.post(url, json=payload, timeout=30)
                 if response.status_code == 200:
                     logging.info("GVCAdapter: Login successful!")
+                    try:
+                        res_json = response.json()
+                        self.logged_in_user = res_json.get("user") or res_json
+                        token = res_json.get("token") or res_json.get("accessToken")
+                        if token:
+                            self.session.headers["Authorization"] = f"Bearer {token}"
+                    except Exception:
+                        pass
                     self.save_session()
                     return True
                 elif response.status_code in [403, 502, 503, 504, 522]:
@@ -253,7 +263,7 @@ class GVCAdapter(BasePortalAdapter):
     def inject_applicant_data(self, applicant_data: dict, visa_center: str) -> bool:
         logging.info("GVCAdapter: Caching applicant data for final injection.")
         self.applicant_data_cache = applicant_data
-        self.visa_center_cache = visa_center
+        self.visa_center_cache = str(visa_center)
         return True
 
     def pass_pre_otp_captcha(self) -> bool:
@@ -263,13 +273,18 @@ class GVCAdapter(BasePortalAdapter):
 
     def request_otp(self) -> bool:
         logging.info("GVCAdapter: Triggering OTP via API...")
-        phone = self.applicant_data_cache.get('phone_number', '')
+        phone = self.applicant_data_cache.get('phone_number') or self.applicant_data_cache.get('phone', '')
         prefix_id = self.applicant_data_cache.get('phone_prefix_id', '197')
         if not phone:
             logging.error("GVCAdapter: Cannot request OTP, no phone number available.")
             return False
             
-        url = f"{self.base_url}/api/v1/onetimepassword/sendOtpBookAppointment/{phone}/{prefix_id}"
+        # Strip leading zeros
+        phone_clean = str(phone).lstrip('0')
+        url = f"{self.base_url}/api/v1/onetimepassword/sendOtpBookAppointment/{phone_clean}/{prefix_id}"
+        
+        # Micro-jitter before OTP request
+        self.persona.apply_jitter(multiplier=0.4)
         
         try:
             response = self.session.post(url, timeout=30)
@@ -284,35 +299,60 @@ class GVCAdapter(BasePortalAdapter):
             return False
 
     def submit_otp_and_book(self, otp_code: str) -> bool:
-        logging.info("GVCAdapter: Submitting OTP and final booking payload...")
-        url = f"{self.base_url}/appointments/add"
+        logging.info(f"GVCAdapter: Submitting OTP and final booking payload with persona '{self.persona.persona_id}'...")
         
-        payload = {
-            "vac": self.visa_center_cache,
-            "type": os.getenv('APPOINTMENT_TYPE', '26'),
-            "bookingfor": os.getenv('BOOKING_FOR', '0'),
-            "otp": otp_code,
-            "g-recaptcha-response": getattr(self, 'booking_captcha_token', '')
+        # Primary HAR-verified endpoint
+        api_url = f"{self.base_url}/api/v1/appointments"
+        
+        # Extract applicant fields
+        phone = self.applicant_data_cache.get('phone_number') or self.applicant_data_cache.get('phone', '')
+        phone_clean = str(phone).lstrip('0')
+        prefix_id = str(self.applicant_data_cache.get('phone_prefix_id', '197'))
+        email = self.applicant_data_cache.get('email', '')
+        
+        # Construct HAR-compliant applicant item
+        periodslotid = str(self.applicant_data_cache.get('periodslotid') or self.applicant_data_cache.get('slot_id') or '2528256')
+        target_date = self.applicant_data_cache.get('target_date', '12/08/2026')
+        target_time = self.applicant_data_cache.get('target_time', '12:00')
+        app_type = str(os.getenv('APPOINTMENT_TYPE', self.applicant_data_cache.get('type', '26')))
+        vac_id = str(self.visa_center_cache or '137')
+        
+        applicant_obj = {
+            "surname": self.applicant_data_cache.get('surname', 'APPLICANT'),
+            "firstname": self.applicant_data_cache.get('firstname', 'NAME'),
+            "dateofbirth": self.applicant_data_cache.get('dateofbirth') or self.applicant_data_cache.get('dob', '01/01/1990'),
+            "passportnumber": self.applicant_data_cache.get('passportnumber') or self.applicant_data_cache.get('passport', 'AB1234567'),
+            "traveldocumentvaliduntil": self.applicant_data_cache.get('passport_expiry') or self.applicant_data_cache.get('passport_exp', '01/01/2030'),
+            "gender": {"id": str(self.applicant_data_cache.get('gender_id', '2'))},
+            "nationality": {"id": str(self.applicant_data_cache.get('nationality_id', '197'))},
+            "periodslotid": periodslotid
         }
         
-        if self.applicant_data_cache:
-            gvc_payload = {
-                "email": self.applicant_data_cache.get('email', ''),
-                "phonenumberprefix[id]": self.applicant_data_cache.get('phone_prefix_id', '1'),
-                "phonenumber": self.applicant_data_cache.get('phone_number', ''),
-                "applicants[][surname]": self.applicant_data_cache.get('surname', ''),
-                "applicants[][firstname]": self.applicant_data_cache.get('firstname', ''),
-                "applicants[][dateofbirth]": self.applicant_data_cache.get('dateofbirth', ''),
-                "applicants[][passportnumber]": self.applicant_data_cache.get('passportnumber', ''),
-                "applicants[][traveldocumentvaliduntil]": self.applicant_data_cache.get('passport_expiry', ''),
-                "applicants[][gender[id]]": self.applicant_data_cache.get('gender_id', '1'),
-                "applicants[][nationality[id]]]": self.applicant_data_cache.get('nationality_id', '1')
-            }
-            payload.update(gvc_payload)
-            if "slot_id" in self.applicant_data_cache:
-                payload["periodslot"] = self.applicant_data_cache["slot_id"]
-
-        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        user_str = "User{id=931995, username=" + email + ", email=" + email + "}"
+        if self.logged_in_user and isinstance(self.logged_in_user, dict):
+            user_str = json.dumps(self.logged_in_user)
+            
+        json_payload = {
+            "otpuser": user_str,
+            "vac": vac_id,
+            "type": app_type,
+            "bookingfor": "0",
+            "members": "1",
+            "email": email,
+            "phonenumberprefix": {"id": prefix_id},
+            "phonenumber": phone_clean,
+            "applicants": [applicant_obj],
+            "datefrom": target_date,
+            "selectedtime": target_time,
+            "appointmentmethod": "1",
+            "submitinfo": "on",
+            "submissionMsgCheck": "Make sure that you have checked the required checkbox",
+            "onetimepassword": str(otp_code),
+            "g-recaptcha-response": self.booking_captcha_token or "mock_token"
+        }
+        
+        # Jitter before final booking submission
+        self.persona.apply_jitter(multiplier=0.6)
         
         try:
             self.session.get(f"{self.base_url}/favicon.ico", timeout=3)
@@ -322,10 +362,42 @@ class GVCAdapter(BasePortalAdapter):
         max_retries = 3
         for attempt in range(max_retries):
             try:
-                response = self.session.post(url, data=payload, headers=headers, timeout=30)
-                if response.status_code == 200:
-                    logging.info("GVCAdapter: Booking confirmed!")
+                response = self.session.post(api_url, json=json_payload, timeout=30)
+                if response.status_code in [200, 201]:
+                    logging.info("GVCAdapter: REST Booking confirmed successfully (200 OK)!")
+                    try:
+                        self.session.post(f"{self.base_url}/appointments/result/null", timeout=5)
+                    except:
+                        pass
                     return True
+                elif response.status_code == 404:
+                    # Fallback to legacy form-encoded /appointments/add endpoint if server uses legacy route
+                    logging.info("GVCAdapter: REST endpoint 404, attempting legacy form endpoint...")
+                    legacy_payload = {
+                        "vac": vac_id,
+                        "type": app_type,
+                        "bookingfor": "0",
+                        "otp": otp_code,
+                        "g-recaptcha-response": self.booking_captcha_token or "mock_token",
+                        "email": email,
+                        "phonenumberprefix[id]": prefix_id,
+                        "phonenumber": phone_clean,
+                        "applicants[][surname]": applicant_obj["surname"],
+                        "applicants[][firstname]": applicant_obj["firstname"],
+                        "applicants[][dateofbirth]": applicant_obj["dateofbirth"],
+                        "applicants[][passportnumber]": applicant_obj["passportnumber"],
+                        "applicants[][traveldocumentvaliduntil]": applicant_obj["traveldocumentvaliduntil"],
+                        "applicants[][gender[id]]": applicant_obj["gender"]["id"],
+                        "applicants[][nationality[id]]]": applicant_obj["nationality"]["id"],
+                        "periodslot": periodslotid
+                    }
+                    leg_res = self.session.post(f"{self.base_url}/appointments/add", data=legacy_payload, headers={'Content-Type': 'application/x-www-form-urlencoded'}, timeout=30)
+                    if leg_res.status_code == 200:
+                        logging.info("GVCAdapter: Legacy Booking confirmed!")
+                        return True
+                    else:
+                        logging.error(f"GVCAdapter: Legacy booking failed. Status: {leg_res.status_code}")
+                        return False
                 elif response.status_code in [403, 502, 503, 504, 522]:
                     logging.warning(f"GVCAdapter: Received {response.status_code} during booking. Retrying...")
                     if response.status_code == 403:
@@ -333,7 +405,7 @@ class GVCAdapter(BasePortalAdapter):
                     time.sleep(3)
                     continue
                 else:
-                    logging.error(f"GVCAdapter: Booking failed. Status: {response.status_code}")
+                    logging.error(f"GVCAdapter: Booking failed. Status: {response.status_code}, Body: {response.text[:200]}")
                     return False
             except Exception as e:
                 logging.error(f"GVCAdapter: Network error during booking: {e}")
