@@ -513,11 +513,59 @@ def get_task_otp(task_id: int, worker: WorkerNode = Depends(verify_worker_hmac),
                 
     # 3. Third priority: Simulator fallback if running against mock portal or mock captcha
     portal_setting = os.getenv("BOOKING_PORTAL_URL", "")
+    if not portal_setting:
+        portal_db = db.query(SystemSetting).filter(SystemSetting.key == "global.portal_url").first()
+        if portal_db and portal_db.value:
+            portal_setting = portal_db.value.strip()
+
     use_mock = os.getenv("USE_MOCK_CAPTCHA", "false").lower() in ["true", "1"]
-    if use_mock or (portal_setting and "gvcworld.eu" not in portal_setting):
+    if use_mock or (portal_setting and "gvcworld.eu" not in portal_setting.lower()):
         return {"otp_code": "12345"}
         
     return {"otp_code": None}
+
+@router.post("/booking-tasks/{task_id}/fail")
+def fail_booking_task(
+    task_id: int,
+    payload: Optional[dict] = None,
+    worker: WorkerNode = Depends(verify_worker_hmac),
+    db: Session = Depends(get_db),
+    lease_service: LeaseService = Depends(get_lease_service)
+):
+    reason = payload.get("reason", "Booking failed") if payload else "Booking failed"
+    details = payload.get("details") if payload else None
+    
+    task = db.query(BookingTask).filter(BookingTask.id == task_id).first()
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+        
+    task.failure_reason = reason
+    task.failure_details = details
+    
+    is_already_booked = any(k in str(reason).upper() or (details and k in str(details).upper()) for k in ["ALREADY_BOOKED", "DUPLICATE", "ALREADY", "EXISTS"])
+    if is_already_booked:
+        task.status = "FAILED"
+        task.active_status = False
+        task.failure_reason = "ALREADY_BOOKED"
+        if task.applicant_id:
+            from app.models import WaitlistQueue
+            q_entry = db.query(WaitlistQueue).filter(
+                WaitlistQueue.applicant_id == task.applicant_id,
+                WaitlistQueue.status.in_(["PENDING", "DISPATCHED", "PROCESSING"])
+            ).first()
+            if q_entry:
+                q_entry.status = "CANCELLED"
+    else:
+        if task.attempts < task.max_attempts:
+            task.status = "PENDING"
+        else:
+            task.status = "FAILED"
+            task.active_status = False
+            
+    # Complete/fail the lease
+    lease_service.fail_lease(worker.worker_id, task_id, reason=reason)
+    db.commit()
+    return {"status": "ok", "task_id": task_id, "task_status": task.status}
 
 @router.post("/booking-tasks/{task_id}/confirmation")
 def submit_task_confirmation(task_id: int, payload: dict, worker: WorkerNode = Depends(verify_worker_hmac), db: Session = Depends(get_db)):

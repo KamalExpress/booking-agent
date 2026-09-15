@@ -232,3 +232,9 @@ class SaaSClient:
             "reference_number": reference_number,
             "confirmation_payload": confirmation_payload or {}
         })
+
+    def fail_booking_task(self, booking_task_id: int, reason: str = "Booking failed", details: str = None):
+        return self._request("POST", f"/api/v1/worker/booking-tasks/{booking_task_id}/fail", {
+            "reason": reason,
+            "details": details
+        })

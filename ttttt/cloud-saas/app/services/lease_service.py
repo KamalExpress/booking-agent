@@ -300,11 +300,28 @@ class LeaseService:
             if lease.booking_task_id:
                 task = self.db.query(BookingTask).filter(BookingTask.id == lease.booking_task_id).first()
                 if task:
-                    if task.attempts < task.max_attempts:
+                    is_already_booked = reason and any(k in str(reason).upper() for k in ["ALREADY_BOOKED", "DUPLICATE", "ALREADY", "EXISTS"])
+                    if is_already_booked:
+                        task.status = "FAILED"
+                        task.active_status = False
+                        task.failure_reason = "ALREADY_BOOKED"
+                        task.failure_details = str(reason)
+                        # Cancel active queue item for applicant to prevent endless re-queuing
+                        if task.applicant_id:
+                            from app.models import WaitlistQueue
+                            q_entry = self.db.query(WaitlistQueue).filter(
+                                WaitlistQueue.applicant_id == task.applicant_id,
+                                WaitlistQueue.status.in_(["PENDING", "DISPATCHED", "PROCESSING"])
+                            ).first()
+                            if q_entry:
+                                q_entry.status = "CANCELLED"
+                    elif task.attempts < task.max_attempts:
                         task.status = "PENDING"
                     else:
                         task.status = "FAILED"
                         task.active_status = False
+                        if reason:
+                            task.failure_reason = str(reason)[:255]
             
             payload_data = {"booking_task_id": lease.booking_task_id} if lease.booking_task_id else {}
             if reason:

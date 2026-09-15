@@ -115,7 +115,79 @@ class Applicant(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     
     tenant = relationship("Tenant")
-    waitlist_entries = relationship("WaitlistQueue", back_populates="applicant", cascade="all, delete-orphan")
+    waitlist_entries = relationship("WaitlistQueue", back_populates="applicant", cascade="all, delete-orphan", order_by="desc(WaitlistQueue.id)")
+    booking_tasks = relationship("BookingTask", back_populates="applicant", cascade="all, delete-orphan", order_by="desc(BookingTask.id)")
+
+    @property
+    def computed_status(self):
+        # 1. Check latest booking tasks first
+        if self.booking_tasks:
+            latest_task = self.booking_tasks[0]
+            if latest_task.status == "SUCCESS":
+                return {
+                    "code": "BOOKED",
+                    "label": "Booked",
+                    "ref": latest_task.reference_number,
+                    "center": latest_task.visa_center,
+                    "date": latest_task.target_date,
+                    "time": latest_task.target_time,
+                    "details": f"{latest_task.target_date} @ {latest_task.target_time}"
+                }
+            elif latest_task.status == "CLAIMED":
+                return {
+                    "code": "IN_FLIGHT",
+                    "label": "In Progress...",
+                    "center": latest_task.visa_center,
+                    "details": f"Attempt {latest_task.attempts}/{latest_task.max_attempts}"
+                }
+            elif latest_task.status == "FAILED":
+                reason = latest_task.failure_reason or ""
+                details = latest_task.failure_details or ""
+                if "ALREADY" in reason.upper() or "ALREADY" in details.upper() or "DUPLICATE" in reason.upper() or "DUPLICATE" in details.upper():
+                    return {
+                        "code": "ALREADY_BOOKED",
+                        "label": "Already Booked",
+                        "center": latest_task.visa_center,
+                        "details": "Active appointment exists on portal"
+                    }
+                return {
+                    "code": "FAILED",
+                    "label": "Failed",
+                    "center": latest_task.visa_center,
+                    "details": reason or "Booking failed"
+                }
+
+        # 2. Check waitlist queue
+        if self.waitlist_entries:
+            for entry in self.waitlist_entries:
+                if entry.status == "BOOKED":
+                    return {
+                        "code": "BOOKED",
+                        "label": "Booked",
+                        "center": entry.visa_center,
+                        "details": "Marked booked in queue"
+                    }
+                elif entry.status in ["PENDING", "DISPATCHED", "PROCESSING"]:
+                    return {
+                        "code": "IN_QUEUE",
+                        "label": "In Queue",
+                        "center": entry.visa_center,
+                        "priority": entry.priority,
+                        "details": f"Center {entry.visa_center} (Priority {entry.priority})"
+                    }
+                elif entry.status == "CANCELLED":
+                    return {
+                        "code": "CANCELLED",
+                        "label": "Cancelled",
+                        "center": entry.visa_center,
+                        "details": "Queue entry cancelled"
+                    }
+
+        return {
+            "code": "UNASSIGNED",
+            "label": "Unassigned",
+            "details": "Not enqueued"
+        }
 
 class WaitlistQueue(Base):
     __tablename__ = "waitlist_queue"
@@ -338,7 +410,7 @@ class BookingTask(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     tenant = relationship("Tenant")
-    applicant = relationship("Applicant")
+    applicant = relationship("Applicant", back_populates="booking_tasks")
 
     __table_args__ = (
         UniqueConstraint('tenant_id', 'visa_center', 'target_date', 'target_time', 'active_status', name='uq_booking_task'),

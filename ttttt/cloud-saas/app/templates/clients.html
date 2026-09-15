@@ -26,6 +26,7 @@
                     <th scope="col" class="px-6 py-4 font-medium">Name</th>
                     <th scope="col" class="px-6 py-4 font-medium">Passport</th>
                     <th scope="col" class="px-6 py-4 font-medium">Phone</th>
+                    <th scope="col" class="px-6 py-4 font-medium">Status</th>
                     <th scope="col" class="px-6 py-4 font-medium">Created</th>
                     <th scope="col" class="px-6 py-4 font-medium text-right">Actions</th>
                 </tr>
@@ -53,6 +54,59 @@
                             {{ client.phone_prefix | default('') }}{{ client.phone_number }}
                         {% endif %}
                     </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% set c_stat = client.computed_status %}
+                        {% if c_stat.code == 'BOOKED' %}
+                            <div class="flex flex-col gap-1">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm w-fit">
+                                    <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i>
+                                    <span>Booked</span>
+                                </span>
+                                {% if c_stat.ref %}
+                                    <span class="font-mono text-[11px] text-zinc-300 font-medium tracking-tight">{{ c_stat.ref }}</span>
+                                {% endif %}
+                                {% if c_stat.date %}
+                                    <span class="text-[10px] text-zinc-500">{{ c_stat.date }}{% if c_stat.time %} @ {{ c_stat.time }}{% endif %}</span>
+                                {% endif %}
+                            </div>
+                        {% elif c_stat.code == 'IN_FLIGHT' %}
+                            <div class="flex flex-col gap-1">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/20 shadow-sm w-fit animate-pulse">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+                                    <span>In Progress</span>
+                                </span>
+                                <span class="text-[10px] text-zinc-400">Center {{ c_stat.center }}</span>
+                            </div>
+                        {% elif c_stat.code == 'IN_QUEUE' %}
+                            <div class="flex flex-col gap-1">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shadow-sm w-fit">
+                                    <i data-lucide="clock" class="w-3.5 h-3.5 text-indigo-400"></i>
+                                    <span>In Queue</span>
+                                </span>
+                                <span class="text-[10px] text-zinc-400">Center {{ c_stat.center }}{% if c_stat.priority %} • P{{ c_stat.priority }}{% endif %}</span>
+                            </div>
+                        {% elif c_stat.code == 'ALREADY_BOOKED' %}
+                            <div class="flex flex-col gap-1">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-sm w-fit" title="Portal reported active appointment exists for this passport">
+                                    <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-amber-400"></i>
+                                    <span>Already Booked</span>
+                                </span>
+                                <span class="text-[10px] text-amber-400/80">Active on Portal</span>
+                            </div>
+                        {% elif c_stat.code == 'FAILED' %}
+                            <div class="flex flex-col gap-1">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20 shadow-sm w-fit" title="{{ c_stat.details }}">
+                                    <i data-lucide="x-circle" class="w-3.5 h-3.5 text-rose-400"></i>
+                                    <span>Failed</span>
+                                </span>
+                                <span class="text-[10px] text-zinc-500 truncate max-w-[120px]">{{ c_stat.details }}</span>
+                            </div>
+                        {% else %}
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-zinc-800/60 text-zinc-400 border border-zinc-700/40">
+                                <span>Unassigned</span>
+                            </span>
+                        {% endif %}
+                    </td>
                     <td class="px-6 py-4 whitespace-nowrap text-xs text-zinc-500">
                         {{ client.created_at | format_time(ui_timezone) }}
                     </td>
@@ -72,7 +126,7 @@
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="6" class="px-6 py-12 text-center text-[#a1a1aa]">
+                    <td colspan="{% if user.role.value == 'SUPER_ADMIN' %}7{% else %}6{% endif %}" class="px-6 py-12 text-center text-[#a1a1aa]">
                         <i data-lucide="users" class="w-8 h-8 mx-auto mb-3 opacity-50"></i>
                         <p>No applicants registered yet.</p>
                     </td>

@@ -1496,7 +1496,11 @@ async def clients_page(request: Request, db: Session = Depends(get_db)):
     if not user:
         return RedirectResponse(url="/login", status_code=303)
         
-    query = db.query(Applicant)
+    query = db.query(Applicant).options(
+        joinedload(Applicant.booking_tasks),
+        joinedload(Applicant.waitlist_entries),
+        joinedload(Applicant.tenant)
+    )
     if user.role in [RoleEnum.TENANT_ADMIN, RoleEnum.STAFF]:
         query = query.filter(Applicant.tenant_id == user.tenant_id)
     elif user.role != RoleEnum.SUPER_ADMIN:

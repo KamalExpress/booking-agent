@@ -13,6 +13,9 @@ class WAFBlockedException(Exception):
 class LoginFailedException(Exception):
     pass
 
+class AlreadyBookedException(Exception):
+    pass
+
 
 class GVCAdapter(BasePortalAdapter):
     def __init__(self, captcha_service: CaptchaService, headless: bool = True, proxy_string: str = None, persona: Optional[BrowserPersona] = None):
@@ -455,6 +458,10 @@ class GVCAdapter(BasePortalAdapter):
                         logging.info("GVCAdapter: Legacy Booking confirmed!")
                         return True
                     else:
+                        leg_text_lower = leg_res.text.lower()
+                        if any(k in leg_text_lower for k in ["already booked", "already registered", "already exists", "active appointment", "duplicate", "duplicate_applicant", "has already booked", "passport already in use", "passport number already has an appointment"]):
+                            logging.warning(f"GVCAdapter: Portal returned duplicate/already-booked error: {leg_res.text[:200]}")
+                            raise AlreadyBookedException(f"Portal rejected: Active appointment already exists for this passport ({leg_res.text[:150]})")
                         logging.error(f"GVCAdapter: Legacy booking failed. Status: {leg_res.status_code}")
                         return False
                 elif response.status_code in [403, 502, 503, 504, 522]:
@@ -464,6 +471,10 @@ class GVCAdapter(BasePortalAdapter):
                     time.sleep(3)
                     continue
                 else:
+                    resp_text_lower = response.text.lower()
+                    if any(k in resp_text_lower for k in ["already booked", "already registered", "already exists", "active appointment", "duplicate", "duplicate_applicant", "has already booked", "passport already in use", "passport number already has an appointment"]):
+                        logging.warning(f"GVCAdapter: Portal returned duplicate/already-booked error: {response.text[:200]}")
+                        raise AlreadyBookedException(f"Portal rejected: Active appointment already exists for this passport ({response.text[:150]})")
                     logging.error(f"GVCAdapter: Booking failed. Status: {response.status_code}, Body: {response.text[:200]}")
                     return False
             except Exception as e:

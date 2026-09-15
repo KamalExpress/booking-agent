@@ -128,10 +128,11 @@ class BookerEngine(threading.Thread):
                 # 5. Execute Booking Flow
                 logging.info(f"[{self.worker_id}] Logging in to portal for account {account['username']}...")
                 try:
-                    from core.gvc_adapter import WAFBlockedException, LoginFailedException
+                    from core.gvc_adapter import WAFBlockedException, LoginFailedException, AlreadyBookedException
                 except ImportError:
                     WAFBlockedException = type("WAFBlockedException", (Exception,), {})
                     LoginFailedException = type("LoginFailedException", (Exception,), {})
+                    AlreadyBookedException = type("AlreadyBookedException", (Exception,), {})
                     
                 agent_login_success = False
                 try:
@@ -139,12 +140,15 @@ class BookerEngine(threading.Thread):
                 except WAFBlockedException as e:
                     logging.warning(f"[{self.worker_id}] Worker Engine hit WAF block during login: {e}")
                     self.api.log_event(task_id, "PROXY_BANNED", "error", {"reason": str(e)})
+                    self.api.fail_booking_task(task_id, reason="PROXY_BANNED", details=str(e))
                 except LoginFailedException as e:
                     logging.error(f"[{self.worker_id}] Worker Engine login failed due to invalid credentials: {e}")
                     self.api.log_event(task_id, "LOGIN_FAILED", "error", {"reason": str(e)})
+                    self.api.fail_booking_task(task_id, reason="LOGIN_FAILED", details=str(e))
                 except Exception as e:
                     logging.error(f"[{self.worker_id}] Worker Engine encountered error during booking: {e}")
                     self.api.log_event(task_id, "BOOKING_EXCEPTION", "error", {"error": str(e)})
+                    self.api.fail_booking_task(task_id, reason="LOGIN_EXCEPTION", details=str(e))
 
                 try:
                     if agent_login_success:
@@ -163,6 +167,10 @@ class BookerEngine(threading.Thread):
                             for _ in range(24): # 2 minutes max
                                 otp_code = self.api.get_booking_task_otp(task_id)
                                 if otp_code:
+                                    break
+                                if (is_custom_portal or use_mock):
+                                    logging.info(f"[{self.worker_id}] Simulator / custom portal detected, auto-supplying test OTP '12345'...")
+                                    otp_code = "12345"
                                     break
                                 time.sleep(5)
                                 
@@ -188,14 +196,24 @@ class BookerEngine(threading.Thread):
                                     self.api.complete_assignment(task_id)
                                 else:
                                     self.api.log_event(task_id, "BOOKING_FAILED", "error", {"reason": "Final submission failed"})
+                                    self.api.fail_booking_task(task_id, reason="Final submission failed")
                             else:
                                 logging.error(f"[{self.worker_id}] Failed to retrieve OTP from SaaS within timeout.")
                                 self.api.log_event(task_id, "BOOKING_FAILED", "error", {"reason": "OTP timeout"})
+                                self.api.fail_booking_task(task_id, reason="OTP_TIMEOUT")
                         else:
                             self.api.log_event(task_id, "BOOKING_FAILED", "error", {"reason": "Pre-OTP Captcha failed"})
+                            self.api.fail_booking_task(task_id, reason="CAPTCHA_FAILED")
+                    elif not agent_login_success:
+                        self.api.fail_booking_task(task_id, reason="LOGIN_FAILED")
+                except AlreadyBookedException as abe:
+                    logging.warning(f"[{self.worker_id}] Applicant already has active appointment on portal: {abe}")
+                    self.api.log_event(task_id, "BOOKING_ALREADY_EXISTS", "warning", {"reason": str(abe)})
+                    self.api.fail_booking_task(task_id, reason="ALREADY_BOOKED", details=str(abe))
                 except Exception as e:
                     logging.error(f"[{self.worker_id}] Error during post-login booking flow: {e}")
                     self.api.log_event(task_id, "BOOKING_EXCEPTION", "error", {"error": str(e)})
+                    self.api.fail_booking_task(task_id, reason="BOOKING_EXCEPTION", details=str(e))
                 finally:
                     # Upload captured network traces/HAR to SaaS
                     try:
