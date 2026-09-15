@@ -176,9 +176,7 @@
                 <i data-lucide="contact" class="w-4 h-4"></i> Client Directory
             </a>
 
-            {% if (user.role.value == 'TENANT_ADMIN' and settings.get('nav.admin.show_queue') and
-            settings.get('nav.admin.show_queue').value == 'true') or (user.role.value == 'STAFF' and
-            settings.get('nav.staff.show_queue') and settings.get('nav.staff.show_queue').value == 'true') %}
+            {% if user.role.value == 'SUPER_ADMIN' or (user.role.value == 'TENANT_ADMIN' and (not settings.get('nav.admin.show_queue') or settings.get('nav.admin.show_queue').value == 'true')) or (user.role.value == 'STAFF' and (not settings.get('nav.staff.show_queue') or settings.get('nav.staff.show_queue').value == 'true')) %}
             <a href="/queue" class="nav-link {% if active_page == 'queue' %}active{% endif %}">
                 <i data-lucide="list-ordered" class="w-4 h-4"></i> Queue Management
             </a>

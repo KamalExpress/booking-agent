@@ -1451,17 +1451,25 @@ async def clients_page(request: Request, db: Session = Depends(get_db)):
         
     clients = query.order_by(Applicant.id.desc()).all()
     
-    if user.role == RoleEnum.SUPER_ADMIN:
-        tenants = db.query(Tenant).all()
-        tenants_map = {t.id: t.name for t in tenants}
-        for c in clients:
-            setattr(c, 'tenant_name', tenants_map.get(c.tenant_id, 'System / Default'))
-    
+    vc_setting = db.query(SystemSetting).filter(SystemSetting.key == "global.visa_centers_config").first()
+    vc_config_str = vc_setting.value if vc_setting and vc_setting.value else "138:26:Lahore, 137:26:Islamabad, 140:24:Doc Verification"
+    available_centers = []
+    for center_str in vc_config_str.split(","):
+        parts = center_str.strip().split(":")
+        if len(parts) >= 3:
+            available_centers.append({
+                "id": parts[0],
+                "type": parts[1],
+                "name": parts[2],
+                "value": parts[0]
+            })
+            
     return render_template("clients.html", {
         "request": request,
         "user": user,
         "active_page": "clients",
-        "clients": clients
+        "clients": clients,
+        "available_centers": available_centers
     }, db)
 
 @router.post("/clients/create")
@@ -1484,7 +1492,7 @@ async def create_client(
         return RedirectResponse(url="/", status_code=303)
         
     new_client = Applicant(
-        tenant_id=user.tenant_id,
+        tenant_id=user.tenant_id or 1,
         firstname=first_name,
         surname=last_name,
         dateofbirth=dateofbirth,
@@ -1520,7 +1528,11 @@ async def edit_client(
     if not user or user.role not in [RoleEnum.TENANT_ADMIN, RoleEnum.STAFF, RoleEnum.SUPER_ADMIN]:
         return RedirectResponse(url="/", status_code=303)
         
-    client = db.query(Applicant).filter(Applicant.id == client_id, Applicant.tenant_id == user.tenant_id).first()
+    if user.role == RoleEnum.SUPER_ADMIN:
+        client = db.query(Applicant).filter(Applicant.id == client_id).first()
+    else:
+        client = db.query(Applicant).filter(Applicant.id == client_id, Applicant.tenant_id == user.tenant_id).first()
+        
     if client:
         client.firstname = first_name
         client.surname = last_name
@@ -1541,7 +1553,11 @@ async def delete_client(request: Request, client_id: int, db: Session = Depends(
     if not user or user.role not in [RoleEnum.TENANT_ADMIN, RoleEnum.STAFF, RoleEnum.SUPER_ADMIN]:
         return RedirectResponse(url="/", status_code=303)
         
-    client = db.query(Applicant).filter(Applicant.id == client_id, Applicant.tenant_id == user.tenant_id).first()
+    if user.role == RoleEnum.SUPER_ADMIN:
+        client = db.query(Applicant).filter(Applicant.id == client_id).first()
+    else:
+        client = db.query(Applicant).filter(Applicant.id == client_id, Applicant.tenant_id == user.tenant_id).first()
+        
     if client:
         db.delete(client)
         db.commit()
@@ -1600,11 +1616,16 @@ async def add_to_queue(
     if not user or user.role not in [RoleEnum.TENANT_ADMIN, RoleEnum.STAFF, RoleEnum.SUPER_ADMIN]:
         return RedirectResponse(url="/", status_code=303)
         
-    # Verify applicant belongs to tenant
-    applicant = db.query(Applicant).filter(Applicant.id == applicant_id, Applicant.tenant_id == user.tenant_id).first()
+    # Verify applicant
+    if user.role == RoleEnum.SUPER_ADMIN:
+        applicant = db.query(Applicant).filter(Applicant.id == applicant_id).first()
+    else:
+        applicant = db.query(Applicant).filter(Applicant.id == applicant_id, Applicant.tenant_id == user.tenant_id).first()
+        
     if applicant:
+        target_tenant_id = applicant.tenant_id or user.tenant_id or 1
         new_entry = WaitlistQueue(
-            tenant_id=user.tenant_id,
+            tenant_id=target_tenant_id,
             applicant_id=applicant.id,
             visa_center=visa_center_id,
             appointment_type=appointment_type,
@@ -1622,7 +1643,11 @@ async def remove_from_queue(request: Request, entry_id: int, db: Session = Depen
     if not user or user.role not in [RoleEnum.TENANT_ADMIN, RoleEnum.STAFF, RoleEnum.SUPER_ADMIN]:
         return RedirectResponse(url="/", status_code=303)
         
-    entry = db.query(WaitlistQueue).filter(WaitlistQueue.id == entry_id, WaitlistQueue.tenant_id == user.tenant_id).first()
+    if user.role == RoleEnum.SUPER_ADMIN:
+        entry = db.query(WaitlistQueue).filter(WaitlistQueue.id == entry_id).first()
+    else:
+        entry = db.query(WaitlistQueue).filter(WaitlistQueue.id == entry_id, WaitlistQueue.tenant_id == user.tenant_id).first()
+        
     if entry:
         db.delete(entry)
         db.commit()

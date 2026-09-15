@@ -312,8 +312,11 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
                 
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-zinc-400">Target Visa Center <span class="text-red-500">*</span></label>
-                    <!-- Instead of fetching from DB which is complex in this context, we will prompt user to type or we could fetch the settings in ui.py and pass it to clients.html. For now, since it's a quick modal, we can just use a text input or hardcode 138/137. Let's do text input for ID. Wait, I can pass `available_centers` to `clients.html` from `ui.py` just like `queue.html`! -->
-                    <input type="text" name="visa_center_id" required class="input" placeholder="e.g., 138 (Lahore)">
+                    <select name="visa_center_id" required class="input">
+                        {% for center in available_centers %}
+                        <option value="{{ center.id }}" {% if center.id == '138' %}selected{% endif %}>{{ center.name }} ({{ center.id }})</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 
                 <div class="space-y-1.5">
