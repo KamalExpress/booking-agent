@@ -117,7 +117,12 @@ class SlotMonitorEngine(threading.Thread):
                 if not proxy_string.startswith("http"):
                     proxy_string = f"http://{proxy_string}"
             
-            if "127.0.0.1" in os.getenv("BOOKING_PORTAL_URL", ""):
+            portal_url = os.getenv("BOOKING_PORTAL_URL", "")
+            disable_proxies = os.getenv("DISABLE_PROXIES", "false").lower() in ["true", "1"]
+            is_custom_portal = bool(portal_url and "gvcworld.eu" not in portal_url)
+            use_mock = os.getenv("USE_MOCK_CAPTCHA", "false").lower() in ["true", "1"]
+            
+            if disable_proxies or is_custom_portal or use_mock or "127.0.0.1" in portal_url or "localhost" in portal_url:
                 proxy_string = None
             
             # Initialize MockCaptchaService if enabled, else CapSolverService

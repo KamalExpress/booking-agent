@@ -60,13 +60,20 @@ class OperatorAgent:
             self.session.mount("https://", adapter)
             self.session.mount("http://", adapter)
         
+        target_domain = os.getenv('BOOKING_PORTAL_URL', 'https://pk-gr-services.gvcworld.eu')
+        disable_proxies = os.getenv("DISABLE_PROXIES", "false").lower() in ["true", "1"]
+        is_custom_portal = bool(target_domain and "gvcworld.eu" not in target_domain)
+        use_mock = os.getenv("USE_MOCK_CAPTCHA", "false").lower() in ["true", "1"]
+        
+        if disable_proxies or is_custom_portal or use_mock or "127.0.0.1" in target_domain or "localhost" in target_domain:
+            proxy_string = None
+            self.proxy_string = None
+
         if proxy_string:
             self.session.proxies = {
                 "http": proxy_string,
                 "https": proxy_string
             }
-        
-        target_domain = os.getenv('BOOKING_PORTAL_URL', 'https://pk-gr-services.gvcworld.eu')
         # Standardize headers to match Playwright context and bypass anti-bot
         # Do NOT override User-Agent, let curl_cffi match the TLS fingerprint precisely
         self.session.headers.update({

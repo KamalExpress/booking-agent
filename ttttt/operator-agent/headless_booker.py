@@ -104,7 +104,12 @@ class BookerEngine(threading.Thread):
                         proxy_string = f"http://{user}:{pwd}@{host}:{port}"
                     else:
                         proxy_string = f"http://{proxy_string}"
-                if proxy_string and "127.0.0.1" in os.getenv("BOOKING_PORTAL_URL", ""):
+                portal_url = os.getenv("BOOKING_PORTAL_URL", "")
+                disable_proxies = os.getenv("DISABLE_PROXIES", "false").lower() in ["true", "1"]
+                is_custom_portal = bool(portal_url and "gvcworld.eu" not in portal_url)
+                use_mock = os.getenv("USE_MOCK_CAPTCHA", "false").lower() in ["true", "1"]
+                
+                if disable_proxies or is_custom_portal or use_mock or "127.0.0.1" in portal_url or "localhost" in portal_url:
                     proxy_string = None
                 
                 if os.getenv('USE_MOCK_CAPTCHA', 'False').lower() in ['true', '1']:
