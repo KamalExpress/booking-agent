@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_, and_, desc
 from typing import List, Optional, Dict, Any, Union
 from pydantic import BaseModel
+import os
 import secrets
 import hashlib
 import hmac
