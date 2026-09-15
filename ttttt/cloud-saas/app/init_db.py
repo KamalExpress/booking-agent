@@ -26,6 +26,8 @@ def init_db():
                 conn.execute(text("ALTER TABLE worker_nodes ADD COLUMN IF NOT EXISTS is_archived BOOLEAN DEFAULT FALSE;"))
                 conn.execute(text("ALTER TABLE worker_nodes ADD COLUMN IF NOT EXISTS archived_at TIMESTAMP;"))
                 conn.execute(text("ALTER TABLE worker_nodes ADD COLUMN IF NOT EXISTS archived_by_id INTEGER;"))
+                conn.execute(text("ALTER TABLE booking_tasks ADD COLUMN IF NOT EXISTS reference_number VARCHAR;"))
+                conn.execute(text("ALTER TABLE booking_tasks ADD COLUMN IF NOT EXISTS confirmation_payload JSONB;"))
                 conn.commit()
         except Exception as e:
             print(f"Self-healing column check warning: {e}")
