@@ -270,9 +270,11 @@ class SchedulerService:
         self.db.commit()
         return lease
 
-    def auto_dispatch_queue(self, visa_center: str, slots: list, assignment_id: int, target_date: str):
+    def auto_dispatch_queue(self, visa_center: str, slots: list = None, assignment_id: int = None, target_date: str = ""):
         from app.models import WaitlistQueue, Applicant
         now = ScoringPolicy.get_utcnow()
+        if not slots:
+            return 0
         slot_count = len(slots)
         
         # 1. Get PENDING waitlist entries for this visa center, ordered by priority
@@ -300,6 +302,7 @@ class SchedulerService:
             # 3. Generate BookingTask
             slot = slots[dispatched_count]
             slot_time = slot.get("starttime", "00:00")
+            slot_date = slot.get("date", target_date)
             
             task = BookingTask(
                 assignment_id=assignment_id,
@@ -307,7 +310,7 @@ class SchedulerService:
                 applicant_id=entry.applicant_id,
                 provider=entry.provider,
                 visa_center=entry.visa_center,
-                target_date=target_date, 
+                target_date=slot_date, 
                 target_time=slot_time,
                 slot_payload=slot,
                 priority=entry.priority,
@@ -327,18 +330,24 @@ class SchedulerService:
     def handle_event(self, event_type: str, lease: Lease, details: dict = None):
         """Translates technical events into account/proxy cooldowns."""
         now = ScoringPolicy.get_utcnow()
-        account = self.db.query(PortalAccount).filter_by(id=lease.portal_account_id).first()
-        proxy = self.db.query(Proxy).filter_by(id=lease.proxy_id).first()
+        account = self.db.query(PortalAccount).filter_by(id=lease.portal_account_id).first() if lease and lease.portal_account_id else None
+        proxy = self.db.query(Proxy).filter_by(id=lease.proxy_id).first() if lease and lease.proxy_id else None
         
         if event_type == "SLOT_FOUND":
             visa_center = details.get("visa_center") if details else None
-            slot_count = details.get("slot_count", 1) if details else 1
-            if not visa_center and lease.assignment_id:
+            slots = details.get("slots", []) if details else []
+            target_date = details.get("date", "") if details else ""
+            if not visa_center and lease and lease.assignment_id:
                 assignment = self.db.query(Assignment).filter_by(id=lease.assignment_id).first()
                 if assignment:
                     visa_center = assignment.visa_center
-            if visa_center:
-                self.auto_dispatch_queue(visa_center, slot_count)
+            if visa_center and slots:
+                self.auto_dispatch_queue(
+                    visa_center=visa_center,
+                    slots=slots,
+                    assignment_id=lease.assignment_id if lease else None,
+                    target_date=target_date
+                )
                 
         elif event_type == "LOGIN_FAILED":
             if account:

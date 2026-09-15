@@ -61,18 +61,11 @@ class LeaseService:
         if expired_leases:
             self.db.commit()
 
-    def get_existing_lease_for_worker(self, worker: WorkerNode) -> Optional[Dict[str, Any]]:
-        existing_lease = self.db.query(Lease).filter(
+    def get_existing_lease_for_worker(self, worker: WorkerNode) -> Optional[Lease]:
+        return self.db.query(Lease).filter(
             Lease.worker_id == worker.worker_id,
             Lease.status.in_(["Leased", "Running"])
         ).first()
-        
-        if existing_lease:
-            best_assignment = self.db.query(Assignment).filter(Assignment.id == existing_lease.assignment_id).first()
-            if best_assignment:
-                acc = self.db.query(PortalAccount).filter(PortalAccount.id == existing_lease.portal_account_id).first()
-                return self._build_lease_response(existing_lease, best_assignment, acc)
-        return None
 
     def get_next_lease(self, worker: WorkerNode) -> Optional[Dict[str, Any]]:
         now = datetime.utcnow()
