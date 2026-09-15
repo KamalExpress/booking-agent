@@ -196,6 +196,14 @@ class BookerEngine(threading.Thread):
                 except Exception as e:
                     logging.error(f"[{self.worker_id}] Error during post-login booking flow: {e}")
                     self.api.log_event(task_id, "BOOKING_EXCEPTION", "error", {"error": str(e)})
+                finally:
+                    # Upload captured network traces/HAR to SaaS
+                    try:
+                        net_logs = adapter.get_network_logs()
+                        if net_logs:
+                            self.api.submit_network_logs(task.get("assignment_id") or 1, net_logs)
+                    except Exception as log_err:
+                        logging.warning(f"[{self.worker_id}] Could not submit network logs: {log_err}")
                     
                 time.sleep(3)
                 

@@ -73,16 +73,20 @@ class SchedulerService:
         if ScoringPolicy.score_worker_for_booking(worker, task) < 0:
             return None
 
-        # Find best account
+        # Find best account (prioritizing supports_booking, falling back to any valid account)
         accounts = self.db.query(PortalAccount).filter(
-            PortalAccount.supports_booking == True,
-            or_(PortalAccount.tenant_id == task.tenant_id, PortalAccount.tenant_id == None)
+            or_(PortalAccount.supports_booking == True, PortalAccount.supports_scraping == True),
+            or_(PortalAccount.tenant_id == task.tenant_id, PortalAccount.tenant_id == None),
+            or_(PortalAccount.is_archived == False, PortalAccount.is_archived == None)
         ).all()
         best_account = None
         best_account_score = -1
         
         for account in accounts:
             score = ScoringPolicy.score_account(account, task.provider)
+            # Give bonus to dedicated booking accounts
+            if account.supports_booking:
+                score += 50
             if score > best_account_score:
                 best_account_score = score
                 best_account = account
@@ -103,41 +107,36 @@ class SchedulerService:
             
         best_account = locked_account
 
-        # Find best proxy
+        # Find best proxy (prioritizing supports_booking, falling back to any ready proxy or None)
         proxies = self.db.query(Proxy).filter(
-            Proxy.supports_booking == True,
-            or_(Proxy.tenant_id == task.tenant_id, Proxy.tenant_id == None)
+            or_(Proxy.supports_booking == True, Proxy.supports_scraping == True),
+            or_(Proxy.tenant_id == task.tenant_id, Proxy.tenant_id == None),
+            or_(Proxy.is_archived == False, Proxy.is_archived == None)
         ).all()
         best_proxy = None
         best_proxy_score = -1
         
         for proxy in proxies:
             score = ScoringPolicy.score_proxy(proxy)
+            if proxy.supports_booking:
+                score += 50
             if score > best_proxy_score:
                 best_proxy_score = score
                 best_proxy = proxy
                 
-        if not best_proxy:
-            self._log_decision(worker.worker_id, "NO_READY_PROXY", "No capable booking proxy available", booking_task_id=task.id)
-            return None
-
-        # Concurrency verification lock
-        locked_proxy = self.db.query(Proxy).filter(
-            Proxy.id == best_proxy.id,
-            Proxy.status == "READY"
-        ).with_for_update(skip_locked=True).first()
-        
-        if not locked_proxy:
-            return None
-            
-        best_proxy = locked_proxy
+        if best_proxy:
+            locked_proxy = self.db.query(Proxy).filter(
+                Proxy.id == best_proxy.id,
+                Proxy.status == "READY"
+            ).with_for_update(skip_locked=True).first()
+            best_proxy = locked_proxy
 
         # Create lease
         lease = Lease(
             worker_id=worker.worker_id,
             booking_task_id=task.id,
             portal_account_id=best_account.id,
-            proxy_id=best_proxy.id,
+            proxy_id=best_proxy.id if best_proxy else None,
             expires_at=now + timedelta(minutes=10),
             status="Leased"
         )
@@ -146,15 +145,35 @@ class SchedulerService:
         task.attempts += 1
         
         best_account.status = "LEASED"
-        best_proxy.status = "LEASED"
+        if best_proxy:
+            best_proxy.status = "LEASED"
         
         worker.current_concurrency += 1
         
         self.db.add(lease)
         self._log_decision(
             worker.worker_id, "SUCCESS", "Leased booking task", 
-            booking_task_id=task.id, account_id=best_account.id, proxy_id=best_proxy.id
+            booking_task_id=task.id, account_id=best_account.id, proxy_id=best_proxy.id if best_proxy else None
         )
+        
+        # Emit EventLog
+        from app.models import EventLog
+        lease_event = EventLog(
+            source="scheduler",
+            worker_id=worker.worker_id,
+            tenant_id=task.tenant_id,
+            assignment_id=task.assignment_id,
+            event_type="BOOKING_CLAIMED",
+            severity="info",
+            payload={
+                "task_id": task.id,
+                "applicant_id": task.applicant_id,
+                "visa_center": task.visa_center,
+                "worker_id": worker.worker_id,
+                "account": best_account.username
+            }
+        )
+        self.db.add(lease_event)
         self.db.commit()
         return lease
 
@@ -317,9 +336,27 @@ class SchedulerService:
                 expires_at=now + timedelta(hours=2)
             )
             self.db.add(task)
+            self.db.flush() # Flush so task.id is populated
             
-            entry.status = "BOOKED"
-            self.db.flush() # Flush so subsequent queries in this loop see the new lock
+            entry.status = "DISPATCHED"
+            
+            # Emit EventLog for dispatched booking
+            from app.models import EventLog
+            dispatch_event = EventLog(
+                source="scheduler",
+                tenant_id=entry.tenant_id,
+                assignment_id=assignment_id,
+                event_type="BOOKING_DISPATCHED",
+                severity="info",
+                payload={
+                    "task_id": task.id,
+                    "applicant_id": entry.applicant_id,
+                    "visa_center": entry.visa_center,
+                    "target_date": slot_date,
+                    "target_time": slot_time
+                }
+            )
+            self.db.add(dispatch_event)
             dispatched_count += 1
             
         if dispatched_count > 0:

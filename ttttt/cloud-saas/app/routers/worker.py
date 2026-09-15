@@ -487,16 +487,7 @@ def submit_logs(
     db.commit()
     return {"status": "ok"}
 
-@router.post("/api/v1/worker/worker-logs")
-def receive_worker_logs(req: dict, worker: WorkerNode = Depends(verify_worker_hmac), db: Session = Depends(get_db)):
-    # Safely handle potential massive logs
-    logs = req.get("payload", [])
-    if len(str(logs)) > 1024 * 1024:
-        raise HTTPException(status_code=413, detail="Payload too large")
-        
-    return {"status": "success"}
-
-@router.get("/api/v1/worker/booking-tasks/{task_id}/otp")
+@router.get("/booking-tasks/{task_id}/otp")
 def get_task_otp(task_id: int, worker: WorkerNode = Depends(verify_worker_hmac), db: Session = Depends(get_db)):
     task = db.query(BookingTask).filter(BookingTask.id == task_id).first()
     if not task:
@@ -509,7 +500,6 @@ def get_task_otp(task_id: int, worker: WorkerNode = Depends(verify_worker_hmac),
         if applicant and applicant.phone_number:
             # Look for recent webhook OTP events matching this phone number (or all for now)
             # Using EventLog where source='webhook_otp'
-            # Note: in real production we match the sender/text with applicant phone.
             log = db.query(EventLog).filter(
                 EventLog.event_type == "OTP_RECEIVED",
                 EventLog.source == "webhook_otp"
@@ -520,7 +510,7 @@ def get_task_otp(task_id: int, worker: WorkerNode = Depends(verify_worker_hmac),
                 
     return {"otp_code": task.otp_code}
 
-@router.post("/api/v1/worker/booking-tasks/{task_id}/confirmation")
+@router.post("/booking-tasks/{task_id}/confirmation")
 def submit_task_confirmation(task_id: int, payload: dict, worker: WorkerNode = Depends(verify_worker_hmac), db: Session = Depends(get_db)):
     task = db.query(BookingTask).filter(BookingTask.id == task_id).first()
     if not task:
@@ -533,8 +523,50 @@ def submit_task_confirmation(task_id: int, payload: dict, worker: WorkerNode = D
     task.confirmation_payload = conf_data
     task.status = "SUCCESS"
     
+    # Update WaitlistQueue entry status to BOOKED
+    from app.models import WaitlistQueue, Applicant, EventLog
+    if task.applicant_id:
+        queue_entry = db.query(WaitlistQueue).filter(
+            WaitlistQueue.applicant_id == task.applicant_id,
+            WaitlistQueue.status.in_(["PENDING", "DISPATCHED", "PROCESSING"])
+        ).first()
+        if queue_entry:
+            queue_entry.status = "BOOKED"
+    
+    # Log persistent EventLog
+    booking_event = EventLog(
+        source="worker",
+        worker_id=worker.worker_id,
+        tenant_id=task.tenant_id,
+        assignment_id=task.assignment_id,
+        event_type="BOOKING_SUCCESS",
+        severity="info",
+        payload={
+            "task_id": task_id,
+            "applicant_id": task.applicant_id,
+            "visa_center": task.visa_center,
+            "reference_number": ref_num,
+            "confirmation": conf_data
+        }
+    )
+    db.add(booking_event)
+    
+    # Broadcast to live dashboard monitor
+    from core.websocket_manager import sync_broadcast
+    from datetime import datetime
+    sync_broadcast({
+        "event_type": "BOOKING_SUCCESS",
+        "worker_id": worker.worker_id,
+        "assignment_id": task.assignment_id,
+        "payload": {
+            "task_id": task_id,
+            "reference_number": ref_num,
+            "visa_center": task.visa_center
+        },
+        "timestamp": datetime.utcnow().isoformat()
+    })
+    
     # Broadcast confirmation push notification
-    from app.models import Applicant
     applicant_name = "Applicant"
     if task.applicant_id:
         applicant = db.query(Applicant).filter(Applicant.id == task.applicant_id).first()

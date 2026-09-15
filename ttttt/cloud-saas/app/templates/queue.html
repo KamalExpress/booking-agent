@@ -45,6 +45,10 @@
                         <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-amber-500/10 text-amber-500 text-xs font-medium border border-amber-500/20">
                             <i data-lucide="clock" class="w-3.5 h-3.5"></i> PENDING
                         </span>
+                        {% elif item.status == 'DISPATCHED' or item.status == 'PROCESSING' %}
+                        <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-indigo-500/10 text-indigo-400 text-xs font-medium border border-indigo-500/20">
+                            <i data-lucide="loader" class="w-3.5 h-3.5 animate-spin"></i> DISPATCHED
+                        </span>
                         {% elif item.status == 'BOOKED' %}
                         <div class="flex items-center gap-2">
                             <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-emerald-500/10 text-emerald-500 text-xs font-medium border border-emerald-500/20">
