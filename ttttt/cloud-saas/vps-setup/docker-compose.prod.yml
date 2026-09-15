@@ -34,6 +34,8 @@ services:
     restart: always
     environment:
       - SAAS_BASE_URL=http://cloud-saas-prod:8000
+      - BOOKING_PORTAL_URL
+      - USE_MOCK_CAPTCHA
     depends_on:
       - cloud-saas
     networks:
@@ -51,6 +53,8 @@ services:
     command: python headless_booker.py
     environment:
       - SAAS_BASE_URL=http://cloud-saas-prod:8000
+      - BOOKING_PORTAL_URL
+      - USE_MOCK_CAPTCHA
     depends_on:
       - cloud-saas
     networks:
