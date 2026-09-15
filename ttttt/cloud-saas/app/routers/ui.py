@@ -30,7 +30,7 @@ def get_db():
 router = APIRouter(tags=["UI"])
 
 from fastapi import WebSocket, WebSocketDisconnect
-from core.websocket_manager import manager
+from core.websocket_manager import manager, sync_broadcast
 
 @router.websocket("/ws/live-logs")
 async def websocket_live_logs(websocket: WebSocket):
@@ -1048,7 +1048,20 @@ async def reset_assignment(assignment_id: int, request: Request, db: Session = D
         if assignment:
             assignment.status = "Active"
             assignment.last_checked = None
+            db.add(EventLog(
+                source="ui",
+                assignment_id=assignment_id,
+                event_type="ASSIGNMENT_RESCHEDULED",
+                severity="info",
+                payload={"assignment_id": assignment_id, "visa_center": assignment.visa_center, "status": "Active"}
+            ))
             db.commit()
+            sync_broadcast({
+                "event_type": "ASSIGNMENT_RESCHEDULED",
+                "worker_id": "ui",
+                "payload": {"assignment_id": assignment_id, "visa_center": assignment.visa_center, "status": "Active"},
+                "timestamp": datetime.utcnow().isoformat()
+            })
     except Exception as e:
         print(f"Failed to reset assignment: {e}")
         db.rollback()
@@ -1710,7 +1723,29 @@ async def add_to_queue(
             priority=0
         )
         db.add(new_entry)
+        db.add(EventLog(
+            source="ui",
+            event_type="QUEUE_ENQUEUED",
+            severity="info",
+            payload={
+                "applicant_id": applicant.id,
+                "applicant_name": f"{applicant.firstname} {applicant.surname}",
+                "visa_center": visa_center_id,
+                "appointment_type": appointment_type
+            }
+        ))
         db.commit()
+        sync_broadcast({
+            "event_type": "QUEUE_ENQUEUED",
+            "worker_id": "ui",
+            "payload": {
+                "applicant_id": applicant.id,
+                "applicant_name": f"{applicant.firstname} {applicant.surname}",
+                "visa_center": visa_center_id,
+                "appointment_type": appointment_type
+            },
+            "timestamp": datetime.utcnow().isoformat()
+        })
         
     return RedirectResponse(url="/queue", status_code=303)
 
@@ -1726,8 +1761,20 @@ async def remove_from_queue(request: Request, entry_id: int, db: Session = Depen
         entry = db.query(WaitlistQueue).filter(WaitlistQueue.id == entry_id, WaitlistQueue.tenant_id == user.tenant_id).first()
         
     if entry:
+        db.add(EventLog(
+            source="ui",
+            event_type="QUEUE_REMOVED",
+            severity="info",
+            payload={"queue_id": entry.id, "applicant_id": entry.applicant_id}
+        ))
         db.delete(entry)
         db.commit()
+        sync_broadcast({
+            "event_type": "QUEUE_REMOVED",
+            "worker_id": "ui",
+            "payload": {"queue_id": entry.id, "applicant_id": entry.applicant_id},
+            "timestamp": datetime.utcnow().isoformat()
+        })
         
     return RedirectResponse(url="/queue", status_code=303)
 
@@ -1749,7 +1796,19 @@ async def reset_queue_entry(request: Request, entry_id: int, db: Session = Depen
             BookingTask.applicant_id == entry.applicant_id,
             BookingTask.status.in_(["PENDING", "FAILED"])
         ).update({"status": "FAILED", "active_status": False})
+        db.add(EventLog(
+            source="ui",
+            event_type="QUEUE_RESET",
+            severity="info",
+            payload={"queue_id": entry.id, "applicant_id": entry.applicant_id}
+        ))
         db.commit()
+        sync_broadcast({
+            "event_type": "QUEUE_RESET",
+            "worker_id": "ui",
+            "payload": {"queue_id": entry.id, "applicant_id": entry.applicant_id},
+            "timestamp": datetime.utcnow().isoformat()
+        })
         
     return RedirectResponse(url="/queue", status_code=303)
 

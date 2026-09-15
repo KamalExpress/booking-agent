@@ -174,7 +174,32 @@ class AutonomousWatchdogEngine:
         timestamp = event.get("timestamp") or self.format_time()
         time_str = timestamp[11:19] if "T" in timestamp else self.format_time()
 
-        if event_type == "SLOT_FOUND":
+        if event_type == "QUEUE_ENQUEUED":
+            app_id = payload.get("applicant_id", "?")
+            name = payload.get("applicant_name", "Applicant")
+            vac = payload.get("visa_center", "?")
+            print(f"[{time_str}] {Colors.CYAN}{Colors.BOLD}[S3: QUEUE ENQUEUED]{Colors.RESET} "
+                  f"Applicant #{app_id} ({name}) enqueued into Waitlist for Center {vac}.")
+
+        elif event_type == "QUEUE_REMOVED":
+            app_id = payload.get("applicant_id", "?")
+            qid = payload.get("queue_id", "?")
+            print(f"[{time_str}] {Colors.DIM}[S3: QUEUE REMOVED]{Colors.RESET} "
+                  f"Entry #{qid} (Applicant #{app_id}) removed from Waitlist.")
+
+        elif event_type == "QUEUE_RESET":
+            app_id = payload.get("applicant_id", "?")
+            qid = payload.get("queue_id", "?")
+            print(f"[{time_str}] {Colors.YELLOW}[S3: QUEUE RESET]{Colors.RESET} "
+                  f"Entry #{qid} (Applicant #{app_id}) reset to WAITING/PENDING.")
+
+        elif event_type == "ASSIGNMENT_RESCHEDULED":
+            asm_id = payload.get("assignment_id", "?")
+            vac = payload.get("visa_center", "?")
+            print(f"[{time_str}] {Colors.GREEN}{Colors.BOLD}[S1: ASSIGNMENT RESCHEDULED]{Colors.RESET} "
+                  f"Assignment #{asm_id} (Center {vac}) rescheduled for IMMEDIATE polling.")
+
+        elif event_type == "SLOT_FOUND":
             self.total_slots_found += 1
             vac = payload.get("visa_center", "?")
             date = payload.get("date", "Unknown")
