@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 from fastapi import Depends
 
-from models import Lease, LeaseArchive, WorkerNode, EventLog, get_db
+from models import Lease, LeaseArchive, WorkerNode, EventLog, WorkerLog, get_db
 
 class MaintenanceService:
     def __init__(self, db: Session):
@@ -17,6 +17,7 @@ class MaintenanceService:
         self._worker_cleanup()
         self._lease_cleanup()
         self._notification_cleanup()
+        self._worker_log_cleanup()
         
     def _worker_cleanup(self):
         # 1. Find workers offline
@@ -80,6 +81,12 @@ class MaintenanceService:
         # Delete EventLogs older than 30 days
         cutoff = datetime.utcnow() - timedelta(days=30)
         self.db.query(EventLog).filter(EventLog.created_at < cutoff).delete(synchronize_session=False)
+        self.db.commit()
+
+    def _worker_log_cleanup(self):
+        # Retain detailed WorkerLog (HAR network dumps) for 7 full days for diagnostics/research
+        cutoff = datetime.utcnow() - timedelta(days=7)
+        self.db.query(WorkerLog).filter(WorkerLog.created_at < cutoff).delete(synchronize_session=False)
         self.db.commit()
 
 def get_maintenance_service(db: Session = Depends(get_db)) -> MaintenanceService:

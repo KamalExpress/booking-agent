@@ -11,16 +11,26 @@ from otp_service import OTPService
 load_dotenv()
 
 import sys
+from logging.handlers import TimedRotatingFileHandler
 os.makedirs('logs', exist_ok=True)
-log_filename = f"logs/runlog_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+log_filename = "logs/runlog.log"
 
-# Configure logging to write to both the file and the console
-handlers = [logging.FileHandler(log_filename, mode='a', encoding='utf-8')]
+# Configure daily rotating file handler (keeps 7 days of rolling logs)
+file_handler = TimedRotatingFileHandler(
+    log_filename,
+    when='midnight',
+    interval=1,
+    backupCount=7,
+    encoding='utf-8'
+)
+handlers = [file_handler]
 if sys.stderr is not None and sys.stdout is not None:
     handlers.append(logging.StreamHandler())
 
+log_level = logging.DEBUG if os.getenv("DEBUG_LOGGING", "false").lower() == "true" else logging.INFO
+
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=log_level,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=handlers,
     force=True

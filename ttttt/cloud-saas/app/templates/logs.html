@@ -3,9 +3,16 @@
 {% block title %}Event Logs - Kamal Express{% endblock %}
 
 {% block content %}
-<header class="mb-8">
-    <h2 class="text-3xl font-bold tracking-tight">Event Logs</h2>
-    <p class="text-muted-foreground mt-1">Live execution streams from distributed worker nodes</p>
+<header class="mb-8 flex items-center justify-between">
+    <div>
+        <h2 class="text-3xl font-bold tracking-tight">Event Logs</h2>
+        <p class="text-muted-foreground mt-1">Live execution streams & 7-day high-fidelity network telemetry</p>
+    </div>
+    <div class="flex items-center gap-3">
+        <a href="/logs/har-export" download class="btn btn-secondary text-xs flex items-center gap-1.5 border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-zinc-200">
+            <i data-lucide="download" class="w-3.5 h-3.5 text-emerald-400"></i> Export 7-Day Network Traces (HAR)
+        </a>
+    </div>
 </header>
 
 <div class="card overflow-hidden">

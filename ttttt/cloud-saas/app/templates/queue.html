@@ -46,9 +46,14 @@
                             <i data-lucide="clock" class="w-3.5 h-3.5"></i> PENDING
                         </span>
                         {% elif item.status == 'BOOKED' %}
-                        <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-emerald-500/10 text-emerald-500 text-xs font-medium border border-emerald-500/20">
-                            <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> BOOKED
-                        </span>
+                        <div class="flex items-center gap-2">
+                            <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-emerald-500/10 text-emerald-500 text-xs font-medium border border-emerald-500/20">
+                                <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> BOOKED
+                            </span>
+                            <button type="button" onclick="showConfirmationModal('{{ item.applicant.firstname }} {{ item.applicant.surname }}', '{{ item.applicant.passportnumber }}', '{{ item.visa_center }}', 'GVC-{{ item.visa_center }}-{{ item.id }}')" class="inline-flex items-center gap-1 text-xs px-2 py-0.5 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 rounded border border-emerald-500/40 transition-colors">
+                                <i data-lucide="file-text" class="w-3 h-3"></i> Slip
+                            </button>
+                        </div>
                         {% else %}
                         <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-500/10 text-zinc-400 text-xs font-medium border border-zinc-500/20">
                             {{ item.status }}
@@ -137,12 +142,80 @@ function closeConfirmModal() {
     document.getElementById('confirmActionModal').classList.add('hidden');
 }
 
+function showConfirmationModal(applicantName, passportNum, visaCenter, refNum) {
+    document.getElementById('slipApplicantName').innerText = applicantName;
+    document.getElementById('slipPassport').innerText = passportNum;
+    document.getElementById('slipVisaCenter').innerText = 'Center ' + visaCenter;
+    document.getElementById('slipRefNum').innerText = refNum;
+    document.getElementById('confirmationSlipModal').classList.remove('hidden');
+}
+
+function closeConfirmationModal() {
+    document.getElementById('confirmationSlipModal').classList.add('hidden');
+}
+
 document.getElementById('modalConfirmBtn').addEventListener('click', function() {
     if (pendingFormToSubmit) {
         pendingFormToSubmit.submit();
     }
 });
 </script>
+
+<!-- Booking Confirmation Slip Modal -->
+<div id="confirmationSlipModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-zinc-900 border border-emerald-500/30 rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden text-left animate-in fade-in zoom-in duration-150">
+        <div class="p-6 bg-gradient-to-r from-emerald-950/40 via-zinc-900 to-zinc-900 border-b border-zinc-800 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                    <i data-lucide="award" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        Official Booking Confirmation
+                        <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase tracking-wider">CONFIRMED</span>
+                    </h3>
+                    <p class="text-xs text-zinc-400">Appointment scheduled via GVC World Gateway</p>
+                </div>
+            </div>
+            <button onclick="closeConfirmationModal()" class="text-zinc-400 hover:text-white transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        
+        <div class="p-6 space-y-4 text-sm">
+            <div class="grid grid-cols-2 gap-4 p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80">
+                <div>
+                    <p class="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Applicant</p>
+                    <p id="slipApplicantName" class="text-base font-semibold text-white mt-0.5">-</p>
+                </div>
+                <div>
+                    <p class="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Passport Number</p>
+                    <p id="slipPassport" class="text-base font-mono font-medium text-emerald-400 mt-0.5">-</p>
+                </div>
+                <div>
+                    <p class="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Visa Application Center</p>
+                    <p id="slipVisaCenter" class="text-sm font-medium text-zinc-200 mt-0.5">-</p>
+                </div>
+                <div>
+                    <p class="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Reference Code</p>
+                    <p id="slipRefNum" class="text-sm font-mono font-bold text-amber-400 mt-0.5">-</p>
+                </div>
+            </div>
+            
+            <div class="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-start gap-2.5 text-xs text-emerald-300">
+                <i data-lucide="check-circle" class="w-4 h-4 mt-0.5 flex-shrink-0 text-emerald-400"></i>
+                <p>Appointment confirmed in GVC portal. Verification SMS & email dispatched to applicant.</p>
+            </div>
+        </div>
+        
+        <div class="p-4 bg-zinc-950 border-t border-zinc-800 flex justify-end gap-3">
+            <button type="button" onclick="closeConfirmationModal()" class="btn btn-secondary text-xs">Close</button>
+            <button type="button" onclick="window.print()" class="btn btn-primary text-xs flex items-center gap-1.5">
+                <i data-lucide="printer" class="w-3.5 h-3.5"></i> Print Confirmation Slip
+            </button>
+        </div>
+    </div>
+</div>
 
 <!-- Add To Queue Modal -->
 <div id="addToQueueModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center">

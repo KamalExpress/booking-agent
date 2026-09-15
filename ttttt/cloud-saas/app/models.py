@@ -323,6 +323,8 @@ class BookingTask(Base):
     target_time = Column(String, nullable=False)
     slot_payload = Column(JSONB, nullable=True)
     otp_code = Column(String, nullable=True)
+    reference_number = Column(String, nullable=True) # e.g. GVC-ISB-2026-91823
+    confirmation_payload = Column(JSONB, nullable=True) # Official appointment receipt details
     
     priority = Column(Integer, default=0)
     expires_at = Column(DateTime, nullable=False)

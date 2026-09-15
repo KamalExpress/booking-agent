@@ -226,3 +226,9 @@ class SaaSClient:
         if res and res.status_code == 200:
             return res.json().get("otp_code")
         return None
+
+    def submit_booking_confirmation(self, booking_task_id: int, reference_number: str = None, confirmation_payload: dict = None):
+        return self._request("POST", f"/api/v1/worker/booking-tasks/{booking_task_id}/confirmation", {
+            "reference_number": reference_number,
+            "confirmation_payload": confirmation_payload or {}
+        })

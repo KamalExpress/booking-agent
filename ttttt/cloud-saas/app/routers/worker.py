@@ -520,6 +520,34 @@ def get_task_otp(task_id: int, worker: WorkerNode = Depends(verify_worker_hmac),
                 
     return {"otp_code": task.otp_code}
 
+@router.post("/api/v1/worker/booking-tasks/{task_id}/confirmation")
+def submit_task_confirmation(task_id: int, payload: dict, worker: WorkerNode = Depends(verify_worker_hmac), db: Session = Depends(get_db)):
+    task = db.query(BookingTask).filter(BookingTask.id == task_id).first()
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+        
+    ref_num = payload.get("reference_number")
+    conf_data = payload.get("confirmation_payload", {})
+    
+    task.reference_number = ref_num
+    task.confirmation_payload = conf_data
+    task.status = "SUCCESS"
+    
+    # Broadcast confirmation push notification
+    from app.models import Applicant
+    applicant_name = "Applicant"
+    if task.applicant_id:
+        applicant = db.query(Applicant).filter(Applicant.id == task.applicant_id).first()
+        if applicant:
+            applicant_name = f"{applicant.firstname} {applicant.surname}"
+            
+    push_title = "🎉 Booking Confirmed!"
+    push_msg = f"Appointment confirmed for {applicant_name} at Center {task.visa_center}. Reference: {ref_num or 'Confirmed'}"
+    send_push_notification(db, push_title, push_msg, visa_center_id=task.visa_center)
+    
+    db.commit()
+    return {"status": "success", "task_id": task_id, "reference_number": ref_num}
+
 @router.post("/worker-logs")
 def submit_worker_logs(
     req: WorkerLogRequest,

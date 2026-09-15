@@ -1672,6 +1672,33 @@ async def logs_page(request: Request, db: Session = Depends(get_db)):
         "logs": unified_logs
     }, db)
 
+@router.get("/logs/har-export")
+async def export_worker_har_logs(request: Request, db: Session = Depends(get_db)):
+    """Exports all detailed WorkerLog (HAR network traces) from the last 7 days as JSON."""
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    cutoff = datetime.utcnow() - timedelta(days=7)
+    worker_logs = db.query(WorkerLog).filter(WorkerLog.created_at >= cutoff).order_by(WorkerLog.created_at.desc()).limit(100).all()
+    
+    dumps = []
+    for log in worker_logs:
+        dumps.append({
+            "log_id": log.id,
+            "worker_id": log.worker_id,
+            "assignment_id": log.assignment_id,
+            "timestamp": log.created_at.isoformat(),
+            "payload": log.payload
+        })
+        
+    from fastapi.responses import JSONResponse
+    filename = f"worker_har_export_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json"
+    return JSONResponse(
+        content={"retention_window": "7_days", "count": len(dumps), "traces": dumps},
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+    )
+
 @router.get("/settings", response_class=HTMLResponse)
 async def settings_page(request: Request, db: Session = Depends(get_db)):
     user = get_ui_user(request, db)

@@ -1,4 +1,4 @@
-﻿import time
+import time
 import logging
 import sys
 import os
@@ -167,7 +167,19 @@ class BookerEngine(threading.Thread):
                                 
                                 if success:
                                     logging.info(f"[{self.worker_id}] Booking SUCCESS for Task #{task_id}!")
-                                    self.api.log_event(task_id, "BOOKING_SUCCESS", "info", {"task_id": task_id, "status": "Success"})
+                                    ref_num = f"GVC-{visa_center}-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+                                    conf_payload = {
+                                        "status": "Confirmed",
+                                        "reference_number": ref_num,
+                                        "applicant_name": f"{applicant_data.get('firstname', '')} {applicant_data.get('surname', '')}".strip(),
+                                        "passport_number": applicant_data.get("passportnumber", ""),
+                                        "visa_center": visa_center,
+                                        "appointment_date": task.get("target_date", ""),
+                                        "appointment_time": task.get("target_time", ""),
+                                        "confirmed_at": datetime.now().isoformat()
+                                    }
+                                    self.api.submit_booking_confirmation(task_id, reference_number=ref_num, confirmation_payload=conf_payload)
+                                    self.api.log_event(task_id, "BOOKING_SUCCESS", "info", {"task_id": task_id, "reference_number": ref_num, "status": "Success"})
                                     self.api.complete_assignment(task_id)
                                 else:
                                     self.api.log_event(task_id, "BOOKING_FAILED", "error", {"reason": "Final submission failed"})
@@ -187,10 +199,14 @@ class BookerEngine(threading.Thread):
                 time.sleep(5)
 
 if __name__ == '__main__':
+    from datetime import datetime
+    from logging.handlers import TimedRotatingFileHandler
+    
     base_url = os.getenv("SAAS_BASE_URL", "http://localhost:8000")
     worker_id = os.getenv("WORKER_HOSTNAME", f"booker-{os.getpid()}")
     print(f"Starting Headless Booker Node [{worker_id}] connecting to {base_url}...")
     
+    os.makedirs('logs', exist_ok=True)
     engine = BookerEngine(base_url, worker_id=worker_id)
     
     log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -202,6 +218,11 @@ if __name__ == '__main__':
     stdout_handler = logging.StreamHandler(sys.stdout)
     stdout_handler.setFormatter(formatter)
     root_logger.addHandler(stdout_handler)
+    
+    # Daily rotating file handler (7-day retention)
+    file_handler = TimedRotatingFileHandler("logs/booker.log", when="midnight", interval=1, backupCount=7, encoding="utf-8")
+    file_handler.setFormatter(formatter)
+    root_logger.addHandler(file_handler)
     
     saas_handler = SaaSStreamHandler(engine.api)
     saas_handler.setFormatter(formatter)
