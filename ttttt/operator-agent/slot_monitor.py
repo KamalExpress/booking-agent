@@ -35,6 +35,16 @@ def generate_dates_between(start_str, end_str):
         return [start_date.strftime("%d/%m/%Y")]
     return [(start_date + timedelta(days=i)).strftime("%d/%m/%Y") for i in range(delta.days + 1)]
 
+def get_weekday_name(date_str: str) -> str:
+    formats = ["%d/%m/%Y", "%Y-%m-%d", "%m/%d/%Y"]
+    for fmt in formats:
+        try:
+            dt = datetime.strptime(str(date_str).strip(), fmt)
+            return dt.strftime("%a") # 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'
+        except Exception:
+            pass
+    return ""
+
 class SlotMonitorEngine(threading.Thread):
     def __init__(self, base_url: str):
         super().__init__(daemon=True)
@@ -189,6 +199,25 @@ class SlotMonitorEngine(threading.Thread):
                     parts = center_str.split(":")
                     vac_id = parts[0]
                     app_type = parts[1] if len(parts) > 1 else "26"
+                    
+                    # --- APPOINTMENT TYPE DAY RULES ENFORCEMENT ---
+                    day_rules = runtime_config.get("appointment_day_rules") or {
+                        "26": ["Mon", "Tue", "Wed"],
+                        "0": [],
+                        "2": ["Thu", "Fri"],
+                        "5": ["Mon", "Tue", "Wed", "Thu", "Fri"],
+                        "6": ["Mon", "Tue", "Wed", "Thu", "Fri"]
+                    }
+                    allowed_days = day_rules.get(str(app_type))
+                    if allowed_days is not None:
+                        if not allowed_days:
+                            logging.info(f"Skipping Type {app_type} at VAC {vac_id} — No active monitoring days configured.")
+                            continue
+                        target_weekday = get_weekday_name(target_date)
+                        if target_weekday and target_weekday not in allowed_days:
+                            logging.info(f"Skipping {target_date} ({target_weekday}) for Type {app_type} at VAC {vac_id} — Not in configured active days ({', '.join(allowed_days)}).")
+                            continue
+                    # ----------------------------------------------
                     
                     logging.info(f"Checking slots for {target_date} at VAC {vac_id} (Type {app_type})...")
                     

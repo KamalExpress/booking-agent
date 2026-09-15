@@ -1808,12 +1808,19 @@ async def settings_page(request: Request, db: Session = Depends(get_db)):
     # Check if captcha API key is configured
     captcha_configured = "captcha.api_key" in settings_dict and settings_dict["captcha.api_key"].encrypted_value
     
+    import json
+    from services.worker_service import get_parsed_appointment_day_rules, APPOINTMENT_TYPES_METADATA, ALL_WEEKDAYS
+    appointment_day_rules = get_parsed_appointment_day_rules(db)
+    
     return render_template("settings.html", {
         "request": request,
         "user": user,
         "active_page": "settings",
         "settings": settings_dict,
-        "captcha_configured": captcha_configured
+        "captcha_configured": captcha_configured,
+        "appointment_day_rules": appointment_day_rules,
+        "appointment_types_meta": APPOINTMENT_TYPES_METADATA,
+        "all_weekdays": ALL_WEEKDAYS
     }, db)
 
 @router.get("/captcha", response_class=HTMLResponse)
@@ -1903,6 +1910,21 @@ async def update_global_settings(
     user = get_ui_user(request, db)
     if not user or user.role != RoleEnum.SUPER_ADMIN:
         return RedirectResponse(url="/", status_code=303)
+        
+    import json
+    from services.worker_service import APPOINTMENT_TYPES_METADATA, ALL_WEEKDAYS
+    form_data = await request.form()
+    
+    new_day_rules = {}
+    for meta in APPOINTMENT_TYPES_METADATA:
+        code = meta["code"]
+        selected_days = []
+        for day in ALL_WEEKDAYS:
+            field_name = f"day_rule_{code}_{day}"
+            if field_name in form_data:
+                selected_days.append(day)
+        new_day_rules[code] = selected_days
+
     settings_to_update = {
         "global.default_polling_interval": default_polling_interval,
         "global.default_date_from": default_date_from,
@@ -1914,6 +1936,7 @@ async def update_global_settings(
         "global.brand_subtitle": brand_subtitle,
         "global.admin_notice": admin_notice,
         "global.visa_centers_config": visa_centers_config,
+        "global.appointment_day_rules": json.dumps(new_day_rules),
         "notify.login_success": "true" if notify_login_success else "false",
         "notify.slots_found": "true" if notify_slots_found else "false",
         "notify.no_slots_found": "true" if notify_no_slots_found else "false",
@@ -1935,6 +1958,14 @@ async def update_global_settings(
             setting = SystemSetting(key=key, updated_by="admin")
             db.add(setting)
         setting.value = value
+        
+    # Bump runtime config version so workers immediately pick up day rules
+    version_setting = db.query(SystemSetting).filter(SystemSetting.key == "runtime.config.version").first()
+    if not version_setting:
+        version_setting = SystemSetting(key="runtime.config.version", value="1", updated_by="admin")
+        db.add(version_setting)
+    else:
+        version_setting.value = str(int(version_setting.value) + 1)
         
     db.commit()
     return RedirectResponse(url="/settings", status_code=303)

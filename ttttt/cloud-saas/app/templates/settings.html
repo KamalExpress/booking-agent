@@ -8,6 +8,7 @@
     </div>
 </div>
 
+<form action="/settings/global" method="post" class="space-y-6">
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <!-- GLOBAL CONFIGURATION -->
     <div class="bg-[#09090b] border border-zinc-800 rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
@@ -17,201 +18,263 @@
             </h3>
         </div>
         
-        <div class="p-5 flex-1">
-            <form action="/settings/global" method="post" class="space-y-4">
+        <div class="p-5 flex-1 space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-zinc-300 mb-1">Default Polling Interval (seconds)</label>
+                <input type="number" name="default_polling_interval" value="{{ settings.get('global.default_polling_interval').value if settings.get('global.default_polling_interval') else '300' }}" placeholder="300" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
+                <p class="text-xs text-zinc-500 mt-1">Default rest period between worker slot checks.</p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-zinc-300 mb-1">Default Polling Interval (seconds)</label>
-                    <input type="number" name="default_polling_interval" value="{{ settings.get('global.default_polling_interval').value if settings.get('global.default_polling_interval') else '300' }}" placeholder="300" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
-                    <p class="text-xs text-zinc-500 mt-1">Default rest period between worker slot checks.</p>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Min Slot Delay (seconds)</label>
+                    <input type="number" step="0.1" name="min_slot_delay" value="{{ settings.get('global.min_slot_delay').value if settings.get('global.min_slot_delay') else '4' }}" placeholder="4" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
+                    <p class="text-xs text-zinc-500 mt-1">Minimum wait between checking dates.</p>
                 </div>
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Max Slot Delay (seconds)</label>
+                    <input type="number" step="0.1" name="max_slot_delay" value="{{ settings.get('global.max_slot_delay').value if settings.get('global.max_slot_delay') else '8' }}" placeholder="8" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
+                    <p class="text-xs text-zinc-500 mt-1">Maximum wait between checking dates.</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Default Date From</label>
+                    <input type="text" name="default_date_from" value="{{ settings.get('global.default_date_from').value if settings.get('global.default_date_from') else '' }}" placeholder="DD/MM/YYYY" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Default Date To</label>
+                    <input type="text" name="default_date_to" value="{{ settings.get('global.default_date_to').value if settings.get('global.default_date_to') else '' }}" placeholder="DD/MM/YYYY" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-zinc-800">
+                <h4 class="text-md font-semibold text-zinc-200 mb-4">Branding & Notices</h4>
+                
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-300 mb-1">Brand Name</label>
+                        <input type="text" name="brand_name" value="{{ settings.get('global.brand_name').value if settings.get('global.brand_name') else 'Alamia Automation' }}" placeholder="Alamia Automation" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-300 mb-1">Brand Subtitle</label>
+                        <input type="text" name="brand_subtitle" value="{{ settings.get('global.brand_subtitle').value if settings.get('global.brand_subtitle') else 'Automating Business Solutions' }}" placeholder="Automating Business Solutions" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Global Admin Notice</label>
+                    <textarea name="admin_notice" rows="2" placeholder="System maintenance scheduled for tonight..." class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">{{ settings.get('global.admin_notice').value if settings.get('global.admin_notice') else '' }}</textarea>
+                    <p class="text-xs text-zinc-500 mt-1">Leave blank to hide. If set, this notice will broadcast on all dashboards immediately.</p>
+                </div>
+
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Monitored Visa Centers</label>
+                    <textarea name="visa_centers_config" rows="3" placeholder="138:26:Lahore, 137:26:Islamabad, 140:24:Doc Verification" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">{{ settings.get('global.visa_centers_config').value if settings.get('global.visa_centers_config') else '138:26:Lahore, 137:26:Islamabad, 140:24:Doc Verification' }}</textarea>
+                    <p class="text-xs text-zinc-500 mt-1">Format: <code>VAC_ID:TYPE_ID:Name</code> separated by commas. (e.g. 138:26:Lahore, 140:24:Doc Verification)</p>
+                </div>
+            </div>
+
+            <div class="border-t border-zinc-800 pt-4 mt-4 space-y-2">
+                <label class="block text-sm font-medium text-zinc-300 mb-2">Display Preferences</label>
+                <div class="mb-4">
+                    <label class="block text-xs font-medium text-zinc-400 mb-1">Timezone</label>
+                    <select name="ui_timezone" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
+                        <option value="Server Time" {% if not settings.get('ui.timezone') or settings.get('ui.timezone').value == 'Server Time' %}selected{% endif %}>Default (Server Time)</option>
+                        <option value="UTC" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'UTC' %}selected{% endif %}>UTC</option>
+                        <option value="Europe/London" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'Europe/London' %}selected{% endif %}>Europe/London (GMT/BST)</option>
+                        <option value="Europe/Berlin" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'Europe/Berlin' %}selected{% endif %}>Europe/Berlin (CET/CEST)</option>
+                        <option value="America/New_York" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'America/New_York' %}selected{% endif %}>America/New_York (EST/EDT)</option>
+                        <option value="America/Chicago" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'America/Chicago' %}selected{% endif %}>America/Chicago (CST/CDT)</option>
+                        <option value="America/Los_Angeles" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'America/Los_Angeles' %}selected{% endif %}>America/Los_Angeles (PST/PDT)</option>
+                        <option value="Asia/Dubai" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'Asia/Dubai' %}selected{% endif %}>Asia/Dubai (GST)</option>
+                        <option value="Asia/Karachi" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'Asia/Karachi' %}selected{% endif %}>Asia/Karachi (PKT)</option>
+                        <option value="Asia/Kolkata" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'Asia/Kolkata' %}selected{% endif %}>Asia/Kolkata (IST)</option>
+                        <option value="Asia/Singapore" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'Asia/Singapore' %}selected{% endif %}>Asia/Singapore (SGT)</option>
+                        <option value="Asia/Tokyo" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'Asia/Tokyo' %}selected{% endif %}>Asia/Tokyo (JST)</option>
+                        <option value="Australia/Sydney" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'Australia/Sydney' %}selected{% endif %}>Australia/Sydney (AEST/AEDT)</option>
+                    </select>
+                    <p class="text-xs text-zinc-500 mt-1">Converts all historical data and event timestamps to the chosen timezone.</p>
+                </div>
+            </div>
+
+            <div class="border-t border-zinc-800 pt-4 mt-4 space-y-2">
+                <label class="block text-sm font-medium text-zinc-300 mb-2">Notification Preferences</label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" name="notify_login_success" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if not settings.get('notify.login_success') or settings.get('notify.login_success').value == 'true' %}checked{% endif %}>
+                    <span class="text-sm text-zinc-300">Send Login Notifications</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" name="notify_slots_found" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if not settings.get('notify.slots_found') or settings.get('notify.slots_found').value == 'true' %}checked{% endif %}>
+                    <span class="text-sm text-zinc-300">Send Slots Found Notifications</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" name="notify_no_slots_found" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if settings.get('notify.no_slots_found') and settings.get('notify.no_slots_found').value == 'true' %}checked{% endif %}>
+                    <span class="text-sm text-zinc-300">Send No Slots Found Notifications</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer mt-2 pt-2 border-t border-zinc-800/50">
+                    <input type="checkbox" name="detailed_push_logging" class="rounded bg-black border-zinc-800 text-purple-500 focus:ring-purple-500" {% if settings.get('global.detailed_push_logging') and settings.get('global.detailed_push_logging').value == 'true' %}checked{% endif %}>
+                    <span class="text-sm text-zinc-300 font-medium">Enable Detailed Push Logging</span>
+                </label>
+                <p class="text-xs text-zinc-500 mt-1 pl-6">Logs individual device delivery statuses instead of just the broadcast event.</p>
+            </div>
+
+            <div class="border-t border-zinc-800 pt-4 mt-4 space-y-3">
+                <label class="block text-sm font-medium text-zinc-300 mb-2">Configure PWA (Tenant Dashboard)</label>
+                <label class="flex items-center justify-between cursor-pointer">
+                    <span class="text-sm text-zinc-300">Show Health Indicator</span>
+                    <input type="checkbox" name="pwa_show_health_indicator" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if not settings.get('pwa.show_health_indicator') or settings.get('pwa.show_health_indicator').value == 'true' %}checked{% endif %}>
+                </label>
+                <div class="mb-2">
+                    <label class="block text-xs font-medium text-zinc-400 mb-1">Health Indicator Mode</label>
+                    <select name="pwa_health_indicator_mode" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
+                        <option value="percentage" {% if not settings.get('pwa.health_indicator_mode') or settings.get('pwa.health_indicator_mode').value == 'percentage' %}selected{% endif %}>Dynamic Percentage (e.g. 98%)</option>
+                        <option value="boolean" {% if settings.get('pwa.health_indicator_mode') and settings.get('pwa.health_indicator_mode').value == 'boolean' %}selected{% endif %}>Simple Boolean (e.g. System Healthy)</option>
+                        <option value="fixed_100" {% if settings.get('pwa.health_indicator_mode') and settings.get('pwa.health_indicator_mode').value == 'fixed_100' %}selected{% endif %}>Fixed 100% Healthy</option>
+                    </select>
+                </div>
+                <label class="flex items-center justify-between cursor-pointer">
+                    <span class="text-sm text-zinc-300">Show Live Timeline</span>
+                    <input type="checkbox" name="pwa_show_live_timeline" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if not settings.get('pwa.show_live_timeline') or settings.get('pwa.show_live_timeline').value == 'true' %}checked{% endif %}>
+                </label>
+                <label class="flex items-center justify-between cursor-pointer">
+                    <span class="text-sm text-zinc-300">Show Notification Status Card</span>
+                    <input type="checkbox" name="pwa_show_notification_status" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if not settings.get('pwa.show_notification_status') or settings.get('pwa.show_notification_status').value == 'true' %}checked{% endif %}>
+                </label>
+            </div>
+            
+            <div class="border-t border-zinc-800 pt-4 mt-4 space-y-3">
+                <label class="block text-sm font-medium text-zinc-300 mb-2">PWA Navigation (Menu Permissions)</label>
+                <p class="text-xs text-zinc-500 mb-4">Control which sections are visible to Tenant Admins vs Staff. Home, Inbox, Client Directory, and Push History are always visible.</p>
                 
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-300 mb-1">Min Slot Delay (seconds)</label>
-                        <input type="number" step="0.1" name="min_slot_delay" value="{{ settings.get('global.min_slot_delay').value if settings.get('global.min_slot_delay') else '4' }}" placeholder="4" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
-                        <p class="text-xs text-zinc-500 mt-1">Minimum wait between checking dates.</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-300 mb-1">Max Slot Delay (seconds)</label>
-                        <input type="number" step="0.1" name="max_slot_delay" value="{{ settings.get('global.max_slot_delay').value if settings.get('global.max_slot_delay') else '8' }}" placeholder="8" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
-                        <p class="text-xs text-zinc-500 mt-1">Maximum wait between checking dates.</p>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-300 mb-1">Default Date From</label>
-                        <input type="text" name="default_date_from" value="{{ settings.get('global.default_date_from').value if settings.get('global.default_date_from') else '' }}" placeholder="DD/MM/YYYY" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-300 mb-1">Default Date To</label>
-                        <input type="text" name="default_date_to" value="{{ settings.get('global.default_date_to').value if settings.get('global.default_date_to') else '' }}" placeholder="DD/MM/YYYY" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
-                    </div>
-                </div>
-
-                <div class="pt-4 border-t border-zinc-800">
-                    <h4 class="text-md font-semibold text-zinc-200 mb-4">Branding & Notices</h4>
-                    
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-300 mb-1">Brand Name</label>
-                            <input type="text" name="brand_name" value="{{ settings.get('global.brand_name').value if settings.get('global.brand_name') else 'Alamia Automation' }}" placeholder="Alamia Automation" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-300 mb-1">Brand Subtitle</label>
-                            <input type="text" name="brand_subtitle" value="{{ settings.get('global.brand_subtitle').value if settings.get('global.brand_subtitle') else 'Automating Business Solutions' }}" placeholder="Automating Business Solutions" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-300 mb-1">Global Admin Notice</label>
-                        <textarea name="admin_notice" rows="2" placeholder="System maintenance scheduled for tonight..." class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">{{ settings.get('global.admin_notice').value if settings.get('global.admin_notice') else '' }}</textarea>
-                        <p class="text-xs text-zinc-500 mt-1">Leave blank to hide. If set, this notice will broadcast on all dashboards immediately.</p>
-                    </div>
-
-                    <div class="mt-4">
-                        <label class="block text-sm font-medium text-zinc-300 mb-1">Monitored Visa Centers</label>
-                        <textarea name="visa_centers_config" rows="3" placeholder="138:26:Lahore, 137:26:Islamabad, 140:24:Doc Verification" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">{{ settings.get('global.visa_centers_config').value if settings.get('global.visa_centers_config') else '138:26:Lahore, 137:26:Islamabad, 140:24:Doc Verification' }}</textarea>
-                        <p class="text-xs text-zinc-500 mt-1">Format: <code>VAC_ID:TYPE_ID:Name</code> separated by commas. (e.g. 138:26:Lahore, 140:24:Doc Verification)</p>
-                    </div>
-                </div>
-
-                <div class="border-t border-zinc-800 pt-4 mt-4 space-y-2">
-                    <label class="block text-sm font-medium text-zinc-300 mb-2">Display Preferences</label>
-                    <div class="mb-4">
-                        <label class="block text-xs font-medium text-zinc-400 mb-1">Timezone</label>
-                        <select name="ui_timezone" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
-                            <option value="Server Time" {% if not settings.get('ui.timezone') or settings.get('ui.timezone').value == 'Server Time' %}selected{% endif %}>Default (Server Time)</option>
-                            <option value="UTC" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'UTC' %}selected{% endif %}>UTC</option>
-                            <option value="Europe/London" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'Europe/London' %}selected{% endif %}>Europe/London (GMT/BST)</option>
-                            <option value="Europe/Berlin" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'Europe/Berlin' %}selected{% endif %}>Europe/Berlin (CET/CEST)</option>
-                            <option value="America/New_York" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'America/New_York' %}selected{% endif %}>America/New_York (EST/EDT)</option>
-                            <option value="America/Chicago" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'America/Chicago' %}selected{% endif %}>America/Chicago (CST/CDT)</option>
-                            <option value="America/Los_Angeles" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'America/Los_Angeles' %}selected{% endif %}>America/Los_Angeles (PST/PDT)</option>
-                            <option value="Asia/Dubai" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'Asia/Dubai' %}selected{% endif %}>Asia/Dubai (GST)</option>
-                            <option value="Asia/Karachi" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'Asia/Karachi' %}selected{% endif %}>Asia/Karachi (PKT)</option>
-                            <option value="Asia/Kolkata" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'Asia/Kolkata' %}selected{% endif %}>Asia/Kolkata (IST)</option>
-                            <option value="Asia/Singapore" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'Asia/Singapore' %}selected{% endif %}>Asia/Singapore (SGT)</option>
-                            <option value="Asia/Tokyo" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'Asia/Tokyo' %}selected{% endif %}>Asia/Tokyo (JST)</option>
-                            <option value="Australia/Sydney" {% if settings.get('ui.timezone') and settings.get('ui.timezone').value == 'Australia/Sydney' %}selected{% endif %}>Australia/Sydney (AEST/AEDT)</option>
-                        </select>
-                        <p class="text-xs text-zinc-500 mt-1">Converts all historical data and event timestamps to the chosen timezone.</p>
-                    </div>
-                </div>
-
-                <div class="border-t border-zinc-800 pt-4 mt-4 space-y-2">
-                    <label class="block text-sm font-medium text-zinc-300 mb-2">Notification Preferences</label>
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" name="notify_login_success" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if not settings.get('notify.login_success') or settings.get('notify.login_success').value == 'true' %}checked{% endif %}>
-                        <span class="text-sm text-zinc-300">Send Login Notifications</span>
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" name="notify_slots_found" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if not settings.get('notify.slots_found') or settings.get('notify.slots_found').value == 'true' %}checked{% endif %}>
-                        <span class="text-sm text-zinc-300">Send Slots Found Notifications</span>
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" name="notify_no_slots_found" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if settings.get('notify.no_slots_found') and settings.get('notify.no_slots_found').value == 'true' %}checked{% endif %}>
-                        <span class="text-sm text-zinc-300">Send No Slots Found Notifications</span>
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer mt-2 pt-2 border-t border-zinc-800/50">
-                        <input type="checkbox" name="detailed_push_logging" class="rounded bg-black border-zinc-800 text-purple-500 focus:ring-purple-500" {% if settings.get('global.detailed_push_logging') and settings.get('global.detailed_push_logging').value == 'true' %}checked{% endif %}>
-                        <span class="text-sm text-zinc-300 font-medium">Enable Detailed Push Logging</span>
-                    </label>
-                    <p class="text-xs text-zinc-500 mt-1 pl-6">Logs individual device delivery statuses instead of just the broadcast event.</p>
-                </div>
-
-                <div class="border-t border-zinc-800 pt-4 mt-4 space-y-3">
-                    <label class="block text-sm font-medium text-zinc-300 mb-2">Configure PWA (Tenant Dashboard)</label>
-                    <label class="flex items-center justify-between cursor-pointer">
-                        <span class="text-sm text-zinc-300">Show Health Indicator</span>
-                        <input type="checkbox" name="pwa_show_health_indicator" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if not settings.get('pwa.show_health_indicator') or settings.get('pwa.show_health_indicator').value == 'true' %}checked{% endif %}>
-                    </label>
-                    <div class="mb-2">
-                        <label class="block text-xs font-medium text-zinc-400 mb-1">Health Indicator Mode</label>
-                        <select name="pwa_health_indicator_mode" class="w-full text-sm bg-black border-zinc-800 text-zinc-300 rounded-md shadow-sm focus:border-zinc-500 focus:ring-zinc-500">
-                            <option value="percentage" {% if not settings.get('pwa.health_indicator_mode') or settings.get('pwa.health_indicator_mode').value == 'percentage' %}selected{% endif %}>Dynamic Percentage (e.g. 98%)</option>
-                            <option value="boolean" {% if settings.get('pwa.health_indicator_mode') and settings.get('pwa.health_indicator_mode').value == 'boolean' %}selected{% endif %}>Simple Boolean (e.g. System Healthy)</option>
-                            <option value="fixed_100" {% if settings.get('pwa.health_indicator_mode') and settings.get('pwa.health_indicator_mode').value == 'fixed_100' %}selected{% endif %}>Fixed 100% Healthy</option>
-                        </select>
-                    </div>
-                    <label class="flex items-center justify-between cursor-pointer">
-                        <span class="text-sm text-zinc-300">Show Live Timeline</span>
-                        <input type="checkbox" name="pwa_show_live_timeline" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if not settings.get('pwa.show_live_timeline') or settings.get('pwa.show_live_timeline').value == 'true' %}checked{% endif %}>
-                    </label>
-                    <label class="flex items-center justify-between cursor-pointer">
-                        <span class="text-sm text-zinc-300">Show Notification Status Card</span>
-                        <input type="checkbox" name="pwa_show_notification_status" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if not settings.get('pwa.show_notification_status') or settings.get('pwa.show_notification_status').value == 'true' %}checked{% endif %}>
-                    </label>
-                </div>
-                
-                <div class="border-t border-zinc-800 pt-4 mt-4 space-y-3">
-                    <label class="block text-sm font-medium text-zinc-300 mb-2">PWA Navigation (Menu Permissions)</label>
-                    <p class="text-xs text-zinc-500 mb-4">Control which sections are visible to Tenant Admins vs Staff. Home, Inbox, Client Directory, and Push History are always visible.</p>
-                    
-                    <div class="grid grid-cols-2 gap-4">
-                        <!-- Tenant Admin Column -->
-                        <div class="space-y-3 bg-zinc-900/30 p-3 rounded-lg border border-zinc-800/50">
-                            <h5 class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Tenant Admin</h5>
-                            
-                            <label class="flex items-center justify-between cursor-pointer">
-                                <span class="text-xs text-zinc-300">Queue Management</span>
-                                <input type="checkbox" name="nav_admin_queue" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if settings.get('nav.admin.show_queue') and settings.get('nav.admin.show_queue').value == 'true' %}checked{% endif %}>
-                            </label>
-                            
-                            <label class="flex items-center justify-between cursor-pointer">
-                                <span class="text-xs text-zinc-300">Bookings</span>
-                                <input type="checkbox" name="nav_admin_bookings" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if settings.get('nav.admin.show_bookings') and settings.get('nav.admin.show_bookings').value == 'true' %}checked{% endif %}>
-                            </label>
-
-                            <label class="flex items-center justify-between cursor-pointer">
-                                <span class="text-xs text-zinc-300">Staff Management</span>
-                                <input type="checkbox" name="nav_admin_staff" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if settings.get('nav.admin.show_staff') and settings.get('nav.admin.show_staff').value == 'true' %}checked{% endif %}>
-                            </label>
-                        </div>
+                    <!-- Tenant Admin Column -->
+                    <div class="space-y-3 bg-zinc-900/30 p-3 rounded-lg border border-zinc-800/50">
+                        <h5 class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Tenant Admin</h5>
                         
-                        <!-- Staff Column -->
-                        <div class="space-y-3 bg-zinc-900/30 p-3 rounded-lg border border-zinc-800/50">
-                            <h5 class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Staff</h5>
-                            
-                            <label class="flex items-center justify-between cursor-pointer">
-                                <span class="text-xs text-zinc-300">Queue Management</span>
-                                <input type="checkbox" name="nav_staff_queue" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if settings.get('nav.staff.show_queue') and settings.get('nav.staff.show_queue').value == 'true' %}checked{% endif %}>
-                            </label>
-                            
-                            <label class="flex items-center justify-between cursor-pointer opacity-50 cursor-not-allowed" title="Staff cannot manage Bookings or Staff">
-                                <span class="text-xs text-zinc-300">Bookings (Admin only)</span>
-                                <input type="checkbox" disabled class="rounded bg-black border-zinc-800">
-                            </label>
+                        <label class="flex items-center justify-between cursor-pointer">
+                            <span class="text-xs text-zinc-300">Queue Management</span>
+                            <input type="checkbox" name="nav_admin_queue" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if settings.get('nav.admin.show_queue') and settings.get('nav.admin.show_queue').value == 'true' %}checked{% endif %}>
+                        </label>
+                        
+                        <label class="flex items-center justify-between cursor-pointer">
+                            <span class="text-xs text-zinc-300">Bookings</span>
+                            <input type="checkbox" name="nav_admin_bookings" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if settings.get('nav.admin.show_bookings') and settings.get('nav.admin.show_bookings').value == 'true' %}checked{% endif %}>
+                        </label>
 
-                            <label class="flex items-center justify-between cursor-pointer opacity-50 cursor-not-allowed" title="Staff cannot manage Staff">
-                                <span class="text-xs text-zinc-300">Staff Mgmt (Admin only)</span>
-                                <input type="checkbox" disabled class="rounded bg-black border-zinc-800">
-                            </label>
-                        </div>
+                        <label class="flex items-center justify-between cursor-pointer">
+                            <span class="text-xs text-zinc-300">Staff Management</span>
+                            <input type="checkbox" name="nav_admin_staff" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if settings.get('nav.admin.show_staff') and settings.get('nav.admin.show_staff').value == 'true' %}checked{% endif %}>
+                        </label>
                     </div>
-                <div class="pt-4 border-t border-zinc-800">
-                    <h4 class="text-md font-semibold text-zinc-200 mb-3 flex items-center gap-2">
-                        <i data-lucide="flask-conical" class="w-4 h-4 text-indigo-400"></i> Testing & Mock Controls
-                    </h4>
-                    <div class="bg-indigo-950/20 border border-indigo-500/20 rounded-lg p-3">
-                        <label class="flex items-start gap-3 cursor-pointer">
-                            <input type="checkbox" name="enable_mock_slots" value="true" {{ 'checked' if settings.get('testing.enable_mock_slots') and settings.get('testing.enable_mock_slots').value == 'true' else '' }} class="mt-0.5 rounded bg-black border-zinc-800 text-indigo-600 focus:ring-indigo-500">
-                            <div>
-                                <span class="text-sm font-medium text-zinc-200 block">Enable Mock Slot Drop (Testing Mode)</span>
-                                <span class="text-xs text-zinc-400 block mt-0.5">When checked, worker slot checks drop 1 mock open slot to test Push Alerts and Waitlist Auto-Dispatch end-to-end without waiting for real portal drops.</span>
-                            </div>
+                    
+                    <!-- Staff Column -->
+                    <div class="space-y-3 bg-zinc-900/30 p-3 rounded-lg border border-zinc-800/50">
+                        <h5 class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Staff</h5>
+                        
+                        <label class="flex items-center justify-between cursor-pointer">
+                            <span class="text-xs text-zinc-300">Queue Management</span>
+                            <input type="checkbox" name="nav_staff_queue" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if settings.get('nav.staff.show_queue') and settings.get('nav.staff.show_queue').value == 'true' %}checked{% endif %}>
+                        </label>
+                        
+                        <label class="flex items-center justify-between cursor-pointer opacity-50 cursor-not-allowed" title="Staff cannot manage Bookings or Staff">
+                            <span class="text-xs text-zinc-300">Bookings (Admin only)</span>
+                            <input type="checkbox" disabled class="rounded bg-black border-zinc-800">
+                        </label>
+
+                        <label class="flex items-center justify-between cursor-pointer opacity-50 cursor-not-allowed" title="Staff cannot manage Staff">
+                            <span class="text-xs text-zinc-300">Staff Mgmt (Admin only)</span>
+                            <input type="checkbox" disabled class="rounded bg-black border-zinc-800">
                         </label>
                     </div>
                 </div>
+            </div>
 
-                <div class="pt-4 mt-auto">
-                    <button type="submit" class="w-full inline-flex justify-center items-center rounded-md text-sm font-medium h-9 px-4 py-2 bg-white text-black hover:bg-zinc-200 transition-colors shadow-sm">
-                        Save Global Defaults
-                    </button>
+            <div class="pt-4 border-t border-zinc-800">
+                <h4 class="text-md font-semibold text-zinc-200 mb-3 flex items-center gap-2">
+                    <i data-lucide="flask-conical" class="w-4 h-4 text-indigo-400"></i> Testing & Mock Controls
+                </h4>
+                <div class="bg-indigo-950/20 border border-indigo-500/20 rounded-lg p-3">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                        <input type="checkbox" name="enable_mock_slots" value="true" {{ 'checked' if settings.get('testing.enable_mock_slots') and settings.get('testing.enable_mock_slots').value == 'true' else '' }} class="mt-0.5 rounded bg-black border-zinc-800 text-indigo-600 focus:ring-indigo-500">
+                        <div>
+                            <span class="text-sm font-medium text-zinc-200 block">Enable Mock Slot Drop (Testing Mode)</span>
+                            <span class="text-xs text-zinc-400 block mt-0.5">When checked, worker slot checks drop 1 mock open slot to test Push Alerts and Waitlist Auto-Dispatch end-to-end without waiting for real portal drops.</span>
+                        </div>
+                    </label>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
+
+    <!-- APPOINTMENT AVAILABILITY / DAY RULES -->
+    <div class="bg-[#09090b] border border-zinc-800 rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
+        <div class="px-5 py-4 border-b border-zinc-800 bg-zinc-900/50 flex justify-between items-center">
+            <h3 class="font-medium text-zinc-100 flex items-center gap-2">
+                <i data-lucide="calendar" class="w-4 h-4 text-indigo-400"></i> Appointment Availability / Day Rules
+            </h3>
+            <span class="text-xs text-zinc-400 bg-zinc-800/80 px-2 py-0.5 rounded border border-zinc-700">Per-Type Rules</span>
+        </div>
+        
+        <div class="p-5 flex-1 flex flex-col justify-between">
+            <div class="space-y-4">
+                <div class="p-3 bg-zinc-900/60 border border-zinc-800/80 rounded-lg">
+                    <p class="text-xs text-zinc-300 leading-relaxed">
+                        Specify which days of the week each appointment category is available. Workers will <strong class="text-indigo-400 font-semibold">strictly monitor only the selected days</strong> and will skip unselected weekdays.
+                    </p>
+                </div>
+
+                <div class="space-y-4 divide-y divide-zinc-800/60 pt-1">
+                    {% for meta in appointment_types_meta %}
+                    {% set selected_days = appointment_day_rules.get(meta.code, []) %}
+                    <div class="pt-4 first:pt-0">
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <div class="flex items-center gap-2">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                                    Type {{ meta.code }}
+                                </span>
+                                <span class="text-sm font-semibold text-zinc-100">{{ meta.name }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Weekday Selector Buttons (Accessible Checkboxes) -->
+                        <div class="flex flex-wrap items-center gap-1.5 mt-2">
+                            {% for day in all_weekdays %}
+                            <label class="cursor-pointer select-none">
+                                <input type="checkbox" name="day_rule_{{ meta.code }}_{{ day }}" value="{{ day }}"
+                                    class="peer sr-only" {% if day in selected_days %}checked{% endif %}>
+                                <span class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-semibold rounded-md border border-zinc-800 bg-zinc-900 text-zinc-400 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-500 hover:border-zinc-700 hover:text-zinc-200 transition-all shadow-sm">
+                                    {{ day }}
+                                </span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="text-[11px] text-zinc-400 mt-2 flex items-center gap-1.5">
+                            {% if selected_days %}
+                                <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                <span class="text-zinc-300 font-medium">Monitoring active on:</span>
+                                <span class="text-emerald-400 font-semibold">{{ selected_days | join(', ') }}</span>
+                            {% else %}
+                                <span class="inline-block w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                                <span class="text-amber-400/90 italic">No days selected — workers will not query this type.</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="pt-6 mt-6 border-t border-zinc-800">
+                <button type="submit" class="w-full inline-flex justify-center items-center rounded-md text-sm font-semibold h-10 px-4 py-2 bg-white text-black hover:bg-zinc-200 transition-colors shadow-sm">
+                    <i data-lucide="save" class="w-4 h-4 mr-2"></i> Save All Settings & Day Rules
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
     <!-- PUSH NOTIFICATIONS SETUP -->
     <div class="bg-[#09090b] border border-zinc-800 rounded-xl shadow-sm overflow-hidden flex flex-col h-full lg:col-span-2">
         <div class="px-5 py-4 border-b border-zinc-800 bg-zinc-900/50 flex justify-between items-center">
