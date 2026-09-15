@@ -204,7 +204,7 @@ def render_template(name: str, context: dict, db: Session):
             
         if db.query(Assignment).count() == 0:
             missing_setup_steps.append({
-                "title": "No Scraper Assignments",
+                "title": "No Monitoring Assignments",
                 "message": "Create an assignment to tell the scheduler which visa centers, locations, and dates to monitor for slot availability.",
                 "link": "/assignments",
                 "link_text": "Create Assignment"
@@ -360,7 +360,7 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
         active_alerts.append({
             "severity": "critical",
             "title": "CapSolver API Balance Exhausted (ERROR_ZERO_BALANCE)",
-            "message": "Workers cannot solve login or booking CAPTCHAs because the CapSolver account balance is zero ($0.00). Automated scraping and booking are temporarily halted.",
+            "message": "Workers cannot solve login or booking CAPTCHAs because the CapSolver account balance is zero ($0.00). Automated monitoring and booking are temporarily halted.",
             "action_link": "https://www.capsolver.com",
             "action_text": "Top Up CapSolver Funds",
             "is_external": True
@@ -379,8 +379,8 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
     if paused_assignments and not is_zero_balance and not is_proxy_down:
         active_alerts.append({
             "severity": "warning",
-            "title": f"Scraping Paused on {len(paused_assignments)} Assignment(s)",
-            "message": "Scraping was automatically paused after repeated failures to protect accounts. Check account credentials and unpause in Assignments.",
+            "title": f"Monitoring Paused on {len(paused_assignments)} Assignment(s)",
+            "message": "Monitoring was automatically paused after repeated failures to protect accounts. Check account credentials and unpause in Assignments.",
             "action_link": "/assignments",
             "action_text": "View Assignments",
             "is_external": False
@@ -1434,24 +1434,60 @@ async def delete_proxy(proxy_id: int, request: Request, db: Session = Depends(ge
     return RedirectResponse(url="/proxies", status_code=303)
 
 @router.get("/booking-tasks", response_class=HTMLResponse)
-async def booking_tasks_page(request: Request, db: Session = Depends(get_db)):
+async def booking_tasks_page(request: Request, tab: Optional[str] = "all", db: Session = Depends(get_db)):
     user = get_ui_user(request, db)
     if not user:
         return RedirectResponse(url="/login", status_code=303)
-        
-    query = db.query(BookingTask)
-    if user.role == RoleEnum.TENANT_ADMIN:
-        query = query.filter(BookingTask.tenant_id == user.tenant_id)
-    elif user.role != RoleEnum.SUPER_ADMIN:
+    if user.role not in [RoleEnum.SUPER_ADMIN, RoleEnum.TENANT_ADMIN, RoleEnum.STAFF]:
         return RedirectResponse(url="/", status_code=303)
         
-    tasks = query.order_by(BookingTask.id.desc()).all()
+    base_query = db.query(BookingTask)
+    if user.role in [RoleEnum.TENANT_ADMIN, RoleEnum.STAFF]:
+        base_query = base_query.filter(BookingTask.tenant_id == user.tenant_id)
+        
+    total_all = base_query.count()
+    total_claimed = base_query.filter(BookingTask.status == "CLAIMED").count()
+    total_success = base_query.filter(BookingTask.status == "SUCCESS").count()
+    total_pending = base_query.filter(BookingTask.status == "PENDING").count()
+    total_failed = base_query.filter(BookingTask.status.in_(["FAILED", "EXPIRED"])).count()
+    
+    query = base_query
+    if tab == "claimed":
+        query = query.filter(BookingTask.status == "CLAIMED")
+    elif tab == "success":
+        query = query.filter(BookingTask.status == "SUCCESS")
+    elif tab == "pending":
+        query = query.filter(BookingTask.status == "PENDING")
+    elif tab == "failed":
+        query = query.filter(BookingTask.status.in_(["FAILED", "EXPIRED"]))
+    else:
+        tab = "all"
+        
+    tasks = query.order_by(BookingTask.id.desc()).limit(200).all()
+    
+    vc_setting = db.query(SystemSetting).filter(SystemSetting.key == "global.visa_centers_config").first()
+    vc_config_str = vc_setting.value if vc_setting and vc_setting.value else "138:26:Lahore, 137:26:Islamabad, 140:24:Doc Verification"
+    vc_map = {}
+    for center_str in vc_config_str.split(","):
+        parts = center_str.strip().split(":")
+        if len(parts) >= 3:
+            vc_map[parts[0]] = parts[2]
+            
+    for t in tasks:
+        c_name = vc_map.get(str(t.visa_center))
+        setattr(t, 'display_visa_center', f"{c_name} ({t.visa_center})" if c_name else f"Center {t.visa_center}")
     
     return render_template("booking_tasks.html", {
         "request": request,
         "user": user,
         "active_page": "booking_tasks",
-        "tasks": tasks
+        "tasks": tasks,
+        "current_tab": tab,
+        "total_all": total_all,
+        "total_claimed": total_claimed,
+        "total_success": total_success,
+        "total_pending": total_pending,
+        "total_failed": total_failed
     }, db)
 
 @router.get("/clients", response_class=HTMLResponse)

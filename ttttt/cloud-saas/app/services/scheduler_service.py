@@ -51,7 +51,7 @@ class SchedulerService:
             if lease:
                 return lease
 
-        # 2. Scraping Phase
+        # 2. Monitoring Phase
         if worker.can_scrape:
             lease = self._try_schedule_scraping(worker)
             if lease:
@@ -191,10 +191,10 @@ class SchedulerService:
                     break
                     
         if not due_assignment:
-            self._log_decision(worker.worker_id, "NO_ASSIGNMENT", "No scraping or booking tasks available.")
+            self._log_decision(worker.worker_id, "NO_ASSIGNMENT", "No monitoring or booking tasks available.")
             return None
             
-        # Find best account (allow global accounts or any registered scraping accounts)
+        # Find best account (allow global accounts or any registered monitoring accounts)
         accounts = self.db.query(PortalAccount).filter(
             PortalAccount.supports_scraping == True,
             or_(PortalAccount.is_archived == False, PortalAccount.is_archived == None)
@@ -211,7 +211,7 @@ class SchedulerService:
         if not best_account:
             matching_provider_accounts = [a for a in accounts if a.provider and a.provider.strip().upper() == due_assignment.provider.strip().upper()]
             if not matching_provider_accounts:
-                reason = f"No portal account registered for provider '{due_assignment.provider}' with scraping enabled."
+                reason = f"No portal account registered for provider '{due_assignment.provider}' with monitoring enabled."
             else:
                 statuses = set(a.status for a in matching_provider_accounts)
                 reason = f"Account(s) for '{due_assignment.provider}' exist, but none are READY (current status: {', '.join(statuses)})."
@@ -249,7 +249,7 @@ class SchedulerService:
                 best_proxy = proxy
                 
         if not best_proxy:
-            self._log_decision(worker.worker_id, "NO_READY_PROXY", "No capable scraping proxy available", assignment_id=due_assignment.id)
+            self._log_decision(worker.worker_id, "NO_READY_PROXY", "No capable monitoring proxy available", assignment_id=due_assignment.id)
             return None
 
         # Concurrency verification lock
@@ -282,7 +282,7 @@ class SchedulerService:
         
         self.db.add(lease)
         self._log_decision(
-            worker.worker_id, "SUCCESS", "Leased scraping task", 
+            worker.worker_id, "SUCCESS", "Leased monitoring task", 
             assignment_id=due_assignment.id, account_id=best_account.id, proxy_id=best_proxy.id
         )
         self.db.commit()

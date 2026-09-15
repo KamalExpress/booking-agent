@@ -20,18 +20,18 @@ NAV_GUIDANCE_DICT = {
     "NAV_WORKERS": {
         "title": "Step 4: Workers",
         "summary": "Deploy headless worker nodes to your infrastructure. They will appear here once they connect.",
-        "why": "Workers are the actual compute engines that execute the scraping and booking tasks.",
+        "why": "Workers are the actual compute engines that execute the monitoring and booking tasks.",
         "severity": "Info"
     },
     "NAV_ASSIGNMENTS": {
-        "title": "Step 5: Scrapers (Tasks)",
-        "summary": "Finally, create a Scraper Assignment. The scheduler will match a Worker, Proxy, and Account to execute it.",
-        "why": "Assignments define WHAT you want to scrape (e.g. Visa Type, Location, Polling Interval).",
+        "title": "Step 5: Monitoring Assignments",
+        "summary": "Finally, create a Monitoring Assignment. The scheduler will match a Worker, Proxy, and Account to execute it.",
+        "why": "Assignments define WHAT you want to monitor (e.g. Visa Type, Location, Polling Interval).",
         "severity": "Info"
     },
     "NAV_BOOKING_TASKS": {
         "title": "Auto-Bookers",
-        "summary": "When a Scraper finds a slot, it creates a Booking Task here automatically.",
+        "summary": "When a Monitoring Agent finds a slot, it creates a Booking Task here automatically.",
         "severity": "Success"
     },
     "NAV_TENANTS": {

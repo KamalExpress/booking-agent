@@ -38,7 +38,7 @@ GUIDANCE_DICT = {
     "NO_READY_WORKER": {
         "title": "No Worker Available",
         "summary": "No worker was available to accept the task.",
-        "why": "No worker with the necessary capabilities (Scrape/Book) polled the server.",
+        "why": "No worker with the necessary capabilities (Monitor/Book) polled the server.",
         "how_to_fix": [
             "Ensure worker instances are running.",
             "Verify workers are configured with the correct capabilities."

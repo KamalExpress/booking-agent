@@ -150,7 +150,7 @@ class SlotMonitorEngine(threading.Thread):
                     
                 accounts = db.query(ScraperAccount).filter(ScraperAccount.is_active == True).all()
                 if not accounts:
-                    logging.error("No active Scraper Accounts found in database!")
+                    logging.error("No active Monitoring Accounts found in database!")
                     self._wake_event.wait(60)
                     self._wake_event.clear()
                     continue
@@ -206,7 +206,7 @@ class SlotMonitorEngine(threading.Thread):
                                 self.session_manager.invalidate_session(account.username)
                                 account_failed = True
                                 break
-                                
+                            
                             elif response.status_code == 200:
                                 slots_data = response.json()
                                 if slots_data and slots_data.get("code") == "SUCCESS":
@@ -230,13 +230,13 @@ class SlotMonitorEngine(threading.Thread):
                             break
                             
                     except Exception as e:
-                        logging.error(f"Exception during scraping with {account.username}: {e}")
+                        logging.error(f"Exception during monitoring with {account.username}: {e}")
                         import traceback
                         traceback.print_exc()
                         continue
                 
                 if not scraper_success:
-                    logging.error("All scraper accounts failed! Will retry next cycle.")
+                    logging.error("All monitoring accounts failed! Will retry next cycle.")
                 
                 if not available_slots:
                     self.previously_seen_slot_ids.clear()
