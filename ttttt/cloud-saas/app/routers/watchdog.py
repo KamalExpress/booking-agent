@@ -117,14 +117,17 @@ def get_watchdog_system_status(
         st = q.status or "PENDING"
         queue_counts[st] = queue_counts.get(st, 0) + 1
 
-    queue_sample = [{
-        "id": q.id,
-        "applicant_id": q.applicant_id,
-        "applicant_name": f"{q.applicant.firstname} {q.applicant.surname}" if q.applicant else "Unknown",
-        "visa_center": q.visa_center,
-        "status": q.status,
-        "priority": q.priority
-    } for q in queue_entries[:15]]
+    queue_sample = []
+    for q in queue_entries[:15]:
+        name = f"{(q.applicant.firstname or '')} {(q.applicant.surname or '')}".strip() if q.applicant else f"Applicant #{q.applicant_id}"
+        queue_sample.append({
+            "id": q.id,
+            "applicant_id": q.applicant_id,
+            "applicant_name": name or f"Applicant #{q.applicant_id}",
+            "visa_center": q.visa_center,
+            "status": q.status,
+            "priority": q.priority
+        })
 
     # 6. Booking Tasks
     tasks = db.query(BookingTask).order_by(BookingTask.id.desc()).limit(15).all()
