@@ -305,23 +305,54 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
     
     recent_logs = db.query(EventLog).order_by(EventLog.created_at.desc()).limit(15).all()
     
-    # Calculate System Health
+    # Calculate True Operational Health
     health_score = 0
-    if active_workers > 0:
-        health_score += 60
-        if active_workers >= 3:
+    if active_workers == 0:
+        health_score = 0
+        is_healthy = False
+    else:
+        # Base connectivity
+        health_score = 60
+        if active_workers >= 2:
             health_score += 15
             
-    if global_last_checked_time:
-        delta_seconds = (now - global_last_checked_time).total_seconds()
-        if delta_seconds < 120:
-            health_score += 25
-        elif delta_seconds < 300:
-            health_score += 10
+        # Pacing & Recency
+        if global_last_checked_time:
+            delta_seconds = (now - global_last_checked_time).total_seconds()
+            if delta_seconds < 180:
+                health_score += 25
+            elif delta_seconds < 600:
+                health_score += 10
+
+        # Penalize for recent operational failures in the last 15 minutes
+        recent_window = now - timedelta(minutes=15)
+        recent_critical_errors = db.query(EventLog).filter(
+            EventLog.created_at >= recent_window,
+            EventLog.severity == "error",
+            EventLog.event_type.in_(["LOGIN_FAILED", "PROXY_BANNED", "LEASE_FAILED", "CAPTCHA_FAILED", "LOGIN_EXCEPTION"])
+        ).count()
+        
+        # Check for proxy quota or zero balance issues
+        recent_error_logs = db.query(EventLog).filter(
+            EventLog.created_at >= recent_window,
+            EventLog.event_type.in_(["PROXY_BANNED", "LEASE_FAILED", "LOGIN_EXCEPTION", "CAPTCHA_FAILED"])
+        ).all()
+        
+        is_proxy_down = any("407" in str(e.payload) for e in recent_error_logs)
+        is_zero_balance = any("ERROR_ZERO_BALANCE" in str(e.payload) or "ZERO_BALANCE" in str(e.payload) for e in recent_error_logs)
+        
+        # Deductions
+        if is_zero_balance:
+            health_score -= 55
+        elif is_proxy_down:
+            health_score -= 45
+        elif recent_critical_errors >= 3:
+            health_score -= 35
+        elif recent_critical_errors > 0:
+            health_score -= (recent_critical_errors * 10)
             
-    # Cap at 100
-    health_score = min(100, health_score)
-    is_healthy = health_score > 70
+        health_score = max(0, min(100, health_score))
+        is_healthy = health_score > 70
     
     # Fetch PWA Config
     pwa_settings = {

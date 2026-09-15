@@ -1,7 +1,9 @@
-import abc
+﻿import abc
 import requests
 import time
 import logging
+import os
+import sys
 
 class CaptchaService(abc.ABC):
     @abc.abstractmethod
@@ -17,7 +19,6 @@ class NopeChaService(CaptchaService):
     def solve(self, sitekey: str, url: str, **kwargs) -> str:
         logging.info(f"Submitting NopeCha job for sitekey {sitekey} on {url}...")
         
-        # Submit job
         payload = {
             'type': 'recaptcha2',
             'sitekey': sitekey,
@@ -39,9 +40,8 @@ class NopeChaService(CaptchaService):
             logging.error(f"Error submitting NopeCha job: {e}")
             return ""
 
-        # Poll for completion
         logging.info("Polling for NopeCha completion...")
-        for _ in range(40): # poll for max 120 seconds
+        for _ in range(40):
             time.sleep(3)
             try:
                 poll_url = f"{self.api_url}?key={self.api_key}&id={job_id}"
@@ -94,23 +94,28 @@ class CapSolverService(CaptchaService):
                 payload["task"]["proxyPassword"] = parsed.password
             
             try:
-                res = requests.post(self.create_task_url, json=payload).json()
+                res = requests.post(self.create_task_url, json=payload, timeout=15).json()
                 if res.get("errorId") != 0:
+                    error_code = res.get("errorCode", "")
+                    error_desc = res.get("errorDescription", "")
                     logging.error(f"CapSolver creation failed: {res}")
+                    
+                    if error_code == "ERROR_ZERO_BALANCE":
+                        logging.error("CRITICAL: CapSolver service balance is ZERO (ERROR_ZERO_BALANCE). Top-up required immediately!")
+                        return ""
                     continue
                 
                 task_id = res.get("taskId")
                 logging.info(f"CapSolver job submitted successfully. Task ID: {task_id}")
                 
-                # Poll for completion
                 logging.info("Polling for CapSolver completion... (Max 150 seconds)")
-                for _ in range(50): # poll for max 150 seconds (50 * 3s)
+                for _ in range(50):
                     time.sleep(3)
                     poll_payload = {
                         "clientKey": self.api_key,
                         "taskId": task_id
                     }
-                    poll_res = requests.post(self.get_result_url, json=poll_payload).json()
+                    poll_res = requests.post(self.get_result_url, json=poll_payload, timeout=15).json()
                     status = poll_res.get("status")
                     
                     if status == "ready":
@@ -119,7 +124,7 @@ class CapSolverService(CaptchaService):
                         return token
                     elif status == "failed":
                         logging.error(f"CapSolver task failed: {poll_res.get('errorDescription')}")
-                        break # break inner polling loop, retry outer loop
+                        break
                     
                     logging.debug(f"Waiting for CapSolver... current status: {status}")
                     
@@ -132,81 +137,80 @@ class CapSolverService(CaptchaService):
 
 class ManualCaptchaService(CaptchaService):
     def solve(self, sitekey: str, url: str, **kwargs) -> str:
+        # Check if headless / server environment
+        is_server_env = (
+            os.getenv("HEADLESS", "true").lower() in ["true", "1"] or 
+            (sys.platform.startswith("linux") and not os.getenv("DISPLAY"))
+        )
+        if is_server_env:
+            logging.warning("ManualCaptchaService: Server is running in headless/Docker mode without GUI display ($DISPLAY). Skipping manual browser launch.")
+            return ""
+
         session = kwargs.get('session')
         logging.info(f"Starting Manual Captcha Solver for {url}...")
         try:
             from playwright.sync_api import sync_playwright
         except ImportError:
-            logging.error("Playwright is not installed. Run 'pip install playwright' and 'playwright install chromium'")
+            logging.error("Playwright is not installed.")
             return ""
 
-        with sync_playwright() as p:
-            # Launch real Chrome browser so human can solve
-            browser = p.chromium.launch(headless=False)
-            context = browser.new_context(
-                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
-            )
-            page = context.new_page()
-            
-            logging.info("Navigating to the login page...")
-            try:
-                page.goto(url)
-            except Exception as e:
-                logging.error(f"Playwright failed to navigate to login page: {e}")
-                browser.close()
-                return None
-            
-            # Autofill credentials so the human doesn't have to
-            import os
-            username = os.getenv('PORTAL_USERNAME', '')
-            password = os.getenv('PORTAL_PASSWORD', '')
-            if username and password:
+        try:
+            with sync_playwright() as p:
+                browser = p.chromium.launch(headless=False)
+                context = browser.new_context(
+                    user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
+                )
+                page = context.new_page()
+                
+                logging.info("Navigating to the login page...")
                 try:
-                    # Attempt standard login form selectors
-                    page.fill('input[name="username"], input[type="email"], input[id*="user"]', username, timeout=2000)
-                    page.fill('input[name="password"], input[type="password"], input[id*="pass"]', password, timeout=2000)
-                    logging.info("Autofilled username and password in browser.")
-                except Exception:
-                    logging.info("Could not autofill credentials, login fields not found on this page.")
-            
-            logging.info("Waiting for you to manually solve the Captcha... You have 300 seconds (5 minutes).")
-            print("\n*** PLEASE SOLVE THE CAPTCHA IN THE OPENED BROWSER WINDOW ***\n")
-            
-            # Play a loud beep to alert the operator
-            try:
-                import winsound
-                # Play 3 short beeps
-                for _ in range(3):
-                    winsound.Beep(1000, 500)
-                    time.sleep(0.1)
-            except Exception as e:
-                logging.error(f"Could not play alarm sound: {e}")
-            
-            # Poll the hidden textarea for the token
-            # g-recaptcha-response is the standard hidden textarea populated after solving
-            token = ""
-            for _ in range(150): # 150 * 2 = 300 seconds timeout
+                    page.goto(url, timeout=30000)
+                except Exception as e:
+                    logging.error(f"Playwright failed to navigate to login page: {e}")
+                    browser.close()
+                    return ""
+                
+                username = os.getenv('PORTAL_USERNAME', '')
+                password = os.getenv('PORTAL_PASSWORD', '')
+                if username and password:
+                    try:
+                        page.fill('input[name="username"], input[type="email"], input[id*="user"]', username, timeout=2000)
+                        page.fill('input[name="password"], input[type="password"], input[id*="pass"]', password, timeout=2000)
+                        logging.info("Autofilled username and password in browser.")
+                    except Exception:
+                        pass
+                
+                logging.info("Waiting for manual Captcha solving... (300s timeout)")
+                print("\n*** PLEASE SOLVE THE CAPTCHA IN THE OPENED BROWSER WINDOW ***\n")
+                
                 try:
-                    # Evaluate javascript to get the value of the textarea
-                    val = page.evaluate("document.getElementById('g-recaptcha-response') ? document.getElementById('g-recaptcha-response').value : ''")
-                    if val and len(val) > 10:
-                        token = val
-                        logging.info("CAPTCHA manually solved successfully!")
-                        if session is not None:
-                            try:
-                                for cookie in context.cookies():
-                                    session.cookies.set(cookie['name'], cookie['value'])
-                                logging.info("Transferred Playwright cookies to requests session.")
-                            except Exception as e:
-                                logging.error(f"Failed to transfer cookies: {e}")
-                        break
+                    import winsound
+                    for _ in range(3):
+                        winsound.Beep(1000, 500)
+                        time.sleep(0.1)
                 except Exception:
                     pass
-                time.sleep(2)
                 
-            browser.close()
-            
-            if not token:
-                logging.error("Manual Captcha solving timed out.")
-                
-            return token
+                token = ""
+                for _ in range(150):
+                    try:
+                        val = page.evaluate("document.getElementById('g-recaptcha-response') ? document.getElementById('g-recaptcha-response').value : ''")
+                        if val and len(val) > 10:
+                            token = val
+                            logging.info("CAPTCHA manually solved successfully!")
+                            if session is not None:
+                                try:
+                                    for cookie in context.cookies():
+                                        session.cookies.set(cookie['name'], cookie['value'])
+                                except Exception:
+                                    pass
+                            break
+                    except Exception:
+                        pass
+                    time.sleep(2)
+                    
+                browser.close()
+                return token
+        except Exception as e:
+            logging.error(f"ManualCaptchaService encountered error: {e}")
+            return ""

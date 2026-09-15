@@ -442,26 +442,34 @@ def submit_logs(
             assignment_ids = [a.id for a in active_assignments]
             lease_service.cancel_active_leases(assignment_ids)
 
-    elif req.event_type in ["LOGIN_FAILED", "PROXY_BANNED", "LOGIN_EXCEPTION"] or (req.event_type == "LEASE_RESULT" and req.payload and req.payload.get("status") == "FAILED"):
+    elif req.event_type in ["LOGIN_FAILED", "PROXY_BANNED", "LOGIN_EXCEPTION", "CAPTCHA_FAILED"] or (req.event_type == "LEASE_RESULT" and req.payload and req.payload.get("status") == "FAILED"):
         reason = ""
         if req.payload and isinstance(req.payload, dict):
             reason = req.payload.get("reason") or req.payload.get("error") or ""
             
+        is_zero_balance = "ERROR_ZERO_BALANCE" in str(reason) or "ZERO_BALANCE" in str(req.payload)
+        is_proxy_407 = "407" in str(reason) or "tunnel" in str(reason).lower() or "proxy" in str(reason).lower()
+
         if req.assignment_id:
             asm = db.query(Assignment).filter(Assignment.id == req.assignment_id).first()
             if asm and asm.status == "Active":
                 recent_fails = db.query(EventLog).filter(
                     EventLog.assignment_id == req.assignment_id,
-                    EventLog.event_type.in_(["LEASE_FAILED", "LOGIN_FAILED", "PROXY_BANNED", "LOGIN_EXCEPTION", "LEASE_RESULT"]),
+                    EventLog.event_type.in_(["LEASE_FAILED", "LOGIN_FAILED", "PROXY_BANNED", "LOGIN_EXCEPTION", "LEASE_RESULT", "CAPTCHA_FAILED"]),
                     EventLog.created_at >= datetime.utcnow() - timedelta(minutes=15)
                 ).count()
                 
-                if recent_fails >= 2:
+                if recent_fails >= 2 or is_zero_balance:
                     asm.status = "Paused"
                     lease_service.cancel_active_leases([asm.id])
                     
-                    is_proxy_407 = "407" in str(reason) or "tunnel" in str(reason).lower() or "proxy" in str(reason).lower()
-                    if is_proxy_407:
+                    if is_zero_balance:
+                        push_title = "[CRITICAL ALERT] Scraping Paused: CapSolver Balance Zero"
+                        push_body = (
+                            "Scraping halted because CapSolver balance is exhausted (ERROR_ZERO_BALANCE). "
+                            "Action Required: Top up balance on CapSolver.com, then unpause the assignment."
+                        )
+                    elif is_proxy_407:
                         push_title = "[OPERATIONAL ALERT] Scraping Paused: Proxy Quota/Auth Failure"
                         push_body = (
                             f"Scraping halted for Center {asm.visa_center} due to repeated proxy tunnel failures (HTTP 407). "
