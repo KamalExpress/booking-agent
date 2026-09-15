@@ -296,6 +296,42 @@ class AutonomousWatchdogEngine:
                   f"Worker {worker_id} encountered: {reason}\n"
                   f"       {Colors.YELLOW}-> Watchdog Recommendation: Verify proxy health or browser persona.{Colors.RESET}")
 
+        elif event_type == "LEASE_RESULT":
+            st = payload.get("status", "COMPLETED")
+            reason = payload.get("reason", "")
+            if st == "COMPLETED":
+                print(f"[{time_str}] {Colors.GREEN}[S1: LEASE CYCLE COMPLETED]{Colors.RESET} "
+                      f"Worker '{worker_id}' finished monitoring cycle successfully.")
+            else:
+                print(f"[{time_str}] {Colors.RED}[LEASE FAILED]{Colors.RESET} "
+                      f"Worker '{worker_id}' lease finished with failure: {reason or 'Unknown error'}")
+
+        elif event_type == "LOGIN_SUCCESS":
+            user = payload.get("username", "account")
+            print(f"[{time_str}] {Colors.GREEN}[S1: AUTH SUCCESS]{Colors.RESET} "
+                  f"Worker '{worker_id}' authenticated to GVC portal as '{user}'.")
+
+        elif event_type == "PUSH_SENT":
+            title = payload.get("title", "Notification")
+            body = payload.get("body", "")
+            sc = payload.get("success_count", 1)
+            print(f"[{time_str}] {Colors.CYAN}{Colors.BOLD}[PUSH DISPATCH]{Colors.RESET} "
+                  f"Broadcasted '{title}': \"{body}\" (Delivered to {sc} subscriber(s))")
+
+        elif event_type == "LEASE_CANCELLED":
+            reason = payload.get("reason", "Cancelled")
+            print(f"[{time_str}] {Colors.YELLOW}[LEASE AUTO-PAUSED]{Colors.RESET} "
+                  f"Monitoring lease for '{worker_id}' paused (Reason: {reason}).")
+
+        elif event_type == "NO_ASSIGNMENT":
+            print(f"[{time_str}] {Colors.DIM}[SCHEDULER: IDLE]{Colors.RESET} "
+                  f"No monitoring or booking tasks available for '{worker_id}'.")
+
+        elif event_type in ["CAPTCHA_SOLVING", "CAPTCHA_SOLVED"]:
+            status_c = Colors.GREEN if "SOLVED" in event_type else Colors.YELLOW
+            print(f"[{time_str}] {status_c}[CAPTCHA {event_type}]{Colors.RESET} "
+                  f"Worker '{worker_id}' captcha status: {payload.get('status', 'processing')}")
+
         elif event_type in ["LEASE_EXPIRED", "LEASE_ABANDONED"]:
             print(f"[{time_str}] {Colors.YELLOW}[LEASE {event_type}]{Colors.RESET} "
                   f"Orphan lease reclaimed for worker {worker_id}. Task auto-recovered to PENDING.")
