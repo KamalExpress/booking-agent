@@ -83,11 +83,14 @@ class WatchdogClient:
             return res
         return None
 
-    def trigger_poll(self, visa_center: Optional[str] = None) -> Optional[Dict[str, Any]]:
-        path = f"/api/v1/watchdog/trigger-poll"
+    def trigger_poll(self, visa_center: Optional[str] = None, unpause: bool = True) -> Optional[Dict[str, Any]]:
+        params = []
         if visa_center:
-            path += f"?visa_center={visa_center}"
-        return self._request(path, data=b"{}")
+            params.append(f"visa_center={visa_center}")
+        if unpause:
+            params.append("unpause=true")
+        query_str = f"?{'&'.join(params)}" if params else ""
+        return self._request(f"/api/v1/watchdog/trigger-poll{query_str}", data=b"{}")
 
     def reset_queue(self) -> Optional[Dict[str, Any]]:
         return self._request("/api/v1/watchdog/reset-queue", data=b"{}")
@@ -143,11 +146,11 @@ class AutonomousWatchdogEngine:
         acc_sum = status.get("accounts_summary", {})
         recent_logs = status.get("recent_logs", [])
 
-        online_scrapers = sum(1 for w in wrks if w.get("can_scrape") and w.get("is_online"))
+        online_monitors = sum(1 for w in wrks if (w.get("can_scrape") or w.get("can_monitor")) and w.get("is_online"))
         online_bookers = sum(1 for w in wrks if w.get("can_book") and w.get("is_online"))
 
         print(f"\n{Colors.BOLD}{Colors.WHITE}--- LIVE SYSTEM TOPOLOGY SNAPSHOT ---{Colors.RESET}")
-        print(f" {Colors.BOLD}Workers:{Colors.RESET}     Scrapers: {Colors.GREEN if online_scrapers else Colors.RED}{online_scrapers} online{Colors.RESET} | "
+        print(f" {Colors.BOLD}Workers:{Colors.RESET}     Monitors: {Colors.GREEN if online_monitors else Colors.RED}{online_monitors} online{Colors.RESET} | "
               f"Bookers: {Colors.GREEN if online_bookers else Colors.RED}{online_bookers} online{Colors.RESET} (Total: {len(wrks)})")
 
         print(f" {Colors.BOLD}Monitoring:{Colors.RESET}  {len(asms)} Active Assignment(s)")
@@ -389,23 +392,45 @@ class AutonomousWatchdogEngine:
                     ts = (lg.get("timestamp") or "")[11:19]
                     print(f"[{ts}] {Colors.CYAN}[PROACTIVE CATCHUP]{Colors.RESET} [{lg.get('event_type')}] ({lg.get('worker_id')}): {json.dumps(lg.get('payload'))[:100]}")
 
-            online_scrapers = sum(1 for w in wrks if w.get("can_scrape") and w.get("is_online"))
+            online_monitors = sum(1 for w in wrks if (w.get("can_scrape") or w.get("can_monitor")) and w.get("is_online"))
             online_bookers = sum(1 for w in wrks if w.get("can_book") and w.get("is_online"))
             pending_q = q_sum.get("PENDING", 0)
             dispatched_q = q_sum.get("DISPATCHED", 0)
 
-            # Anomaly: Fleet Starvation
-            if (pending_q > 0 or dispatched_q > 0) and online_scrapers == 0 and online_bookers == 0:
+            # Anomaly 1: Fleet Starvation
+            if (pending_q > 0 or dispatched_q > 0) and online_monitors == 0 and online_bookers == 0:
                 print(f"[{self.format_time()}] {Colors.RED}{Colors.BOLD}[DIAGNOSE: FLEET STARVATION]{Colors.RESET} "
-                      f"Waitlist has {pending_q} WAITING / {dispatched_q} DISPATCHED item(s), but {Colors.RED}0 Workers are Online{Colors.RESET}! "
-                      f"Action: Launch worker process.")
+                      f"Waitlist has {pending_q} WAITING / {dispatched_q} DISPATCHED item(s), but {Colors.RED}0 Workers are Online{Colors.RESET}!\n"
+                      f"       {Colors.YELLOW}-> Recommendation: Start operator/booker worker containers.{Colors.RESET}")
 
-            # Anomaly: Account Deadlock
+            # Anomaly 2: No Booker Available when tasks or slots exist
+            elif (dispatched_q > 0 or self.total_slots_found > 0) and online_bookers == 0:
+                print(f"[{self.format_time()}] {Colors.YELLOW}{Colors.BOLD}[DIAGNOSE: NO BOOKER ONLINE]{Colors.RESET} "
+                      f"Discovered slots available, but {Colors.YELLOW}0 Booker workers are online{Colors.RESET} (`can_book=True`).\n"
+                      f"       {Colors.YELLOW}-> Recommendation: Launch headless booker (`python headless_booker.py`).{Colors.RESET}")
+
+            # Anomaly 3: Monitoring Paused while Queue is Waiting
+            active_asms = [a for a in asms if a.get("status") == "Active"]
+            paused_asms = [a for a in asms if a.get("status") == "Paused"]
+            if len(asms) > 0 and len(active_asms) == 0 and len(paused_asms) > 0 and pending_q > 0:
+                print(f"[{self.format_time()}] {Colors.YELLOW}{Colors.BOLD}[DIAGNOSE: MONITORING HALTED]{Colors.RESET} "
+                      f"All {len(paused_asms)} monitoring assignment(s) are PAUSED while {pending_q} applicant(s) are WAITING in queue.\n"
+                      f"       {Colors.DIM}-> Root Cause: Monitoring auto-paused after recent slot discovery.{Colors.RESET}\n"
+                      f"       {Colors.YELLOW}-> Recommendation: Unpause assignments and trigger active monitoring.{Colors.RESET}")
+                if self.auto_heal:
+                    res = self.execute_rate_limited_action("unpause_poll", lambda: self.client.trigger_poll(unpause=True), cooldown_seconds=30)
+                    if res and res.get("status") == "ok":
+                        self.total_auto_healed += 1
+                        print(f"[{self.format_time()}] {Colors.BG_MAGENTA}{Colors.WHITE}{Colors.BOLD} [AUTONOMOUS RECOVERY] {Colors.RESET} "
+                              f"{Colors.GREEN}Auto-unpaused and triggered active polling for {len(paused_asms)} assignment(s).{Colors.RESET}")
+
+            # Anomaly 4: Account Deadlock
             ready_accs = acc_sum.get("READY", 0)
             cooldown_accs = acc_sum.get("COOLDOWN", 0)
             if ready_accs == 0 and cooldown_accs > 0 and (pending_q > 0 or dispatched_q > 0):
                 print(f"[{self.format_time()}] {Colors.YELLOW}[DIAGNOSE: RESOURCE LOCK DEADLOCK]{Colors.RESET} "
-                      f"0 accounts READY ({cooldown_accs} in COOLDOWN).")
+                      f"0 portal accounts READY ({cooldown_accs} in COOLDOWN).\n"
+                      f"       {Colors.YELLOW}-> Recommendation: Reset account cooldowns.{Colors.RESET}")
                 if self.auto_heal:
                     res = self.execute_rate_limited_action("reset_cooldowns", self.client.reset_cooldowns, cooldown_seconds=30)
                     if res and res.get("status") == "ok":
@@ -414,11 +439,17 @@ class AutonomousWatchdogEngine:
                               f"{Colors.GREEN}Auto-cleared account/proxy cooldown locks.{Colors.RESET}")
 
             # Pulse line
-            next_poll = min([a.get("next_due_seconds", 999) for a in asms], default=0)
-            poll_text = f"Next scrape in {next_poll}s" if next_poll > 0 else "Scrape due NOW"
+            active_next_poll = min([a.get("next_due_seconds", 999) for a in active_asms], default=None)
+            if active_next_poll is not None:
+                poll_text = f"Next poll in {active_next_poll}s" if active_next_poll > 0 else f"{Colors.GREEN}Polling due NOW{Colors.RESET}"
+            elif paused_asms:
+                poll_text = f"{Colors.YELLOW}Monitoring PAUSED{Colors.RESET}"
+            else:
+                poll_text = "No assignments"
+
             heal_badge = f" | {Colors.MAGENTA}Heals: {self.total_auto_healed}{Colors.RESET}" if self.auto_heal else ""
             print(f"[{self.format_time()}] {Colors.DIM}[WATCHDOG PULSE]{Colors.RESET} "
-                  f"Workers: {online_scrapers} Scrapers / {online_bookers} Bookers | "
+                  f"Workers: {online_monitors} Monitors / {online_bookers} Bookers | "
                   f"Queue: {pending_q} WAITING / {dispatched_q} DISPATCHED | {poll_text}{heal_badge}")
         else:
             print(f"[{self.format_time()}] {Colors.DIM}[WATCHDOG PULSE]{Colors.RESET} "

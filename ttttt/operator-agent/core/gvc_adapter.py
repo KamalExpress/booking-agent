@@ -479,6 +479,8 @@ class GVCAdapter(BasePortalAdapter):
                         raise AlreadyBookedException(f"Portal rejected: Active appointment already exists for this passport ({response.text[:150]})")
                     logging.error(f"GVCAdapter: Booking failed. Status: {response.status_code}, Body: {response.text[:200]}")
                     return False
+            except (WAFBlockedException, AlreadyBookedException):
+                raise
             except Exception as e:
                 logging.error(f"GVCAdapter: Network error during booking: {e}")
                 if "28" in str(e) or "timeout" in str(e).lower():
