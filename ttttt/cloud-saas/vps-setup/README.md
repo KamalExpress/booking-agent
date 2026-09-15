@@ -31,3 +31,10 @@ If you prefer SSH and terminal access, you can deploy via the command line.
 4. The application will build and bind to port `8743`. Point your Cloudflare Tunnel to `http://localhost:8743`.
 
 > To update the app in the future, simply re-run `./deploy.sh`. It will automatically run `git pull` and rebuild the containers with zero downtime.
+
+---
+
+## Standalone GVC Simulator Deployment
+
+To deploy the dedicated **GVC Consular Portal & Simulation Engine** (port `8745`), see the complete guide:
+👉 [`simulator-deployment-guide.md`](./simulator-deployment-guide.md)
