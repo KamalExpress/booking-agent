@@ -212,16 +212,26 @@ def reset_stuck_queue(
 ):
     """Self-heals orphan leases and resets non-booked queue entries to PENDING."""
     lease_service.expire_stale_leases()
+    
+    # Release accounts and proxies held by any stalled booking leases
+    stuck_leases = db.query(Lease).filter(Lease.booking_task_id.isnot(None), Lease.status.in_(["Leased", "Running"])).all()
+    for l in stuck_leases:
+        l.status = "Expired"
+        if l.portal_account_id:
+            db.query(PortalAccount).filter(PortalAccount.id == l.portal_account_id).update({"status": "READY"})
+        if l.proxy_id:
+            db.query(Proxy).filter(Proxy.id == l.proxy_id).update({"status": "READY"})
+
     entries = db.query(WaitlistQueue).filter(WaitlistQueue.status.in_(["DISPATCHED", "PROCESSING", "FAILED"])).all()
     for e in entries:
         e.status = "PENDING"
         db.query(BookingTask).filter(
             BookingTask.applicant_id == e.applicant_id,
-            BookingTask.status.in_(["PENDING", "FAILED"])
+            BookingTask.status.in_(["PENDING", "CLAIMED", "FAILED"])
         ).update({"status": "FAILED", "active_status": False})
         
     db.commit()
-    return {"status": "ok", "message": f"Reset {len(entries)} queue entries to PENDING."}
+    return {"status": "ok", "message": f"Reset {len(entries)} queue entries and released {len(stuck_leases)} booking lease(s)."}
 
 @router.post("/reset-cooldowns")
 def reset_all_cooldowns(

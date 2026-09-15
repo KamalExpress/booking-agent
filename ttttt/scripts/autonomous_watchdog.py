@@ -438,6 +438,20 @@ class AutonomousWatchdogEngine:
                         print(f"[{self.format_time()}] {Colors.BG_MAGENTA}{Colors.WHITE}{Colors.BOLD} [AUTONOMOUS RECOVERY] {Colors.RESET} "
                               f"{Colors.GREEN}Auto-cleared account/proxy cooldown locks.{Colors.RESET}")
 
+            # Anomaly 5: Booking Task Lease Deadlock (Holding Accounts)
+            b_tasks = status.get("booking_tasks", [])
+            stuck_tasks = [t for t in b_tasks if t.get("status") in ["PENDING", "CLAIMED"]]
+            if ready_accs == 0 and len(stuck_tasks) > 0:
+                print(f"[{self.format_time()}] {Colors.YELLOW}{Colors.BOLD}[DIAGNOSE: BOOKING TASK LEASE DEADLOCK]{Colors.RESET} "
+                      f"0 accounts are READY (all {acc_sum.get('LEASED', 0)} LEASED). Task(s) #{[t['id'] for t in stuck_tasks]} holding account leases, blocking new dispatches.\n"
+                      f"       {Colors.YELLOW}-> Recommendation: Release stuck booking leases and reset queue entries to PENDING.{Colors.RESET}")
+                if self.auto_heal:
+                    res = self.execute_rate_limited_action("reset_stuck_tasks", self.client.reset_queue, cooldown_seconds=20)
+                    if res and res.get("status") == "ok":
+                        self.total_auto_healed += 1
+                        print(f"[{self.format_time()}] {Colors.BG_MAGENTA}{Colors.WHITE}{Colors.BOLD} [AUTONOMOUS RECOVERY] {Colors.RESET} "
+                              f"{Colors.GREEN}Auto-released stuck booking leases and reset queue entries to PENDING.{Colors.RESET}")
+
             # Pulse line
             active_next_poll = min([a.get("next_due_seconds", 999) for a in active_asms], default=None)
             if active_next_poll is not None:
