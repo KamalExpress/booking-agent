@@ -353,6 +353,38 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
             
         health_score = max(0, min(100, health_score))
         is_healthy = health_score > 70
+
+    # Construct Prominent Active Operational Alerts
+    active_alerts = []
+    if is_zero_balance:
+        active_alerts.append({
+            "severity": "critical",
+            "title": "CapSolver API Balance Exhausted (ERROR_ZERO_BALANCE)",
+            "message": "Workers cannot solve login or booking CAPTCHAs because the CapSolver account balance is zero ($0.00). Automated scraping and booking are temporarily halted.",
+            "action_link": "https://www.capsolver.com",
+            "action_text": "Top Up CapSolver Funds",
+            "is_external": True
+        })
+    if is_proxy_down:
+        active_alerts.append({
+            "severity": "error",
+            "title": "Decodo Proxy Tunnel Authentication Failed (HTTP 407)",
+            "message": "Proxy connection was rejected with HTTP 407. Bandwidth/data quota is exhausted or credentials changed. Worker cannot connect to visa portal.",
+            "action_link": "/settings?tab=proxies",
+            "action_text": "Check Proxy Settings",
+            "is_external": False
+        })
+        
+    paused_assignments = db.query(Assignment).filter(Assignment.status == "Paused").all()
+    if paused_assignments and not is_zero_balance and not is_proxy_down:
+        active_alerts.append({
+            "severity": "warning",
+            "title": f"Scraping Paused on {len(paused_assignments)} Assignment(s)",
+            "message": "Scraping was automatically paused after repeated failures to protect accounts. Check account credentials and unpause in Assignments.",
+            "action_link": "/assignments",
+            "action_text": "View Assignments",
+            "is_external": False
+        })
     
     # Fetch PWA Config
     pwa_settings = {
@@ -462,7 +494,8 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
         "health_score": health_score,
         "is_healthy": is_healthy,
         "pwa_settings": pwa_settings,
-        "global_assignments": global_assignments
+        "global_assignments": global_assignments,
+        "active_alerts": active_alerts
     }, db)
 
 @router.get("/workers", response_class=HTMLResponse)

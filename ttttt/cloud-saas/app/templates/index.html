@@ -13,6 +13,33 @@
     {% endif %}
 </header>
 
+{% if active_alerts %}
+<div class="space-y-4 mb-8">
+    {% for alert in active_alerts %}
+    <div class="p-4 rounded-xl border flex flex-col md:flex-row items-start md:items-center justify-between gap-4 {% if alert.severity == 'critical' %}bg-red-500/10 border-red-500/30 text-red-200{% elif alert.severity == 'error' %}bg-rose-500/10 border-rose-500/30 text-rose-200{% else %}bg-amber-500/10 border-amber-500/30 text-amber-200{% endif %}">
+        <div class="flex items-start gap-3">
+            <div class="p-2 rounded-lg {% if alert.severity == 'critical' or alert.severity == 'error' %}bg-red-500/20 text-red-400{% else %}bg-amber-500/20 text-amber-400{% endif %} mt-0.5">
+                <i data-lucide="alert-octagon" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <h4 class="text-sm font-semibold tracking-tight text-white flex items-center gap-2">
+                    {{ alert.title }}
+                    <span class="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full {% if alert.severity == 'critical' or alert.severity == 'error' %}bg-red-500/30 text-red-300{% else %}bg-amber-500/30 text-amber-300{% endif %}">Action Required</span>
+                </h4>
+                <p class="text-xs text-zinc-300 mt-1 max-w-3xl leading-relaxed">{{ alert.message }}</p>
+            </div>
+        </div>
+        {% if alert.action_link %}
+        <a href="{{ alert.action_link }}" {% if alert.is_external %}target="_blank" rel="noopener noreferrer"{% endif %} class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium text-white shadow-sm transition-all whitespace-nowrap {% if alert.severity == 'critical' or alert.severity == 'error' %}bg-red-600 hover:bg-red-500{% else %}bg-amber-600 hover:bg-amber-500{% endif %}">
+            {{ alert.action_text }}
+            <i data-lucide="{% if alert.is_external %}external-link{% else %}arrow-right{% endif %}" class="w-3.5 h-3.5"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
 {% if user.role.value == 'SUPER_ADMIN' %}
 <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
     <!-- Auto-Scaling Dial -->

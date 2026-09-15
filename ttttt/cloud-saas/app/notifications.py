@@ -32,7 +32,8 @@ def send_push_notification(db: Session, title: str, body: str, user_ids: list = 
     detailed_setting = db.query(SystemSetting).filter(SystemSetting.key == "global.detailed_push_logging").first()
     detailed_logging = detailed_setting.value.lower() == 'true' if (detailed_setting and detailed_setting.value) else False
     
-    query = db.query(PushSubscription, User).join(User, PushSubscription.user_id == User.id)
+    # Query all push subscriptions across all users and devices
+    query = db.query(PushSubscription, User).outerjoin(User, PushSubscription.user_id == User.id)
     if user_ids is not None:
         query = query.filter(PushSubscription.user_id.in_(user_ids))
     
@@ -40,19 +41,19 @@ def send_push_notification(db: Session, title: str, body: str, user_ids: list = 
     if not subs:
         return 0
         
-    logger.info(f"Sending push notification to {len(subs)} endpoints...")
+    logger.info(f"Broadcasting push notification to {len(subs)} subscriber endpoints...")
     success_count = 0
     
     success_by_tenant = {}
     failure_by_tenant = {}
     
     for sub, user in subs:
-        if visa_center_id and user.preferences:
+        if visa_center_id and user and user.preferences:
             muted_centers = user.preferences.get("muted_visa_centers", [])
             if str(visa_center_id) in muted_centers:
                 continue
                 
-        t_id = user.tenant_id
+        t_id = user.tenant_id if user else 1
         if t_id not in success_by_tenant:
             success_by_tenant[t_id] = 0
             failure_by_tenant[t_id] = 0
