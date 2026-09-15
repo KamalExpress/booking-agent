@@ -1,0 +1,22 @@
+﻿version: '3.8'
+
+services:
+  mock-gvc-portal:
+    image: mock-gvc-portal:latest
+    build:
+      context: ../../internal-portal
+      dockerfile: Dockerfile
+    container_name: mock-gvc-portal-standalone
+    restart: always
+    ports:
+      # Expose port 8745 for Cloudflare Tunnel routing (or 5001)
+      - "127.0.0.1:8745:5001"
+    environment:
+      - PORT=5001
+      - HOST=0.0.0.0
+    networks:
+      - simulator-network
+
+networks:
+  simulator-network:
+    driver: bridge

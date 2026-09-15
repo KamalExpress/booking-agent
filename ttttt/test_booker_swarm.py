@@ -1,4 +1,4 @@
-﻿import time
+import time
 import os
 import sys
 import argparse
@@ -14,8 +14,10 @@ if sys.stdout.encoding != 'utf-8':
         pass
 
 # Setup path
-sys.path.insert(0, os.path.abspath("ttttt/operator-agent"))
-sys.path.insert(0, os.path.abspath("ttttt/operator-agent/core"))
+base_dir = os.path.dirname(os.path.abspath(__file__))
+op_agent_dir = os.path.join(base_dir, "operator-agent") if os.path.exists(os.path.join(base_dir, "operator-agent")) else os.path.join(base_dir, "ttttt", "operator-agent")
+sys.path.insert(0, op_agent_dir)
+sys.path.insert(0, os.path.join(op_agent_dir, "core"))
 
 from core.browser_persona import BrowserPersonaManager
 from core.gvc_adapter import GVCAdapter
@@ -23,7 +25,7 @@ from mock_captcha import MockCaptchaService
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] (%(threadName)s) %(message)s")
 
-PORTAL_URL = "http://127.0.0.1:5001"
+PORTAL_URL = os.getenv("BOOKING_PORTAL_URL", "http://127.0.0.1:8745")
 os.environ["BOOKING_PORTAL_URL"] = PORTAL_URL
 os.environ["USE_MOCK_CAPTCHA"] = "true"
 
