@@ -10,7 +10,7 @@ import time
 from datetime import datetime, timedelta
 import uuid
 import json
-from notifications import send_push_notification
+from notifications import send_push_notification, send_booking_confirmed_push
 
 from models import (
     WorkerNode, Assignment, Lease, EventLog, PortalAccount, 
@@ -574,16 +574,12 @@ def submit_task_confirmation(task_id: int, payload: dict, worker: WorkerNode = D
         "timestamp": datetime.utcnow().isoformat()
     })
     
-    # Broadcast confirmation push notification
-    applicant_name = "Applicant"
+    # Broadcast tenant-scoped confirmation push notification (Privileged full vs Masked marketing hook)
+    applicant = None
     if task.applicant_id:
         applicant = db.query(Applicant).filter(Applicant.id == task.applicant_id).first()
-        if applicant:
-            applicant_name = f"{applicant.firstname} {applicant.surname}"
-            
-    push_title = "🎉 Booking Confirmed!"
-    push_msg = f"Appointment confirmed for {applicant_name} at Center {task.visa_center}. Reference: {ref_num or 'Confirmed'}"
-    send_push_notification(db, push_title, push_msg, visa_center_id=task.visa_center)
+        
+    send_booking_confirmed_push(db, task, applicant, reference_number=ref_num)
     
     db.commit()
     return {"status": "success", "task_id": task_id, "reference_number": ref_num}
