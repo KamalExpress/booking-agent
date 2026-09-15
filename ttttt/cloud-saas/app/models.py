@@ -1,8 +1,10 @@
 import os
 import enum
 from datetime import datetime, timedelta, timezone
-from sqlalchemy import create_engine, Column, Integer, String, Boolean, DateTime, ForeignKey, Enum, UniqueConstraint
+from sqlalchemy import create_engine, Column, Integer, String, Boolean, DateTime, ForeignKey, Enum, UniqueConstraint, JSON
 from sqlalchemy.dialects.postgresql import JSONB
+
+JSONType = JSON().with_variant(JSONB, "postgresql")
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship, backref
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/booking_saas")
@@ -40,7 +42,7 @@ class User(Base):
     role = Column(Enum(RoleEnum), default=RoleEnum.STAFF, nullable=False)
     is_active = Column(Boolean, default=True)
     can_solve_captcha = Column(Boolean, default=False)
-    preferences = Column(JSONB, default=dict)
+    preferences = Column(JSONType, default=dict)
     created_at = Column(DateTime, default=datetime.utcnow)
     
     tenant = relationship("Tenant", back_populates="users")
@@ -111,7 +113,7 @@ class Applicant(Base):
     email = Column(String, nullable=False)
     phone_prefix = Column(String, nullable=False)
     phone_number = Column(String, nullable=False)
-    provider_metadata = Column(JSONB, default=dict) # e.g., GWF number
+    provider_metadata = Column(JSONType, default=dict) # e.g., GWF number
     created_at = Column(DateTime, default=datetime.utcnow)
     
     tenant = relationship("Tenant")
@@ -221,7 +223,7 @@ class WorkerNode(Base):
     __tablename__ = "worker_nodes"
     worker_id = Column(String, primary_key=True, index=True)
     secret_hash = Column(String, nullable=False)
-    labels = Column(JSONB, default=dict) # e.g., {"system.os": "windows"}
+    labels = Column(JSONType, default=dict) # e.g., {"system.os": "windows"}
     version = Column(String, nullable=True)
     git_commit = Column(String, nullable=True)
     
@@ -379,7 +381,7 @@ class Assignment(Base):
     polling_interval = Column(Integer, default=300)
     priority = Column(Integer, default=0)
     status = Column(String, default="Active")
-    required_labels = Column(JSONB, default=dict)
+    required_labels = Column(JSONType, default=dict)
     last_checked = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
@@ -393,10 +395,10 @@ class BookingTask(Base):
     visa_center = Column(String, nullable=False)
     target_date = Column(String, nullable=False)
     target_time = Column(String, nullable=False)
-    slot_payload = Column(JSONB, nullable=True)
+    slot_payload = Column(JSONType, nullable=True)
     otp_code = Column(String, nullable=True)
     reference_number = Column(String, nullable=True) # e.g. GVC-ISB-2026-91823
-    confirmation_payload = Column(JSONB, nullable=True) # Official appointment receipt details
+    confirmation_payload = Column(JSONType, nullable=True) # Official appointment receipt details
     
     priority = Column(Integer, default=0)
     expires_at = Column(DateTime, nullable=False)
@@ -468,7 +470,7 @@ class EventLog(Base):
     assignment_id = Column(Integer, nullable=True)
     severity = Column(String, default="info") # info, warning, error
     event_type = Column(String, nullable=False) # LOGIN_SUCCESS, RATE_LIMIT, etc
-    payload = Column(JSONB, nullable=True)
+    payload = Column(JSONType, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 class WorkerLog(Base):
@@ -477,7 +479,7 @@ class WorkerLog(Base):
     id = Column(Integer, primary_key=True, index=True)
     worker_id = Column(String, ForeignKey("worker_nodes.worker_id"), nullable=False)
     assignment_id = Column(Integer, ForeignKey("assignments.id"), nullable=True)
-    payload = Column(JSONB, nullable=False) # The JSON dump of network requests/responses
+    payload = Column(JSONType, nullable=False) # The JSON dump of network requests/responses
     created_at = Column(DateTime, default=datetime.utcnow)
 
 class SlotAvailability(Base):
@@ -486,7 +488,7 @@ class SlotAvailability(Base):
     assignment_id = Column(Integer, ForeignKey("assignments.id"), nullable=True)
     visa_center = Column(String, nullable=False)
     date = Column(String, nullable=False)
-    slots_data = Column(JSONB, nullable=False)
+    slots_data = Column(JSONType, nullable=False)
     found_by = Column(String, nullable=True) # The worker_id that found the slot
     status = Column(String, default="AVAILABLE", nullable=False) # AVAILABLE, VERIFYING, UNAVAILABLE
     last_checked_at = Column(DateTime, default=datetime.utcnow)

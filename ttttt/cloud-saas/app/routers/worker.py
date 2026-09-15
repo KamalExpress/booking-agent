@@ -317,17 +317,17 @@ def submit_logs(
         payload=req.payload
     )
     db.add(log)
+    db.commit()
     
-    # Broadcast live log to the dashboard monitor
-    from core.websocket_manager import sync_broadcast
-    from datetime import datetime
-    sync_broadcast({
-        "event_type": req.event_type,
-        "worker_id": worker.worker_id,
-        "assignment_id": req.assignment_id,
-        "payload": req.payload,
-        "timestamp": datetime.utcnow().isoformat()
-    })
+    # Publish to EventBus
+    from core.event_bus import event_bus
+    event_bus.publish(
+        topic="events:pipeline",
+        event_type=req.event_type,
+        payload=req.payload or {},
+        source=f"worker:{worker.worker_id}",
+        worker_id=worker.worker_id
+    )
     
     if req.event_type == "LOGIN_SUCCESS" and req.assignment_id:
         assignment = db.query(Assignment).filter(Assignment.id == req.assignment_id).first()
@@ -615,21 +615,23 @@ def submit_task_confirmation(task_id: int, payload: dict, worker: WorkerNode = D
         }
     )
     db.add(booking_event)
+    db.commit()
     
-    # Broadcast to live dashboard monitor
-    from core.websocket_manager import sync_broadcast
-    from datetime import datetime
-    sync_broadcast({
-        "event_type": "BOOKING_SUCCESS",
-        "worker_id": worker.worker_id,
-        "assignment_id": task.assignment_id,
-        "payload": {
+    # Publish to EventBus
+    from core.event_bus import event_bus
+    event_bus.publish(
+        topic="events:pipeline",
+        event_type="BOOKING_SUCCESS",
+        payload={
             "task_id": task_id,
             "reference_number": ref_num,
-            "visa_center": task.visa_center
+            "visa_center": task.visa_center,
+            "applicant_id": task.applicant_id
         },
-        "timestamp": datetime.utcnow().isoformat()
-    })
+        source=f"worker:{worker.worker_id}",
+        worker_id=worker.worker_id,
+        tenant_id=task.tenant_id
+    )
     
     # Broadcast tenant-scoped confirmation push notification (Privileged full vs Masked marketing hook)
     applicant = None

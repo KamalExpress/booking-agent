@@ -4,6 +4,10 @@ Autonomous Operational Observer (Watchdog Agent)
 =================================================
 Closed-loop supervisor implementing the EDR (Explain, Diagnose & Recover) standard:
 Sense (Telemetry) -> Diagnose (Anomalies) -> Decide (Policies) -> Act (Self-Healing) -> Verify
+
+Supports both:
+1. Native Redis Streams Ingestion (via Consumer Group 'watchdog-group' + XREADGROUP + XACK)
+2. WebSocket Live Stream Bridge (fallback transport for remote environments)
 """
 
 import os
@@ -20,8 +24,12 @@ from typing import Dict, Any, List, Optional, Set
 try:
     import websockets
 except ImportError:
-    print("Error: 'websockets' library is required. Install via: pip install websockets")
-    sys.exit(1)
+    websockets = None
+
+try:
+    import redis
+except ImportError:
+    redis = None
 
 
 # Terminal ANSI Formatting
@@ -105,13 +113,13 @@ class AutonomousWatchdogEngine:
     def format_time(self) -> str:
         return datetime.now().strftime("%H:%M:%S")
 
-    def print_banner(self, ws_url: str):
+    def print_banner(self, transport_desc: str):
         mode_badge = f"{Colors.BG_GREEN}{Colors.WHITE}{Colors.BOLD} AUTONOMOUS SELF-HEALING ACTIVE {Colors.RESET}" if self.auto_heal else f"{Colors.BG_BLUE}{Colors.WHITE}{Colors.BOLD} PASSIVE OBSERVATION ONLY {Colors.RESET}"
         print(f"\n{Colors.BOLD}{Colors.CYAN}{'='*80}{Colors.RESET}")
         print(f"{Colors.BOLD}{Colors.CYAN}   AUTONOMOUS OPERATIONAL OBSERVER & WATCHDOG (EDR SUPERVISOR){Colors.RESET}")
         print(f"{Colors.BOLD}{Colors.CYAN}{'='*80}{Colors.RESET}")
         print(f" {Colors.DIM}Target Control Plane:{Colors.RESET} {self.client.base_url}")
-        print(f" {Colors.DIM}WebSocket Stream:{Colors.RESET}     {ws_url}")
+        print(f" {Colors.DIM}Event Ingestion:{Colors.RESET}      {transport_desc}")
         print(f" {Colors.DIM}Supervisory Mode:{Colors.RESET}     {mode_badge}")
         print(f" {Colors.DIM}Local Time:{Colors.RESET}           {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print(f"{Colors.CYAN}{'-'*80}{Colors.RESET}")
@@ -277,7 +285,7 @@ class AutonomousWatchdogEngine:
                       f"Task #{task_id}: Active booking exists on portal. Queue state -> {Colors.YELLOW}CANCELLED{Colors.RESET}.")
             else:
                 print(f"[{time_str}] {Colors.RED}{Colors.BOLD}[BOOKING FAILED]{Colors.RESET} "
-                      f"Task #{task_id} failed: {reason}. (Worker: {worker_id})")
+                  f"Task #{task_id} failed: {reason}. (Worker: {worker_id})")
 
         elif event_type in ["WAF_CHALLENGE", "PROXY_BANNED", "LOGIN_FAILED"]:
             reason = payload.get("reason", "")
@@ -334,7 +342,7 @@ class AutonomousWatchdogEngine:
             recent_logs = status.get("recent_logs", [])
             acc_sum = status.get("accounts_summary", {})
 
-            # Catch up on any DB logs not received via WebSocket
+            # Catch up on any DB logs not received
             for lg in reversed(recent_logs):
                 lid = lg.get("id")
                 if lid and lid not in self.seen_log_ids:
@@ -378,7 +386,70 @@ class AutonomousWatchdogEngine:
                   f"Stream active on {self.client.base_url} | Monitoring live worker events...")
 
 
-async def start_autonomous_supervisor(saas_url: str, api_key: str, auto_heal: bool):
+async def start_redis_stream_supervisor(redis_url: str, saas_url: str, api_key: str, auto_heal: bool):
+    """Direct high-performance ingestion via Redis Streams Consumer Group."""
+    client = WatchdogClient(saas_url, api_key)
+    engine = AutonomousWatchdogEngine(client, auto_heal=auto_heal)
+
+    engine.print_banner(f"Redis Streams (Consumer Group: 'watchdog-group' @ {redis_url.split('@')[-1]})")
+    engine.print_system_snapshot()
+
+    r = redis.Redis.from_url(redis_url, decode_responses=True)
+    topic = "events:pipeline"
+    group = "watchdog-group"
+    consumer_id = f"watchdog-{os.getpid()}"
+
+    try:
+        r.xgroup_create(topic, group, id="$", mkstream=True)
+    except Exception:
+        pass
+
+    async def evaluation_loop():
+        while True:
+            await asyncio.sleep(7)
+            engine.evaluate_and_heal()
+
+    asyncio.create_task(evaluation_loop())
+
+    print(f"[{engine.format_time()}] {Colors.GREEN}{Colors.BOLD}CONNECTED to Redis Stream! Autonomous Watchdog is actively supervising.{Colors.RESET}\n")
+    while True:
+        try:
+            entries = await asyncio.to_thread(
+                r.xreadgroup,
+                groupname=group,
+                consumername=consumer_id,
+                streams={topic: ">"},
+                count=10,
+                block=2000
+            )
+            if entries:
+                ack_ids = []
+                for stream_name, messages in entries:
+                    for msg_id, fields in messages:
+                        ack_ids.append(msg_id)
+                        payload_raw = fields.get("payload", "{}")
+                        try:
+                            payload = json.loads(payload_raw) if isinstance(payload_raw, str) else payload_raw
+                        except Exception:
+                            payload = {"raw": payload_raw}
+
+                        engine.process_event({
+                            "event_id": fields.get("event_id"),
+                            "event_type": fields.get("event_type"),
+                            "source": fields.get("source"),
+                            "worker_id": fields.get("worker_id"),
+                            "payload": payload,
+                            "timestamp": fields.get("timestamp")
+                        })
+                if ack_ids:
+                    await asyncio.to_thread(r.xack, topic, group, *ack_ids)
+        except Exception as e:
+            print(f"[{engine.format_time()}] {Colors.YELLOW}Redis Stream read error ({e}). Retrying in 2s...{Colors.RESET}")
+            await asyncio.sleep(2)
+
+
+async def start_ws_supervisor(saas_url: str, api_key: str, auto_heal: bool):
+    """Fallback transport ingestion via WebSocket Live Bridge."""
     client = WatchdogClient(saas_url, api_key)
     engine = AutonomousWatchdogEngine(client, auto_heal=auto_heal)
 
@@ -387,10 +458,9 @@ async def start_autonomous_supervisor(saas_url: str, api_key: str, auto_heal: bo
     host = base_url.split("://")[1]
     ws_url = f"{ws_protocol}://{host}/ws/live-logs"
 
-    engine.print_banner(ws_url)
+    engine.print_banner(f"WebSocket Live Bridge ({ws_url})")
     engine.print_system_snapshot()
 
-    # Closed-loop health pulse & diagnostic loop (every 7s)
     async def evaluation_loop():
         while True:
             await asyncio.sleep(7)
@@ -413,7 +483,7 @@ async def start_autonomous_supervisor(saas_url: str, api_key: str, auto_heal: bo
                     except json.JSONDecodeError:
                         pass
         except Exception as e:
-            print(f"[{engine.format_time()}] {Colors.YELLOW}WebSocket disconnected ({e}). Retrying in {retry_delay}s... (Closed-loop pulse remains active){Colors.RESET}")
+            print(f"[{engine.format_time()}] {Colors.YELLOW}WebSocket stream disconnected ({e}). Retrying in {retry_delay}s...{Colors.RESET}")
             await asyncio.sleep(retry_delay)
             retry_delay = min(retry_delay * 1.5, 15)
 
@@ -422,6 +492,8 @@ def main():
     parser = argparse.ArgumentParser(description="Autonomous Operational Observer & Watchdog for Booking Automation")
     parser.add_argument("--saas-url", default=os.getenv("SAAS_BASE_URL", "https://keagent.alamiaconnect.com"),
                         help="Base URL of the SaaS control plane (default: https://keagent.alamiaconnect.com)")
+    parser.add_argument("--redis-url", default=os.getenv("REDIS_URL"),
+                        help="Direct Redis Streams URL (e.g. redis://localhost:6379/0)")
     parser.add_argument("--api-key", default=os.getenv("WATCHDOG_API_KEY", "51129693340"),
                         help="API key for watchdog status and recovery endpoints (default: 51129693340)")
     parser.add_argument("--no-heal", action="store_true",
@@ -459,7 +531,10 @@ def main():
         return
 
     try:
-        asyncio.run(start_autonomous_supervisor(args.saas_url, args.api_key, auto_heal=not args.no_heal))
+        if args.redis_url and redis:
+            asyncio.run(start_redis_stream_supervisor(args.redis_url, args.saas_url, args.api_key, auto_heal=not args.no_heal))
+        else:
+            asyncio.run(start_ws_supervisor(args.saas_url, args.api_key, auto_heal=not args.no_heal))
     except KeyboardInterrupt:
         print("\nWatchdog supervisor stopped by user.")
 

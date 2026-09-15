@@ -64,14 +64,21 @@ for view in views:
     admin.add_view(view)
 
 @app.on_event("startup")
-def startup_event():
+async def startup_event():
     # Auto-seed the database if it's empty
     from init_db import init_db
     init_db()
 
+    # Initialize EventBus and launch WebSocket Bridge Consumer
+    from core.event_bus import event_bus
+    from core.websocket_manager import ws_bridge
+    event_bus.initialize()
+    await ws_bridge.start()
+
 @app.on_event("shutdown")
-def shutdown_event():
-    pass
+async def shutdown_event():
+    from core.websocket_manager import ws_bridge
+    await ws_bridge.stop()
 
 # --- Dependency ---
 def get_db():

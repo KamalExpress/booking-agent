@@ -12,14 +12,33 @@ services:
       # In production, this will point to the production PostgreSQL instance
       - DATABASE_URL=postgresql://postgres:postgres@postgres_dev:5432/booking_saas
       - SECRET_KEY=kamal_express_saas_secure_key_12345
+      - REDIS_URL=redis://saas-redis:6379/0
+      - EVENTBUS_BACKEND=redis
       # VAPID keys for Web Push Notifications (You must generate real ones for production)
       - VAPID_PRIVATE_KEY=private_key.pem
       - VAPID_PUBLIC_KEY=BOJviVyqeMuXRl9-4a_iJrH67TKwCjV7N4YZs-tZ63ZBHOtqksgujIA_0yMiDaC_EAt-wUJ4YNJN4vZMoBMeuzs
     volumes:
       - ./private_key.pem:/app/private_key.pem
       - cloud_saas_data:/app/data
+    depends_on:
+      - redis
     networks:
       - sam-agent-platform_default
+
+  redis:
+    image: redis:7-alpine
+    container_name: saas-redis
+    restart: unless-stopped
+    command: redis-server --save "" --appendonly no
+    ports:
+      - "6379:6379"
+    networks:
+      - sam-agent-platform_default
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   operator-agent:
     image: operator-agent:latest

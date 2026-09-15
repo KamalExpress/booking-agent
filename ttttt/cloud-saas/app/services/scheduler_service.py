@@ -3,11 +3,18 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from fastapi import Depends
 
-from app.models import (
-    WorkerNode, PortalAccount, Proxy, Assignment, BookingTask, 
-    Lease, SchedulerDecision, EventLog, get_db
-)
-from app.services.scoring_policy import ScoringPolicy
+try:
+    from app.models import (
+        WorkerNode, PortalAccount, Proxy, Assignment, BookingTask, 
+        Lease, SchedulerDecision, EventLog, get_db
+    )
+    from app.services.scoring_policy import ScoringPolicy
+except ImportError:
+    from models import (
+        WorkerNode, PortalAccount, Proxy, Assignment, BookingTask, 
+        Lease, SchedulerDecision, EventLog, get_db
+    )
+    from services.scoring_policy import ScoringPolicy
 
 class SchedulerService:
     def __init__(self, db: Session):
@@ -173,18 +180,17 @@ class SchedulerService:
             }
         )
         self.db.add(lease_event)
-        try:
-            from core.websocket_manager import sync_broadcast
-            sync_broadcast({
-                "event_type": "BOOKING_CLAIMED",
-                "worker_id": worker.worker_id,
-                "assignment_id": task.assignment_id,
-                "payload": lease_event.payload,
-                "timestamp": now.isoformat()
-            })
-        except Exception:
-            pass
         self.db.commit()
+
+        from core.event_bus import event_bus
+        event_bus.publish(
+            topic="events:pipeline",
+            event_type="BOOKING_CLAIMED",
+            payload=lease_event.payload,
+            source=f"worker:{worker.worker_id}",
+            worker_id=worker.worker_id,
+            tenant_id=task.tenant_id
+        )
         return lease
 
     def _try_schedule_scraping(self, worker: WorkerNode) -> Lease:
@@ -367,20 +373,17 @@ class SchedulerService:
                 }
             )
             self.db.add(dispatch_event)
-            try:
-                from core.websocket_manager import sync_broadcast
-                sync_broadcast({
-                    "event_type": "BOOKING_DISPATCHED",
-                    "assignment_id": assignment_id,
-                    "payload": dispatch_event.payload,
-                    "timestamp": now.isoformat()
-                })
-            except Exception:
-                pass
-            dispatched_count += 1
-            
-        if dispatched_count > 0:
             self.db.commit()
+
+            from core.event_bus import event_bus
+            event_bus.publish(
+                topic="events:pipeline",
+                event_type="BOOKING_DISPATCHED",
+                payload=dispatch_event.payload,
+                source="scheduler:auto_dispatch",
+                tenant_id=entry.tenant_id
+            )
+            dispatched_count += 1
             
         return dispatched_count
 

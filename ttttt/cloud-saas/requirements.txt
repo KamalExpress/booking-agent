@@ -12,3 +12,5 @@ user-agents
 sqladmin
 itsdangerous
 alembic
+redis>=5.0.0
+mcp<2.0.0

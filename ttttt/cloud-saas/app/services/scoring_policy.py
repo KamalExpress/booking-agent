@@ -1,5 +1,8 @@
 from datetime import datetime, timezone
-from app.models import PortalAccount, Proxy, WorkerNode, Assignment, BookingTask
+try:
+    from app.models import PortalAccount, Proxy, WorkerNode, Assignment, BookingTask
+except ImportError:
+    from models import PortalAccount, Proxy, WorkerNode, Assignment, BookingTask
 
 class ScoringPolicy:
     """

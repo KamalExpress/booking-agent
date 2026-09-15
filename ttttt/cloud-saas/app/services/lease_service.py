@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from typing import Optional, Dict, Any, List
 from fastapi import Depends
 
-from models import Lease, Assignment, PortalAccount, Proxy, WorkerNode, BookingTask, EventLog, get_db
+from models import Lease, Assignment, PortalAccount, Proxy, WorkerNode, BookingTask, EventLog, get_db, WaitlistQueue
 
 class LeaseService:
     def __init__(self, db: Session):
@@ -96,7 +96,7 @@ class LeaseService:
                     t.active_status = False
 
         # Self-healing: recover orphan WaitlistQueue entries stuck in DISPATCHED/PROCESSING
-        from app.models import WaitlistQueue
+
         stuck_queue_entries = self.db.query(WaitlistQueue).filter(
             WaitlistQueue.status.in_(["DISPATCHED", "PROCESSING"])
         ).all()
@@ -273,7 +273,7 @@ class LeaseService:
                     task.status = "SUCCESS"
                     task.active_status = False
                     if task.applicant_id:
-                        from app.models import WaitlistQueue
+                
                         q_entry = self.db.query(WaitlistQueue).filter(
                             WaitlistQueue.applicant_id == task.applicant_id,
                             WaitlistQueue.status.in_(["PENDING", "DISPATCHED", "PROCESSING"])
@@ -378,7 +378,7 @@ class LeaseService:
                         task.failure_details = str(reason)
                         # Cancel active queue item for applicant to prevent endless re-queuing
                         if task.applicant_id:
-                            from app.models import WaitlistQueue
+                    
                             q_entry = self.db.query(WaitlistQueue).filter(
                                 WaitlistQueue.applicant_id == task.applicant_id,
                                 WaitlistQueue.status.in_(["PENDING", "DISPATCHED", "PROCESSING"])
@@ -393,7 +393,7 @@ class LeaseService:
                         if reason:
                             task.failure_reason = str(reason)[:255]
                         if task.applicant_id:
-                            from app.models import WaitlistQueue
+                    
                             q_entry = self.db.query(WaitlistQueue).filter(
                                 WaitlistQueue.applicant_id == task.applicant_id,
                                 WaitlistQueue.status.in_(["PENDING", "DISPATCHED", "PROCESSING"])
