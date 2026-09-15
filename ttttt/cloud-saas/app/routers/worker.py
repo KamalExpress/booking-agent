@@ -350,7 +350,7 @@ def submit_logs(
                 s.status = "UNAVAILABLE"
                 s.last_checked_at = datetime.utcnow()
                 
-        if not notify_no_slots or notify_no_slots.value == "true":
+        if notify_no_slots and notify_no_slots.value == "true":
             friendly_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
             send_push_notification(db, "Slot Monitor", f"No Slots available; last checked: {friendly_time}", visa_center_id=vac_id)
         

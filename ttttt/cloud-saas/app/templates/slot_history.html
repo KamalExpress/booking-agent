@@ -19,7 +19,7 @@
 </header>
 
 <div class="bg-card border border-border rounded-xl shadow-sm overflow-hidden mb-8">
-    <div class="p-6 border-b border-border bg-muted/30 flex justify-between items-center">
+    <div class="p-6 border-b border-border bg-muted/30 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div class="flex items-center gap-4">
             <a href="/slots?tab=active" class="text-sm font-semibold px-3 py-1.5 rounded-md transition-colors {% if current_tab == 'active' %}bg-zinc-800 text-white border border-zinc-700{% else %}text-zinc-400 hover:text-white{% endif %}">
                 Active Slots ({{ total_active }})
@@ -28,6 +28,13 @@
                 Archived Slots ({{ total_archived }})
             </a>
         </div>
+        {% if user.role.value == 'SUPER_ADMIN' and (total_active > 0 or total_archived > 0) %}
+        <form action="/slots/clear-all" method="POST" class="inline" onsubmit="event.preventDefault(); promptConfirmModal({ title: 'Clear All Slot History', subtitle: 'Permanent Reset', description: 'Are you sure you want to permanently delete ALL recorded slot drops across all visa centers? This cannot be undone.', confirmText: 'Clear All History', isDanger: true, form: this });">
+            <button type="submit" class="btn btn-secondary text-xs py-1.5 px-3 border-red-500/30 text-red-400 hover:bg-red-500/10 flex items-center gap-1.5 transition-colors">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Clear All History
+            </button>
+        </form>
+        {% endif %}
     </div>
     
     <div class="overflow-x-auto">

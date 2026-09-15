@@ -110,7 +110,7 @@
                         <span class="text-sm text-zinc-300">Send Slots Found Notifications</span>
                     </label>
                     <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" name="notify_no_slots_found" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if not settings.get('notify.no_slots_found') or settings.get('notify.no_slots_found').value == 'true' %}checked{% endif %}>
+                        <input type="checkbox" name="notify_no_slots_found" class="rounded bg-black border-zinc-800 text-indigo-500 focus:ring-indigo-500" {% if settings.get('notify.no_slots_found') and settings.get('notify.no_slots_found').value == 'true' %}checked{% endif %}>
                         <span class="text-sm text-zinc-300">Send No Slots Found Notifications</span>
                     </label>
                     <label class="flex items-center gap-2 cursor-pointer mt-2 pt-2 border-t border-zinc-800/50">
