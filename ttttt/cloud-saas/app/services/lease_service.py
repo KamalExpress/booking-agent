@@ -61,6 +61,38 @@ class LeaseService:
         if expired_leases:
             self.db.commit()
 
+        # Self-healing: recover orphan LEASED accounts with no active running lease
+        leased_accounts = self.db.query(PortalAccount).filter(PortalAccount.status == "LEASED").all()
+        for acc in leased_accounts:
+            has_active_lease = self.db.query(Lease).filter(
+                Lease.portal_account_id == acc.id,
+                Lease.status.in_(["Leased", "Running"])
+            ).first()
+            if not has_active_lease:
+                acc.status = "READY"
+
+        # Self-healing: recover orphan LEASED proxies with no active running lease
+        leased_proxies = self.db.query(Proxy).filter(Proxy.status == "LEASED").all()
+        for prx in leased_proxies:
+            has_active_lease = self.db.query(Lease).filter(
+                Lease.proxy_id == prx.id,
+                Lease.status.in_(["Leased", "Running"])
+            ).first()
+            if not has_active_lease:
+                prx.status = "READY"
+
+        # Self-healing: recover orphan CLAIMED booking tasks with no active running lease
+        claimed_tasks = self.db.query(BookingTask).filter(BookingTask.status == "CLAIMED").all()
+        for t in claimed_tasks:
+            has_active_lease = self.db.query(Lease).filter(
+                Lease.booking_task_id == t.id,
+                Lease.status.in_(["Leased", "Running"])
+            ).first()
+            if not has_active_lease:
+                t.status = "PENDING"
+
+        self.db.commit()
+
     def get_existing_lease_for_worker(self, worker: WorkerNode) -> Optional[Lease]:
         return self.db.query(Lease).filter(
             Lease.worker_id == worker.worker_id,

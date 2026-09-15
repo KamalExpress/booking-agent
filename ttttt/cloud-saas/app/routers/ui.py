@@ -1569,12 +1569,13 @@ async def create_client(
     db.add(new_client)
     db.flush()
     
-    if auto_enqueue and visa_center_id:
+    if auto_enqueue:
+        target_vc = visa_center_id.strip() if (visa_center_id and visa_center_id.strip()) else "138"
         queue_entry = WaitlistQueue(
             tenant_id=target_tenant_id,
             applicant_id=new_client.id,
             provider="GVC",
-            visa_center=visa_center_id,
+            visa_center=target_vc,
             appointment_type=appointment_type or "26",
             status="PENDING",
             priority=priority or 0
