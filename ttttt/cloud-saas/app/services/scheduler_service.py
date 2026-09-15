@@ -110,8 +110,7 @@ class SchedulerService:
         # Find best proxy (prioritizing supports_booking, falling back to any ready proxy or None)
         proxies = self.db.query(Proxy).filter(
             or_(Proxy.supports_booking == True, Proxy.supports_scraping == True),
-            or_(Proxy.tenant_id == task.tenant_id, Proxy.tenant_id == None),
-            or_(Proxy.is_archived == False, Proxy.is_archived == None)
+            or_(Proxy.tenant_id == task.tenant_id, Proxy.tenant_id == None)
         ).all()
         best_proxy = None
         best_proxy_score = -1
@@ -161,12 +160,12 @@ class SchedulerService:
         lease_event = EventLog(
             source="scheduler",
             worker_id=worker.worker_id,
-            tenant_id=task.tenant_id,
             assignment_id=task.assignment_id,
             event_type="BOOKING_CLAIMED",
             severity="info",
             payload={
                 "task_id": task.id,
+                "tenant_id": task.tenant_id,
                 "applicant_id": task.applicant_id,
                 "visa_center": task.visa_center,
                 "worker_id": worker.worker_id,
@@ -344,12 +343,12 @@ class SchedulerService:
             from app.models import EventLog
             dispatch_event = EventLog(
                 source="scheduler",
-                tenant_id=entry.tenant_id,
                 assignment_id=assignment_id,
                 event_type="BOOKING_DISPATCHED",
                 severity="info",
                 payload={
                     "task_id": task.id,
+                    "tenant_id": entry.tenant_id,
                     "applicant_id": entry.applicant_id,
                     "visa_center": entry.visa_center,
                     "target_date": slot_date,

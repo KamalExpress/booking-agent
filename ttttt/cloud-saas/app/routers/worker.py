@@ -545,12 +545,12 @@ def submit_task_confirmation(task_id: int, payload: dict, worker: WorkerNode = D
     booking_event = EventLog(
         source="worker",
         worker_id=worker.worker_id,
-        tenant_id=task.tenant_id,
         assignment_id=task.assignment_id,
         event_type="BOOKING_SUCCESS",
         severity="info",
         payload={
             "task_id": task_id,
+            "tenant_id": task.tenant_id,
             "applicant_id": task.applicant_id,
             "visa_center": task.visa_center,
             "reference_number": ref_num,
