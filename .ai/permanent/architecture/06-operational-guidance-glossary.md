@@ -27,21 +27,17 @@ This document serves as the master dictionary for all operational events, errors
 | `PORTAL_ERROR` | The visa portal returned a server error (5xx). | The visa portal is undergoing maintenance or is overloaded. | Wait for the portal to recover. | System will keep trying at the configured polling interval. |
 | `BOOKING_FAILED` | A booking attempt failed. | The slot was taken by someone else before the booker could finish, or a portal error occurred during submission. | None (slot is lost). | Bookers will wait for the next `SLOT_FOUND` event. |
 | `RATE_LIMITED` | The portal rate-limited the worker (429). | The proxy or account made too many requests in a short time. | Increase your polling interval or add more proxies. | Both Account and Proxy enter cooldown. |
-| `WAF_TARPIT` | Worker network request hangs and times out after exactly 30s. | Imperva WAF dropped the POST packet because JS cookies expired, rather than sending a TCP reset. | Spawn a headless Playwright instance to evaluate the JS challenge and refresh cookies. | Yes, the worker detects the `curl: (28)` error and automatically triggers a cookie refresh. |
-| `WAF_FINGERPRINT_MISMATCH` | Worker receives `403 Forbidden` despite valid cookies. | The browser fingerprint (User-Agent/sec-ch-ua) used to solve the JS challenge differs from the API scraper client. | Align Playwright context attributes perfectly with the `curl_cffi` impersonation profile. | No, requires developer intervention to fix the fingerprint alignment. |
-
-## System / Lifecycle Events
-
-| Code | What Happened | Why did it happen? | How to fix it | Auto-Recovery |
-| --- | --- | --- | --- | --- |
-| `WORKER_REGISTERED` | A new worker node connected. | A worker successfully started and contacted the SaaS. | N/A | N/A |
-| `WORKER_OFFLINE` | A worker was marked offline. | The worker missed its heartbeat check (90s). | Restart the worker node if it crashed or check network connectivity. | Yes, when the worker reconnects. |
-| `LEASE_CREATED` | A lease was issued to a worker. | The scheduler bundled a task, account, and proxy. | N/A | N/A |
-| `LEASE_COMPLETED` | A lease was successfully finished. | The worker finished its task and reported back. | N/A | N/A |
-| `LEASE_CANCELLED` | A lease was explicitly cancelled. | An admin manually cancelled the lease via the UI, or the system paused it. | N/A | N/A |
-| `LEASE_EXPIRED` | A lease expired before completion. | The worker took too long to complete the task or died without sending a heartbeat. | Ensure worker instances have sufficient resources to complete tasks within TTL. | The task will be instantly re-queued for another worker. |
-| `LEASE_ABANDONED` | A lease was marked abandoned. | The worker died or missed heartbeats, and its active leases were forcefully reclaimed by maintenance. | Restart the worker node if it crashed, or check network connectivity. | Yes, the task is re-queued and resources are freed. |
-| `PUSH_SENT` | A Web Push payload was dispatched. | A booking task triggered an admin notification. | N/A | N/A |
+| `BOOKING_DISPATCHED` | An applicant in the queue was matched to a discovered slot and a BookingTask was created. | `SLOT_FOUND` occurred with waiting applicants matching the VAC and date criteria. | N/A | N/A |
+| `BOOKING_CLAIMED` | A Booking Agent claimed the BookingTask and locked credentials. | A Booker worker polled the scheduler and leased the task. | N/A | N/A |
+| `OTP_RECEIVED` / `OTP_INTERCEPTED` | An SMS or Email OTP verification code was captured. | GVC sent an OTP challenge during booking, which was captured via webhook or injected. | N/A | N/A |
+| `BOOKING_SUCCESS` | An appointment was successfully booked and confirmed on GVC. | Booker completed form submission, OTP validation, and received a reference number. | N/A | Queue item marked BOOKED. |
+| `BOOKING_ALREADY_EXISTS` | Booking rejected because applicant already has an active appointment. | Duplicate booking attempt for a passport number with an existing slot. | Mark queue entry as COMPLETED/CANCELLED. | Yes, Watchdog auto-resolves. |
+| `WAF_CHALLENGE` | Portal WAF intercepted request with a JavaScript/Turnstile challenge (HTTP 403). | Missing valid TLS clearance token or high-frequency automated POST detected by Cloudflare/Imperva. | Verify browser persona alignment, proxy quality, or refresh clearance session. | Auto-retry with jitter; escalate to manual browser session if persistent. |
+| `QUEUE_ENQUEUED` | Applicant added to waitlist queue. | User or API enqueued an applicant for slot matching. | N/A | N/A |
+| `QUEUE_REMOVED` | Applicant removed from waitlist queue. | Admin deleted the queue entry. | N/A | N/A |
+| `QUEUE_RESET` | Stuck or failed queue entry returned to PENDING. | Watchdog or Admin reset stuck tasks to allow re-dispatch. | N/A | Yes, auto-recovered by Watchdog. |
+| `ASSIGNMENT_RESCHEDULED`| Monitoring assignment timer set to 0. | Admin or Watchdog surged assignment for immediate polling. | N/A | N/A |
+| `PUSH_SENT` | A Web Push payload was dispatched. | A booking task or slot finding triggered an admin notification. | N/A | N/A |
 
 ## Entity Statuses (Portal Accounts, Proxies, Workers)
 

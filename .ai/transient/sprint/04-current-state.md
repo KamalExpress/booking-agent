@@ -1,39 +1,35 @@
-# Sprint 12: Current State & Handoff
+﻿# Sprint 13: Current State & Handoff
 
 ## Current Sprint
-Sprint 12 (Production Branch Synchronization & E2E Booking Validation)
+Sprint 13 (Redis Streams EventBus, Autonomous Watchdog Observer & Booker Cloudflare WAF Hardening)
 
 ## Completed Work & Architectural Upgrades
-- **Production Topology Branching (`feature/prod`):** Merged all staging features, fixes, and schema defaults from `feature/staging` into `feature/prod` (`52f62f6`), establishing `feature/prod` as the canonical production branch for VPS deployments.
-- **Provider System Unification (`GVC` Default):**
-  - Migrated DB model defaults in `models.py` to `GVC` for `PortalAccount`, `Assignment`, and `BookingTask`.
-  - Reordered dropdown menus across `accounts.html`, `account_detail.html`, and `assignments.html` to preselect `GVC` first.
-  - Added Provider badge column to `assignments.html` and updated `edit_assignment` UI handler to persist provider updates.
-- **Web Push Notification Hardening:**
-  - Migrated `/api/push/*` endpoints in `main.py` to `Depends(get_current_user_from_cookie)`.
-  - Implemented endpoint-based subscription upsert/deduplication in PostgreSQL.
-  - Added client-side `checkPushState()` in `base.html` and `settings.html` to auto-toggle the subscribe button into a disabled emerald `Subscribed` badge on load/subscribe.
-- **EDR Operational Guidance System:**
-  - Expanded `GUIDANCE_DICT` in `guidance.py` with 11 new worker events (`LEASE_COMPLETED`, `PREFLIGHT_SUCCESS`, `CAPTCHA_SOLVING`, `WORKER_ERROR`, `RATE_LIMIT_HIT`, `OTP_SENT`, etc.).
-  - Embedded `<operational-guidance>` web component into live log cards on `dashboard_logs.html`.
-- **PWA Dashboard Hardening:**
-  - Updated `global_last_checked_time` in `ui.py` to query across all event types (`SLOT_FOUND`, `NO_SLOTS_FOUND`, `LEASE_COMPLETED`, `LOGIN_SUCCESS`) and `Assignment.last_checked` DB timestamps, resolving "Last Checked: Never".
-  - Integrated 90-second smart auto-refresh script in `index.html` with `!document.hidden` visibility guard.
-- **Execution Plane & Docker Stacks:**
-  - Configured `headless_booker.py` as dedicated Booker Agent (`can_scrape=False, can_book=True`) and `slot_monitor.py` as dedicated Scraper Agent (`can_scrape=True, can_book=False`).
-  - Updated `docker-compose-staging.yml`, `vps-setup/docker-compose-staging.yml`, `vps-setup/docker-compose.prod.yml`, and `docker-compose.yml` with dedicated Booker worker services (`booker-agent` / `booker-worker-prod`) executing `python headless_booker.py`.
-  - Added multi-format date parser (`%d/%m/%Y`, `%Y-%m-%d`, `%m/%d/%Y`) in `slot_monitor.py`.
-- **Configurable Mock Slot Drop (SaaS Admin Settings):**
-  - Added **Testing & Mock Controls** UI section to `/settings` with **Enable Mock Slot Drop (Testing Mode)** checkbox.
-  - Persisted `"testing.enable_mock_slots"` setting in PostgreSQL `SystemSetting` and exposed it in worker `/api/v1/worker/runtime-config` payload.
-  - Updated `slot_monitor.py` to dynamically check `enable_mock_slots` flag before dropping 1 open mock slot (`09:00 AM`). When unchecked, worker executes real portal API slot searches.
-- **WAF Security Diagnosis:**
-  - Analyzed worker network log (`worker_worker_5cc74783_network_log_25610.json`) and identified an **Imperva Incapsula 403 Forbidden IP Block** on proxy `185.193.214.18`.
+- **Decoupled Real-Time EventBus (Redis Streams):**
+  - Built `EventBusBackend` interface and `RedisStreamsBackend` in `cloud-saas/app/core/event_bus.py` with `MAXLEN ~ 10000` bounded operational log.
+  - Refactored `WebSocketManager` in `cloud-saas/app/core/websocket_manager.py` into a downstream `WebSocketBridgeConsumer` reading from group `ws-bridge` and multicasting to `/ws/live-logs`.
+  - Retained PostgreSQL `EventLog` dual-write for persistent audit trails.
+- **Autonomous Watchdog Supervisor (`scripts/autonomous_watchdog.py`):**
+  - Standalone daemon with dual Redis Streams & WebSocket ingestion and SLA monitoring across all 6 stages (S1 -> S6).
+  - Proactive self-healing for:
+    1. Overdue polling (>120s idle).
+    2. Post-discovery paused monitoring.
+    3. Stalled booking tasks.
+    4. Expired rate-limit cooldowns.
+    5. Account lease deadlocks & queue item restoration.
+- **Watchdog Control Plane APIs (`cloud-saas/app/routers/watchdog.py`):**
+  - Added `/api/v1/watchdog/status`, `/trigger-poll`, `/reset-queue`, `/reset-cooldowns`, `/inject-otp`.
+- **Cloudflare WAF & Booker Error Propagation:**
+  - Diagnosed Booker 403 Forbidden Cloudflare challenge on mock portal via HAR analysis (`worker_har_export_20260915_160417.json`).
+  - Fixed `operator-agent/core/gvc_adapter.py` to unmask `WAFBlockedException` to SaaS.
+- **Terminology & Vocabulary Sanitization:**
+  - Completely removed "scrape/scraper/scraping" across UI, backend, worker logging, and docs in favor of "Monitor Nodes", "Monitors", and "Polling".
+- **Infrastructure & Port Conflict Fixes:**
+  - Added `redis:7-alpine` to VPS compose with `expose: 6379` internal bridge networking, avoiding host port collisions.
 
 ## Pending / Next Priorities
-1. **Rotate Proxy Pool:** Replace banned proxy `185.193.214.18` on SaaS `/proxies` with a clean residential proxy.
-2. **Execute E2E Booking Validation on Staging:** Trigger assignment scan with `booker-agent-staging` running, verify `SLOT_FOUND` -> Web Push -> `BookingTask` -> Booker lease -> `BOOKING_SUCCESS`.
-3. **Deploy Staging to Production:** Once validated on staging, deploy `feature/prod` stack to production VPS.
+1. **Cloudflare WAF Rule on Mock Portal:** Add Cloudflare WAF skip/bypass rule for `gvcportal.alamiaconnect.com` on `/api/v1/appointments` and `/api/v1/onetimepassword/*`.
+2. **Execute Full E2E Test Loop:** Trigger mock slot drop on Lahore VAC 138 (Type 26) and verify full automated booking loop to `BOOKING_SUCCESS`.
+3. **Multi-Tenant Concurrent Queue Test:** Validate queue prioritization across multiple centers with autonomous Watchdog tracking.
 
 ---
-*Last Reviewed: July 27, 2026 | Production Branch: feature/prod | Owner: Knowledge Manager*
+*Last Reviewed: September 15, 2026 | Active Branch: feature/mock-portal-hardening | Owner: Knowledge Manager*

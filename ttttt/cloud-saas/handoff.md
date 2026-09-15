@@ -1,39 +1,66 @@
-# Session Handoff: Kamal Express Cloud SaaS
+﻿# Session Handoff: Kamal Express Cloud SaaS & Execution Plane
 
 ## Current State & Context
-We are migrating a Windows Desktop Booking Bot to a **Cloud-based SaaS Application** (FastAPI backend + Vanilla JS/HTML frontend). The bot uses a threaded `SlotMonitorEngine` with Playwright (headless) to constantly scrape a target website for booking slots.
+We have transitioned from legacy polling to a decoupled, event-driven architecture powered by **Redis Streams**, a live **WebSocket Bridge**, and an **Autonomous Watchdog Supervisor** daemon that continuously monitors end-to-end booking SLA stages (S1 -> S6) and performs automated self-healing.
 
-The main challenge encountered during this session was **Handling Captchas in a Headless/SaaS Environment**.
+The control plane is live on VPS at `https://keagent.alamiaconnect.com/`, paired with the mock portal at `https://gvcportal.alamiaconnect.com/`.
 
-## What Was Accomplished
-1. **Log Observability**: Built a custom `MemoryLogHandler` that pipes standard Python `logging` directly from the background threads to a fast, in-memory queue. These logs are polled by the frontend and displayed in a **Live Bot Terminal** for Super Admins.
-2. **Staff Permission System**: Added a `can_solve_captcha` boolean to the database via raw SQL injection. The backend schemas, API endpoints, and frontend Staff Modals were updated to support toggling this permission.
-3. **Manual Bot Trigger**: Rewrote the thread sleeping mechanism to use `threading.Event()`. Added a **"Run Bot Now"** button to the UI that instantly bypasses the sleep timer and wakes the bot up for immediate execution.
-4. **Captcha Engine Setup**: 
-   - Built a blocking `global_captcha_state` mechanism that freezes the Playwright scraping thread when a Captcha is detected.
-   - Built a frontend polling loop (`checkPendingCaptcha`) that detects the blocked state and pops up a Google reCAPTCHA v2 Modal for the user to solve manually.
-5. **Debugging & Limitations**: 
-   - Traced why the Google widget wouldn't physically render: **"Invalid domain for site key"**. 
-   - Confirmed that the target website heavily restricts their sitekey to their own domain. Unlike the previous Desktop App (which spoofed headers), standard web browsers forbid Javascript from spoofing the `Origin`/`Referer` headers. 
+---
 
-## What is Pending (The Path Forward)
-The user has decided to pursue a hybrid of **Option 1 (Automated API)** and **Option 3 (Chrome Extension)** to solve the domain restriction issue.
+## What Was Accomplished in This Session
+1. **Redis Streams Operational EventBus:**
+   - Implemented `EventBusBackend` ABC and `RedisStreamsBackend` (`cloud-saas/app/core/event_bus.py`) with bounded stream capacity (`MAXLEN ~ 10000`).
+   - Decoupled `WebSocketManager` (`cloud-saas/app/core/websocket_manager.py`) so WebSocket connections act as pure consumers of the Redis `ws-bridge` consumer group without holding server state.
+   - Retained PostgreSQL `EventLog` dual-write for persistent audit history.
+2. **Autonomous Watchdog Supervisor (`scripts/autonomous_watchdog.py`):**
+   - Built a real-time topology observer supporting both direct Redis Streams ingestion and public WebSocket streaming.
+   - Implemented human-readable terminal rendering for all 6 pipeline stages:
+     - S1: Monitor Node Polling & Slot Detection
+     - S2: SaaS Task Dispatch & Booker Matching
+     - S3: Queue Management & Waitlist Advancement
+     - S4: Booker Lease & Pre-Flight Form Fill
+     - S5: OTP Extraction & Verification
+     - S6: Confirmation & Final Receipt
+   - Integrated 5 autonomous healing loops:
+     - Auto-trigger overdue monitoring scans (>120s idle with queue pending).
+     - Auto-unpause monitoring assignments paused post-slot discovery.
+     - Auto-advance stale pending booking tasks.
+     - Proactively unblock accounts whose rate-limit cooldowns expired.
+     - Auto-release locked accounts (`LEASED` -> `READY`) on failed/stuck tasks and reset waitlist items to `PENDING`.
+3. **Control Plane Watchdog Management Endpoints (`cloud-saas/app/routers/watchdog.py`):**
+   - Added `/api/v1/watchdog/status`, `/trigger-poll`, `/reset-queue`, `/reset-cooldowns`, and `/inject-otp`.
+4. **Cloudflare WAF Diagnosis on Mock Portal:**
+   - Analyzed HAR export (`worker_har_export_20260915_160417.json`) and identified Cloudflare Turnstile challenge returning HTTP 403 on Booker `POST /api/v1/appointments`.
+   - Fixed exception swallowing in `operator-agent/core/gvc_adapter.py` so `WAFBlockedException` is cleanly reported to SaaS instead of masked as `"Final submission failed"`.
+5. **Infrastructure & Port Conflict Fixes:**
+   - Configured `redis:7-alpine` in `vps-setup/docker-compose.prod.yml` and `docker-compose-staging.yml` using internal Docker bridge exposure (`expose: 6379`) to eliminate port binding collisions on host `127.0.0.1:6379`.
+6. **Terminology & Secret Hardening:**
+   - Standardized terminology to **Monitor Nodes**, **Monitors**, and **Polling** (completely removing 'scrape/scraper').
+   - Removed hardcoded default credentials from CLI args and routes.
 
-### 1. Option 1: Automated 3rd-Party Solving (Recommended default)
-- **Goal**: Integrate `NopeChaService` (or 2Captcha/CapSolver).
-- **Task**: 
-  - Ensure the user has an active API key from the chosen service.
-  - Update the `MonitorConfig` in the database to default back to `strategy = "AUTO"`.
-  - Validate that the `NopeChaService.solve()` logic correctly intercepts the sitekey and URL, sends it to the API, and successfully injects the returned token back into the Playwright session.
+---
 
-### 2. Option 3: Chrome Extension Header Spoofing (Manual Fallback)
-- **Goal**: Allow staff to manually solve captchas on the dashboard without Google blocking the widget.
-- **Task**:
-  - Build a lightweight `manifest.json` + `background.js` Chrome Extension using the `chrome.declarativeNetRequest` API.
-  - The extension will intercept outgoing requests to `https://www.google.com/recaptcha/*` from the SaaS dashboard (`apptsys.samwebdevs.dpdns.org`) and rewrite the `Referer` and `Origin` HTTP headers to match the target website.
-  - Staff members with the `can_solve_captcha` permission will be required to install this extension.
+## Live System Status
+- **Monitor Worker (`worker_5cc74783`):** Active on Lahore VAC 138.
+- **Booker Worker (`worker_96983342`):** Online, standby.
+- **Waitlist Queue:** Applicant #6 (Jawad Mansoor) `PENDING` for VAC 138.
+- **Portal Accounts:** Account #1 leased to Monitor, Account #2 `READY`.
+- **Observer:** `python scripts/autonomous_watchdog.py --saas-url https://keagent.alamiaconnect.com`.
+
+---
+
+## What is Pending (Next Session Objectives)
+1. **Cloudflare WAF Bypass Rule for Mock Portal:**
+   - Configure a Cloudflare WAF skip/bypass rule on `gvcportal.alamiaconnect.com` for `/api/v1/appointments` and `/api/v1/onetimepassword/*` to permit automated POST requests without interactive browser challenges.
+2. **Execute Full End-to-End Booking Validation:**
+   - Drop a mock slot on `https://gvcportal.alamiaconnect.com/admin` for Lahore VAC 138 (Type 26).
+   - Verify Monitor detects -> Booker dispatches -> OTP verified -> `BOOKING_SUCCESS`.
+3. **Multi-Tenant Queue Validation:**
+   - Enqueue multiple applicants across different VACs to test concurrent queue management.
+
+---
 
 ## How to Resume
-- To test the current UI, navigate to the Dashboard -> **Live Bot Terminal** -> Click **Run Bot Now**.
-- Look for the Captcha Modal to spawn. Note the red error message inside the container confirming the domain restriction block.
-- When you return, state whether you'd like to build the Chrome Extension first, or wire up the NopeCha Auto-solver first!
+- Check branch: `git status` (must be on `feature/mock-portal-hardening`).
+- Launch Watchdog: `python scripts/autonomous_watchdog.py --saas-url https://keagent.alamiaconnect.com`.
+- Inspect Live Status: `curl -s https://keagent.alamiaconnect.com/api/v1/watchdog/status`.
