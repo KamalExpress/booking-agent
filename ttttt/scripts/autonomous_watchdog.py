@@ -15,11 +15,14 @@ import sys
 import time
 import json
 import asyncio
+import functools
 import urllib.request
 import urllib.error
 import argparse
 from datetime import datetime, timezone
 from typing import Dict, Any, List, Optional, Set
+
+print = functools.partial(print, flush=True)
 
 try:
     import websockets
