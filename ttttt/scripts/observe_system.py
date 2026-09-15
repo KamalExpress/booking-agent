@@ -13,7 +13,7 @@ Features:
 
 Usage:
   python scripts/observe_system.py --saas-url https://keagent.alamiaconnect.com
-  python scripts/observe_system.py --saas-url https://keagent.alamiaconnect.com --api-key 51129693340
+  python scripts/observe_system.py --saas-url https://keagent.alamiaconnect.com --api-key <YOUR_API_KEY>
 """
 
 import sys
@@ -56,9 +56,9 @@ class Colors:
 
 
 class WatchdogClient:
-    def __init__(self, base_url: str, api_key: str = "51129693340"):
+    def __init__(self, base_url: str, api_key: Optional[str] = None):
         self.base_url = base_url.rstrip("/")
-        self.api_key = api_key
+        self.api_key = api_key or os.getenv("WATCHDOG_API_KEY", "")
 
     def _request(self, path: str, data: Optional[bytes] = None, timeout: int = 10) -> Optional[Dict[str, Any]]:
         url = f"{self.base_url}{path}"
@@ -348,6 +348,9 @@ class PipelineTracker:
                 print(f"[{self.format_time()}] {Colors.DIM}[WATCHDOG PULSE]{Colors.RESET} "
                       f"Workers: {online_scrapers} Scrapers / {online_bookers} Bookers | "
                       f"Queue: {pending_q} WAITING / {dispatched_q} DISPATCHED | {poll_text}")
+        else:
+            print(f"[{self.format_time()}] {Colors.DIM}[WATCHDOG PULSE]{Colors.RESET} "
+                  f"WebSocket stream active on {self.client.base_url} | Listening for worker events...")
 
 
 async def start_observer(saas_url: str, api_key: str):
@@ -395,8 +398,8 @@ def main():
     parser = argparse.ArgumentParser(description="Live Pipeline Observer & Watchdog for Booking Automation")
     parser.add_argument("--saas-url", default=os.getenv("SAAS_BASE_URL", "https://keagent.alamiaconnect.com"),
                         help="Base URL of the SaaS control plane (default: https://keagent.alamiaconnect.com)")
-    parser.add_argument("--api-key", default=os.getenv("WATCHDOG_API_KEY", "51129693340"),
-                        help="API key for watchdog status and recovery endpoints (default: 51129693340)")
+    parser.add_argument("--api-key", default=os.getenv("WATCHDOG_API_KEY", ""),
+                        help="API key for watchdog status and recovery endpoints")
     parser.add_argument("--snapshot", action="store_true",
                         help="Print current system topology snapshot and exit")
     parser.add_argument("--trigger-poll", action="store_true",

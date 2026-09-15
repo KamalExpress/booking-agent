@@ -52,9 +52,9 @@ class Colors:
 
 
 class WatchdogClient:
-    def __init__(self, base_url: str, api_key: str = "51129693340"):
+    def __init__(self, base_url: str, api_key: Optional[str] = None):
         self.base_url = base_url.rstrip("/")
-        self.api_key = api_key
+        self.api_key = api_key or os.getenv("WATCHDOG_API_KEY", "")
 
     def _request(self, path: str, data: Optional[bytes] = None, timeout: int = 8) -> Optional[Dict[str, Any]]:
         url = f"{self.base_url}{path}"
@@ -494,8 +494,8 @@ def main():
                         help="Base URL of the SaaS control plane (default: https://keagent.alamiaconnect.com)")
     parser.add_argument("--redis-url", default=os.getenv("REDIS_URL"),
                         help="Direct Redis Streams URL (e.g. redis://localhost:6379/0)")
-    parser.add_argument("--api-key", default=os.getenv("WATCHDOG_API_KEY", "51129693340"),
-                        help="API key for watchdog status and recovery endpoints (default: 51129693340)")
+    parser.add_argument("--api-key", default=os.getenv("WATCHDOG_API_KEY", ""),
+                        help="API key for watchdog status and recovery endpoints")
     parser.add_argument("--no-heal", action="store_true",
                         help="Disable automated self-healing actions (passive observation only)")
     parser.add_argument("--snapshot", action="store_true",

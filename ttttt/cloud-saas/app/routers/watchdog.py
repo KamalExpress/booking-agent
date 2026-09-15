@@ -29,7 +29,7 @@ def verify_watchdog_auth(
         elif authorization.startswith("ApiKey "):
             provided_key = authorization.split(" ")[1]
 
-    valid_keys = [k for k in [WATCHDOG_API_KEY, MCP_API_KEY, SECRET_KEY, "51129693340", "kamal_express_saas_secure_key_12345"] if k]
+    valid_keys = [k for k in [WATCHDOG_API_KEY, MCP_API_KEY, SECRET_KEY] if k]
     if provided_key and provided_key in valid_keys:
         return True
 

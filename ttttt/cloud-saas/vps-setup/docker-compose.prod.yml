@@ -14,6 +14,9 @@ services:
     environment:
       - DATABASE_URL
       - SECRET_KEY
+      - REDIS_URL=redis://saas-redis-prod:6379/0
+      - EVENTBUS_BACKEND=redis
+      - WATCHDOG_API_KEY
       - VAPID_PUBLIC_KEY
       - VAPID_PRIVATE_KEY
       - SUPER_ADMIN_EMAIL
@@ -22,10 +25,26 @@ services:
       - USE_MOCK_CAPTCHA
     depends_on:
       - db
+      - redis
     networks:
       - saas-network
     volumes:
       - saas_data_prod:/app/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: saas-redis-prod
+    restart: always
+    command: redis-server --save "" --appendonly no
+    ports:
+      - "127.0.0.1:6379:6379"
+    networks:
+      - saas-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   operator-worker:
     image: operator-worker:prod
