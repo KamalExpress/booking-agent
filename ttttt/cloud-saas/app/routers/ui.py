@@ -815,6 +815,23 @@ async def delete_slot(slot_id: int, request: Request, db: Session = Depends(get_
         db.commit()
     return RedirectResponse(url="/slots", status_code=303)
 
+@router.post("/slots/clear-all")
+async def clear_all_slots(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+    from models import SlotAvailability
+    deleted_count = db.query(SlotAvailability).delete()
+    audit = AuditLog(
+        user_id=user.id,
+        tenant_id=user.tenant_id,
+        action=f"Cleared All Slot History ({deleted_count} records removed)",
+        ip_address=request.client.host if request.client else None
+    )
+    db.add(audit)
+    db.commit()
+    return RedirectResponse(url="/slots", status_code=303)
+
 @router.get("/workers/{worker_id}", response_class=HTMLResponse)
 async def worker_detail_page(worker_id: str, request: Request, db: Session = Depends(get_db)):
     user = get_ui_user(request, db)
