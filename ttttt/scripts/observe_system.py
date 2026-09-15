@@ -5,11 +5,15 @@ Real-Time System Watchdog & Observer Tool
 Monitors the end-to-end booking automation pipeline across all 6 stages:
   [S1: MONITOR] -> [S2: SLOTS] -> [S3: QUEUE] -> [S4: BOOKER] -> [S5: OTP] -> [S6: CONFIRM]
 
-Detects stalls, WAF challenges, OTP race conditions, and queue desynchronizations live.
+Features:
+- Token-based API access (no manual browser login needed).
+- Real-time WebSocket event streaming.
+- Live pipeline state diagnostics & stall detection.
+- Self-healing trigger controls (trigger-poll, reset-queue, reset-cooldowns).
 
 Usage:
   python scripts/observe_system.py --saas-url https://keagent.alamiaconnect.com
-  python scripts/observe_system.py --saas-url http://localhost:8000
+  python scripts/observe_system.py --saas-url https://keagent.alamiaconnect.com --api-key 51129693340
 """
 
 import sys
@@ -18,8 +22,13 @@ import json
 import time
 import asyncio
 import argparse
+import functools
+import urllib.request
+import urllib.parse
 from datetime import datetime
 from typing import Dict, Any, Optional
+
+print = functools.partial(print, flush=True)
 
 try:
     import websockets
@@ -46,9 +55,53 @@ class Colors:
     BG_BLUE = "\033[44m"
 
 
+class WatchdogClient:
+    def __init__(self, base_url: str, api_key: str):
+        self.base_url = base_url.rstrip("/")
+        self.api_key = api_key
+
+    def get_status(self) -> Optional[Dict[str, Any]]:
+        url = f"{self.base_url}/api/v1/watchdog/status"
+        req = urllib.request.Request(url, headers={
+            "X-Watchdog-Key": self.api_key,
+            "User-Agent": "WatchdogObserver/2.0"
+        })
+        try:
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                return json.loads(resp.read().decode())
+        except Exception as e:
+            return None
+
+    def trigger_poll(self, visa_center: Optional[str] = None) -> Optional[Dict[str, Any]]:
+        url = f"{self.base_url}/api/v1/watchdog/trigger-poll"
+        if visa_center:
+            url += f"?visa_center={visa_center}"
+        req = urllib.request.Request(url, data=b"", headers={
+            "X-Watchdog-Key": self.api_key,
+            "User-Agent": "WatchdogObserver/2.0"
+        })
+        try:
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                return json.loads(resp.read().decode())
+        except Exception as e:
+            return None
+
+    def reset_queue(self) -> Optional[Dict[str, Any]]:
+        url = f"{self.base_url}/api/v1/watchdog/reset-queue"
+        req = urllib.request.Request(url, data=b"", headers={
+            "X-Watchdog-Key": self.api_key,
+            "User-Agent": "WatchdogObserver/2.0"
+        })
+        try:
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                return json.loads(resp.read().decode())
+        except Exception as e:
+            return None
+
+
 class PipelineTracker:
-    def __init__(self):
-        # In-flight task states: task_id -> { "stage": 1..6, "start_time": float, "applicant_id": ..., "center": ... }
+    def __init__(self, client: WatchdogClient):
+        self.client = client
         self.in_flight_tasks: Dict[str, Dict[str, Any]] = {}
         self.total_slots_found = 0
         self.total_dispatched = 0
@@ -66,6 +119,43 @@ class PipelineTracker:
         print(f" {Colors.BOLD}Pipeline Stages:{Colors.RESET}")
         print(f"  [S1: MONITOR] -> [S2: SLOTS] -> [S3: QUEUE] -> [S4: BOOKER] -> [S5: OTP] -> [S6: CONFIRM]")
         print(f"{Colors.BOLD}{Colors.CYAN}{'='*80}{Colors.RESET}\n")
+
+    def print_system_snapshot(self):
+        status = self.client.get_status()
+        if not status:
+            print(f"[{self.format_time()}] {Colors.DIM}[SNAPSHOT] Status API endpoint initializing...{Colors.RESET}")
+            return
+
+        asms = status.get("assignments", [])
+        wrks = status.get("workers", [])
+        q_sum = status.get("queue_summary", {}).get("counts", {})
+        acc_sum = status.get("accounts_summary", {})
+
+        print(f"\n{Colors.BOLD}{Colors.WHITE}--- LIVE SYSTEM TOPOLOGY SNAPSHOT ---{Colors.RESET}")
+        
+        # Workers
+        online_scrapers = sum(1 for w in wrks if w.get("can_scrape") and w.get("is_online"))
+        online_bookers = sum(1 for w in wrks if w.get("can_book") and w.get("is_online"))
+        print(f" {Colors.BOLD}Workers:{Colors.RESET}     Scrapers: {Colors.GREEN}{online_scrapers} online{Colors.RESET} | "
+              f"Bookers: {Colors.GREEN}{online_bookers} online{Colors.RESET} (Total: {len(wrks)})")
+
+        # Assignments
+        print(f" {Colors.BOLD}Monitoring:{Colors.RESET}  {len(asms)} Active Assignment(s)")
+        for a in asms:
+            due_str = f"{Colors.GREEN}POLLING DUE NOW{Colors.RESET}" if a.get("is_due_for_polling") else f"Next poll in {a.get('next_due_seconds')}s"
+            print(f"   Center {a.get('visa_center')}: Status={a.get('status')} | Interval={a.get('polling_interval')}s | {due_str}")
+
+        # Queue
+        print(f" {Colors.BOLD}Waitlist:{Colors.RESET}    PENDING: {Colors.YELLOW}{q_sum.get('PENDING', 0)}{Colors.RESET} | "
+              f"DISPATCHED: {Colors.CYAN}{q_sum.get('DISPATCHED', 0)}{Colors.RESET} | "
+              f"BOOKED: {Colors.GREEN}{q_sum.get('BOOKED', 0)}{Colors.RESET} | "
+              f"FAILED: {Colors.RED}{q_sum.get('FAILED', 0)}{Colors.RESET}")
+
+        # Accounts
+        print(f" {Colors.BOLD}Accounts:{Colors.RESET}    READY: {Colors.GREEN}{acc_sum.get('READY', 0)}{Colors.RESET} | "
+              f"LEASED: {Colors.BLUE}{acc_sum.get('LEASED', 0)}{Colors.RESET} | "
+              f"COOLDOWN: {Colors.YELLOW}{acc_sum.get('COOLDOWN', 0)}{Colors.RESET}")
+        print(f"{Colors.WHITE}{'-'*45}{Colors.RESET}\n")
 
     def format_time(self) -> str:
         return datetime.now().strftime("%H:%M:%S")
@@ -198,18 +288,19 @@ class PipelineTracker:
         for task_id, task in list(self.in_flight_tasks.items()):
             elapsed = now - task["start_time"]
             stage = task["stage"]
-            if stage == 3 and elapsed > 20: # Dispatched but not claimed
+            if stage == 3 and elapsed > 20:
                 print(f"[{self.format_time()}] {Colors.YELLOW}{Colors.BOLD}[WATCHDOG STALL WARNING: STAGE 3]{Colors.RESET} "
                       f"Task #{task_id} has been DISPATCHED for {elapsed:.0f}s without being CLAIMED by any Booker worker.\n"
                       f"       -> Likely Root Cause: No Booker worker running (`can_book=True`) or all portal accounts in COOLDOWN.")
-            elif stage == 4 and elapsed > 45: # Claimed but not finished
+            elif stage == 4 and elapsed > 45:
                 print(f"[{self.format_time()}] {Colors.YELLOW}{Colors.BOLD}[WATCHDOG STALL WARNING: STAGE 4-5]{Colors.RESET} "
                       f"Task #{task_id} in-flight with {task.get('worker')} for {elapsed:.0f}s without completing.\n"
                       f"       -> Likely Root Cause: Waiting for SMS OTP, solving heavy captcha, or worker hung.")
 
 
-async def start_observer(saas_url: str):
-    tracker = PipelineTracker()
+async def start_observer(saas_url: str, api_key: str):
+    client = WatchdogClient(saas_url, api_key)
+    tracker = PipelineTracker(client)
     
     # Normalize URLs
     base_url = saas_url.rstrip("/")
@@ -218,6 +309,7 @@ async def start_observer(saas_url: str):
     ws_url = f"{ws_protocol}://{host}/ws/live-logs"
 
     tracker.print_banner(base_url, ws_url)
+    tracker.print_system_snapshot()
 
     # Stall check background task
     async def stall_checker():
@@ -251,10 +343,28 @@ def main():
     parser = argparse.ArgumentParser(description="Live Pipeline Observer & Watchdog for Booking Automation")
     parser.add_argument("--saas-url", default=os.getenv("SAAS_BASE_URL", "https://keagent.alamiaconnect.com"),
                         help="Base URL of the SaaS control plane (default: https://keagent.alamiaconnect.com)")
+    parser.add_argument("--api-key", default=os.getenv("WATCHDOG_API_KEY", "51129693340"),
+                        help="API key for watchdog status and recovery endpoints (default: 51129693340)")
+    parser.add_argument("--trigger-poll", action="store_true",
+                        help="Immediately trigger monitoring assignments to poll right away")
+    parser.add_argument("--reset-queue", action="store_true",
+                        help="Immediately self-heal and reset stuck queue entries to PENDING")
     args = parser.parse_args()
 
+    client = WatchdogClient(args.saas_url, args.api_key)
+
+    if args.trigger_poll:
+        res = client.trigger_poll()
+        print("Trigger Poll Result:", res)
+        return
+
+    if args.reset_queue:
+        res = client.reset_queue()
+        print("Reset Queue Result:", res)
+        return
+
     try:
-        asyncio.run(start_observer(args.saas_url))
+        asyncio.run(start_observer(args.saas_url, args.api_key))
     except KeyboardInterrupt:
         print("\nObserver stopped by user.")
 
