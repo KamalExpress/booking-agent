@@ -45,8 +45,9 @@ def test_level_2():
         
         # 2. Test auto_dispatch_queue
         scheduler = SchedulerService(db)
-        # 2 slots found
-        dispatched = scheduler.auto_dispatch_queue(visa_center="138", slot_count=3)
+        # 3 slots found
+        test_slots = [{"id": 1, "starttime": "09:00", "date": "15/09/2026"}, {"id": 2, "starttime": "09:30", "date": "15/09/2026"}, {"id": 3, "starttime": "10:00", "date": "15/09/2026"}]
+        dispatched = scheduler.auto_dispatch_queue(visa_center="138", slots=test_slots)
         print(f"Auto-dispatched {dispatched} applicants.")
         
         # Should have dispatched 2 out of 3, because app3 shares phone number with app1 (OTP race condition prevented)

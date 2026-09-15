@@ -206,6 +206,10 @@ class BookerEngine(threading.Thread):
                             self.api.fail_booking_task(task_id, reason="CAPTCHA_FAILED")
                     elif not agent_login_success:
                         self.api.fail_booking_task(task_id, reason="LOGIN_FAILED")
+                except WAFBlockedException as wbe:
+                    logging.warning(f"[{self.worker_id}] Hit WAF challenge during booking: {wbe}")
+                    self.api.log_event(task_id, "WAF_CHALLENGE", "error", {"reason": str(wbe)})
+                    self.api.fail_booking_task(task_id, reason="WAF_CHALLENGE", details=str(wbe))
                 except AlreadyBookedException as abe:
                     logging.warning(f"[{self.worker_id}] Applicant already has active appointment on portal: {abe}")
                     self.api.log_event(task_id, "BOOKING_ALREADY_EXISTS", "warning", {"reason": str(abe)})

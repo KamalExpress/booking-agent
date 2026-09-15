@@ -1731,6 +1731,49 @@ async def remove_from_queue(request: Request, entry_id: int, db: Session = Depen
         
     return RedirectResponse(url="/queue", status_code=303)
 
+@router.post("/queue/{entry_id}/reset")
+async def reset_queue_entry(request: Request, entry_id: int, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role not in [RoleEnum.TENANT_ADMIN, RoleEnum.STAFF, RoleEnum.SUPER_ADMIN]:
+        return RedirectResponse(url="/", status_code=303)
+        
+    if user.role == RoleEnum.SUPER_ADMIN:
+        entry = db.query(WaitlistQueue).filter(WaitlistQueue.id == entry_id).first()
+    else:
+        entry = db.query(WaitlistQueue).filter(WaitlistQueue.id == entry_id, WaitlistQueue.tenant_id == user.tenant_id).first()
+        
+    if entry:
+        entry.status = "PENDING"
+        # Also clean up any failed tasks so it's a fresh retry
+        db.query(BookingTask).filter(
+            BookingTask.applicant_id == entry.applicant_id,
+            BookingTask.status.in_(["PENDING", "FAILED"])
+        ).update({"status": "FAILED", "active_status": False})
+        db.commit()
+        
+    return RedirectResponse(url="/queue", status_code=303)
+
+@router.post("/queue/reset-stuck")
+async def reset_all_stuck_queue_entries(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role not in [RoleEnum.TENANT_ADMIN, RoleEnum.STAFF, RoleEnum.SUPER_ADMIN]:
+        return RedirectResponse(url="/", status_code=303)
+        
+    query = db.query(WaitlistQueue).filter(WaitlistQueue.status.in_(["DISPATCHED", "PROCESSING", "FAILED"]))
+    if user.role != RoleEnum.SUPER_ADMIN:
+        query = query.filter(WaitlistQueue.tenant_id == user.tenant_id)
+        
+    entries = query.all()
+    for entry in entries:
+        entry.status = "PENDING"
+        db.query(BookingTask).filter(
+            BookingTask.applicant_id == entry.applicant_id,
+            BookingTask.status.in_(["PENDING", "FAILED"])
+        ).update({"status": "FAILED", "active_status": False})
+        
+    db.commit()
+    return RedirectResponse(url="/queue", status_code=303)
+
 @router.get("/logs", response_class=HTMLResponse)
 async def logs_page(request: Request, db: Session = Depends(get_db)):
     user = get_ui_user(request, db)

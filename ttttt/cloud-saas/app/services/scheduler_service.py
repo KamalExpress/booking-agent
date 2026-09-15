@@ -173,6 +173,17 @@ class SchedulerService:
             }
         )
         self.db.add(lease_event)
+        try:
+            from core.websocket_manager import sync_broadcast
+            sync_broadcast({
+                "event_type": "BOOKING_CLAIMED",
+                "worker_id": worker.worker_id,
+                "assignment_id": task.assignment_id,
+                "payload": lease_event.payload,
+                "timestamp": now.isoformat()
+            })
+        except Exception:
+            pass
         self.db.commit()
         return lease
 
@@ -356,6 +367,16 @@ class SchedulerService:
                 }
             )
             self.db.add(dispatch_event)
+            try:
+                from core.websocket_manager import sync_broadcast
+                sync_broadcast({
+                    "event_type": "BOOKING_DISPATCHED",
+                    "assignment_id": assignment_id,
+                    "payload": dispatch_event.payload,
+                    "timestamp": now.isoformat()
+                })
+            except Exception:
+                pass
             dispatched_count += 1
             
         if dispatched_count > 0:

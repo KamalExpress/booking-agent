@@ -89,7 +89,37 @@ class LeaseService:
                 Lease.status.in_(["Leased", "Running"])
             ).first()
             if not has_active_lease:
-                t.status = "PENDING"
+                if t.attempts < t.max_attempts:
+                    t.status = "PENDING"
+                else:
+                    t.status = "FAILED"
+                    t.active_status = False
+
+        # Self-healing: recover orphan WaitlistQueue entries stuck in DISPATCHED/PROCESSING
+        from app.models import WaitlistQueue
+        stuck_queue_entries = self.db.query(WaitlistQueue).filter(
+            WaitlistQueue.status.in_(["DISPATCHED", "PROCESSING"])
+        ).all()
+        for q in stuck_queue_entries:
+            has_active_task = self.db.query(BookingTask).filter(
+                BookingTask.applicant_id == q.applicant_id,
+                BookingTask.status.in_(["PENDING", "CLAIMED"])
+            ).first()
+            if not has_active_task:
+                latest_task = self.db.query(BookingTask).filter(
+                    BookingTask.applicant_id == q.applicant_id
+                ).order_by(BookingTask.id.desc()).first()
+                if latest_task:
+                    if latest_task.status == "SUCCESS":
+                        q.status = "BOOKED"
+                    elif latest_task.failure_reason == "ALREADY_BOOKED":
+                        q.status = "CANCELLED"
+                    elif latest_task.status == "FAILED":
+                        q.status = "FAILED"
+                    else:
+                        q.status = "PENDING"
+                else:
+                    q.status = "PENDING"
 
         self.db.commit()
 
@@ -242,6 +272,14 @@ class LeaseService:
                 if task:
                     task.status = "SUCCESS"
                     task.active_status = False
+                    if task.applicant_id:
+                        from app.models import WaitlistQueue
+                        q_entry = self.db.query(WaitlistQueue).filter(
+                            WaitlistQueue.applicant_id == task.applicant_id,
+                            WaitlistQueue.status.in_(["PENDING", "DISPATCHED", "PROCESSING"])
+                        ).first()
+                        if q_entry:
+                            q_entry.status = "BOOKED"
             
             log = EventLog(
                 source="lease_service",
@@ -354,6 +392,14 @@ class LeaseService:
                         task.active_status = False
                         if reason:
                             task.failure_reason = str(reason)[:255]
+                        if task.applicant_id:
+                            from app.models import WaitlistQueue
+                            q_entry = self.db.query(WaitlistQueue).filter(
+                                WaitlistQueue.applicant_id == task.applicant_id,
+                                WaitlistQueue.status.in_(["PENDING", "DISPATCHED", "PROCESSING"])
+                            ).first()
+                            if q_entry:
+                                q_entry.status = "FAILED"
             
             payload_data = {"booking_task_id": lease.booking_task_id} if lease.booking_task_id else {}
             if reason:

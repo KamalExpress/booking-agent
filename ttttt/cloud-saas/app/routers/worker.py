@@ -561,6 +561,14 @@ def fail_booking_task(
         else:
             task.status = "FAILED"
             task.active_status = False
+            if task.applicant_id:
+                from app.models import WaitlistQueue
+                q_entry = db.query(WaitlistQueue).filter(
+                    WaitlistQueue.applicant_id == task.applicant_id,
+                    WaitlistQueue.status.in_(["PENDING", "DISPATCHED", "PROCESSING"])
+                ).first()
+                if q_entry:
+                    q_entry.status = "FAILED"
             
     # Complete/fail the lease
     lease_service.fail_lease(worker.worker_id, task_id, reason=reason)

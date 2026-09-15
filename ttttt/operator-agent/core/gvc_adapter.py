@@ -468,6 +468,8 @@ class GVCAdapter(BasePortalAdapter):
                     logging.warning(f"GVCAdapter: Received {response.status_code} during booking. Retrying...")
                     if response.status_code == 403:
                         self.refresh_waf_cookies()
+                        if attempt == max_retries - 1:
+                            raise WAFBlockedException(f"Portal WAF Challenge (HTTP 403): {response.text[:120]}")
                     time.sleep(3)
                     continue
                 else:
