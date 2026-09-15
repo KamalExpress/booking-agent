@@ -146,15 +146,15 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
 </script>
 
 <!-- Create Applicant Modal -->
-<div id="createApplicantModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center">
-    <div class="bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
-        <div class="flex items-center justify-between p-4 border-b border-zinc-800 bg-zinc-900/50">
+<div id="createApplicantModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl w-full max-w-md my-auto flex flex-col max-h-[92vh] sm:max-h-[85vh] overflow-hidden transform transition-all">
+        <div class="flex items-center justify-between p-4 border-b border-zinc-800 bg-zinc-900/50 flex-shrink-0">
             <h3 class="text-lg font-semibold text-white">Add New Applicant</h3>
-            <button onclick="document.getElementById('createApplicantModal').classList.add('hidden')" class="text-zinc-400 hover:text-white transition-colors">
+            <button type="button" onclick="document.getElementById('createApplicantModal').classList.add('hidden')" class="text-zinc-400 hover:text-white transition-colors">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
-        <div class="p-6">
+        <div class="p-5 sm:p-6 overflow-y-auto flex-1 overscroll-contain">
             <form action="/clients/create" method="POST" class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-1.5">
@@ -253,7 +253,7 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
                     </div>
                 </div>
 
-                <div class="pt-4 flex justify-end gap-3 border-t border-zinc-800 mt-6">
+                <div class="pt-4 flex justify-end gap-3 border-t border-zinc-800 mt-6 sticky bottom-0 bg-zinc-950/95 py-2">
                     <button type="button" onclick="document.getElementById('createApplicantModal').classList.add('hidden')" class="btn btn-secondary">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save Applicant</button>
                 </div>
@@ -263,15 +263,15 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
 </div>
 
 <!-- Edit Applicant Modal -->
-<div id="editApplicantModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center">
-    <div class="bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
-        <div class="flex items-center justify-between p-4 border-b border-zinc-800 bg-zinc-900/50">
+<div id="editApplicantModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl w-full max-w-md my-auto flex flex-col max-h-[92vh] sm:max-h-[85vh] overflow-hidden transform transition-all">
+        <div class="flex items-center justify-between p-4 border-b border-zinc-800 bg-zinc-900/50 flex-shrink-0">
             <h3 class="text-lg font-semibold text-white">Edit Applicant</h3>
-            <button onclick="document.getElementById('editApplicantModal').classList.add('hidden')" class="text-zinc-400 hover:text-white transition-colors">
+            <button type="button" onclick="document.getElementById('editApplicantModal').classList.add('hidden')" class="text-zinc-400 hover:text-white transition-colors">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
-        <div class="p-6">
+        <div class="p-5 sm:p-6 overflow-y-auto flex-1 overscroll-contain">
             <form id="editApplicantForm" action="" method="POST" class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-1.5">
@@ -329,7 +329,7 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
                     </div>
                 </div>
                 
-                <div class="pt-4 flex justify-end gap-3 border-t border-zinc-800 mt-6">
+                <div class="pt-4 flex justify-end gap-3 border-t border-zinc-800 mt-6 sticky bottom-0 bg-zinc-950/95 py-2">
                     <button type="button" onclick="document.getElementById('editApplicantModal').classList.add('hidden')" class="btn btn-secondary">Cancel</button>
                     <button type="submit" class="btn btn-primary">Update Applicant</button>
                 </div>
@@ -339,15 +339,15 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
 </div>
 
 <!-- Quick Enqueue Modal -->
-<div id="quickEnqueueModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center">
-    <div class="bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
-        <div class="flex items-center justify-between p-4 border-b border-zinc-800 bg-zinc-900/50">
+<div id="quickEnqueueModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl w-full max-w-md my-auto flex flex-col max-h-[92vh] sm:max-h-[85vh] overflow-hidden transform transition-all">
+        <div class="flex items-center justify-between p-4 border-b border-zinc-800 bg-zinc-900/50 flex-shrink-0">
             <h3 class="text-lg font-semibold text-white">Quick Enqueue: <span id="quick_applicant_name" class="text-indigo-400"></span></h3>
-            <button onclick="document.getElementById('quickEnqueueModal').classList.add('hidden')" class="text-zinc-400 hover:text-white transition-colors">
+            <button type="button" onclick="document.getElementById('quickEnqueueModal').classList.add('hidden')" class="text-zinc-400 hover:text-white transition-colors">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
-        <div class="p-6">
+        <div class="p-5 sm:p-6 overflow-y-auto flex-1 overscroll-contain">
             <form action="/queue/add" method="POST" class="space-y-4">
                 <input type="hidden" name="applicant_id" id="quick_applicant_id" required>
                 
@@ -371,7 +371,7 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
                     </select>
                 </div>
                 
-                <div class="pt-4 flex justify-end gap-3 border-t border-zinc-800 mt-6">
+                <div class="pt-4 flex justify-end gap-3 border-t border-zinc-800 mt-6 sticky bottom-0 bg-zinc-950/95 py-2">
                     <button type="button" onclick="document.getElementById('quickEnqueueModal').classList.add('hidden')" class="btn btn-secondary">Cancel</button>
                     <button type="submit" class="btn btn-primary">Enqueue Now</button>
                 </div>
