@@ -63,7 +63,7 @@
                         <button onclick="openEditModal('{{ client.id }}', '{{ client.firstname }}', '{{ client.surname }}', '{{ client.dateofbirth }}', '{{ client.gender }}', '{{ client.nationality }}', '{{ client.passportnumber }}', '{{ client.passport_expiry }}', '{{ client.email }}', '{{ client.phone_prefix }}', '{{ client.phone_number }}')" class="btn btn-secondary text-xs h-7 px-2 border-blue-500/30 text-blue-400 hover:bg-blue-500/10">
                             <i data-lucide="edit" class="w-3 h-3 mr-1.5"></i> Edit
                         </button>
-                        <form action="/clients/{{ client.id }}/delete" method="POST" class="inline" onsubmit="event.preventDefault(); promptConfirmModal({ title: 'Delete Applicant', subtitle: 'Permanent Action', description: 'Are you sure you want to delete applicant {{ client.first_name }} {{ client.last_name }}?', confirmText: 'Confirm Delete', isDanger: true, form: this });">
+                        <form action="/clients/{{ client.id }}/delete" method="POST" class="inline" onsubmit="event.preventDefault(); promptConfirmModal({ title: 'Delete Applicant', subtitle: 'Permanent Action', description: 'Are you sure you want to delete applicant {{ client.firstname }} {{ client.surname }}?', confirmText: 'Confirm Delete', isDanger: true, form: this });">
                             <button type="submit" class="text-xs px-2.5 py-1 bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/30 rounded-md font-medium transition-colors">
                                 Delete
                             </button>
@@ -212,6 +212,47 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
                     </div>
                 </div>
                 
+                <div class="p-3.5 bg-zinc-900/60 border border-zinc-800/80 rounded-lg space-y-3 mt-2">
+                    <div class="flex items-center justify-between">
+                        <label class="text-xs font-semibold text-zinc-200 flex items-center gap-2 cursor-pointer select-none">
+                            <input type="checkbox" name="auto_enqueue" id="create_auto_enqueue_checkbox" value="true" checked class="rounded border-zinc-700 text-indigo-600 focus:ring-indigo-500 bg-zinc-900 h-4 w-4">
+                            Auto-enqueue to Waitlist Queue
+                        </label>
+                        <span class="text-[10px] text-indigo-400 font-mono font-medium px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20">Recommended</span>
+                    </div>
+                    
+                    <div id="create_enqueue_options_container" class="space-y-3 pt-2 border-t border-zinc-800">
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-medium text-zinc-400">Target Visa Center <span class="text-red-500">*</span></label>
+                            <select name="visa_center_id" class="input">
+                                {% for center in available_centers %}
+                                <option value="{{ center.id }}" {% if center.id == '138' %}selected{% endif %}>{{ center.name }} ({{ center.id }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-medium text-zinc-400">Appointment Type <span class="text-red-500">*</span></label>
+                            <select name="appointment_type" class="input">
+                                <option value="26" selected>Long-Term Type D (Seasonal/Dependent Employment)</option>
+                                <option value="0">Submission Schengen Visa (Short term – Type C)</option>
+                                <option value="2">National visa (Long term - type D)</option>
+                                <option value="5">Premium Lounge (optional service at an additional charge)</option>
+                                <option value="6">Prime Time (optional service at an additional charge)</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-medium text-zinc-400">Priority Level</label>
+                            <select name="priority" class="input">
+                                <option value="0" selected>Normal (0)</option>
+                                <option value="1">High (1)</option>
+                                <option value="2">Urgent (2)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="pt-4 flex justify-end gap-3 border-t border-zinc-800 mt-6">
                     <button type="button" onclick="document.getElementById('createApplicantModal').classList.add('hidden')" class="btn btn-secondary">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save Applicant</button>
@@ -360,5 +401,15 @@ function openEditModal(id, firstName, lastName, dob, gender, nationality, passpo
     document.getElementById('edit_phone_number').value = phone;
     document.getElementById('editApplicantModal').classList.remove('hidden');
 }
+document.getElementById('create_auto_enqueue_checkbox')?.addEventListener('change', function() {
+    const container = document.getElementById('create_enqueue_options_container');
+    if (container) {
+        if (this.checked) {
+            container.classList.remove('hidden');
+        } else {
+            container.classList.add('hidden');
+        }
+    }
+});
 </script>
 {% endblock %}

@@ -1485,14 +1485,19 @@ async def create_client(
     email: str = Form(...),
     phone_prefix: str = Form(...),
     phone_number: str = Form(...),
+    auto_enqueue: Optional[str] = Form(None),
+    visa_center_id: Optional[str] = Form(None),
+    appointment_type: Optional[str] = Form("26"),
+    priority: Optional[int] = Form(0),
     db: Session = Depends(get_db)
 ):
     user = get_ui_user(request, db)
     if not user or user.role not in [RoleEnum.TENANT_ADMIN, RoleEnum.STAFF, RoleEnum.SUPER_ADMIN]:
         return RedirectResponse(url="/", status_code=303)
         
+    target_tenant_id = user.tenant_id or 1
     new_client = Applicant(
-        tenant_id=user.tenant_id or 1,
+        tenant_id=target_tenant_id,
         firstname=first_name,
         surname=last_name,
         dateofbirth=dateofbirth,
@@ -1505,6 +1510,20 @@ async def create_client(
         phone_number=phone_number
     )
     db.add(new_client)
+    db.flush()
+    
+    if auto_enqueue and visa_center_id:
+        queue_entry = WaitlistQueue(
+            tenant_id=target_tenant_id,
+            applicant_id=new_client.id,
+            provider="GVC",
+            visa_center=visa_center_id,
+            appointment_type=appointment_type or "26",
+            status="PENDING",
+            priority=priority or 0
+        )
+        db.add(queue_entry)
+
     db.commit()
     return RedirectResponse(url="/clients", status_code=303)
 
