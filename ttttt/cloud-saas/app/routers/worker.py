@@ -493,13 +493,15 @@ def get_task_otp(task_id: int, worker: WorkerNode = Depends(verify_worker_hmac),
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
         
-    # Check EventLog if OTP is null on task (temporary workaround until OTP mapping research is done)
-    if not task.otp_code and task.applicant_id:
+    # 1. First priority: task has an explicit OTP code set
+    if task.otp_code:
+        return {"otp_code": task.otp_code}
+
+    # 2. Second priority: Match recent webhook OTP event
+    if task.applicant_id:
         from app.models import Applicant, EventLog
         applicant = db.query(Applicant).filter(Applicant.id == task.applicant_id).first()
         if applicant and applicant.phone_number:
-            # Look for recent webhook OTP events matching this phone number (or all for now)
-            # Using EventLog where source='webhook_otp'
             log = db.query(EventLog).filter(
                 EventLog.event_type == "OTP_RECEIVED",
                 EventLog.source == "webhook_otp"
@@ -508,7 +510,13 @@ def get_task_otp(task_id: int, worker: WorkerNode = Depends(verify_worker_hmac),
             if log and log.payload and "extracted_otp" in log.payload:
                 return {"otp_code": log.payload["extracted_otp"]}
                 
-    return {"otp_code": task.otp_code}
+    # 3. Third priority: Simulator fallback if running against mock portal or mock captcha
+    portal_setting = os.getenv("BOOKING_PORTAL_URL", "")
+    use_mock = os.getenv("USE_MOCK_CAPTCHA", "false").lower() in ["true", "1"]
+    if use_mock or (portal_setting and "gvcworld.eu" not in portal_setting):
+        return {"otp_code": "12345"}
+        
+    return {"otp_code": None}
 
 @router.post("/booking-tasks/{task_id}/confirmation")
 def submit_task_confirmation(task_id: int, payload: dict, worker: WorkerNode = Depends(verify_worker_hmac), db: Session = Depends(get_db)):
