@@ -159,11 +159,11 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-1.5">
                         <label class="text-xs font-medium text-zinc-400">Name <span class="text-red-500">*</span></label>
-                        <input type="text" name="first_name" required class="input" placeholder="Ali">
+                        <input type="text" name="first_name" required class="input" placeholder="First Name">
                     </div>
                     <div class="space-y-1.5">
                         <label class="text-xs font-medium text-zinc-400">Surname <span class="text-red-500">*</span></label>
-                        <input type="text" name="last_name" required class="input" placeholder="Raza">
+                        <input type="text" name="last_name" required class="input" placeholder="Last Name">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
@@ -182,7 +182,7 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
                 
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-zinc-400">Nationality <span class="text-red-500">*</span></label>
-                    <input type="text" name="nationality" required class="input" placeholder="PAK">
+                    <input type="text" name="nationality" value="PAK" required class="input" placeholder="PAK">
                 </div>
                 
                 <div class="grid grid-cols-2 gap-4">
@@ -204,11 +204,11 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
                 <div class="grid grid-cols-3 gap-4">
                     <div class="space-y-1.5 col-span-1">
                         <label class="text-xs font-medium text-zinc-400">Prefix <span class="text-red-500">*</span></label>
-                        <input type="text" name="phone_prefix" required class="input" placeholder="+92">
+                        <input type="text" name="phone_prefix" value="+92" required class="input" placeholder="+92">
                     </div>
                     <div class="space-y-1.5 col-span-2">
                         <label class="text-xs font-medium text-zinc-400">Phone Number <span class="text-red-500">*</span></label>
-                        <input type="text" name="phone_number" required class="input" placeholder="3001234567">
+                        <input type="text" name="phone_number" required class="input" placeholder="+923339876543">
                     </div>
                 </div>
                 
@@ -276,17 +276,17 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-1.5">
                         <label class="text-xs font-medium text-zinc-400">Name <span class="text-red-500">*</span></label>
-                        <input type="text" id="edit_first_name" name="first_name" required class="input">
+                        <input type="text" id="edit_first_name" name="first_name" required class="input" placeholder="First Name">
                     </div>
                     <div class="space-y-1.5">
                         <label class="text-xs font-medium text-zinc-400">Surname <span class="text-red-500">*</span></label>
-                        <input type="text" id="edit_last_name" name="last_name" required class="input">
+                        <input type="text" id="edit_last_name" name="last_name" required class="input" placeholder="Last Name">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-1.5">
                         <label class="text-xs font-medium text-zinc-400">Date of Birth <span class="text-red-500">*</span></label>
-                        <input type="text" id="edit_dateofbirth" name="dateofbirth" required class="input">
+                        <input type="text" id="edit_dateofbirth" name="dateofbirth" required class="input" placeholder="DD/MM/YYYY">
                     </div>
                     <div class="space-y-1.5">
                         <label class="text-xs font-medium text-zinc-400">Gender <span class="text-red-500">*</span></label>
@@ -299,33 +299,33 @@ document.getElementById('modalConfirmBtn').addEventListener('click', function() 
                 
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-zinc-400">Nationality <span class="text-red-500">*</span></label>
-                    <input type="text" id="edit_nationality" name="nationality" required class="input">
+                    <input type="text" id="edit_nationality" name="nationality" required class="input" placeholder="PAK">
                 </div>
                 
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-1.5">
                         <label class="text-xs font-medium text-zinc-400">Passport Number <span class="text-red-500">*</span></label>
-                        <input type="text" id="edit_passport_number" name="passport_number" required class="input">
+                        <input type="text" id="edit_passport_number" name="passport_number" required class="input" placeholder="AB1234567">
                     </div>
                     <div class="space-y-1.5">
                         <label class="text-xs font-medium text-zinc-400">Passport Expiry <span class="text-red-500">*</span></label>
-                        <input type="text" id="edit_passport_expiry" name="passport_expiry" required class="input">
+                        <input type="text" id="edit_passport_expiry" name="passport_expiry" required class="input" placeholder="DD/MM/YYYY">
                     </div>
                 </div>
 
                 <div class="space-y-1.5">
                     <label class="text-xs font-medium text-zinc-400">Email Address <span class="text-red-500">*</span></label>
-                    <input type="email" id="edit_email" name="email" required class="input">
+                    <input type="email" id="edit_email" name="email" required class="input" placeholder="applicant@example.com">
                 </div>
 
                 <div class="grid grid-cols-3 gap-4">
                     <div class="space-y-1.5 col-span-1">
                         <label class="text-xs font-medium text-zinc-400">Prefix <span class="text-red-500">*</span></label>
-                        <input type="text" id="edit_phone_prefix" name="phone_prefix" required class="input">
+                        <input type="text" id="edit_phone_prefix" name="phone_prefix" required class="input" placeholder="+92">
                     </div>
                     <div class="space-y-1.5 col-span-2">
                         <label class="text-xs font-medium text-zinc-400">Phone Number <span class="text-red-500">*</span></label>
-                        <input type="text" id="edit_phone_number" name="phone_number" required class="input">
+                        <input type="text" id="edit_phone_number" name="phone_number" required class="input" placeholder="+923339876543">
                     </div>
                 </div>
                 

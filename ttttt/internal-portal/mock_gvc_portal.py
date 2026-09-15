@@ -332,7 +332,7 @@ async def human_portal_home(request: Request):
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Phone Number (SIM) *</label>
-                        <input type="text" id="appPhone" required class="w-full bg-slate-50 border border-slate-300 rounded p-2.5 text-sm" value="3345112969">
+                        <input type="text" id="appPhone" required class="w-full bg-slate-50 border border-slate-300 rounded p-2.5 text-sm" value="+923339876543">
                     </div>
                     <div>
                         <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Email Address *</label>
