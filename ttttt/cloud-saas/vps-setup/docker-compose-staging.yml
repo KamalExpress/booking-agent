@@ -37,8 +37,8 @@ services:
     container_name: saas-redis-staging
     restart: always
     command: redis-server --save "" --appendonly no
-    ports:
-      - "127.0.0.1:6380:6379"
+    expose:
+      - "6379"
     networks:
       - saas-network-staging
     healthcheck:
