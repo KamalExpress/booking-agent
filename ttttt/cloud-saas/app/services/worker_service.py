@@ -2,11 +2,64 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timezone
 import uuid
 import secrets
+import json
 from typing import Tuple, Dict, Any, Optional
 from fastapi import Depends
 
 from models import WorkerNode, WorkerVersion, SystemSetting, EventLog, get_db
 from secrets_manager import secrets_manager
+
+DEFAULT_APPOINTMENT_DAY_RULES = {
+    "26": ["Mon", "Tue", "Wed"],
+    "0": [],
+    "2": ["Thu", "Fri"],
+    "5": ["Mon", "Tue", "Wed", "Thu", "Fri"],
+    "6": ["Mon", "Tue", "Wed", "Thu", "Fri"]
+}
+
+APPOINTMENT_TYPES_METADATA = [
+    {
+        "code": "26",
+        "name": "Long-Term Type D (Seasonal/Dependent Employment)",
+        "default_days": ["Mon", "Tue", "Wed"]
+    },
+    {
+        "code": "0",
+        "name": "Submission Schengen Visa (Short term – Type C)",
+        "default_days": []
+    },
+    {
+        "code": "2",
+        "name": "National Visa (Long term - type D)",
+        "default_days": ["Thu", "Fri"]
+    },
+    {
+        "code": "5",
+        "name": "Premium Lounge (optional service)",
+        "default_days": ["Mon", "Tue", "Wed", "Thu", "Fri"]
+    },
+    {
+        "code": "6",
+        "name": "Prime Time (optional service)",
+        "default_days": ["Mon", "Tue", "Wed", "Thu", "Fri"]
+    }
+]
+
+ALL_WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+
+def get_parsed_appointment_day_rules(db: Session) -> Dict[str, list]:
+    setting = db.query(SystemSetting).filter(SystemSetting.key == "global.appointment_day_rules").first()
+    if setting and setting.value:
+        try:
+            parsed = json.loads(setting.value)
+            if isinstance(parsed, dict):
+                # Ensure all standard codes exist
+                rules = dict(DEFAULT_APPOINTMENT_DAY_RULES)
+                rules.update(parsed)
+                return rules
+        except Exception:
+            pass
+    return dict(DEFAULT_APPOINTMENT_DAY_RULES)
 
 class WorkerService:
     def __init__(self, db: Session):
@@ -130,6 +183,7 @@ class WorkerService:
             "feature_flags": {
                 "enable_telemetry": True
             },
+            "appointment_day_rules": get_parsed_appointment_day_rules(self.db),
             "limits": {
                 "max_retries": 3
             }
