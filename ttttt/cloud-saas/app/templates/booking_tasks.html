@@ -1,66 +1,226 @@
 {% extends "base.html" %}
 
-{% block title %}Booking Tasks - Kamal Express{% endblock %}
+{% block title %}Bookings Ledger & Historical Archive - KE Agent{% endblock %}
 
 {% block content %}
-<header class="mb-8 flex justify-between items-center">
+<header class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
     <div>
-        <h2 class="text-3xl font-bold tracking-tight">Booking Tasks</h2>
-        <p class="text-muted-foreground mt-1">Event-driven tasks for acquiring available slots</p>
+        <h1 class="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
+            <i data-lucide="calendar-check" class="w-6 h-6 text-indigo-400"></i>
+            Bookings Ledger & Historical Archive
+        </h1>
+        <p class="text-sm text-zinc-400 mt-1">Audit trail of all claimed, in-flight, and confirmed appointment bookings across visa centers.</p>
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+        <a href="/booking-tasks?tab=all" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors {% if current_tab == 'all' %}bg-zinc-800 text-white border border-zinc-700{% else %}bg-zinc-900/60 text-zinc-400 hover:text-white border border-zinc-800{% endif %}">
+            All ({{ total_all }})
+        </a>
+        <a href="/booking-tasks?tab=claimed" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors {% if current_tab == 'claimed' %}bg-blue-500/20 text-blue-300 border border-blue-500/40{% else %}bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-blue-500/20{% endif %}">
+            <span class="w-2 h-2 rounded-full bg-blue-400 inline-block mr-1 animate-pulse"></span>
+            Claimed / In-Flight ({{ total_claimed }})
+        </a>
+        <a href="/booking-tasks?tab=success" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors {% if current_tab == 'success' %}bg-emerald-500/20 text-emerald-300 border border-emerald-500/40{% else %}bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20{% endif %}">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block mr-1"></span>
+            Confirmed ({{ total_success }})
+        </a>
+        <a href="/booking-tasks?tab=pending" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors {% if current_tab == 'pending' %}bg-amber-500/20 text-amber-300 border border-amber-500/40{% else %}bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border border-amber-500/20{% endif %}">
+            Pending ({{ total_pending }})
+        </a>
+        <a href="/booking-tasks?tab=failed" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors {% if current_tab == 'failed' %}bg-red-500/20 text-red-300 border border-red-500/40{% else %}bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20{% endif %}">
+            Failed ({{ total_failed }})
+        </a>
     </div>
 </header>
 
-<div class="card overflow-hidden">
+<div class="card bg-zinc-950 border border-zinc-800 rounded-xl shadow-sm overflow-hidden mb-8">
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse text-sm">
-            <thead>
-            <tr class="border-b border-border bg-muted/50">
-                <th class="p-4 font-medium text-muted-foreground">ID</th>
-                <th class="p-4 font-medium text-muted-foreground">Provider</th>
-                <th class="p-4 font-medium text-muted-foreground">Target</th>
-                <th class="p-4 font-medium text-muted-foreground">Attempts</th>
-                <th class="p-4 font-medium text-muted-foreground">Status</th>
-                <th class="p-4 font-medium text-muted-foreground">Expires At</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for task in tasks %}
-            <tr class="border-b border-border hover:bg-muted/50 transition-colors">
-                <td class="p-4 text-muted-foreground font-mono">
-                    #{{ task.id }}
-                </td>
-                <td class="p-4 text-foreground font-medium">
-                    {{ task.provider }}
-                </td>
-                <td class="p-4 text-muted-foreground">
-                    <span class="text-foreground font-medium">{{ task.target_date }} at {{ task.target_time }}</span><br>
-                    <span class="text-xs">Center {{ task.visa_center }}</span>
-                </td>
-                <td class="p-4 text-muted-foreground">
-                    {{ task.attempts }}
-                </td>
-                <td class="p-4">
-                    {% if task.status == 'PENDING' %}
-                        <span class="inline-flex items-center rounded-full border border-amber-500/20 bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-500">Pending</span>
-                    {% elif task.status == 'CLAIMED' %}
-                        <span class="inline-flex items-center rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-500">Claimed</span>
-                    {% elif task.status == 'SUCCESS' %}
-                        <span class="inline-flex items-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-500">Success</span>
-                    {% else %}
-                        <span class="inline-flex items-center rounded-full border border-destructive/20 bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive">{{ task.status }}</span>
+            <thead class="bg-zinc-900/60 text-zinc-400 uppercase text-xs border-b border-zinc-800">
+                <tr>
+                    <th class="p-4 font-medium">Task ID</th>
+                    {% if user.role.value == 'SUPER_ADMIN' %}
+                    <th class="p-4 font-medium">Agency / Tenant</th>
                     {% endif %}
-                </td>
-                <td class="p-4 text-muted-foreground">
-                    {{ task.expires_at | format_time(ui_timezone, '%Y-%m-%d %H:%M:%S') if task.expires_at else '-' }}
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="6" class="p-8 text-center text-muted-foreground">No booking tasks found.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
+                    <th class="p-4 font-medium">Applicant Profile</th>
+                    <th class="p-4 font-medium">Target Schedule</th>
+                    <th class="p-4 font-medium">Status</th>
+                    <th class="p-4 font-medium">Reference Code</th>
+                    <th class="p-4 font-medium text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-zinc-800/80">
+                {% for task in tasks %}
+                <tr class="hover:bg-zinc-900/40 transition-colors">
+                    <td class="p-4 whitespace-nowrap">
+                        <span class="font-mono text-xs font-bold text-zinc-300">#{{ task.id }}</span>
+                        <div class="text-[11px] text-zinc-500 mt-0.5">{{ task.created_at | format_time(ui_timezone, '%Y-%m-%d %H:%M') }}</div>
+                    </td>
+                    
+                    {% if user.role.value == 'SUPER_ADMIN' %}
+                    <td class="p-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-zinc-800 text-zinc-300 border border-zinc-700">
+                            {{ task.tenant.name if task.tenant else ('Tenant #' ~ task.tenant_id) }}
+                        </span>
+                    </td>
+                    {% endif %}
+                    
+                    <td class="p-4">
+                        {% if task.applicant %}
+                            <div class="font-semibold text-white">{{ task.applicant.firstname }} {{ task.applicant.surname }}</div>
+                            <div class="text-xs font-mono text-zinc-400 flex items-center gap-1.5 mt-0.5">
+                                <span class="text-indigo-400 font-bold">{{ task.applicant.passportnumber }}</span>
+                                <span class="text-zinc-600">&bull;</span>
+                                <span>{{ task.applicant.phone_prefix | default('') }}{{ task.applicant.phone_number }}</span>
+                            </div>
+                        {% else %}
+                            <span class="text-zinc-500 text-xs italic">Unassigned Applicant</span>
+                        {% endif %}
+                    </td>
+                    
+                    <td class="p-4 whitespace-nowrap">
+                        <div class="font-medium text-white">{{ task.target_date }} <span class="text-indigo-400 font-semibold">@ {{ task.target_time }}</span></div>
+                        <div class="text-xs text-zinc-400 mt-0.5">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                                {{ task.display_visa_center or ('Center ' ~ task.visa_center) }}
+                            </span>
+                        </div>
+                    </td>
+                    
+                    <td class="p-4 whitespace-nowrap">
+                        {% if task.status == 'SUCCESS' %}
+                            <span class="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-bold text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.15)]">
+                                <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-400"></i>
+                                BOOKED
+                            </span>
+                        {% elif task.status == 'CLAIMED' %}
+                            <span class="inline-flex items-center gap-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 px-2.5 py-1 text-xs font-bold text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.15)]">
+                                <span class="relative flex h-2 w-2">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                                </span>
+                                CLAIMED
+                            </span>
+                        {% elif task.status == 'PENDING' %}
+                            <span class="inline-flex items-center rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-400">
+                                PENDING
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center rounded-full border border-red-500/30 bg-red-500/10 px-2.5 py-1 text-xs font-semibold text-red-400" title="{{ task.failure_reason or 'Failed' }}">
+                                {{ task.status }}
+                            </span>
+                        {% endif %}
+                    </td>
+                    
+                    <td class="p-4 whitespace-nowrap">
+                        {% if task.reference_number %}
+                            <span class="font-mono text-xs font-bold text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-2 py-0.5 rounded">
+                                {{ task.reference_number }}
+                            </span>
+                        {% elif task.status == 'CLAIMED' %}
+                            <span class="text-xs text-blue-400 font-mono animate-pulse">In Progress...</span>
+                        {% else %}
+                            <span class="text-zinc-600 text-xs font-mono">-</span>
+                        {% endif %}
+                    </td>
+                    
+                    <td class="p-4 whitespace-nowrap text-right">
+                        {% if task.status == 'SUCCESS' or task.reference_number %}
+                            <button type="button" onclick="showTaskSlipModal('{{ task.applicant.firstname if task.applicant else '' }} {{ task.applicant.surname if task.applicant else '' }}', '{{ task.applicant.passportnumber if task.applicant else '' }}', '{{ task.display_visa_center or task.visa_center }}', '{{ task.reference_number or ('GVC-' ~ task.visa_center ~ '-' ~ task.id) }}', '{{ task.target_date }} at {{ task.target_time }}')" class="btn btn-secondary text-xs py-1 px-2.5 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/10 inline-flex items-center gap-1">
+                                <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Slip
+                            </button>
+                        {% else %}
+                            <span class="text-xs text-zinc-600">Attempts: {{ task.attempts }}/{{ task.max_attempts }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="{% if user.role.value == 'SUPER_ADMIN' %}7{% else %}6{% endif %}" class="p-12 text-center text-zinc-500">
+                        <div class="flex flex-col items-center justify-center">
+                            <i data-lucide="calendar-x" class="w-10 h-10 mb-2 text-zinc-600"></i>
+                            <p class="font-medium text-sm text-zinc-400">No booking tasks found for this filter.</p>
+                            <p class="text-xs text-zinc-500 mt-1">When monitors detect open appointment slots, matched applicants from the queue appear here.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
     </div>
 </div>
+
+<!-- Booking Confirmation Slip Modal -->
+<div id="confirmationSlipModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-zinc-900 border border-emerald-500/30 rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden text-left animate-in fade-in zoom-in duration-150">
+        <div class="p-6 bg-gradient-to-r from-emerald-950/40 via-zinc-900 to-zinc-900 border-b border-zinc-800 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                    <i data-lucide="award" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        Official Booking Confirmation
+                        <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase tracking-wider">CONFIRMED</span>
+                    </h3>
+                    <p class="text-xs text-zinc-400">Appointment scheduled via GVC World Gateway</p>
+                </div>
+            </div>
+            <button onclick="closeConfirmationModal()" class="text-zinc-400 hover:text-white transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        
+        <div class="p-6 space-y-4 text-sm" id="printableSlipArea">
+            <div class="grid grid-cols-2 gap-4 p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/80">
+                <div>
+                    <p class="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Applicant</p>
+                    <p id="slipApplicantName" class="text-base font-semibold text-white mt-0.5">-</p>
+                </div>
+                <div>
+                    <p class="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Passport Number</p>
+                    <p id="slipPassport" class="text-base font-mono font-medium text-emerald-400 mt-0.5">-</p>
+                </div>
+                <div>
+                    <p class="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Visa Center</p>
+                    <p id="slipVisaCenter" class="text-sm font-medium text-zinc-200 mt-0.5">-</p>
+                </div>
+                <div>
+                    <p class="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Reference Code</p>
+                    <p id="slipRefNum" class="text-sm font-mono font-bold text-amber-400 mt-0.5">-</p>
+                </div>
+                <div class="col-span-2 pt-2 border-t border-zinc-800/60">
+                    <p class="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Appointment Schedule</p>
+                    <p id="slipSchedule" class="text-sm font-semibold text-white mt-0.5">-</p>
+                </div>
+            </div>
+            
+            <div class="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-start gap-2.5 text-xs text-emerald-300">
+                <i data-lucide="check-circle" class="w-4 h-4 mt-0.5 flex-shrink-0 text-emerald-400"></i>
+                <p>Appointment officially secured in GVC Portal. Retain this confirmation for consular entry.</p>
+            </div>
+        </div>
+        
+        <div class="p-4 bg-zinc-950 border-t border-zinc-800 flex justify-end gap-3">
+            <button type="button" onclick="closeConfirmationModal()" class="btn btn-secondary text-xs">Close</button>
+            <button type="button" onclick="window.print()" class="btn btn-primary text-xs flex items-center gap-1.5">
+                <i data-lucide="printer" class="w-3.5 h-3.5"></i> Print Confirmation Slip
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function showTaskSlipModal(applicantName, passportNum, visaCenter, refNum, schedule) {
+    document.getElementById('slipApplicantName').innerText = applicantName;
+    document.getElementById('slipPassport').innerText = passportNum;
+    document.getElementById('slipVisaCenter').innerText = visaCenter;
+    document.getElementById('slipRefNum').innerText = refNum;
+    document.getElementById('slipSchedule').innerText = schedule;
+    document.getElementById('confirmationSlipModal').classList.remove('hidden');
+}
+
+function closeConfirmationModal() {
+    document.getElementById('confirmationSlipModal').classList.add('hidden');
+}
+</script>
 {% endblock %}

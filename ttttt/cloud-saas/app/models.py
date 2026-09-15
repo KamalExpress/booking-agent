@@ -337,6 +337,9 @@ class BookingTask(Base):
     failure_details = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
+    tenant = relationship("Tenant")
+    applicant = relationship("Applicant")
+
     __table_args__ = (
         UniqueConstraint('tenant_id', 'visa_center', 'target_date', 'target_time', 'active_status', name='uq_booking_task'),
     )
