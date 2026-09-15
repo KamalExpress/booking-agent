@@ -19,6 +19,8 @@ services:
       - SUPER_ADMIN_EMAIL
       - SUPER_ADMIN_PASSWORD
       - ENVIRONMENT=staging
+      - BOOKING_PORTAL_URL
+      - USE_MOCK_CAPTCHA
     depends_on:
       - db
     networks:

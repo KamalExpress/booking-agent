@@ -18,6 +18,8 @@ services:
       - VAPID_PRIVATE_KEY
       - SUPER_ADMIN_EMAIL
       - SUPER_ADMIN_PASSWORD
+      - BOOKING_PORTAL_URL
+      - USE_MOCK_CAPTCHA
     depends_on:
       - db
     networks:

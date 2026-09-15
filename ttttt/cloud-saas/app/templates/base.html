@@ -148,10 +148,16 @@
                     {{ branding.brand_subtitle | default('Automating Business Solutions') }}
                     {% if env_branding.badge_text %}
                     <span
-                        class="ml-2 inline-flex items-center rounded-md bg-amber-400/10 px-2 py-1 text-xs font-medium text-amber-500 ring-1 ring-inset ring-amber-400/20">{{
+                        class="ml-2 inline-flex items-center rounded-md {% if env_branding.is_simulator %}bg-purple-500/10 text-purple-400 ring-purple-500/20{% else %}bg-amber-400/10 text-amber-500 ring-amber-400/20{% endif %} px-2 py-1 text-xs font-medium ring-1 ring-inset">{{
                         env_branding.badge_text }}</span>
                     {% endif %}
                 </p>
+                {% if env_branding.is_simulator %}
+                <div class="mt-2.5 flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-semibold">
+                    <i data-lucide="cpu" class="w-3.5 h-3.5 text-purple-400 shrink-0"></i>
+                    <span class="truncate text-[11px]" title="Target: {{ env_branding.portal_target }}">Simulator Active</span>
+                </div>
+                {% endif %}
             </div>
             <button id="closeSidebarBtn" class="md:hidden p-1 text-zinc-400 hover:text-white rounded-md">
                 <i data-lucide="x" class="w-5 h-5"></i>
@@ -358,6 +364,21 @@
 
     <!-- Main Content -->
     <main class="flex-1 flex flex-col relative md:overflow-hidden min-h-[100dvh] md:h-full w-full">
+        {% if env_branding.is_simulator %}
+        <div class="w-full bg-purple-950/50 border-b border-purple-500/30 px-4 md:px-6 py-2 flex items-center justify-between shrink-0 text-xs text-purple-200">
+            <div class="flex items-center gap-2">
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-purple-500/20 border border-purple-500/40 text-[10px] font-bold tracking-wider uppercase text-purple-300">
+                    <i data-lucide="cpu" class="w-3 h-3"></i> Simulator Active
+                </span>
+                <span class="hidden sm:inline text-zinc-400">Target Portal:</span>
+                <a href="{{ env_branding.portal_target }}" target="_blank" class="font-mono text-purple-300 underline hover:text-white truncate max-w-xs md:max-w-md">{{ env_branding.portal_target }}</a>
+            </div>
+            <a href="{{ env_branding.portal_target }}/admin" target="_blank" class="text-[11px] font-bold text-purple-300 hover:text-white flex items-center gap-1 shrink-0 ml-2 bg-purple-900/40 hover:bg-purple-800/60 px-2 py-1 rounded border border-purple-500/30">
+                Simulator Deck <i data-lucide="external-link" class="w-3 h-3"></i>
+            </a>
+        </div>
+        {% endif %}
+
         {% if branding.admin_notice %}
         <div class="w-full bg-amber-500/10 border-b border-amber-500/20 px-6 py-3 flex items-center gap-3 shrink-0">
             <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-500"></i>
@@ -380,6 +401,9 @@
                     </span>
                     <span class="text-[9px] font-bold tracking-widest uppercase text-emerald-500">Live</span>
                 </div>
+                {% if env_branding.is_simulator %}
+                <span class="px-2 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/30 text-[9px] font-bold text-purple-300 uppercase">Simulator</span>
+                {% endif %}
             </div>
             {% if user %}
             <button id="mobileMenuBtn" class="p-2 text-zinc-400 hover:text-white rounded-md">
