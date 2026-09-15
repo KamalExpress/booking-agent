@@ -464,22 +464,22 @@ def submit_logs(
                     lease_service.cancel_active_leases([asm.id])
                     
                     if is_zero_balance:
-                        push_title = "[CRITICAL ALERT] Scraping Paused: CapSolver Balance Zero"
+                        push_title = "[CRITICAL ALERT] Monitoring Paused: CapSolver Balance Zero"
                         push_body = (
-                            "Scraping halted because CapSolver balance is exhausted (ERROR_ZERO_BALANCE). "
+                            "Monitoring halted because CapSolver balance is exhausted (ERROR_ZERO_BALANCE). "
                             "Action Required: Top up balance on CapSolver.com, then unpause the assignment."
                         )
                     elif is_proxy_407:
-                        push_title = "[OPERATIONAL ALERT] Scraping Paused: Proxy Quota/Auth Failure"
+                        push_title = "[OPERATIONAL ALERT] Monitoring Paused: Proxy Quota/Auth Failure"
                         push_body = (
-                            f"Scraping halted for Center {asm.visa_center} due to repeated proxy tunnel failures (HTTP 407). "
+                            f"Monitoring halted for Center {asm.visa_center} due to repeated proxy tunnel failures (HTTP 407). "
                             f"Likely Cause: Decodo/proxy data quota exhausted or credentials changed. "
                             f"Action Required: Top up proxy data, update proxy in Settings > Proxies, then unpause the assignment."
                         )
                     else:
-                        push_title = "[OPERATIONAL ALERT] Scraping Paused: Repeated Failures"
+                        push_title = "[OPERATIONAL ALERT] Monitoring Paused: Repeated Failures"
                         push_body = (
-                            f"Scraping halted for Center {asm.visa_center} after repeated worker failures ({reason or 'Login failed'}). "
+                            f"Monitoring halted for Center {asm.visa_center} after repeated worker failures ({reason or 'Login failed'}). "
                             f"Action Required: Check portal account credentials and unpause the assignment."
                         )
                     send_push_notification(db, push_title, push_body, visa_center_id=asm.visa_center)

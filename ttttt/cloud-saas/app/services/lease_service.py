@@ -278,16 +278,16 @@ class LeaseService:
                             from notifications import send_push_notification
                             is_proxy_407 = reason and ("407" in str(reason) or "tunnel" in str(reason).lower())
                             if is_proxy_407:
-                                push_title = "[OPERATIONAL ALERT] Scraping Paused: Proxy Quota/Auth Failure"
+                                push_title = "[OPERATIONAL ALERT] Monitoring Paused: Proxy Quota/Auth Failure"
                                 push_body = (
-                                    f"Scraping halted for Center {assignment.visa_center} due to repeated proxy tunnel failures (HTTP 407). "
+                                    f"Monitoring halted for Center {assignment.visa_center} due to repeated proxy tunnel failures (HTTP 407). "
                                     f"Likely Cause: Decodo/proxy data quota exhausted or credentials changed. "
                                     f"Action Required: Top up proxy data, update proxy in Settings > Proxies, then unpause the assignment."
                                 )
                             else:
-                                push_title = "[OPERATIONAL ALERT] Scraping Paused: Repeated Failures"
+                                push_title = "[OPERATIONAL ALERT] Monitoring Paused: Repeated Failures"
                                 push_body = (
-                                    f"Scraping halted for Center {assignment.visa_center} after repeated failures ({reason or 'Worker login blocked'}). "
+                                    f"Monitoring halted for Center {assignment.visa_center} after repeated failures ({reason or 'Worker login blocked'}). "
                                     f"Action Required: Check account credentials and unpause assignment in Dashboard."
                                 )
                             send_push_notification(self.db, push_title, push_body, visa_center_id=assignment.visa_center)
