@@ -1,0 +1,40 @@
+﻿name: CI Verification
+
+on:
+  push:
+    branches:
+      - main
+      - feature/staging
+      - feature/sep-2026
+  pull_request:
+    branches:
+      - main
+      - feature/staging
+
+jobs:
+  lint-and-test:
+    name: Lint & Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f ttttt/cloud-saas/requirements.txt ]; then pip install -r ttttt/cloud-saas/requirements.txt; fi
+          if [ -f ttttt/operator-agent/requirements.txt ]; then pip install -r ttttt/operator-agent/requirements.txt; fi
+          pip install flake8
+
+      - name: Syntax & Lint Check
+        run: |
+          # Stop the build if there are Python syntax errors or undefined names
+          flake8 ttttt/cloud-saas/app ttttt/operator-agent --count --select=E9,F63,F7,F82 --show-source --statistics
+          # Warning check for complexity and line length
+          flake8 ttttt/cloud-saas/app ttttt/operator-agent --count --exit-zero --max-complexity=15 --max-line-length=127 --statistics

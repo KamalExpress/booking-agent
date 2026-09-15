@@ -1,4 +1,4 @@
-﻿# Architecture Document 10: Booker Swarm, Sequential SIM Locking, Zero-Idle Standby & 7-Day HAR Retention
+# Architecture Document 10: Booker Swarm, Sequential SIM Locking, Zero-Idle Standby & 7-Day HAR Retention
 
 **Version:** 2.0  
 **Status:** ACCEPTED  
@@ -97,9 +97,10 @@ Upon successful appointment submission:
 
 ---
 
-## 6. GitHub Actions CI/CD Pipeline
+## 6. CI Verification & Portainer CE Deployment Topology
 
-Deployments are automated via `.github/workflows/deploy.yml`:
-- **Trigger**: Push to `main` (Production) or `feature/staging` (Staging).
-- **Validation**: Python 3.12 syntax check, `flake8` linting, and automated unit test suites.
-- **Delivery**: Triggers Portainer webhook for zero-downtime container stack reload.
+1. **GitHub Actions CI (`.github/workflows/ci.yml`)**:
+   - Executes automated Python 3.12 syntax verification and `flake8` lint checks on push/PR to protect codebase integrity.
+2. **Portainer CE Manual Deployment Pipeline**:
+   - **Portainer Web UI**: Navigate to **Stacks** $\rightarrow$ select stack $\rightarrow$ click **"Pull and redeploy"** (re-pulls latest commit from Git and builds the stack).
+   - **SSH Terminal Alternative**: Run `./vps-setup/deploy.sh` on the VPS to execute `git pull` followed by `docker compose -f vps-setup/docker-compose.prod.yml up -d --build`.
