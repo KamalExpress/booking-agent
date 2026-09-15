@@ -68,8 +68,9 @@ def generate_default_slots(start_date: str = None, days: int = 7, slots_per_day:
             })
     logging.info(f"Generated {len(SLOT_MATRIX)} slots across {days} days starting {base_dt.strftime('%d/%m/%Y')}.")
 
-# Seed default slots on startup
-generate_default_slots(days=5, slots_per_day=6)
+# Seed default slots on startup only if explicitly enabled
+if os.getenv("SEED_DEFAULT_SLOTS", "false").lower() in ["true", "1"]:
+    generate_default_slots(days=5, slots_per_day=6)
 
 def record_telemetry(request: Request, endpoint: str):
     record = {
@@ -858,14 +859,24 @@ async def api_query_slots(request: Request):
     vac_id = str(data.get("vac", {}).get("id", "138") if isinstance(data.get("vac"), dict) else data.get("vac", "138"))
     target_date = data.get("datefrom", "")
     
-    avail_slots = [s for s in SLOT_MATRIX if s["isavailable"]]
+    # Filter strictly by target_date and vac_id if provided
+    avail_slots = []
+    for s in SLOT_MATRIX:
+        if not s.get("isavailable"):
+            continue
+        if vac_id and str(s.get("vac_id", "138")) != str(vac_id):
+            continue
+        if target_date:
+            if s.get("date") != target_date and s.get("date_iso") != target_date:
+                continue
+        avail_slots.append(s)
     
-    logging.info(f"API Query slots for VAC {vac_id}: returning {len(avail_slots)} available slots.")
+    logging.info(f"API Query slots for VAC {vac_id} on date '{target_date}': returning {len(avail_slots)} available slots.")
     return {
         "code": "SUCCESS",
         "returnobject": {
             "vacId": vac_id,
-            "date": target_date or (avail_slots[0]["date"] if avail_slots else "12/08/2026"),
+            "date": target_date or (avail_slots[0]["date"] if avail_slots else ""),
             "slots": avail_slots
         }
     }
