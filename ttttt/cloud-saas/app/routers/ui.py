@@ -345,13 +345,22 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
             "407" in str(e.payload) or "proxy tunnel" in str(e.payload).lower() or "proxy quota" in str(e.payload).lower()
             for e in recent_logs_2h
         )
+        
+        recent_captcha_failures = [
+            e for e in recent_logs_2h 
+            if e.event_type == "CAPTCHA_FAILED" 
+            or "captcha" in str(e.payload).lower() 
+            or "capsolver" in str(e.payload).lower()
+        ]
+        
         is_zero_balance = any(
             "ERROR_ZERO_BALANCE" in str(e.payload) or "ZERO_BALANCE" in str(e.payload) or "balance is zero" in str(e.payload).lower() or "capsolver balance zero" in str(e.payload).lower()
             for e in recent_logs_2h
         )
+        is_captcha_error = bool(recent_captcha_failures) and not is_zero_balance
         
         # Deductions
-        if is_zero_balance:
+        if is_zero_balance or is_captcha_error:
             health_score -= 55
         elif is_proxy_down:
             health_score -= 45
@@ -365,6 +374,11 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
 
     # Construct Prominent Active Operational Alerts
     active_alerts = []
+    
+    # Check if Captcha Key is missing altogether
+    captcha_setting = db.query(SystemSetting).filter(SystemSetting.key == "captcha.api_key").first()
+    has_captcha_key = bool(captcha_setting and (captcha_setting.value or captcha_setting.encrypted_value))
+    
     if is_zero_balance:
         active_alerts.append({
             "severity": "critical",
@@ -374,6 +388,29 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
             "action_text": "Top Up CapSolver Funds",
             "is_external": True
         })
+    elif is_captcha_error:
+        latest_err = recent_captcha_failures[0]
+        err_detail = ""
+        if isinstance(latest_err.payload, dict):
+            err_detail = latest_err.payload.get("error") or latest_err.payload.get("reason") or latest_err.payload.get("errorDescription") or ""
+        active_alerts.append({
+            "severity": "critical",
+            "title": "CAPTCHA Solver Error / Challenge Failed",
+            "message": f"Workers encountered CAPTCHA solving failures ({err_detail or 'Challenge solve timeout or invalid key'}). Automated login and slot verification are impacted.",
+            "action_link": "/settings",
+            "action_text": "Check Captcha Settings",
+            "is_external": False
+        })
+    elif not has_captcha_key:
+        active_alerts.append({
+            "severity": "warning",
+            "title": "CapSolver API Key Not Configured",
+            "message": "No Captcha solver API key is configured. Headless workers cannot solve login or booking challenges without an active solver key.",
+            "action_link": "/settings",
+            "action_text": "Configure Captcha Key",
+            "is_external": False
+        })
+        
     if is_proxy_down:
         proxy_count_str = f" ({len(cooldown_proxies)} in Cooldown)" if cooldown_proxies else ""
         active_alerts.append({
