@@ -302,6 +302,31 @@
             </div>
         </div>
     </div>
+
+    <!-- SLOT HISTORY & DATA RESET (SUPER ADMIN ONLY) -->
+    {% if user and (user.role.value == 'SUPER_ADMIN' or user.role == 'SUPER_ADMIN') %}
+    <div class="bg-[#09090b] border border-red-500/20 rounded-xl shadow-sm overflow-hidden flex flex-col h-full lg:col-span-2">
+        <div class="px-5 py-4 border-b border-zinc-800 bg-red-950/10 flex justify-between items-center">
+            <h3 class="font-medium text-red-200 flex items-center gap-2">
+                <i data-lucide="database-zap" class="w-4 h-4 text-red-400"></i> Slot History & Data Maintenance
+            </h3>
+            <span class="text-xs text-red-400 bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20 font-mono">Super Admin</span>
+        </div>
+        <div class="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div class="space-y-1">
+                <h4 class="text-sm font-semibold text-zinc-100">Clear All Discovered Slot Drops</h4>
+                <p class="text-xs text-zinc-400 max-w-2xl leading-relaxed">
+                    Permanently purge all historical slot drop entries recorded across all visa centers from the database. This action does not affect active applicant waitlists or client records.
+                </p>
+            </div>
+            <form action="/slots/clear-all" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete ALL recorded slot drops across all visa centers? This cannot be undone.');">
+                <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold bg-red-600 hover:bg-red-500 text-white shadow-sm transition-colors whitespace-nowrap cursor-pointer">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Clear All Slot History
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
 

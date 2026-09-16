@@ -28,9 +28,9 @@
                 Archived Slots ({{ total_archived }})
             </a>
         </div>
-        {% if user.role.value == 'SUPER_ADMIN' and (total_active > 0 or total_archived > 0) %}
+        {% if user and (user.role.value == 'SUPER_ADMIN' or user.role == 'SUPER_ADMIN') %}
         <form action="/slots/clear-all" method="POST" class="inline" onsubmit="event.preventDefault(); promptConfirmModal({ title: 'Clear All Slot History', subtitle: 'Permanent Reset', description: 'Are you sure you want to permanently delete ALL recorded slot drops across all visa centers? This cannot be undone.', confirmText: 'Clear All History', isDanger: true, form: this });">
-            <button type="submit" class="btn btn-secondary text-xs py-1.5 px-3 border-red-500/30 text-red-400 hover:bg-red-500/10 flex items-center gap-1.5 transition-colors">
+            <button type="submit" class="btn btn-secondary text-xs py-1.5 px-3 border-red-500/30 text-red-400 hover:bg-red-500/10 flex items-center gap-1.5 transition-colors cursor-pointer">
                 <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Clear All History
             </button>
         </form>
