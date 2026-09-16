@@ -38,7 +38,7 @@ GUIDANCE_DICT = {
     "NO_READY_WORKER": {
         "title": "No Worker Available",
         "summary": "No worker was available to accept the task.",
-        "why": "No worker with the necessary capabilities (Scrape/Book) polled the server.",
+        "why": "No worker with the necessary capabilities (Monitor/Book) polled the server.",
         "how_to_fix": [
             "Ensure worker instances are running.",
             "Verify workers are configured with the correct capabilities."
@@ -47,8 +47,8 @@ GUIDANCE_DICT = {
         "severity": "Warning"
     },
     "NO_ASSIGNMENT": {
-        "title": "No Scraping Tasks",
-        "summary": "No scraping tasks need to be run right now.",
+        "title": "No Monitoring Tasks",
+        "summary": "No monitoring tasks need to be run right now.",
         "why": "All assignments are currently leased, paused, or not yet due for polling.",
         "how_to_fix": [
             "Create a new assignment.",
@@ -60,9 +60,9 @@ GUIDANCE_DICT = {
     "NO_BOOKING_TASK": {
         "title": "No Booking Tasks",
         "summary": "No slots are available to book.",
-        "why": "No slots have been found recently by the scrapers.",
+        "why": "No slots have been found recently by the monitors.",
         "how_to_fix": [
-            "Wait for scrapers to find slots."
+            "Wait for monitors to find slots."
         ],
         "auto_recovery": "Yes, automatically triggered on a SLOT_FOUND event.",
         "severity": "Info"
@@ -83,7 +83,7 @@ GUIDANCE_DICT = {
     "SLOT_FOUND": {
         "title": "Slot Found",
         "summary": "An available appointment slot was detected.",
-        "why": "A scraper successfully checked the portal and found availability.",
+        "why": "A monitor successfully checked the portal and found availability.",
         "how_to_fix": [],
         "auto_recovery": "Triggers a BookingTask.",
         "severity": "Success"
@@ -91,7 +91,7 @@ GUIDANCE_DICT = {
     "NO_SLOTS_FOUND": {
         "title": "No Slots Found",
         "summary": "No slots were available.",
-        "why": "A scraper successfully checked the portal and found no availability.",
+        "why": "A monitor successfully checked the portal and found no availability.",
         "how_to_fix": [],
         "auto_recovery": "N/A",
         "severity": "Info"

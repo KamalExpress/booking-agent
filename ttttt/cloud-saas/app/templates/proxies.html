@@ -17,7 +17,7 @@
 <div id="createProxyModal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
     <div class="card w-full max-w-lg bg-background p-6">
         <h3 class="text-xl font-bold mb-2 tracking-tight">Bulk Add Proxies</h3>
-        <p class="text-sm text-zinc-400 mb-4 cursor-help" title="Tip: Use high cost premium proxies for Bookers, low-cost residential for scrapers.">Format: <code class="bg-zinc-900 px-1 py-0.5 rounded text-indigo-300">host:port:user:pass</code> (one per line)</p>
+        <p class="text-sm text-zinc-400 mb-4 cursor-help" title="Tip: Use high cost premium proxies for Bookers, low-cost residential for monitors.">Format: <code class="bg-zinc-900 px-1 py-0.5 rounded text-indigo-300">host:port:user:pass</code> (one per line)</p>
         
         <div class="mb-4 bg-indigo-500/10 border border-indigo-500/20 rounded-lg p-3">
             <div class="flex items-start gap-2">
@@ -42,7 +42,7 @@
             <div class="flex items-center gap-4 py-2 border-y border-border">
                 <label class="flex items-center gap-2 text-sm font-medium cursor-pointer">
                     <input type="checkbox" name="supports_scraping" value="true" class="rounded bg-zinc-900 border-zinc-700" checked>
-                    Use for Scraping
+                    Use for Monitoring
                 </label>
                 <label class="flex items-center gap-2 text-sm font-medium cursor-pointer">
                     <input type="checkbox" name="supports_booking" value="true" class="rounded bg-zinc-900 border-zinc-700">
@@ -81,7 +81,7 @@
                 </td>
                 <td class="p-4 text-muted-foreground flex gap-1">
                     {% if proxy.supports_scraping %}
-                        <span class="inline-flex items-center rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-xs text-emerald-400 font-semibold" title="Eligible for Slot Scraping Tasks">Slot Agent</span>
+                        <span class="inline-flex items-center rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-xs text-emerald-400 font-semibold" title="Eligible for Slot Monitoring Tasks">Slot Agent</span>
                     {% endif %}
                     {% if proxy.supports_booking %}
                         <span class="inline-flex items-center rounded-md border border-indigo-500/30 bg-indigo-500/10 px-2 py-0.5 text-xs text-indigo-400 font-semibold" title="Eligible for Booking Tasks">Booking Agent</span>

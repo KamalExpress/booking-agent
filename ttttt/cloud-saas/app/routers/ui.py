@@ -360,7 +360,7 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
         active_alerts.append({
             "severity": "critical",
             "title": "CapSolver API Balance Exhausted (ERROR_ZERO_BALANCE)",
-            "message": "Workers cannot solve login or booking CAPTCHAs because the CapSolver account balance is zero ($0.00). Automated scraping and booking are temporarily halted.",
+            "message": "Workers cannot solve login or booking CAPTCHAs because the CapSolver account balance is zero ($0.00). Automated monitoring and booking are temporarily halted.",
             "action_link": "https://www.capsolver.com",
             "action_text": "Top Up CapSolver Funds",
             "is_external": True
@@ -379,8 +379,8 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
     if paused_assignments and not is_zero_balance and not is_proxy_down:
         active_alerts.append({
             "severity": "warning",
-            "title": f"Scraping Paused on {len(paused_assignments)} Assignment(s)",
-            "message": "Scraping was automatically paused after repeated failures to protect accounts. Check account credentials and unpause in Assignments.",
+            "title": f"Monitoring Paused on {len(paused_assignments)} Assignment(s)",
+            "message": "Monitoring was automatically paused after repeated failures to protect accounts. Check account credentials and unpause in Assignments.",
             "action_link": "/assignments",
             "action_text": "View Assignments",
             "is_external": False

@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}Scraper Accounts - KE Agent{% endblock %}
+{% block title %}Portal Accounts - KE Agent{% endblock %}
 
 {% block content %}
 <header class="mb-8 flex justify-between items-center">
     <div>
         <h2 class="text-3xl font-bold tracking-tight">Portal Accounts</h2>
-        <p class="text-muted-foreground mt-1">Manage target credentials used by workers for scraping and booking</p>
+        <p class="text-muted-foreground mt-1">Manage target credentials used by workers for monitoring and booking</p>
     </div>
     <button class="btn btn-primary" onclick="document.getElementById('createAccountModal').classList.remove('hidden')">
         <i data-lucide="plus" class="w-4 h-4 mr-2"></i> Add Account
@@ -42,7 +42,7 @@
                 <label class="flex items-center gap-2 text-sm font-medium cursor-pointer">
                     <input type="checkbox" name="supports_scraping" value="true"
                         class="rounded bg-zinc-900 border-zinc-700" checked>
-                    Use for Scraping
+                    Use for Monitoring
                 </label>
                 <label class="flex items-center gap-2 text-sm font-medium cursor-pointer">
                     <input type="checkbox" name="supports_booking" value="true"
@@ -106,7 +106,7 @@
                         {% if acc.supports_scraping %}
                         <span
                             class="inline-flex items-center rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-xs text-emerald-400 font-semibold"
-                            title="Eligible for Slot Scraping Tasks">Slot Agent</span>
+                            title="Eligible for Slot Monitoring Tasks">Slot Agent</span>
                         {% endif %}
                         {% if acc.supports_booking %}
                         <span
