@@ -324,22 +324,31 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
             elif delta_seconds < 600:
                 health_score += 10
 
-        # Penalize for recent operational failures in the last 15 minutes
-        recent_window = now - timedelta(minutes=15)
+        # Penalize for recent operational failures in the last 30 minutes
+        recent_window = now - timedelta(minutes=30)
         recent_critical_errors = db.query(EventLog).filter(
             EventLog.created_at >= recent_window,
-            EventLog.severity == "error",
-            EventLog.event_type.in_(["LOGIN_FAILED", "PROXY_BANNED", "LEASE_FAILED", "CAPTCHA_FAILED", "LOGIN_EXCEPTION"])
+            EventLog.severity == "error"
         ).count()
         
-        # Check for proxy quota or zero balance issues
-        recent_error_logs = db.query(EventLog).filter(
-            EventLog.created_at >= recent_window,
-            EventLog.event_type.in_(["PROXY_BANNED", "LEASE_FAILED", "LOGIN_EXCEPTION", "CAPTCHA_FAILED"])
-        ).all()
+        # Check active database state
+        cooldown_proxies = db.query(Proxy).filter(Proxy.status == "COOLDOWN").all()
+        paused_assignments = db.query(Assignment).filter(Assignment.status == "Paused").all()
         
-        is_proxy_down = any("407" in str(e.payload) for e in recent_error_logs)
-        is_zero_balance = any("ERROR_ZERO_BALANCE" in str(e.payload) or "ZERO_BALANCE" in str(e.payload) for e in recent_error_logs)
+        # Check recent event logs (last 2 hours) across all event types for 407 / zero balance
+        recent_window_2h = now - timedelta(hours=2)
+        recent_logs_2h = db.query(EventLog).filter(
+            EventLog.created_at >= recent_window_2h
+        ).order_by(EventLog.created_at.desc()).limit(100).all()
+        
+        is_proxy_down = bool(cooldown_proxies) or any(
+            "407" in str(e.payload) or "proxy tunnel" in str(e.payload).lower() or "proxy quota" in str(e.payload).lower()
+            for e in recent_logs_2h
+        )
+        is_zero_balance = any(
+            "ERROR_ZERO_BALANCE" in str(e.payload) or "ZERO_BALANCE" in str(e.payload) or "balance is zero" in str(e.payload).lower() or "capsolver balance zero" in str(e.payload).lower()
+            for e in recent_logs_2h
+        )
         
         # Deductions
         if is_zero_balance:
@@ -366,21 +375,21 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
             "is_external": True
         })
     if is_proxy_down:
+        proxy_count_str = f" ({len(cooldown_proxies)} in Cooldown)" if cooldown_proxies else ""
         active_alerts.append({
             "severity": "error",
-            "title": "Decodo Proxy Tunnel Authentication Failed (HTTP 407)",
+            "title": f"Decodo Proxy Tunnel Authentication Failed (HTTP 407){proxy_count_str}",
             "message": "Proxy connection was rejected with HTTP 407. Bandwidth/data quota is exhausted or credentials changed. Worker cannot connect to visa portal.",
             "action_link": "/settings?tab=proxies",
             "action_text": "Check Proxy Settings",
             "is_external": False
         })
         
-    paused_assignments = db.query(Assignment).filter(Assignment.status == "Paused").all()
-    if paused_assignments and not is_zero_balance and not is_proxy_down:
+    if paused_assignments:
         active_alerts.append({
             "severity": "warning",
             "title": f"Monitoring Paused on {len(paused_assignments)} Assignment(s)",
-            "message": "Monitoring was automatically paused after repeated failures to protect accounts. Check account credentials and unpause in Assignments.",
+            "message": f"{len(paused_assignments)} assignment(s) were automatically paused after repeated failures to protect accounts. Check account credentials or proxy bandwidth, then unpause in Assignments.",
             "action_link": "/assignments",
             "action_text": "View Assignments",
             "is_external": False
