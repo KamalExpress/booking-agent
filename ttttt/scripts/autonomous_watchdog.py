@@ -64,7 +64,7 @@ class WatchdogClient:
         headers = {
             "X-Watchdog-Key": self.api_key,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": "AutonomousWatchdog/3.0"
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         }
         if data is not None:
             headers["Content-Type"] = "application/json"
@@ -553,10 +553,16 @@ async def start_ws_supervisor(saas_url: str, api_key: str, auto_heal: bool):
     asyncio.create_task(evaluation_loop())
 
     retry_delay = 3
+    headers = [("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")]
     while True:
         try:
             print(f"[{engine.format_time()}] Connecting to SaaS WebSocket stream...")
-            async with websockets.connect(ws_url, ping_interval=20, ping_timeout=20) as ws:
+            try:
+                conn = websockets.connect(ws_url, additional_headers=headers, ping_interval=20, ping_timeout=20)
+            except TypeError:
+                conn = websockets.connect(ws_url, extra_headers=dict(headers), ping_interval=20, ping_timeout=20)
+
+            async with conn as ws:
                 print(f"[{engine.format_time()}] {Colors.GREEN}{Colors.BOLD}CONNECTED! Autonomous Watchdog is supervising the live pipeline.{Colors.RESET}\n")
                 retry_delay = 3
                 while True:

@@ -53,51 +53,64 @@ def verify_watchdog_auth(
         detail="Unauthorized. Provide valid X-Watchdog-Key or Authorization Bearer token."
     )
 
+def ensure_naive(dt: Optional[datetime]) -> Optional[datetime]:
+    if dt is None:
+        return None
+    if getattr(dt, "tzinfo", None) is not None:
+        return dt.astimezone(timezone.utc).replace(tzinfo=None)
+    return dt
+
 @router.get("/status")
 def get_watchdog_system_status(
     auth: bool = Depends(verify_watchdog_auth),
     db: Session = Depends(get_db),
     lease_service: LeaseService = Depends(get_lease_service)
 ):
-    now = datetime.utcnow()
-    cutoff = now - timedelta(seconds=WorkerNode.WORKER_TIMEOUT_SECONDS)
+    try:
+        now = datetime.utcnow()
+        cutoff = now - timedelta(seconds=WorkerNode.WORKER_TIMEOUT_SECONDS)
 
-    # 1. Self-heal stale leases and orphan queue entries before reporting
-    lease_service.expire_stale_leases()
+        # 1. Self-heal stale leases and orphan queue entries before reporting
+        try:
+            lease_service.expire_stale_leases()
+        except Exception:
+            pass
 
-    # 2. Assignments
-    assignments = db.query(Assignment).all()
-    asm_data = []
-    for a in assignments:
-        is_due = not a.last_checked or (now - a.last_checked).total_seconds() >= a.polling_interval
-        next_due_in = 0 if is_due else max(0, int(a.polling_interval - (now - a.last_checked).total_seconds()))
-        asm_data.append({
-            "id": a.id,
-            "visa_center": a.visa_center,
-            "date_from": a.date_from,
-            "date_to": a.date_to,
-            "status": a.status,
-            "priority": a.priority,
-            "polling_interval": a.polling_interval,
-            "last_checked": a.last_checked.isoformat() if a.last_checked else None,
-            "is_due_for_polling": is_due,
-            "next_due_seconds": next_due_in
-        })
+        # 2. Assignments
+        assignments = db.query(Assignment).all()
+        asm_data = []
+        for a in assignments:
+            lc = ensure_naive(a.last_checked)
+            is_due = not lc or (now - lc).total_seconds() >= a.polling_interval
+            next_due_in = 0 if is_due else max(0, int(a.polling_interval - (now - lc).total_seconds()))
+            asm_data.append({
+                "id": a.id,
+                "visa_center": a.visa_center,
+                "date_from": a.date_from,
+                "date_to": a.date_to,
+                "status": a.status,
+                "priority": a.priority,
+                "polling_interval": a.polling_interval,
+                "last_checked": a.last_checked.isoformat() if a.last_checked else None,
+                "is_due_for_polling": is_due,
+                "next_due_seconds": next_due_in
+            })
 
-    # 3. Workers
-    workers = db.query(WorkerNode).all()
-    worker_data = []
-    for w in workers:
-        is_online = bool(w.last_heartbeat and w.last_heartbeat >= cutoff)
-        worker_data.append({
-            "worker_id": w.worker_id,
-            "can_scrape": w.can_scrape,
-            "can_book": w.can_book,
-            "is_online": is_online,
-            "current_concurrency": w.current_concurrency,
-            "max_concurrency": w.max_concurrency,
-            "last_heartbeat": w.last_heartbeat.isoformat() if w.last_heartbeat else None
-        })
+        # 3. Workers
+        workers = db.query(WorkerNode).all()
+        worker_data = []
+        for w in workers:
+            hb = ensure_naive(w.last_heartbeat)
+            is_online = bool(hb and hb >= cutoff)
+            worker_data.append({
+                "worker_id": w.worker_id,
+                "can_scrape": w.can_scrape,
+                "can_book": w.can_book,
+                "is_online": is_online,
+                "current_concurrency": w.current_concurrency,
+                "max_concurrency": w.max_concurrency,
+                "last_heartbeat": w.last_heartbeat.isoformat() if w.last_heartbeat else None
+            })
 
     # 4. Leases
     active_leases = db.query(Lease).filter(Lease.status.in_(["Leased", "Running"])).all()
@@ -182,6 +195,13 @@ def get_watchdog_system_status(
         "proxies_summary": proxy_counts,
         "recent_logs": log_data
     }
+    except Exception as e:
+        import traceback
+        return {
+            "error": str(e),
+            "traceback": traceback.format_exc(),
+            "timestamp": datetime.utcnow().isoformat()
+        }
 
 @router.post("/trigger-poll")
 def trigger_immediate_poll(
