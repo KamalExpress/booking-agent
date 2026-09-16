@@ -982,13 +982,19 @@ async def assignments_page(request: Request, db: Session = Depends(get_db)):
                 "value": f"{parts[0]}:{parts[1]}"
             })
             
+    from services.worker_service import get_parsed_appointment_day_rules, APPOINTMENT_TYPES_METADATA, ALL_WEEKDAYS
+    appointment_day_rules = get_parsed_appointment_day_rules(db)
+            
     return render_template("assignments.html", {
         "request": request,
         "user": user,
         "active_page": "assignments",
         "assignments": assignments,
         "accounts": accounts,
-        "available_centers": available_centers
+        "available_centers": available_centers,
+        "appointment_day_rules": appointment_day_rules,
+        "appointment_types_meta": APPOINTMENT_TYPES_METADATA,
+        "all_weekdays": ALL_WEEKDAYS
     }, db)
 
 @router.post("/assignments/create")
