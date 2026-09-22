@@ -1,4 +1,4 @@
-﻿import logging
+import logging
 import time
 import os
 import json
@@ -59,12 +59,30 @@ class GVCAdapter(BasePortalAdapter):
         self.load_session()
 
     def load_session(self):
+        import pickle
         if os.path.exists(self.cookie_file):
             try:
                 with open(self.cookie_file, 'r', encoding='utf-8') as f:
                     cookies_dict = json.load(f)
-                    self.session.cookies.update(cookies_dict)
+                    if isinstance(cookies_dict, dict):
+                        self.session.cookies.update(cookies_dict)
                 logging.info("GVCAdapter: Loaded previous session cookies.")
+                return
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                try:
+                    with open(self.cookie_file, 'rb') as f:
+                        cookies_dict = pickle.load(f)
+                        if isinstance(cookies_dict, dict):
+                            self.session.cookies.update(cookies_dict)
+                    logging.info("GVCAdapter: Loaded previous session cookies from legacy pickle file.")
+                    self.save_session()
+                    return
+                except Exception as pkl_err:
+                    logging.warning(f"GVCAdapter: Could not load corrupted session cookies ({pkl_err}). Removing file.")
+                    try:
+                        os.remove(self.cookie_file)
+                    except Exception:
+                        pass
             except Exception as e:
                 logging.warning(f"GVCAdapter: Could not load previous session: {e}")
 
@@ -153,8 +171,27 @@ class GVCAdapter(BasePortalAdapter):
             try:
                 response = self.session.put(url, json=payload, timeout=15)
                 if response.status_code == 200:
-                    logging.info("GVCAdapter: Session is fully valid.")
-                    return True
+                    try:
+                        data = response.json()
+                        if isinstance(data, dict):
+                            if data.get("code") in ["UNAUTHORIZED", "FORBIDDEN", 401, 403]:
+                                logging.info(f"GVCAdapter: Session has expired ({data.get('code')}).")
+                                return False
+                            if data.get("code") == "SUCCESS" or "returnobject" in data:
+                                logging.info("GVCAdapter: Session is fully valid.")
+                                return True
+                        elif isinstance(data, list):
+                            logging.info("GVCAdapter: Session is fully valid.")
+                            return True
+                        logging.warning(f"GVCAdapter: Unexpected JSON response during session check: {str(data)[:100]}")
+                        return False
+                    except Exception:
+                        logging.warning("GVCAdapter: Session check returned HTTP 200 with non-JSON body (WAF challenge or HTML page).")
+                        if "<html" in response.text.lower() or "_incapsula_resource" in response.text.lower():
+                            logging.warning("GVCAdapter: Detected WAF challenge. Refreshing cookies...")
+                            self.refresh_waf_cookies()
+                            continue
+                        return False
                 elif response.status_code == 401:
                     logging.info("GVCAdapter: Session has expired (401).")
                     return False
@@ -177,7 +214,12 @@ class GVCAdapter(BasePortalAdapter):
                     try:
                         response = self.session.put(url, json=payload, timeout=15)
                         if response.status_code == 200:
-                            return True
+                            try:
+                                data = response.json()
+                                if (isinstance(data, dict) and (data.get("code") == "SUCCESS" or "returnobject" in data)) or isinstance(data, list):
+                                    return True
+                            except Exception:
+                                pass
                     except:
                         pass
                 return False
