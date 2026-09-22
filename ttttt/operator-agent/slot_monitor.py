@@ -183,6 +183,8 @@ class SlotMonitorEngine(threading.Thread):
                 centers_to_check = ["138:26"] # Fallback to Lahore Standard
                 
             slots_found = False
+            slots_response = None
+            hit_rate_limit = False
             for target_date in dates_to_check:
                 if self._stop_event.is_set():
                     break
@@ -245,6 +247,7 @@ class SlotMonitorEngine(threading.Thread):
                     elif slots_response and slots_response.get("status_code") == 429:
                         logging.warning("Hit 429 Rate Limit. Pausing slot checks for this run.")
                         self.api.log_event(assignment_id, "RATE_LIMIT_HIT", "warning", {"date": target_date})
+                        hit_rate_limit = True
                         break
                     
                     # Prevent hammering the API with a human-like randomized delay between checks
@@ -253,7 +256,7 @@ class SlotMonitorEngine(threading.Thread):
                     logging.info(f"Waiting {delay:.2f}s before next check...")
                     self._stop_event.wait(delay)
                     
-                if slots_response and slots_response.get("status_code") == 429:
+                if hit_rate_limit:
                     break
             
             if not slots_found:
