@@ -341,22 +341,44 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
             EventLog.created_at >= recent_window_2h
         ).order_by(EventLog.created_at.desc()).limit(100).all()
         
-        is_proxy_down = bool(cooldown_proxies) or any(
-            "407" in str(e.payload) or "proxy tunnel" in str(e.payload).lower() or "proxy quota" in str(e.payload).lower()
-            for e in recent_logs_2h
-        )
+        # Check for active proxy issues (auto-recovers if latest login/proxy event is successful)
+        proxy_events = [
+            e for e in recent_logs_2h
+            if e.event_type in ["PROXY_BANNED", "LOGIN_SUCCESS", "LOGIN_FAILED"]
+            or (e.severity in ["error", "critical"] and ("407" in str(e.payload) or "proxy tunnel" in str(e.payload).lower() or "proxy quota" in str(e.payload).lower()))
+        ]
+        is_proxy_down = bool(cooldown_proxies)
+        if not is_proxy_down and proxy_events:
+            latest_proxy_event = proxy_events[0]
+            if latest_proxy_event.severity in ["error", "critical"] and (
+                "407" in str(latest_proxy_event.payload)
+                or "proxy tunnel" in str(latest_proxy_event.payload).lower()
+                or "proxy quota" in str(latest_proxy_event.payload).lower()
+            ):
+                is_proxy_down = True
         
-        recent_captcha_failures = [
-            e for e in recent_logs_2h 
-            if e.event_type == "CAPTCHA_FAILED" 
-            or "captcha" in str(e.payload).lower() 
-            or "capsolver" in str(e.payload).lower()
+        # Check for active CAPTCHA issues (auto-recovers if latest CAPTCHA/login event succeeded)
+        captcha_events = [
+            e for e in recent_logs_2h
+            if e.event_type in ["CAPTCHA_FAILED", "CAPTCHA_SOLVED", "LOGIN_SUCCESS", "LOGIN_FAILED"]
+            or (e.severity in ["error", "critical"] and ("captcha" in str(e.payload).lower() or "capsolver" in str(e.payload).lower()))
         ]
         
-        is_zero_balance = any(
-            "ERROR_ZERO_BALANCE" in str(e.payload) or "ZERO_BALANCE" in str(e.payload) or "balance is zero" in str(e.payload).lower() or "capsolver balance zero" in str(e.payload).lower()
-            for e in recent_logs_2h
-        )
+        recent_captcha_failures = []
+        is_zero_balance = False
+        
+        if captcha_events:
+            latest_cap_event = captcha_events[0]
+            # Only trigger alert if the most recent CAPTCHA activity was a failure/error
+            if latest_cap_event.event_type == "CAPTCHA_FAILED" or (
+                latest_cap_event.severity in ["error", "critical"] and ("captcha" in str(latest_cap_event.payload).lower() or "capsolver" in str(latest_cap_event.payload).lower())
+            ):
+                recent_captcha_failures = [latest_cap_event]
+                is_zero_balance = any(
+                    "ERROR_ZERO_BALANCE" in str(e.payload) or "ZERO_BALANCE" in str(e.payload) or "balance is zero" in str(e.payload).lower() or "capsolver balance zero" in str(e.payload).lower()
+                    for e in captcha_events if e.severity in ["error", "critical"]
+                )
+        
         is_captcha_error = bool(recent_captcha_failures) and not is_zero_balance
         
         # Deductions
