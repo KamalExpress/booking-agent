@@ -368,6 +368,7 @@ class OperatorAgent:
             logging.warning(f"Pre-flight navigation failed (WAF might still block us): {e}")
 
         # 2. Solve CAPTCHA
+        logging.info(f"Solving login CAPTCHA via {self.captcha_service.__class__.__name__}...")
         captcha_token = self.captcha_service.solve(self.sitekey, f"{self.base_url}/login", session=self.session)
         
         # Intelligent fallback to Manual mode if Auto mode fails
@@ -376,6 +377,29 @@ class OperatorAgent:
             from captcha_service import ManualCaptchaService
             manual_svc = ManualCaptchaService()
             captcha_token = manual_svc.solve(self.sitekey, f"{self.base_url}/login", session=self.session)
+        
+        if captcha_token:
+            logging.info(f"CAPTCHA solved successfully! Proceeding to authenticate credentials for {self.username}...")
+            if hasattr(self, 'api') and self.api and hasattr(self, 'assignment_id') and self.assignment_id:
+                try:
+                    self.api.log_event(self.assignment_id, "CAPTCHA_SOLVED", "info", {
+                        "service": self.captcha_service.__class__.__name__,
+                        "action": "login",
+                        "username": self.username
+                    })
+                except Exception:
+                    pass
+        else:
+            logging.error(f"CAPTCHA solving failed via {self.captcha_service.__class__.__name__}.")
+            if hasattr(self, 'api') and self.api and hasattr(self, 'assignment_id') and self.assignment_id:
+                try:
+                    self.api.log_event(self.assignment_id, "CAPTCHA_FAILED", "error", {
+                        "service": self.captcha_service.__class__.__name__,
+                        "action": "login",
+                        "username": self.username
+                    })
+                except Exception:
+                    pass
         
         url = f"{self.base_url}/api/v1/auth/login"
         payload = {
@@ -528,9 +552,29 @@ class OperatorAgent:
         """
         Final booking API call using application/x-www-form-urlencoded format.
         """
-        logging.info("Submitting final booking request...")
-        
+        logging.info(f"Solving booking CAPTCHA via {self.captcha_service.__class__.__name__}...")
         captcha_token = self.captcha_service.solve(self.sitekey, f"{self.base_url}/appointments/add", session=self.session)
+        
+        if captcha_token:
+            logging.info("Booking CAPTCHA solved successfully! Proceeding to submit booking...")
+            if hasattr(self, 'api') and self.api and hasattr(self, 'assignment_id') and self.assignment_id:
+                try:
+                    self.api.log_event(self.assignment_id, "CAPTCHA_SOLVED", "info", {
+                        "service": self.captcha_service.__class__.__name__,
+                        "action": "booking"
+                    })
+                except Exception:
+                    pass
+        else:
+            logging.error("Booking CAPTCHA solving failed.")
+            if hasattr(self, 'api') and self.api and hasattr(self, 'assignment_id') and self.assignment_id:
+                try:
+                    self.api.log_event(self.assignment_id, "CAPTCHA_FAILED", "error", {
+                        "service": self.captcha_service.__class__.__name__,
+                        "action": "booking"
+                    })
+                except Exception:
+                    pass
         
         # We will assume standard form submission endpoint or API endpoint
         url = f"{self.base_url}/appointments/add"

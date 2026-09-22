@@ -149,6 +149,8 @@ class SlotMonitorEngine(threading.Thread):
                 LoginFailedException = type("LoginFailedException", (Exception,), {})
                 
             agent = OperatorAgent(captcha_svc, username=account["username"], password=account["password"], proxy_string=proxy_string)
+            agent.api = self.api
+            agent.assignment_id = assignment_id
             
             # Make sure the session file matches the account so we don't mix cookies
             agent.cookie_file = f"cookies_{account['id']}.pkl"

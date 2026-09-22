@@ -1,4 +1,4 @@
-﻿import abc
+import abc
 import requests
 import time
 import logging
@@ -98,7 +98,7 @@ class CapSolverService(CaptchaService):
                 if res.get("errorId") != 0:
                     error_code = res.get("errorCode", "")
                     error_desc = res.get("errorDescription", "")
-                    logging.error(f"CapSolver creation failed: {res}")
+                    logging.error(f"CapSolver creation failed (Code: {error_code}): {error_desc}")
                     
                     if error_code == "ERROR_ZERO_BALANCE":
                         logging.error("CRITICAL: CapSolver service balance is ZERO (ERROR_ZERO_BALANCE). Top-up required immediately!")
@@ -107,9 +107,10 @@ class CapSolverService(CaptchaService):
                 
                 task_id = res.get("taskId")
                 logging.info(f"CapSolver job submitted successfully. Task ID: {task_id}")
-                
                 logging.info("Polling for CapSolver completion... (Max 150 seconds)")
-                for _ in range(50):
+                
+                poll_start = time.time()
+                for poll_count in range(1, 51):
                     time.sleep(3)
                     poll_payload = {
                         "clientKey": self.api_key,
@@ -117,18 +118,23 @@ class CapSolverService(CaptchaService):
                     }
                     poll_res = requests.post(self.get_result_url, json=poll_payload, timeout=15).json()
                     status = poll_res.get("status")
+                    elapsed = int(time.time() - poll_start)
                     
                     if status == "ready":
                         token = poll_res.get("solution", {}).get("gRecaptchaResponse", "")
-                        logging.info("CapSolver solved the CAPTCHA successfully!")
+                        logging.info(f"CapSolver solved the CAPTCHA successfully in {elapsed}s! (Token length: {len(token)})")
                         return token
                     elif status == "failed":
-                        logging.error(f"CapSolver task failed: {poll_res.get('errorDescription')}")
+                        err_desc = poll_res.get('errorDescription') or poll_res.get('errorCode') or 'Unknown error'
+                        logging.error(f"CapSolver task failed ({err_desc}) after {elapsed}s.")
                         break
                     
-                    logging.debug(f"Waiting for CapSolver... current status: {status}")
+                    if poll_count % 3 == 0:
+                        logging.info(f"Still waiting for CapSolver ({elapsed}s elapsed)... status: {status}")
+                    else:
+                        logging.debug(f"Waiting for CapSolver... current status: {status}")
                     
-                logging.warning(f"CapSolver attempt {attempt} timed out or failed.")
+                logging.warning(f"CapSolver attempt {attempt} timed out or failed after {int(time.time() - poll_start)}s.")
             except Exception as e:
                 logging.error(f"Error during CapSolver job: {e}")
                 
