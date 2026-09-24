@@ -932,37 +932,51 @@
             const wsUrl = `${wsProtocol}//${window.location.host}/ws/live-logs`;
             let ws;
             let reconnectDelay = 2000;
+            let reconnectAttempts = 0;
+            const maxReconnectAttempts = 4;
 
             function connect() {
-                ws = new WebSocket(wsUrl);
-                ws.onmessage = (event) => {
-                    try {
-                        const data = JSON.parse(event.data);
-                        if (data.type === 'event_log') {
-                            const eType = data.payload.event_type || '';
-                            const src = data.payload.source || '';
-                            const workerId = (data.payload.worker_id || '').substring(0, 8);
+                if (reconnectAttempts >= maxReconnectAttempts) return;
+                try {
+                    ws = new WebSocket(wsUrl);
+                    ws.onmessage = (event) => {
+                        try {
+                            const data = JSON.parse(event.data);
+                            if (data.type === 'event_log') {
+                                const eType = data.payload.event_type || '';
+                                const src = data.payload.source || '';
+                                const workerId = (data.payload.worker_id || '').substring(0, 8);
 
-                            // Define which events trigger toasts
-                            if (eType === 'WORKER_ONLINE') uiToast(`Worker ${workerId} connected`, 'success');
-                            else if (eType === 'WORKER_OFFLINE') uiToast(`Worker ${workerId} disconnected`, 'error');
-                            else if (eType === 'WAF_BLOCK') uiToast(`WAF Block: Worker ${workerId}`, 'error');
-                            else if (eType === 'PROXY_EXHAUSTED') uiToast('Proxy pool exhausted', 'error');
-                            else if (eType === 'SLOT_FOUND') uiToast('🎉 SLOT FOUND!', 'success');
-                            else if (eType === 'BOOKING_STARTED') uiToast(`Worker ${workerId} started booking`, 'info');
-                            else if (eType === 'BOOKING_SUCCESS') uiToast('Booking task completed successfully!', 'success');
-                            else if (eType === 'OTP_REQUIRED') uiToast('Booking requires an OTP', 'info');
-                            else if (eType === 'ACCOUNT_LOCKED') uiToast('Portal account was locked', 'error');
-                            else if (eType === 'CONFIG_REFRESH') uiToast('SaaS runtime configuration refreshed', 'info');
-                            else if (eType === 'PUSH_DEVICE_SUBSCRIBED') uiToast('New device subscribed for push notifications', 'success');
+                                // Define which events trigger toasts
+                                if (eType === 'WORKER_ONLINE') uiToast(`Worker ${workerId} connected`, 'success');
+                                else if (eType === 'WORKER_OFFLINE') uiToast(`Worker ${workerId} disconnected`, 'error');
+                                else if (eType === 'WAF_BLOCK') uiToast(`WAF Block: Worker ${workerId}`, 'error');
+                                else if (eType === 'PROXY_EXHAUSTED') uiToast('Proxy pool exhausted', 'error');
+                                else if (eType === 'SLOT_FOUND') uiToast('🎉 SLOT FOUND!', 'success');
+                                else if (eType === 'BOOKING_STARTED') uiToast(`Worker ${workerId} started booking`, 'info');
+                                else if (eType === 'BOOKING_SUCCESS') uiToast('Booking task completed successfully!', 'success');
+                                else if (eType === 'OTP_REQUIRED') uiToast('Booking requires an OTP', 'info');
+                                else if (eType === 'ACCOUNT_LOCKED') uiToast('Portal account was locked', 'error');
+                                else if (eType === 'CONFIG_REFRESH') uiToast('SaaS runtime configuration refreshed', 'info');
+                                else if (eType === 'PUSH_DEVICE_SUBSCRIBED') uiToast('New device subscribed for push notifications', 'success');
+                            }
+                        } catch (e) { }
+                    };
+                    ws.onerror = () => {
+                        // Suppress error bubbling to avoid console spam when edge proxy lacks ws upgrade
+                    };
+                    ws.onclose = () => {
+                        reconnectAttempts++;
+                        if (reconnectAttempts < maxReconnectAttempts) {
+                            setTimeout(connect, reconnectDelay);
+                            reconnectDelay = Math.min(reconnectDelay * 1.5, 10000);
                         }
-                    } catch (e) { }
-                };
-                ws.onclose = () => {
-                    setTimeout(connect, reconnectDelay);
-                    reconnectDelay = Math.min(reconnectDelay * 1.5, 10000);
-                };
-                ws.onopen = () => { reconnectDelay = 2000; };
+                    };
+                    ws.onopen = () => { 
+                        reconnectDelay = 2000;
+                        reconnectAttempts = 0;
+                    };
+                } catch (e) { }
             }
             connect();
         })();

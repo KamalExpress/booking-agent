@@ -10,7 +10,7 @@ from models import WorkerNode, WorkerVersion, SystemSetting, EventLog, get_db
 from secrets_manager import secrets_manager
 
 DEFAULT_APPOINTMENT_DAY_RULES = {
-    "26": ["Mon", "Tue", "Wed"],
+    "26": ["Mon", "Tue", "Wed", "Thu", "Fri"],
     "0": [],
     "2": ["Thu", "Fri"],
     "5": ["Mon", "Tue", "Wed", "Thu", "Fri"],
@@ -21,7 +21,7 @@ APPOINTMENT_TYPES_METADATA = [
     {
         "code": "26",
         "name": "Long-Term Type D (Seasonal/Dependent Employment)",
-        "default_days": ["Mon", "Tue", "Wed"]
+        "default_days": ["Mon", "Tue", "Wed", "Thu", "Fri"]
     },
     {
         "code": "0",

@@ -201,7 +201,7 @@ class SlotMonitorEngine(threading.Thread):
                     
                     # --- APPOINTMENT TYPE DAY RULES ENFORCEMENT ---
                     day_rules = runtime_config.get("appointment_day_rules") or {
-                        "26": ["Mon", "Tue", "Wed"],
+                        "26": ["Mon", "Tue", "Wed", "Thu", "Fri"],
                         "0": [],
                         "2": ["Thu", "Fri"],
                         "5": ["Mon", "Tue", "Wed", "Thu", "Fri"],
