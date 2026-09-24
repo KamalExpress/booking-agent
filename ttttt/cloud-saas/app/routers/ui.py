@@ -1911,11 +1911,14 @@ async def update_global_settings(
     
     new_day_rules = {}
     for meta in APPOINTMENT_TYPES_METADATA:
-        code = meta["code"]
+        code = str(meta["code"])
         selected_days = []
         for day in ALL_WEEKDAYS:
             field_name = f"day_rule_{code}_{day}"
-            if field_name in form_data:
+            val = form_data.get(field_name)
+            if val is not None and str(val).strip() != "":
+                selected_days.append(day)
+            elif field_name in form_data:
                 selected_days.append(day)
         new_day_rules[code] = selected_days
 

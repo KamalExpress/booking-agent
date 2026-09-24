@@ -245,7 +245,7 @@
                                 <input type="checkbox" name="day_rule_{{ meta.code }}_{{ day }}" value="{{ day }}"
                                     data-day="{{ day }}" data-code="{{ meta.code }}"
                                     class="day-rule-checkbox peer sr-only" {% if day in selected_days %}checked{% endif %}>
-                                <span class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-semibold rounded-md border border-zinc-800 bg-zinc-900 text-zinc-400 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-500 hover:border-zinc-700 hover:text-zinc-200 transition-all shadow-sm">
+                                <span class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-semibold rounded-md border border-zinc-800 bg-zinc-900 text-zinc-400 peer-checked:!bg-indigo-600 peer-checked:!text-white peer-checked:!border-indigo-500 hover:border-zinc-700 hover:text-zinc-200 transition-all shadow-sm">
                                     {{ day }}
                                 </span>
                             </label>
@@ -334,9 +334,25 @@
 {% block scripts %}
 <script>
     document.addEventListener("DOMContentLoaded", async function() {
+        // Explicit state visual synchronization
+        function updateDayRuleCheckboxVisual(cb) {
+            const span = cb.nextElementSibling;
+            if (!span) return;
+            if (cb.checked) {
+                span.classList.add('bg-indigo-600', 'text-white', 'border-indigo-500');
+                span.classList.remove('bg-zinc-900', 'text-zinc-400', 'border-zinc-800');
+            } else {
+                span.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-500');
+                span.classList.add('bg-zinc-900', 'text-zinc-400', 'border-zinc-800');
+            }
+        }
+
         // Live Day Rules summary interactive updater
         document.querySelectorAll('.day-rule-checkbox').forEach(cb => {
+            updateDayRuleCheckboxVisual(cb);
+            
             cb.addEventListener('change', function() {
+                updateDayRuleCheckboxVisual(this);
                 const code = this.dataset.code;
                 const group = document.querySelectorAll(`.day-rule-checkbox[data-code="${code}"]:checked`);
                 const checkedDays = Array.from(group).map(el => el.dataset.day);
