@@ -1962,7 +1962,7 @@ async def update_global_settings(
         version_setting.value = str(int(version_setting.value) + 1)
         
     db.commit()
-    return RedirectResponse(url="/settings", status_code=303)
+    return RedirectResponse(url="/settings?saved=true", status_code=303)
 
 from services.guidance import get_guidance
 

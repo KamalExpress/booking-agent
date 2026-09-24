@@ -31,6 +31,11 @@ self.addEventListener('notificationclick', function(event) {
 
 // A fetch handler is strictly required by Chromium to trigger the PWA install prompt.
 self.addEventListener('fetch', function(event) {
-    // We can just fall back to network for now.
-    event.respondWith(fetch(event.request));
+    // Pass through to network and catch transient network drops gracefully
+    event.respondWith(
+        fetch(event.request).catch(function(err) {
+            // Return empty response or fail silently for non-critical assets
+            return new Response('', { status: 408, statusText: 'Network Timeout' });
+        })
+    );
 });
