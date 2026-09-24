@@ -332,6 +332,33 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
         ).count()
         
         # Check active database state
+        # 1. Auto-recover expired proxy or account cooldowns
+        cooldown_proxies_expired = db.query(Proxy).filter(
+            Proxy.status == "COOLDOWN",
+            Proxy.cooldown_until.isnot(None),
+            Proxy.cooldown_until <= now
+        ).all()
+        if cooldown_proxies_expired:
+            for p in cooldown_proxies_expired:
+                p.status = "READY"
+                p.cooldown_until = None
+                p.failure_count = 0
+                p.health_score = 100
+            db.commit()
+
+        cooldown_accounts_expired = db.query(PortalAccount).filter(
+            PortalAccount.status == "COOLDOWN",
+            PortalAccount.cooldown_until.isnot(None),
+            PortalAccount.cooldown_until <= now
+        ).all()
+        if cooldown_accounts_expired:
+            for a in cooldown_accounts_expired:
+                a.status = "READY"
+                a.cooldown_until = None
+                a.failure_count = 0
+                a.health_score = 100
+            db.commit()
+
         cooldown_proxies = db.query(Proxy).filter(Proxy.status == "COOLDOWN").all()
         paused_assignments = db.query(Assignment).filter(Assignment.status == "Paused").all()
         
@@ -344,11 +371,12 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
         # Check for active proxy issues (auto-recovers if latest login/proxy event is successful)
         proxy_events = [
             e for e in recent_logs_2h
-            if e.event_type in ["PROXY_BANNED", "LOGIN_SUCCESS", "LOGIN_FAILED"]
+            if e.event_type in ["PROXY_BANNED", "LOGIN_SUCCESS", "LEASE_COMPLETED", "LOGIN_FAILED", "LEASE_FAILED"]
             or (e.severity in ["error", "critical"] and ("407" in str(e.payload) or "proxy tunnel" in str(e.payload).lower() or "proxy quota" in str(e.payload).lower()))
         ]
-        is_proxy_down = bool(cooldown_proxies)
-        if not is_proxy_down and proxy_events:
+        
+        is_proxy_down = False
+        if proxy_events:
             latest_proxy_event = proxy_events[0]
             if latest_proxy_event.severity in ["error", "critical"] and (
                 "407" in str(latest_proxy_event.payload)
@@ -356,6 +384,19 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
                 or "proxy quota" in str(latest_proxy_event.payload).lower()
             ):
                 is_proxy_down = True
+            elif latest_proxy_event.event_type in ["LOGIN_SUCCESS", "LEASE_COMPLETED"]:
+                # The latest operation succeeded cleanly: auto-recover any proxy in cooldown
+                if cooldown_proxies:
+                    for p in cooldown_proxies:
+                        p.status = "READY"
+                        p.cooldown_until = None
+                        p.failure_count = 0
+                        p.health_score = 100
+                    db.commit()
+                    cooldown_proxies = []
+                is_proxy_down = False
+        elif cooldown_proxies:
+            is_proxy_down = True
         
         # Check for active CAPTCHA issues (auto-recovers if latest CAPTCHA/login event succeeded)
         captcha_events = [
@@ -439,8 +480,8 @@ async def overview_page(request: Request, db: Session = Depends(get_db)):
             "severity": "error",
             "title": f"Decodo Proxy Tunnel Authentication Failed (HTTP 407){proxy_count_str}",
             "message": "Proxy connection was rejected with HTTP 407. Bandwidth/data quota is exhausted or credentials changed. Worker cannot connect to visa portal.",
-            "action_link": "/settings?tab=proxies",
-            "action_text": "Check Proxy Settings",
+            "action_link": "/proxies",
+            "action_text": "Check Proxies",
             "is_external": False
         })
         
@@ -1043,6 +1084,7 @@ async def assignments_page(request: Request, db: Session = Depends(get_db)):
             
     from services.worker_service import get_parsed_appointment_day_rules, APPOINTMENT_TYPES_METADATA, ALL_WEEKDAYS
     appointment_day_rules = get_parsed_appointment_day_rules(db)
+    paused_count = sum(1 for a in assignments if a.status == 'Paused')
             
     return render_template("assignments.html", {
         "request": request,
@@ -1053,7 +1095,8 @@ async def assignments_page(request: Request, db: Session = Depends(get_db)):
         "available_centers": available_centers,
         "appointment_day_rules": appointment_day_rules,
         "appointment_types_meta": APPOINTMENT_TYPES_METADATA,
-        "all_weekdays": ALL_WEEKDAYS
+        "all_weekdays": ALL_WEEKDAYS,
+        "paused_count": paused_count
     }, db)
 
 @router.post("/assignments/create")
@@ -1163,10 +1206,42 @@ async def update_assignment(
             assignment.date_to = end_date.strftime('%d/%m/%Y')
             assignment.visa_center = ",".join(visa_center)
             assignment.required_labels = parsed_labels
+            if assignment.status == "Paused":
+                assignment.status = "Active"
+                assignment.last_checked = None
             db.commit()
     except Exception as e:
         print(f"Failed to update assignment: {e}")
         db.rollback()
+        
+    return RedirectResponse(url="/assignments", status_code=303)
+
+@router.post("/assignments/{assignment_id}/unpause")
+async def unpause_assignment(assignment_id: int, request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    assignment = db.query(Assignment).filter(Assignment.id == assignment_id).first()
+    if assignment:
+        assignment.status = "Active"
+        assignment.last_checked = None
+        db.commit()
+        
+    return RedirectResponse(url="/assignments", status_code=303)
+
+@router.post("/assignments/unpause-all")
+async def unpause_all_assignments(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    paused = db.query(Assignment).filter(Assignment.status == "Paused").all()
+    for a in paused:
+        a.status = "Active"
+        a.last_checked = None
+    if paused:
+        db.commit()
         
     return RedirectResponse(url="/assignments", status_code=303)
 
@@ -1300,6 +1375,9 @@ async def edit_assignment(
         assignment.date_to = date_to
         assignment.polling_interval = polling_interval
         assignment.priority = priority
+        if assignment.status == "Paused":
+            assignment.status = "Active"
+            assignment.last_checked = None
         db.commit()
             
     return RedirectResponse(url=f"/assignments/{assignment_id}", status_code=303)
@@ -1505,6 +1583,23 @@ async def delete_proxy(proxy_id: int, request: Request, db: Session = Depends(ge
     
     db.query(Proxy).filter(Proxy.id == proxy_id).delete()
     db.commit()
+    return RedirectResponse(url="/proxies", status_code=303)
+
+@router.post("/proxies/reset-cooldowns")
+async def reset_proxy_cooldowns(request: Request, db: Session = Depends(get_db)):
+    user = get_ui_user(request, db)
+    if not user or user.role != RoleEnum.SUPER_ADMIN:
+        return RedirectResponse(url="/", status_code=303)
+        
+    proxies = db.query(Proxy).filter(Proxy.status == "COOLDOWN").all()
+    for p in proxies:
+        p.status = "READY"
+        p.cooldown_until = None
+        p.failure_count = 0
+        p.health_score = 100
+    if proxies:
+        db.commit()
+        
     return RedirectResponse(url="/proxies", status_code=303)
 
 @router.get("/booking-tasks", response_class=HTMLResponse)

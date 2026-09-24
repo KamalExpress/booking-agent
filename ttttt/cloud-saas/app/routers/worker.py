@@ -328,15 +328,32 @@ def submit_logs(
         "timestamp": datetime.utcnow().isoformat()
     })
     
-    if req.event_type == "LOGIN_SUCCESS" and req.assignment_id:
-        assignment = db.query(Assignment).filter(Assignment.id == req.assignment_id).first()
-        if assignment and lease:
-            account = db.query(PortalAccount).filter(PortalAccount.id == lease.portal_account_id).first()
-            if account:
-                account.last_login = datetime.utcnow()
-                notify_login = db.query(SystemSetting).filter(SystemSetting.key == "notify.login_success").first()
-                if not notify_login or notify_login.value == "true":
-                    send_push_notification(db, "Login Successful", f"Worker successfully logged into {account.username} (Center {assignment.visa_center})", visa_center_id=assignment.visa_center)
+    if req.event_type == "LOGIN_SUCCESS":
+        # Clear cooldown on proxy since authentication succeeded
+        if lease and lease.proxy_id:
+            prx = db.query(Proxy).filter(Proxy.id == lease.proxy_id).first()
+            if prx:
+                prx.status = "READY"
+                prx.cooldown_until = None
+                prx.failure_count = 0
+                prx.health_score = 100
+        else:
+            cooled = db.query(Proxy).filter(Proxy.status == "COOLDOWN").all()
+            for p in cooled:
+                p.status = "READY"
+                p.cooldown_until = None
+                p.failure_count = 0
+                p.health_score = 100
+                
+        if req.assignment_id:
+            assignment = db.query(Assignment).filter(Assignment.id == req.assignment_id).first()
+            if assignment and lease:
+                account = db.query(PortalAccount).filter(PortalAccount.id == lease.portal_account_id).first()
+                if account:
+                    account.last_login = datetime.utcnow()
+                    notify_login = db.query(SystemSetting).filter(SystemSetting.key == "notify.login_success").first()
+                    if not notify_login or notify_login.value == "true":
+                        send_push_notification(db, "Login Successful", f"Worker successfully logged into {account.username} (Center {assignment.visa_center})", visa_center_id=assignment.visa_center)
                 
     elif req.event_type == "NO_SLOTS_FOUND":
         notify_no_slots = db.query(SystemSetting).filter(SystemSetting.key == "notify.no_slots_found").first()

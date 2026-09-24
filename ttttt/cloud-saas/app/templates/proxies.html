@@ -8,9 +8,16 @@
         <h2 class="text-3xl font-bold tracking-tight">Proxies</h2>
         <p class="text-muted-foreground mt-1">Manage network proxies and view their health and capabilities</p>
     </div>
-    <button class="btn btn-primary" onclick="document.getElementById('createProxyModal').classList.remove('hidden')">
-        <i data-lucide="plus" class="w-4 h-4 mr-2"></i> Add Proxies
-    </button>
+    <div class="flex items-center gap-2">
+        <form action="/proxies/reset-cooldowns" method="POST" class="inline" onsubmit="event.preventDefault(); const f = this; uiConfirm('Are you sure you want to reset all proxy cooldowns back to READY status?').then(c => { if(c) HTMLFormElement.prototype.submit.call(f); });">
+            <button type="submit" class="btn btn-secondary text-xs flex items-center text-indigo-400 hover:bg-indigo-500/10 border-indigo-500/20" title="Reset all proxies in cooldown to READY">
+                <i data-lucide="refresh-cw" class="w-4 h-4 mr-1.5"></i> Reset Cooldowns
+            </button>
+        </form>
+        <button class="btn btn-primary" onclick="document.getElementById('createProxyModal').classList.remove('hidden')">
+            <i data-lucide="plus" class="w-4 h-4 mr-2"></i> Add Proxies
+        </button>
+    </div>
 </header>
 
 <!-- Create Proxy Modal -->

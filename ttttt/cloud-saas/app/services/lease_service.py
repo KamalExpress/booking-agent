@@ -31,6 +31,29 @@ class LeaseService:
                 if proxy and proxy.status == "LEASED":
                     proxy.status = "READY"
                     
+        # Auto-recover expired proxy and account cooldowns
+        cooldown_proxies_expired = self.db.query(Proxy).filter(
+            Proxy.status == "COOLDOWN",
+            Proxy.cooldown_until.isnot(None),
+            Proxy.cooldown_until <= now
+        ).all()
+        for p in cooldown_proxies_expired:
+            p.status = "READY"
+            p.cooldown_until = None
+            p.failure_count = 0
+            p.health_score = 100
+
+        cooldown_accounts_expired = self.db.query(PortalAccount).filter(
+            PortalAccount.status == "COOLDOWN",
+            PortalAccount.cooldown_until.isnot(None),
+            PortalAccount.cooldown_until <= now
+        ).all()
+        for a in cooldown_accounts_expired:
+            a.status = "READY"
+            a.cooldown_until = None
+            a.failure_count = 0
+            a.health_score = 100
+                    
             # Decrement worker concurrency
             worker = self.db.query(WorkerNode).filter(WorkerNode.worker_id == lease.worker_id).first()
             if worker and worker.current_concurrency > 0:
@@ -196,8 +219,11 @@ class LeaseService:
             # Reset Proxy status
             if lease.proxy_id:
                 proxy = self.db.query(Proxy).filter(Proxy.id == lease.proxy_id).first()
-                if proxy and proxy.status == "LEASED":
+                if proxy and proxy.status in ["LEASED", "COOLDOWN"]:
                     proxy.status = "READY"
+                    proxy.cooldown_until = None
+                    proxy.failure_count = 0
+                    proxy.health_score = 100
                     
             # Decrement worker concurrency
             worker = self.db.query(WorkerNode).filter(WorkerNode.worker_id == worker_id).first()
